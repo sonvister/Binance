@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>0.1.0-alpha</Version>
+    <PackageId>Binance</PackageId>
+    <Authors>sonvister</Authors>
+    <Company>sonvister</Company>
+    <Product>Binance</Product>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <Description>A full-featured .NET standard 2.0 Binance API facade designed for ease of use.</Description>
+    <Copyright>Copyright © sonvister 2017</Copyright>
+    <PackageTags>binance crypto cryptocurrency exchange api</PackageTags>
+    <PackageReleaseNotes>Pre-release for Binance.com .NET API competition.</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/sonvister/Binance</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/sonvister/Binance/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://github.com/sonvister/Binance/blob/master/logo.png?raw=true</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/sonvister/Binance</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Threading.Tasks.Dataflow">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\System.Threading.Tasks.Dataflow.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
