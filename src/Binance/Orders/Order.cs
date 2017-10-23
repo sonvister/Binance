@@ -5,7 +5,7 @@ namespace Binance.Orders
     /// <summary>
     /// An order that has been sent to the matching engine.
     /// </summary>
-    public class Order : IChronological
+    public sealed class Order : IChronological
     {
         #region Public Properties
 

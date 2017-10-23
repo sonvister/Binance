@@ -23,7 +23,6 @@ namespace Binance.Tests.Accounts
             Assert.Throws<ArgumentNullException>("symbol", () => new AccountTrade(null, id, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch));
 
             Assert.Throws<ArgumentException>("id", () => new AccountTrade(symbol, -1, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch));
-            Assert.Throws<ArgumentException>("id", () => new AccountTrade(symbol, 0, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch));
 
             Assert.Throws<ArgumentException>("price", () => new AccountTrade(symbol, id, -1, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch));
 

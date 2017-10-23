@@ -1,4 +1,4 @@
-﻿using Binance.Api.Json;
+﻿using Binance.Api;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -223,7 +223,7 @@ namespace Binance.Orders.Book
         /// Get a duplicate order book (deep copy).
         /// </summary>
         /// <returns></returns>
-        public virtual IOrderBook Clone(int limit = BinanceJsonApi.OrderBookLimitDefault)
+        public virtual IOrderBook Clone(int limit = BinanceApi.OrderBookLimitDefault)
         {
             return new OrderBook(Symbol, LastUpdateId, _bids.Take(limit).Select(_ => (_.Key, _.Value)), _asks.Take(limit).Select(_ => (_.Key, _.Value)));
         }

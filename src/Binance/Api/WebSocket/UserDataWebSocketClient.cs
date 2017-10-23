@@ -53,7 +53,7 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public async Task SubscribeAsync(IBinanceUser user, CancellationToken token = default)
+        public virtual async Task SubscribeAsync(IBinanceUser user, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
@@ -74,13 +74,13 @@ namespace Binance.Api.WebSocket
                     var eventArgs = DeserializeJson(json);
                     if (eventArgs != null)
                     {
-                        FireUpdateEvent(eventArgs);
+                        RaiseUpdateEvent(eventArgs);
                     }
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    LogException(e, $"{nameof(UserDataWebSocketClient)}.{nameof(FireUpdateEvent)}");
+                    LogException(e, $"{nameof(UserDataWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 }
             }, token);
         }
@@ -148,17 +148,17 @@ namespace Binance.Api.WebSocket
         }
 
         /// <summary>
-        /// Fire account update event.
+        /// Raise account update event.
         /// </summary>
         /// <param name="args"></param>
-        protected virtual void FireUpdateEvent(AccountUpdateEventArgs args)
+        protected virtual void RaiseUpdateEvent(AccountUpdateEventArgs args)
         {
             Throw.IfNull(args, nameof(args));
 
             try { AccountUpdate?.Invoke(this, args); }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(UserDataWebSocketClient)}.{nameof(FireUpdateEvent)}");
+                LogException(e, $"{nameof(UserDataWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 throw;
             }
         }

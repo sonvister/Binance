@@ -38,7 +38,7 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public Task SubscribeAsync(string symbol, KlineInterval interval, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, KlineInterval interval, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -54,13 +54,13 @@ namespace Binance.Api.WebSocket
                     var eventArgs = DeserializeJson(json);
                     if (eventArgs != null)
                     {
-                        FireUpdateEvent(eventArgs);
+                        RaiseUpdateEvent(eventArgs);
                     }
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    LogException(e, $"{nameof(KlineWebSocketClient)}.{nameof(FireUpdateEvent)}");
+                    LogException(e, $"{nameof(KlineWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 }
             }, token);
         }
@@ -131,17 +131,17 @@ namespace Binance.Api.WebSocket
         }
 
         /// <summary>
-        /// Fire kline event.
+        /// Raise kline event.
         /// </summary>
         /// <param name="args"></param>
-        protected virtual void FireUpdateEvent(KlineEventArgs args)
+        protected virtual void RaiseUpdateEvent(KlineEventArgs args)
         {
             Throw.IfNull(args, nameof(args));
 
             try { Kline?.Invoke(this, args); }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(KlineWebSocketClient)}.{nameof(FireUpdateEvent)}");
+                LogException(e, $"{nameof(KlineWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 throw;
             }
         }

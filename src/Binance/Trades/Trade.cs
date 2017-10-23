@@ -62,8 +62,8 @@ namespace Binance.Trades
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (id <= 0)
-                throw new ArgumentException($"{nameof(Trade)}: ID must be greater than 0.", nameof(id));
+            if (id < 0)
+                throw new ArgumentException($"{nameof(Trade)}: ID must not be less than 0.", nameof(id));
             if (price < 0)
                 throw new ArgumentException($"{nameof(Trade)}: price must not be less than 0.", nameof(price));
             if (quantity <= 0)

@@ -39,7 +39,7 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public Task SubscribeAsync(string symbol, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -55,13 +55,13 @@ namespace Binance.Api.WebSocket
                     var eventArgs = DeserializeJson(json);
                     if (eventArgs != null)
                     {
-                        FireUpdateEvent(eventArgs);
+                        RaiseUpdateEvent(eventArgs);
                     }
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    LogException(e, $"{nameof(TradesWebSocketClient)}.{nameof(FireUpdateEvent)}");
+                    LogException(e, $"{nameof(TradesWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 }
             }, token);
         }
@@ -120,17 +120,17 @@ namespace Binance.Api.WebSocket
         }
 
         /// <summary>
-        /// Fire aggregate trade event.
+        /// Raise aggregate trade event.
         /// </summary>
         /// <param name="args"></param>
-        protected virtual void FireUpdateEvent(AggregateTradeEventArgs args)
+        protected virtual void RaiseUpdateEvent(AggregateTradeEventArgs args)
         {
             Throw.IfNull(args, nameof(args));
 
             try { AggregateTrade?.Invoke(this, args); }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(TradesWebSocketClient)}.{nameof(FireUpdateEvent)}");
+                LogException(e, $"{nameof(TradesWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 throw;
             }
         }

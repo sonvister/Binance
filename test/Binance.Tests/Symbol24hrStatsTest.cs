@@ -48,6 +48,8 @@ namespace Binance.Tests
 
             Assert.Throws<ArgumentException>("volume", () => new Symbol24hrStats(symbol, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, bidPrice, askPrice, openPrice, highPrice, lowPrice, -1, openTime, closeTime, lastTradeId, firstTradeId, tradeCount));
 
+            Assert.Throws<ArgumentException>("lastTradeId", () => new Symbol24hrStats(symbol, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, bidPrice, askPrice, openPrice, highPrice, lowPrice, volume, openTime, closeTime, lastTradeId, firstTradeId, tradeCount));
+
             Assert.Throws<ArgumentException>("tradeCount", () => new Symbol24hrStats(symbol, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, bidPrice, askPrice, openPrice, highPrice, lowPrice, volume, openTime, closeTime, firstTradeId, lastTradeId, -1));
             Assert.Throws<ArgumentException>("tradeCount", () => new Symbol24hrStats(symbol, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, bidPrice, askPrice, openPrice, highPrice, lowPrice, volume, openTime, closeTime, firstTradeId, lastTradeId, tradeCount + 1));
         }

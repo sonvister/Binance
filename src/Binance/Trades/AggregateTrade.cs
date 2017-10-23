@@ -1,6 +1,8 @@
-﻿namespace Binance.Trades
+﻿using System;
+
+namespace Binance.Trades
 {
-    public class AggregateTrade : Trade
+    public sealed class AggregateTrade : Trade
     {
         #region Public Properties
 
@@ -47,6 +49,13 @@
             bool isBestPriceMatch)
             : base(symbol, id, price, quantity, timestamp, isBestPriceMatch)
         {
+            if (firstTradeId < 0)
+                throw new ArgumentException($"{nameof(AggregateTrade)} trade ID must not be less than 0.", nameof(firstTradeId));
+            if (lastTradeId < 0)
+                throw new ArgumentException($"{nameof(AggregateTrade)} trade ID must not be less than 0.", nameof(lastTradeId));
+            if (lastTradeId < firstTradeId)
+                throw new ArgumentException($"{nameof(AggregateTrade)} last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
+
             FirstTradeId = firstTradeId;
             LastTradeId = lastTradeId;
             IsBuyerMaker = isBuyerMaker;

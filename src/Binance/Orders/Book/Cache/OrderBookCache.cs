@@ -1,4 +1,4 @@
-﻿using Binance.Api.Json;
+﻿using Binance.Api;
 using Binance.Api.WebSocket;
 using Binance.Api.WebSocket.Events;
 using Microsoft.Extensions.Logging;
@@ -172,17 +172,17 @@ namespace Binance.Orders.Book.Cache
         #region Protected Methods
 
         /// <summary>
-        /// Fire depth of market update event.
+        /// Raise depth of market update event.
         /// </summary>
         /// <param name="args"></param>
-        protected virtual void FireUpdateEvent(OrderBookUpdateEventArgs args)
+        protected virtual void RaiseUpdateEvent(OrderBookUpdateEventArgs args)
         {
             Throw.IfNull(args, nameof(args));
 
             try { Update?.Invoke(this, args); }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(FireUpdateEvent)}");
+                LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 throw;
             }
         }
@@ -203,7 +203,7 @@ namespace Binance.Orders.Book.Cache
                 base.Modify(lastUpdateId, bids, asks);
             }
 
-            FireUpdateEvent(new OrderBookUpdateEventArgs(Clone()));
+            RaiseUpdateEvent(new OrderBookUpdateEventArgs(Clone()));
         }
 
         #endregion Protected Methods
@@ -239,7 +239,7 @@ namespace Binance.Orders.Book.Cache
 
         #region ICloneable
 
-        public override IOrderBook Clone(int limit = BinanceJsonApi.OrderBookLimitDefault)
+        public override IOrderBook Clone(int limit = BinanceApi.OrderBookLimitDefault)
         {
             lock (_sync)
             {

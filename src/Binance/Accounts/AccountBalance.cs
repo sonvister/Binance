@@ -5,7 +5,7 @@ namespace Binance.Accounts
     /// <summary>
     /// An account asset balance.
     /// </summary>
-    public class AccountBalance
+    public sealed class AccountBalance
     {
         #region Public Properties
 

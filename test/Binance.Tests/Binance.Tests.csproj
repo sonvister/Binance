@@ -17,8 +17,4 @@
     <ProjectReference Include="..\..\src\Binance\Binance.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Trades\" />
-  </ItemGroup>
-
 </Project>

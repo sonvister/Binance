@@ -1,4 +1,6 @@
-﻿namespace Binance
+﻿using System;
+
+namespace Binance
 {
     /// <summary>
     /// Candlestick.
@@ -107,6 +109,34 @@
             decimal takerBuyBaseAssetVolume,
             decimal takerBuyQuoteAssetVolume)
         {
+            Throw.IfNull(symbol, nameof(symbol));
+
+            if (openTime <= 0)
+                throw new ArgumentException($"{nameof(Candlestick)}: timestamp must be greater than 0.", nameof(openTime));
+            if (closeTime <= 0)
+                throw new ArgumentException($"{nameof(Candlestick)}: timestamp must be greater than 0.", nameof(closeTime));
+
+            if (open < 0)
+                throw new ArgumentException($"{nameof(Candlestick)}: price must not be less than 0.", nameof(open));
+            if (high < 0)
+                throw new ArgumentException($"{nameof(Candlestick)}: price must not be less than 0.", nameof(high));
+            if (low < 0)
+                throw new ArgumentException($"{nameof(Candlestick)}: price must not be less than 0.", nameof(low));
+            if (close < 0)
+                throw new ArgumentException($"{nameof(Candlestick)}: price must not be less than 0.", nameof(close));
+
+            if (numberOfTrades < 0)
+                throw new ArgumentException($"{nameof(Candlestick)}: number of trades must not be less than 0.", nameof(numberOfTrades));
+
+            if (volume < 0)
+                throw new ArgumentException($"{nameof(Candlestick)}: volume must not be less than 0.", nameof(volume));
+            if (quoteAssetVolume < 0)
+                throw new ArgumentException($"{nameof(Candlestick)}: volume must not be less than 0.", nameof(quoteAssetVolume));
+            if (takerBuyBaseAssetVolume < 0)
+                throw new ArgumentException($"{nameof(Candlestick)}: volume must not be less than 0.", nameof(takerBuyBaseAssetVolume));
+            if (takerBuyQuoteAssetVolume < 0)
+                throw new ArgumentException($"{nameof(Candlestick)}: volume must not be less than 0.", nameof(takerBuyQuoteAssetVolume));
+
             Symbol = symbol;
             Interval = interval;
             OpenTime = openTime;

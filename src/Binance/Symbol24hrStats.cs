@@ -172,8 +172,8 @@ namespace Binance
             //    throw new ArgumentException($"{nameof(Symbol24hrStats)} trade ID must be greater than 0.", nameof(firstTradeId));
             //if (lastTradeId < 0) // ...fails due to symbol 'ETC' (?) with -1 trade ID.
             //    throw new ArgumentException($"{nameof(Symbol24hrStats)} trade ID must be greater than 0.", nameof(lastTradeId));
-            if (firstTradeId > lastTradeId)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} first trade ID must be less than or equal to last trade ID.", nameof(firstTradeId));
+            if (lastTradeId < firstTradeId)
+                throw new ArgumentException($"{nameof(Symbol24hrStats)} last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
 
             if (tradeCount < 0)
                 throw new ArgumentException($"{nameof(Symbol24hrStats)} trade count must be greater than or equal to 0.", nameof(tradeCount));

@@ -39,7 +39,7 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public Task SubscribeAsync(string symbol, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -55,13 +55,13 @@ namespace Binance.Api.WebSocket
                     var eventArgs = DeserializeJson(json);
                     if (eventArgs != null)
                     {
-                        FireUpdateEvent(eventArgs);
+                        RaiseUpdateEvent(eventArgs);
                     }
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(FireUpdateEvent)}");
+                    LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 }
             }, token);
         }
@@ -122,17 +122,17 @@ namespace Binance.Api.WebSocket
         }
 
         /// <summary>
-        /// Fire depth of market update event.
+        /// Raise depth of market update event.
         /// </summary>
         /// <param name="args"></param>
-        protected virtual void FireUpdateEvent(DepthUpdateEventArgs args)
+        protected virtual void RaiseUpdateEvent(DepthUpdateEventArgs args)
         {
             Throw.IfNull(args, nameof(args));
 
             try { DepthUpdate?.Invoke(this, args); }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(FireUpdateEvent)}");
+                LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 throw;
             }
         }
