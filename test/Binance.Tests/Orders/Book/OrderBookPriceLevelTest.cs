@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Binance.Orders.Book
 {
-    public class OrderBookLevelTest
+    public class OrderBookPriceLevelTest
     {
         [Fact]
         public void Throws()

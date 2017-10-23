@@ -1,4 +1,6 @@
-﻿namespace Binance.Accounts
+﻿using System;
+
+namespace Binance.Accounts
 {
     public sealed class Deposit : IChronological
     {
@@ -38,6 +40,11 @@
         public Deposit(string asset, decimal amount, long timestamp, DepositStatus status)
         {
             Throw.IfNullOrWhiteSpace(asset, nameof(asset));
+
+            if (amount <= 0)
+                throw new ArgumentException($"{nameof(Deposit)} amount must be greater than 0.", nameof(amount));
+            if (timestamp <= 0)
+                throw new ArgumentException($"{nameof(Deposit)} timestamp must be greater than 0.", nameof(timestamp));
 
             Asset = asset;
             Amount = amount;

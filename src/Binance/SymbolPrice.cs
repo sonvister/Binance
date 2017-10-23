@@ -33,7 +33,7 @@ namespace Binance
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (value < 0)
-                throw new ArgumentException($"{nameof(SymbolPrice)} {nameof(value)} must not be less than 0.", nameof(value));
+                throw new ArgumentException($"{nameof(SymbolPrice)} price must not be less than 0.", nameof(value));
 
             Symbol = symbol;
             Value = value;

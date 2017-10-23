@@ -59,6 +59,8 @@ namespace Binance.Accounts
             bool isBestPriceMatch)
             : base(symbol, id, price, quantity, timestamp, isBestPriceMatch)
         {
+            AccountCommissions.ThrowIfCommissionIsInvalid(commission, nameof(commission));
+
             Commission = commission;
             CommissionAsset = commissionAsset;
             IsBuyer = isBuyer;

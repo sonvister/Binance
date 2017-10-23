@@ -34,11 +34,15 @@ namespace Binance.Accounts
         /// <param name="commissions">The account commissions.</param>
         /// <param name="status">The account status.</param>
         /// <param name="balances">The account balances.</param>
-        public Account(AccountCommissions commissions, AccountStatus status, IEnumerable<AccountBalance> balances)
+        public Account(AccountCommissions commissions, AccountStatus status, IEnumerable<AccountBalance> balances = null)
         {
+            Throw.IfNull(commissions, nameof(commissions));
+            Throw.IfNull(status, nameof(status));
+
             Commissions = commissions;
             Status = status;
-            Balances = balances;
+
+            Balances = balances ?? new AccountBalance[] { };
         }
 
         #endregion Constructors

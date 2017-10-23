@@ -1,4 +1,6 @@
-﻿namespace Binance.Trades
+﻿using System;
+
+namespace Binance.Trades
 {
     /// <summary>
     /// A abstract trade class.
@@ -59,6 +61,15 @@
             bool isBestPriceMatch)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            if (id <= 0)
+                throw new ArgumentException($"{nameof(Trade)}: ID must be greater than 0.", nameof(id));
+            if (price < 0)
+                throw new ArgumentException($"{nameof(Trade)}: price must not be less than 0.", nameof(price));
+            if (quantity <= 0)
+                throw new ArgumentException($"{nameof(Trade)}: quantity must be greater than 0.", nameof(quantity));
+            if (timestamp <= 0)
+                throw new ArgumentException($"{nameof(Trade)}: timestamp must be greater than 0.", nameof(timestamp));
 
             Symbol = symbol;
             Id = id;

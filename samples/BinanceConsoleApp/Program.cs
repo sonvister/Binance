@@ -137,6 +137,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  depth|book <symbol> [limit]                display symbol order book, where limit: [1-100].");
                 Console.WriteLine("  trades <symbol> [limit]                    display latest N trades, where limit: [1-500].");
                 Console.WriteLine("  candles|klines <symbol> <interval>         display candlestick bars for a symbol.");
+                Console.WriteLine("  symbols                                    display all symbols.");
                 Console.WriteLine("  prices                                     display current price for all symbols.");
                 Console.WriteLine("  tops                                       display order book top price and quantity for all symbols.");
                 Console.WriteLine("  live depth <symbol>                        enable order book live feed for a symbol.");
@@ -350,6 +351,17 @@ namespace BinanceConsoleApp
                             {
                                 Console.WriteLine($"   O: {candlestick.Open.ToString("0.00000000")} | H: {candlestick.High.ToString("0.00000000")} | L: {candlestick.Low.ToString("0.00000000")} | C: {candlestick.Close.ToString("0.00000000")} | V: {candlestick.Volume.ToString("0.")}");
                             }
+                            Console.WriteLine();
+                        }
+                    }
+                    // Symbols
+                    else if (stdin.Equals("symbols", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var symbols = await _api.SymbolsAsync(token);
+                        lock (_consoleSync)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine(string.Join(", ", symbols));
                             Console.WriteLine();
                         }
                     }

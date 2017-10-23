@@ -1,4 +1,6 @@
-﻿namespace Binance.Accounts
+﻿using System;
+
+namespace Binance.Accounts
 {
     /// <summary>
     /// An account asset balance.
@@ -35,6 +37,11 @@
         public AccountBalance(string asset, decimal free, decimal locked)
         {
             Throw.IfNullOrWhiteSpace(asset, nameof(asset));
+
+            if (free < 0)
+                throw new ArgumentException($"{nameof(AccountBalance)} amount must not be less than 0.", nameof(free));
+            if (locked < 0)
+                throw new ArgumentException($"{nameof(AccountBalance)} amount must not be less than 0.", nameof(locked));
 
             Asset = asset;
             Free = free;

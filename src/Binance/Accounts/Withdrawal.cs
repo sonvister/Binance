@@ -1,4 +1,6 @@
-﻿namespace Binance.Accounts
+﻿using System;
+
+namespace Binance.Accounts
 {
     public sealed class Withdrawal : IChronological
     {
@@ -50,6 +52,12 @@
         public Withdrawal(string asset, decimal amount, long timestamp, WithdrawalStatus status, string address, string txId = null)
         {
             Throw.IfNullOrWhiteSpace(asset, nameof(asset));
+
+            if (amount <= 0)
+                throw new ArgumentException($"{nameof(Withdrawal)} amount must be greater than 0.", nameof(amount));
+            if (timestamp <= 0)
+                throw new ArgumentException($"{nameof(Withdrawal)} timestamp must be greater than 0.", nameof(timestamp));
+
             Throw.IfNullOrWhiteSpace(address, nameof(address));
 
             Asset = asset;
