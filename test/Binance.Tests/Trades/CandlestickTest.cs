@@ -10,13 +10,13 @@ namespace Binance.Tests.Trades
         {
             var symbol = Symbol.BTC_USDT;
             var interval = KlineInterval.Hour;
-            long openTime = 1234567890;
+            long openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             decimal open = 4950;
             decimal high = 5100;
             decimal low = 4900;
             decimal close = 5050;
             decimal volume = 1000;
-            long closeTime = 2345678901;
+            long closeTime = DateTimeOffset.FromUnixTimeMilliseconds(openTime).AddHours(1).ToUnixTimeMilliseconds();
             long quoteAssetVolume = 5000000;
             int numberOfTrades = 555555;
             decimal takerBuyBaseAssetVolume = 4444;
@@ -48,13 +48,13 @@ namespace Binance.Tests.Trades
         {
             var symbol = Symbol.BTC_USDT;
             var interval = KlineInterval.Hour;
-            long openTime = 1234567890;
+            long openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             decimal open = 4950;
             decimal high = 5100;
             decimal low = 4900;
             decimal close = 5050;
             decimal volume = 1000;
-            long closeTime = 2345678901;
+            long closeTime = DateTimeOffset.FromUnixTimeMilliseconds(openTime).AddHours(1).ToUnixTimeMilliseconds();
             long quoteAssetVolume = 5000000;
             int numberOfTrades = 555555;
             decimal takerBuyBaseAssetVolume = 4444;

@@ -32,10 +32,11 @@ namespace Binance.Api.WebSocket.Events
         public AccountUpdateEventArgs(long timestamp, Account account)
         {
             if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(AccountUpdateEventArgs)}: Event {nameof(timestamp)} must be greater than 0.", nameof(timestamp));
+                throw new ArgumentException($"{nameof(AccountUpdateEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
 
             Throw.IfNull(account, nameof(account));
 
+            Timestamp = timestamp;
             Account = account;
         }
 

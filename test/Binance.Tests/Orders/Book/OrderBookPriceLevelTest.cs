@@ -15,8 +15,8 @@ namespace Binance.Orders.Book
         [Fact]
         public void Zeroed()
         {
-            var price = 0;
-            var quantity = 0;
+            decimal price = 0;
+            decimal quantity = 0;
 
             var level = new OrderBookPriceLevel(price, quantity);
 
@@ -27,8 +27,8 @@ namespace Binance.Orders.Book
         [Fact]
         public void Properties()
         {
-            var price = 0.123456789m;
-            var quantity = 0.987654321m;
+            decimal price = 0.123456789m;
+            decimal quantity = 0.987654321m;
 
             var level = new OrderBookPriceLevel(price, quantity);
 
@@ -39,8 +39,8 @@ namespace Binance.Orders.Book
         [Fact]
         public void Clone()
         {
-            var price = 0.123456789m;
-            var quantity = 0.987654321m;
+            decimal price = 0.123456789m;
+            decimal quantity = 0.987654321m;
 
             var level = new OrderBookPriceLevel(price, quantity);
 

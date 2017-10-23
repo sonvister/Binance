@@ -32,7 +32,7 @@ namespace Binance.Api.WebSocket.Events
         public AggregateTradeEventArgs(long timestamp, AggregateTrade trade)
         {
             if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(AggregateTradeEventArgs)}: Event {nameof(timestamp)} must be greater than 0.", nameof(timestamp));
+                throw new ArgumentException($"{nameof(AggregateTradeEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
 
             Throw.IfNull(trade, nameof(trade));
 

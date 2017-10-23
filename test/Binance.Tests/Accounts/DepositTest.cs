@@ -11,7 +11,7 @@ namespace Binance.Tests.Accounts
         {
             var asset = Asset.BTC;
             var amount = 1.23m;
-            var timestamp = 1234567890;
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var status = DepositStatus.Success;
 
             Assert.Throws<ArgumentNullException>("asset", () => new Deposit(null, amount, timestamp, status));
@@ -26,7 +26,7 @@ namespace Binance.Tests.Accounts
         {
             var asset = Asset.BTC;
             var amount = 1.23m;
-            var timestamp = 1234567890;
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var status = DepositStatus.Success;
 
             var deposit = new Deposit(asset, amount, timestamp, status);

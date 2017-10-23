@@ -54,14 +54,14 @@ namespace Binance.Api.WebSocket.Events
         public DepthUpdateEventArgs(long timestamp, string symbol, long firstUpdateId, long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
         {
             if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(DepthUpdateEventArgs)}: Event {nameof(timestamp)} must be greater than 0.", nameof(timestamp));
+                throw new ArgumentException($"{nameof(DepthUpdateEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
 
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (firstUpdateId <= 0)
-                throw new ArgumentException($"{nameof(DepthUpdateEventArgs)}: First update ID must be greater than 0.", nameof(firstUpdateId));
-            if (lastUpdateId <= 0)
-                throw new ArgumentException($"{nameof(DepthUpdateEventArgs)}: Last update ID must be greater than 0.", nameof(lastUpdateId));
+            if (firstUpdateId < 0)
+                throw new ArgumentException($"{nameof(DepthUpdateEventArgs)}: Update ID must not be less than 0.", nameof(firstUpdateId));
+            if (lastUpdateId < 0)
+                throw new ArgumentException($"{nameof(DepthUpdateEventArgs)}: Update ID must not be less than 0.", nameof(lastUpdateId));
             if (lastUpdateId < firstUpdateId)
                 throw new ArgumentException($"{nameof(DepthUpdateEventArgs)}: Last update ID must be greater than or equal to first update ID.", nameof(lastUpdateId));
 

@@ -13,7 +13,7 @@ namespace Binance.Tests.Accounts
             long id = 12345;
             decimal price = 5000;
             decimal quantity = 1;
-            long timestamp = 1234567890;
+            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             long firstTradeId = 123456;
             long lastTradeId = 234567;
             bool isBuyerMaker = true;
@@ -41,7 +41,7 @@ namespace Binance.Tests.Accounts
             long id = 12345;
             decimal price = 5000;
             decimal quantity = 1;
-            long timestamp = 1234567890;
+            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             long firstTradeId = 123456;
             long lastTradeId = 234567;
             bool isBuyerMaker = true;

@@ -8,7 +8,7 @@ namespace Binance.Orders.Book
         [Fact]
         public void Throws()
         {
-            var symbol = "BTCUSDT";
+            var symbol = Symbol.BTC_USDT;
             var lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
@@ -26,7 +26,7 @@ namespace Binance.Orders.Book
         [Fact]
         public void Properties()
         {
-            var symbol = "BTCUSDT";
+            var symbol = Symbol.BTC_USDT;
             var lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
@@ -49,7 +49,7 @@ namespace Binance.Orders.Book
         [Fact]
         public void Clone()
         {
-            var symbol = "BTCUSDT";
+            var symbol = Symbol.BTC_USDT;
             var lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
@@ -79,7 +79,7 @@ namespace Binance.Orders.Book
         [Fact]
         public void Quantity()
         {
-            var symbol = "BTCUSDT";
+            var symbol = Symbol.BTC_USDT;
             var lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
@@ -99,7 +99,7 @@ namespace Binance.Orders.Book
         [Fact]
         public void MidMarketPrice()
         {
-            var symbol = "BTCUSDT";
+            var symbol = Symbol.BTC_USDT;
             var lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
@@ -112,7 +112,7 @@ namespace Binance.Orders.Book
         [Fact]
         public void Depth()
         {
-            var symbol = "BTCUSDT";
+            var symbol = Symbol.BTC_USDT;
             var lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
@@ -127,7 +127,7 @@ namespace Binance.Orders.Book
         [Fact]
         public void Volume()
         {
-            var symbol = "BTCUSDT";
+            var symbol = Symbol.BTC_USDT;
             var lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };

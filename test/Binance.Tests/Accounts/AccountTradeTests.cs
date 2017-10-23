@@ -15,7 +15,7 @@ namespace Binance.Tests.Accounts
             decimal quantity = 1;
             decimal commission = 10;
             string commissionAsset = "BNB";
-            long timestamp = 1234567890;
+            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             bool isBuyer = true;
             bool isMaker = true;
             bool isBestPriceMatch = true;
@@ -42,7 +42,7 @@ namespace Binance.Tests.Accounts
             decimal quantity = 1;
             decimal commission = 10;
             string commissionAsset = "BNB";
-            long timestamp = 1234567890;
+            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             bool isBuyer = true;
             bool isMaker = true;
             bool isBestPriceMatch = true;

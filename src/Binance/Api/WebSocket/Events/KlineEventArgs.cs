@@ -27,7 +27,7 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// Get the last trade ID.
         /// </summary>
-        public long LastUpdateId { get; private set; }
+        public long LastTradeId { get; private set; }
 
         /// <summary>
         /// Get whether the candlestick is final.
@@ -49,17 +49,21 @@ namespace Binance.Api.WebSocket.Events
         public KlineEventArgs(long timestamp, Candlestick candlestick, long firstTradeId, long lastTradeId, bool isFinal)
         {
             if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(KlineEventArgs)}: Event {nameof(timestamp)} must be greater than 0.", nameof(timestamp));
+                throw new ArgumentException($"{nameof(KlineEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
 
             Throw.IfNull(candlestick, nameof(candlestick));
 
+            if (firstTradeId < 0)
+                throw new ArgumentException($"{nameof(KlineEventArgs)}: Trade ID must be greater than 0.", nameof(firstTradeId));
+            if (lastTradeId < 0)
+                throw new ArgumentException($"{nameof(KlineEventArgs)}: Trade ID must be greater than 0.", nameof(lastTradeId));
+            if (lastTradeId < firstTradeId)
+                throw new ArgumentException($"{nameof(KlineEventArgs)}: Last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
+
             Timestamp = timestamp;
-
             Candlestick = candlestick;
-
             FirstTradeId = firstTradeId;
-            LastUpdateId = lastTradeId;
-
+            LastTradeId = lastTradeId;
             IsFinal = isFinal;
         }
 

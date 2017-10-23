@@ -9,11 +9,9 @@ namespace Binance.Orders.Book
         public void Throws()
         {
             var symbol = Symbol.BTC_USDT;
-
-            var bidPrice = 0.123456789m;
-            var bidQuantity = 0.987654321m;
-
-            var askQuantity = 1.987654321m;
+            decimal bidPrice = 0.123456789m;
+            decimal bidQuantity = 0.987654321m;
+            decimal askQuantity = 1.987654321m;
 
             Assert.Throws<ArgumentException>("askPrice", () => new OrderBookTop(symbol, bidPrice, bidQuantity, bidPrice - 1, askQuantity));
         }
@@ -22,12 +20,10 @@ namespace Binance.Orders.Book
         public void Properties()
         {
             var symbol = Symbol.BTC_USDT;
-
-            var bidPrice = 0.123456789m;
-            var bidQuantity = 0.987654321m;
-
-            var askPrice = 1.123456789m;
-            var askQuantity = 1.987654321m;
+            decimal bidPrice = 0.123456789m;
+            decimal bidQuantity = 0.987654321m;
+            decimal askPrice = 1.123456789m;
+            decimal askQuantity = 1.987654321m;
 
             var top = new OrderBookTop(symbol, bidPrice, bidQuantity, askPrice, askQuantity);
 
@@ -42,12 +38,10 @@ namespace Binance.Orders.Book
         public void Clone()
         {
             var symbol = Symbol.BTC_USDT;
-
-            var bidPrice = 0.123456789m;
-            var bidQuantity = 0.987654321m;
-
-            var askPrice = 1.123456789m;
-            var askQuantity = 1.987654321m;
+            decimal bidPrice = 0.123456789m;
+            decimal bidQuantity = 0.987654321m;
+            decimal askPrice = 1.123456789m;
+            decimal askQuantity = 1.987654321m;
 
             var top = new OrderBookTop(symbol, bidPrice, bidQuantity, askPrice, askQuantity);
 

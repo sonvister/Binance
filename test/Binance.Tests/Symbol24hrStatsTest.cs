@@ -20,8 +20,8 @@ namespace Binance.Tests
             decimal highPrice = 5025;
             decimal lowPrice = 4925;
             decimal volume = 100000;
-            long openTime = 1100000000;
-            long closeTime = 1200000000;
+            long openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            long closeTime = DateTimeOffset.FromUnixTimeMilliseconds(openTime).AddHours(24).ToUnixTimeMilliseconds();
             long firstTradeId = 123456;
             long lastTradeId = 234567;
             long tradeCount = lastTradeId - firstTradeId + 1;
@@ -69,8 +69,8 @@ namespace Binance.Tests
             decimal highPrice = 5025;
             decimal lowPrice = 4925;
             decimal volume = 100000;
-            long openTime = 1100000000;
-            long closeTime = 1200000000;
+            long openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            long closeTime = DateTimeOffset.FromUnixTimeMilliseconds(openTime).AddHours(24).ToUnixTimeMilliseconds();
             long firstTradeId = 123456;
             long lastTradeId = 234567;
             long tradeCount = lastTradeId - firstTradeId + 1;

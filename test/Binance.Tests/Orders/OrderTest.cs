@@ -21,7 +21,7 @@ namespace Binance.Tests.Orders
             var orderSide = OrderSide.Sell;
             decimal stopPrice = 5000;
             decimal icebergQuantity = 0.1m;
-            long timestamp = 1234567890;
+            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             Assert.Throws<ArgumentNullException>("symbol", () => new Order(null, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp));
             Assert.Throws<ArgumentException>("id", () => new Order(symbol, -1, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp));
@@ -49,7 +49,7 @@ namespace Binance.Tests.Orders
             var orderSide = OrderSide.Sell;
             decimal stopPrice = 5000;
             decimal icebergQuantity = 0.1m;
-            long timestamp = 1234567890;
+            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             var order = new Order(symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
 
