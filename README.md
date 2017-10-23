@@ -6,6 +6,7 @@ Using [Nuget](https://www.nuget.org/packages/Binance/) Package Manager:
 ```
 PM> Install-Package Binance
 ```
+![Icon](https://img.shields.io/nuget/v/Binance.svg)
 
 ## Features
 * **Complete** implementation of [Binance API](https://www.binance.com/restapipub.html) including latest deposit/withdrawal features and WebSocket feeds. 
