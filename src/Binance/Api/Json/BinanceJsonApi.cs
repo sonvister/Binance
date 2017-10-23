@@ -86,7 +86,7 @@ namespace Binance.Api.Json
             return GetAsync($"/api/v1/depth?symbol={symbol}&limit={limit}", token);
         }
 
-        public virtual Task<string> GetAggregateTradesAsync(string symbol, long fromId = BinanceApi.NullTradeId, long startTime = 0, long endTime = 0, int limit = BinanceApi.TradesLimitDefault, CancellationToken token = default)
+        public virtual Task<string> GetAggregateTradesAsync(string symbol, long fromId = BinanceApi.NullId, long startTime = 0, long endTime = 0, int limit = BinanceApi.TradesLimitDefault, CancellationToken token = default)
         {
             symbol = ThrowIfSymbolIsInvalid(symbol);
 
@@ -185,7 +185,7 @@ namespace Binance.Api.Json
 
             var totalParams = $"symbol={symbol}&recvWindow={recvWindow}";
 
-            if (orderId > 0)
+            if (orderId >= 0)
                 totalParams += $"&orderId={orderId}";
 
             if (!string.IsNullOrWhiteSpace(origClientOrderId))
@@ -201,7 +201,7 @@ namespace Binance.Api.Json
                 .ConfigureAwait(false);
         }
 
-        public virtual async Task<string> CancelOrderAsync(IBinanceUser user, string symbol, long orderId = 0, string origClientOrderId = null, string newClientOrderId = null, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<string> CancelOrderAsync(IBinanceUser user, string symbol, long orderId = BinanceApi.NullId, string origClientOrderId = null, string newClientOrderId = null, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
@@ -211,7 +211,7 @@ namespace Binance.Api.Json
 
             var totalParams = $"symbol={symbol}&recvWindow={recvWindow}";
 
-            if (orderId > 0)
+            if (orderId >= 0)
                 totalParams += $"&orderId={orderId}";
 
             if (!string.IsNullOrWhiteSpace(origClientOrderId))
@@ -250,7 +250,7 @@ namespace Binance.Api.Json
                 .ConfigureAwait(false);
         }
 
-        public virtual async Task<string> GetOrdersAsync(IBinanceUser user, string symbol, long orderId = 0, int limit = BinanceApi.OrdersLimitDefault, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<string> GetOrdersAsync(IBinanceUser user, string symbol, long orderId = BinanceApi.NullId, int limit = BinanceApi.OrdersLimitDefault, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
@@ -263,7 +263,7 @@ namespace Binance.Api.Json
 
             var totalParams = $"symbol={symbol}&limit={limit}&recvWindow={recvWindow}";
 
-            if (orderId > 0)
+            if (orderId >= 0)
                 totalParams += $"&orderId={orderId}";
 
             var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
@@ -291,7 +291,7 @@ namespace Binance.Api.Json
             return await GetAsync($"/api/v3/account?{totalParams}&signature={signature}", token, user);
         }
 
-        public virtual async Task<string> GetTradesAsync(IBinanceUser user, string symbol, int limit = BinanceApi.OrdersLimitDefault, long fromId = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<string> GetTradesAsync(IBinanceUser user, string symbol, int limit = BinanceApi.OrdersLimitDefault, long fromId = BinanceApi.NullId, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
@@ -304,7 +304,7 @@ namespace Binance.Api.Json
 
             var totalParams = $"symbol={symbol}&limit={limit}&recvWindow={recvWindow}";
 
-            if (fromId > 0)
+            if (fromId >= 0)
                 totalParams += $"&fromId={fromId}";
 
             var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
@@ -345,7 +345,7 @@ namespace Binance.Api.Json
                 .ConfigureAwait(false);
         }
 
-        public virtual async Task<string> GetDepositsAsync(IBinanceUser user, string asset, DepositStatus? status, long startTime = 0, long endTime = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<string> GetDepositsAsync(IBinanceUser user, string asset, DepositStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
@@ -380,7 +380,7 @@ namespace Binance.Api.Json
                 .ConfigureAwait(false);
         }
 
-        public virtual async Task<string> GetWithdrawalsAsync(IBinanceUser user, string asset, WithdrawalStatus? status, long startTime = 0, long endTime = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<string> GetWithdrawalsAsync(IBinanceUser user, string asset, WithdrawalStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 

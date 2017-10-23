@@ -10,17 +10,17 @@ namespace Binance.Tests.Trades
         {
             var symbol = Symbol.BTC_USDT;
             var interval = KlineInterval.Hour;
-            var openTime = 1234567890;
-            var open = 4950;
-            var high = 5100;
-            var low = 4900;
-            var close = 5050;
-            var volume = 1000;
-            var closeTime = 2345678901;
-            var quoteAssetVolume = 5000000;
-            var numberOfTrades = 555555;
-            var takerBuyBaseAssetVolume = 4444;
-            var takerBuyQuoteAssetVolume = 333;
+            long openTime = 1234567890;
+            decimal open = 4950;
+            decimal high = 5100;
+            decimal low = 4900;
+            decimal close = 5050;
+            decimal volume = 1000;
+            long closeTime = 2345678901;
+            long quoteAssetVolume = 5000000;
+            int numberOfTrades = 555555;
+            decimal takerBuyBaseAssetVolume = 4444;
+            decimal takerBuyQuoteAssetVolume = 333;
 
             Assert.Throws<ArgumentNullException>("symbol", () => new Candlestick(null, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume));
 
@@ -48,17 +48,17 @@ namespace Binance.Tests.Trades
         {
             var symbol = Symbol.BTC_USDT;
             var interval = KlineInterval.Hour;
-            var openTime = 1234567890;
-            var open = 4950;
-            var high = 5100;
-            var low = 4900;
-            var close = 5050;
-            var volume = 1000;
-            var closeTime = 2345678901;
-            var quoteAssetVolume = 5000000;
-            var numberOfTrades = 555555;
-            var takerBuyBaseAssetVolume = 4444;
-            var takerBuyQuoteAssetVolume = 333;
+            long openTime = 1234567890;
+            decimal open = 4950;
+            decimal high = 5100;
+            decimal low = 4900;
+            decimal close = 5050;
+            decimal volume = 1000;
+            long closeTime = 2345678901;
+            long quoteAssetVolume = 5000000;
+            int numberOfTrades = 555555;
+            decimal takerBuyBaseAssetVolume = 4444;
+            decimal takerBuyQuoteAssetVolume = 333;
 
             var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
 

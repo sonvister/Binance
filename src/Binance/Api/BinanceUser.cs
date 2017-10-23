@@ -24,18 +24,20 @@ namespace Binance.Api
         #region Constructors
 
         /// <summary>
-        /// Constructor.
+        /// Construct an <see cref="IBinanceUser"/> instance providing an API
+        /// key and optional API secret. The API secret is not required for 
+        /// the user stream methods, but is required for other account methods.
         /// </summary>
         /// <param name="key">The user's API key.</param>
-        /// <param name="secret">The user's API secret.</param>
+        /// <param name="secret">The user's API secret (optional).</param>
         public BinanceUser(string key, string secret)
         {
             Throw.IfNullOrWhiteSpace(key, nameof(key));
-            Throw.IfNullOrWhiteSpace(secret, nameof(secret));
 
             ApiKey = key;
 
-            _hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
+            if (!string.IsNullOrWhiteSpace(secret))
+                _hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
         }
 
         #endregion Constructors
@@ -44,6 +46,9 @@ namespace Binance.Api
 
         public string Sign(string query)
         {
+            if (_hmac == null)
+                throw new InvalidOperationException("Signature requires the user's API secret.");
+
             var hash = _hmac.ComputeHash(Encoding.UTF8.GetBytes(query));
 
             return BitConverter.ToString(hash).Replace("-", string.Empty);

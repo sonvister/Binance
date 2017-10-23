@@ -37,20 +37,22 @@
         public static readonly string SNM_BTC = "SNMBTC";
         public static readonly string IOTA_BTC = "IOTABTC";
         public static readonly string LINK_BTC = "LINKBTC";
-        public static readonly string XVGBTC = "XVGBTC";
-        public static readonly string CTRBTC = "CTRBTC";
-        public static readonly string SALTBTC = "SALTBTC";
-        public static readonly string MDABTC = "MDABTC";
-        public static readonly string MTLBTC = "MTLBTC";
-        public static readonly string SUBBTC = "SUBBTC";
-        public static readonly string EOSBTC = "EOSBTC";
-        public static readonly string SNTBTC = "SNTBTC";
-        public static readonly string ETCBTC = "ETCBTC";
-        public static readonly string MTHBTC = "MTHBTC";
-        public static readonly string ENGBTC = "ENGBTC";
-        public static readonly string DNTBTC = "DNTBTC";
-        public static readonly string ZECBTC = "ZECBTC";
-        public static readonly string BNTBTC = "BNTBTC";
+        public static readonly string XVG_BTC = "XVGBTC";
+        public static readonly string CTR_BTC = "CTRBTC";
+        public static readonly string SALT_BTC = "SALTBTC";
+        public static readonly string MDA_BTC = "MDABTC";
+        public static readonly string MTL_BTC = "MTLBTC";
+        public static readonly string SUB_BTC = "SUBBTC";
+        public static readonly string EOS_BTC = "EOSBTC";
+        public static readonly string SNT_BTC = "SNTBTC";
+        public static readonly string ETC_BTC = "ETCBTC";
+        public static readonly string MTH_BTC = "MTHBTC";
+        public static readonly string ENG_BTC = "ENGBTC";
+        public static readonly string DNT_BTC = "DNTBTC";
+        public static readonly string ZEC_BTC = "ZECBTC";
+        public static readonly string BNT_BTC = "BNTBTC";
+        public static readonly string OAX_BTC = "OAXBTC";
+        public static readonly string ICN_BTC = "ICNBTC";
 
         // ETH
         public static readonly string QTUM_ETH  = "QTUMETH";
@@ -75,16 +77,16 @@
         public static readonly string NEO_ETH = "NEOETH";
         public static readonly string IOTA_ETH = "IOTAETH";
         public static readonly string LINK_ETH = "LINKETH";
-        public static readonly string XVGETH = "XVGETH";
-        public static readonly string CTRETH = "CTRETH";
-        public static readonly string SALTETH = "SALTETH";
-        public static readonly string MDAETH = "MDAETH";
-        public static readonly string MTLETH = "MTLETH";
-        public static readonly string SUBETH = "SUBETH";
-        public static readonly string ETCETH = "ETCETH";
-        public static readonly string MTHETH = "MTHETH";
-        public static readonly string ENGETH = "ENGETH";
-        public static readonly string ZECETH = "ZECETH";
+        public static readonly string XVG_ETH = "XVGETH";
+        public static readonly string CTR_ETH = "CTRETH";
+        public static readonly string SALT_ETH = "SALTETH";
+        public static readonly string MDA_ETH = "MDAETH";
+        public static readonly string MTL_ETH = "MTLETH";
+        public static readonly string SUB_ETH = "SUBETH";
+        public static readonly string ETC_ETH = "ETCETH";
+        public static readonly string MTH_ETH = "MTHETH";
+        public static readonly string ENG_ETH = "ENGETH";
+        public static readonly string ZEC_ETH = "ZECETH";
 
         #endregion Public Constants
     }

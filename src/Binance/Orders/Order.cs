@@ -93,7 +93,7 @@ namespace Binance.Orders
         /// <param name="orderSide"></param>
         /// <param name="stopPrice"></param>
         /// <param name="icebergQuantity"></param>
-        /// <param name="time"></param>
+        /// <param name="timestamp"></param>
         public Order(
             string symbol,
             long id,
@@ -107,12 +107,27 @@ namespace Binance.Orders
             OrderSide orderSide,
             decimal stopPrice,
             decimal icebergQuantity,
-            long time)
+            long timestamp)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (id <= 0)
-                throw new ArgumentException($"{nameof(Order)} ID must be greater than 0.", nameof(id));
+            if (id < 0)
+                throw new ArgumentException($"{nameof(Order)} ID must not be less than 0.", nameof(id));
+
+            if (price < 0)
+                throw new ArgumentException($"{nameof(Order)} price must not be less than 0.", nameof(price));
+            if (stopPrice < 0)
+                throw new ArgumentException($"{nameof(Order)} price must not be less than 0.", nameof(stopPrice));
+
+            if (originalQuantity < 0)
+                throw new ArgumentException($"{nameof(Order)} quantity must not be less than 0.", nameof(originalQuantity));
+            if (executedQuantity < 0)
+                throw new ArgumentException($"{nameof(Order)} quantity must not be less than 0.", nameof(executedQuantity));
+            if (icebergQuantity < 0)
+                throw new ArgumentException($"{nameof(Order)} quantity must not be less than 0.", nameof(icebergQuantity));
+
+            if (timestamp <= 0)
+                throw new ArgumentException($"{nameof(Order)}: timestamp must be greater than 0.", nameof(timestamp));
 
             Symbol = symbol;
             Id = id;
@@ -126,7 +141,7 @@ namespace Binance.Orders
             Side = orderSide;
             StopPrice = stopPrice;
             IcebergQuantity = icebergQuantity;
-            Timestamp = time;
+            Timestamp = timestamp;
         }
 
         /// <summary>

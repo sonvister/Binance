@@ -663,7 +663,7 @@ namespace BinanceConsoleApp
 
                         var orders = openOrders
                             ? await _api.GetOpenOrdersAsync(_user, symbol, _recvWindow, token)
-                            : await _api.GetOrdersAsync(_user, symbol, 0, limit, _recvWindow, token);
+                            : await _api.GetOrdersAsync(_user, symbol, limit: limit, recvWindow: _recvWindow, token: token);
 
                         lock (_consoleSync)
                         {
@@ -707,17 +707,17 @@ namespace BinanceConsoleApp
                         {
                             clientOrderId = args[2];
                         }
-                        else if (id <= 0)
+                        else if (id < 0)
                         {
-                            Console.WriteLine("An order ID greater than 0 is required.");
+                            Console.WriteLine("An order ID not less than 0 is required.");
                             continue;
                         }
 
                         if (args.Length > 3 && args[3].Equals("cancel", StringComparison.OrdinalIgnoreCase))
                         {
                             var cancelOrderId = clientOrderId != null
-                               ? await _api.CancelOrderAsync(_user, symbol, clientOrderId, null, _recvWindow, token)
-                               : await _api.CancelOrderAsync(_user, symbol, id, null, _recvWindow, token);
+                               ? await _api.CancelOrderAsync(_user, symbol, clientOrderId, recvWindow: _recvWindow, token: token)
+                               : await _api.CancelOrderAsync(_user, symbol, id, recvWindow: _recvWindow, token: token);
 
                             lock (_consoleSync)
                             {
@@ -793,7 +793,7 @@ namespace BinanceConsoleApp
                             }
                         }
 
-                        var trades = await _api.GetTradesAsync(_user, symbol, limit, 0, _recvWindow, token);
+                        var trades = await _api.GetTradesAsync(_user, symbol, limit, recvWindow: _recvWindow, token: token);
 
                         lock (_consoleSync)
                         {
@@ -829,7 +829,7 @@ namespace BinanceConsoleApp
                             asset = args[1];
                         }
 
-                        var deposits = await _api.GetDepositsAsync(_user, asset, null, 0, 0, _recvWindow, token);
+                        var deposits = await _api.GetDepositsAsync(_user, asset, recvWindow: _recvWindow, token: token);
 
                         lock (_consoleSync)
                         {
