@@ -28,8 +28,6 @@ namespace Binance.Api.Json
 
         #region Private Constants
 
-        private const string UserAgent = "Binance/0.0.1-alpha (.NET)";
-
         private const string RequestHeaderKeyName = "X-MBX-APIKEY";
 
         #endregion Private Constants
@@ -55,7 +53,9 @@ namespace Binance.Api.Json
                 BaseAddress = new Uri(EndpointUrl)
             };
 
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+            var version = GetType().Assembly.GetName().Version;
+
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", $"Binance/{version.Major}.{version.Minor}.{version.Build}-alpha (.NET; +https://github.com/sonvister/Binance)");
         }
 
         #endregion Constructors
