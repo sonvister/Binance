@@ -6,6 +6,7 @@ using Binance.Trades;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,19 +19,34 @@ namespace Binance.Api
     {
         #region Public Constants
 
-        public const long RecvWindowDefault = 5000;
+        public const long RecvWindowDefault = 5000; // 5 seconds.
 
+        #region Order Book
         public const int OrderBookLimitDefault = 100;
-        public const int OrderBookLimitMax = 100;
 
-        public const int OrdersLimitDefault = 500;
-        public const int OrdersLimitMax = 500;
+        public static readonly int[] OrderBookLimits = { 5, 10, 20, 50, 100, 200, 500 };
 
+        public static int OrderBookLimitMax => OrderBookLimits.Max();
+        public static int OrderBookLimitMin => OrderBookLimits.Min();
+        #endregion Order Book
+
+        #region Trades
         public const int TradesLimitDefault = 500;
         public const int TradesLimitMax = 500;
+        public const int TradesLimitMin = 1;
+        #endregion Trades
 
+        #region Candlesticks
         public const int CandlesticksLimitDefault = 500;
         public const int CandlesticksLimitMax = 500;
+        public const int CandlesticksLimitMin = 1;
+        #endregion Candlesticks
+
+        #region Orders
+        public const int OrdersLimitDefault = 500;
+        public const int OrdersLimitMax = 500;
+        public const int OrdersLimitMin = 1;
+        #endregion Orders
 
         public const long NullId = -1;
 

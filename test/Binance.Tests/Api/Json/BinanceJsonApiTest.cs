@@ -1,9 +1,7 @@
 //#define LIVE
 
-using Binance.Accounts;
 using Binance.Orders;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -21,6 +19,89 @@ namespace Binance.Api.Json
             Assert.Equal(BinanceJsonApi.SuccessfulTestResponse, await api.PingAsync());
         }
 
+        [Fact]
+        public async Task GetServerTime()
+        {
+            var api = new BinanceJsonApi();
+
+            var json = await api.GetServerTimeAsync();
+
+            Assert.True(IsJsonObject(json));
+        }
+
+        [Fact]
+        public async Task GetOrderBook()
+        {
+            var api = new BinanceJsonApi();
+
+            var json = await api.GetOrderBookAsync(Symbol.BTC_USDT, BinanceApi.OrderBookLimitMin);
+
+            Assert.True(IsJsonObject(json));
+        }
+
+        [Fact]
+        public async Task GetTrades()
+        {
+            var api = new BinanceJsonApi();
+
+            var now = DateTimeOffset.UtcNow;
+
+            var json = await api.GetAggregateTradesAsync(Symbol.BTC_USDT, 0, limit: BinanceApi.TradesLimitMin);
+
+            Assert.True(IsJsonArray(json));
+
+            json = await api.GetAggregateTradesAsync(Symbol.BTC_USDT, startTime: now.AddMinutes(-1).ToUnixTimeMilliseconds(), endTime: now.ToUnixTimeMilliseconds());
+
+            Assert.True(IsJsonArray(json));
+        }
+
+        [Fact]
+        public async Task GetCandlesticks()
+        {
+            var api = new BinanceJsonApi();
+
+            var now = DateTimeOffset.UtcNow;
+
+            var json = await api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour, limit: BinanceApi.CandlesticksLimitMin);
+
+            Assert.True(IsJsonArray(json));
+
+            json = await api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Minute, startTime: now.AddMinutes(-1).ToUnixTimeMilliseconds(), endTime: now.ToUnixTimeMilliseconds());
+
+            Assert.True(IsJsonArray(json));
+        }
+
+        [Fact]
+        public async Task Get24hrStats()
+        {
+            var api = new BinanceJsonApi();
+
+            var json = await api.Get24hStatsAsync(Symbol.BTC_USDT);
+
+            Assert.True(IsJsonObject(json));
+        }
+
+        [Fact]
+        public async Task GetPrices()
+        {
+            var api = new BinanceJsonApi();
+
+            var json = await api.GetPrices();
+
+            Assert.True(IsJsonArray(json));
+        }
+
+        [Fact]
+        public async Task GetOrderBookTops()
+        {
+            var api = new BinanceJsonApi();
+
+            var json = await api.GetOrderBookTopsAsync();
+
+            Assert.True(IsJsonArray(json));
+        }
+
+        /*
         [Fact]
         public async Task RateLimit()
         {
@@ -41,6 +122,19 @@ namespace Binance.Api.Json
 
             Assert.True(stopwatch.ElapsedMilliseconds > api.RateLimiter.Duration.TotalMilliseconds * intervals);
             Assert.False(count <= 3 && stopwatch.ElapsedMilliseconds > api.RateLimiter.Duration.TotalMilliseconds * (intervals + 0.5));
+        }
+        */
+
+        private bool IsJsonObject(string json)
+        {
+            return !string.IsNullOrWhiteSpace(json)
+                && json.StartsWith("{") && json.EndsWith("}");
+        }
+
+        private bool IsJsonArray(string json)
+        {
+            return !string.IsNullOrWhiteSpace(json)
+                && json.StartsWith("[") && json.EndsWith("]");
         }
 
 #else

@@ -1,7 +1,9 @@
 ﻿using Binance.Accounts;
 using Binance.Orders;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -40,13 +42,17 @@ namespace Binance.Api.Json
 
         private DateTime _timestampOffsetUpdatedAt;
 
+        private ILogger<BinanceJsonApi> _logger;
+
         #endregion Private Fields
 
         #region Constructors
 
-        public BinanceJsonApi(IRateLimiter rateLimiter = null)
+        public BinanceJsonApi(IRateLimiter rateLimiter = null, ILogger<BinanceJsonApi> logger = null)
         {
             RateLimiter = rateLimiter ?? new RateLimiter();
+
+            _logger = logger;
 
             _httpClient = new HttpClient()
             {
@@ -80,18 +86,26 @@ namespace Binance.Api.Json
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (limit < 1 || limit > BinanceApi.OrderBookLimitMax)
-                throw new ArgumentException($"Limit must be in the range [1-{BinanceApi.OrderBookLimitMax}].", nameof(limit));
+            if (limit < BinanceApi.OrderBookLimitMin || limit > BinanceApi.OrderBookLimitMax)
+                throw new ArgumentException($"Limit must be in the range [{BinanceApi.OrderBookLimitMin}-{BinanceApi.OrderBookLimitMax}].", nameof(limit));
 
-            return GetAsync($"/api/v1/depth?symbol={symbol.FixSymbol()}&limit={limit}", token);
+            // Coerce limit down to the next lower valid value.
+            var _limit = BinanceApi.OrderBookLimits.Where(l => l <= limit).Last(); // limits must be in ascending order.
+
+            if (limit != _limit)
+            {
+                _logger?.LogWarning($"Argument '{nameof(limit)}' ({limit}) coerced to the next lower valid value ({_limit}).");
+            }
+
+            return GetAsync($"/api/v1/depth?symbol={symbol.FixSymbol()}&limit={_limit}", token);
         }
 
         public virtual Task<string> GetAggregateTradesAsync(string symbol, long fromId = BinanceApi.NullId, long startTime = 0, long endTime = 0, int limit = BinanceApi.TradesLimitDefault, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (limit < 1 || limit > BinanceApi.TradesLimitMax)
-                throw new ArgumentException($"Limit must be in the range [1-{BinanceApi.TradesLimitMax}].", nameof(limit));
+            if (limit < BinanceApi.TradesLimitMin || limit > BinanceApi.TradesLimitMax)
+                throw new ArgumentException($"Limit must be in the range [{BinanceApi.TradesLimitMin}-{BinanceApi.TradesLimitMax}].", nameof(limit));
 
             var totalParams = $"/api/v1/aggTrades?symbol={symbol.FixSymbol()}";
 
@@ -122,8 +136,8 @@ namespace Binance.Api.Json
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (limit < 1 || limit > BinanceApi.CandlesticksLimitMax)
-                throw new ArgumentException($"Limit must be in the range [1-{BinanceApi.CandlesticksLimitMax}].", nameof(limit));
+            if (limit < BinanceApi.CandlesticksLimitMin || limit > BinanceApi.CandlesticksLimitMax)
+                throw new ArgumentException($"Limit must be in the range [{BinanceApi.CandlesticksLimitMin}-{BinanceApi.CandlesticksLimitMax}].", nameof(limit));
 
             var totalParams = $"/api/v1/klines?symbol={symbol.FixSymbol()}&interval={interval.AsString()}&limit={limit}";
 
