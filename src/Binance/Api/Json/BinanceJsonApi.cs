@@ -570,7 +570,7 @@ namespace Binance.Api.Json
                     int errorCode = 0;
                     string errorMessage = null;
 
-                    if (!string.IsNullOrWhiteSpace(error))
+                    if (!string.IsNullOrWhiteSpace(error) && error.IsJsonObject())
                     {
                         try // to parse server error response.
                         {
@@ -579,7 +579,10 @@ namespace Binance.Api.Json
                             errorCode = jObject["code"]?.Value<int>() ?? 0;
                             errorMessage = jObject["msg"]?.Value<string>() ?? null;
                         }
-                        catch { }
+                        catch (Exception e)
+                        {
+                            _logger?.LogError(e, $"Failed to parse server error response: \"{error}\"");
+                        }
                     }
 
                     throw new BinanceHttpException(response.StatusCode, response.ReasonPhrase, errorCode, errorMessage);

@@ -690,21 +690,6 @@ namespace Binance.Api
         /// <param name="jToken"></param>
         private void FillOrder(Order order, JToken jToken)
         {
-            // Example MARKET order response:
-            //{
-            //    "symbol":"BTCUSDT",
-            //    "orderId":1234567,
-            //    "clientOrderId":"xxxxxxxxxxxxxxxxxxxxx",
-            //    "transactTime":1500000000000,
-            //    "price":"0.00000000",
-            //    "origQty":"0.01000000",
-            //    "executedQty":"0.01000000",
-            //    "status":"FILLED",
-            //    "timeInForce":"GTC",
-            //    "type":"MARKET",
-            //    "side":"SELL"
-            //}
-
             order.Symbol = jToken["symbol"].Value<string>();
             order.Id = jToken["orderId"].Value<long>();
             order.ClientOrderId = jToken["clientOrderId"].Value<string>();
@@ -714,83 +699,14 @@ namespace Binance.Api
             order.Price = jToken["price"].Value<decimal>();
             order.OriginalQuantity = jToken["origQty"].Value<decimal>();
             order.ExecutedQuantity = jToken["executedQty"].Value<decimal>();
-            order.Status = ConvertOrderStatus(jToken["status"].Value<string>());
-            order.TimeInForce = ConvertTimeInForce(jToken["timeInForce"].Value<string>());
-            order.Type = ConvertOrderType(jToken["type"].Value<string>());
-            order.Side = ConvertOrderSide(jToken["side"].Value<string>());
+            order.Status = jToken["status"].Value<string>().ConvertOrderStatus();
+            order.TimeInForce = jToken["timeInForce"].Value<string>().ConvertTimeInForce();
+            order.Type = jToken["type"].Value<string>().ConvertOrderType();
+            order.Side = jToken["side"].Value<string>().ConvertOrderSide();
             order.StopPrice = jToken["stopPrice"]?.Value<decimal>() ?? 0;
             order.IcebergQuantity = jToken["icebergQty"]?.Value<decimal>() ?? 0;
         }
 
-        /// <summary>
-        /// Deserialize order status.
-        /// </summary>
-        /// <param name="status"></param>
-        /// <returns></returns>
-        private OrderStatus ConvertOrderStatus(string status)
-        {
-            switch (status)
-            {
-                case "NEW": return OrderStatus.New;
-                case "PARTIALLY_FILLED": return OrderStatus.PartiallyFilled;
-                case "FILLED": return OrderStatus.Filled;
-                case "CANCELED": return OrderStatus.Canceled;
-                case "PENDING_CANCEL": return OrderStatus.PendingCancel;
-                case "REJECTED": return OrderStatus.Rejected;
-                case "EXPIRED": return OrderStatus.Expired;
-                default:
-                    throw new Exception($"Failed to convert order status: \"{status}\"");
-            }
-        }
-
-        /// <summary>
-        /// Deserialize time in force.
-        /// </summary>
-        /// <param name="timeInForce"></param>
-        /// <returns></returns>
-        private TimeInForce ConvertTimeInForce(string timeInForce)
-        {
-            switch (timeInForce)
-            {
-                case "GTC": return TimeInForce.GTC;
-                case "IOC": return TimeInForce.IOC;
-                default:
-                    throw new Exception($"Failed to convert time in force: \"{timeInForce}\"");
-            }
-        }
-
-        /// <summary>
-        /// Deserialize order type.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        private OrderType ConvertOrderType(string type)
-        {
-            switch (type)
-            {
-                case "LIMIT": return OrderType.Limit;
-                case "MARKET": return OrderType.Market;
-                default:
-                    throw new Exception($"Failed to convert order type: \"{type}\"");
-            }
-        }
-
-        /// <summary>
-        /// Deserialize order side.
-        /// </summary>
-        /// <param name="side"></param>
-        /// <returns></returns>
-        private OrderSide ConvertOrderSide(string side)
-        {
-            switch (side)
-            {
-                case "BUY": return OrderSide.Buy;
-                case "SELL": return OrderSide.Sell;
-                default:
-                    throw new Exception($"Failed to convert order side: \"{side}\"");
-            }
-        }
-
-        #endregion
+        #endregion Private Methods
     }
 }

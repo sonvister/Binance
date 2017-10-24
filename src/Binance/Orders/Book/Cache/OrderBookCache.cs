@@ -107,7 +107,7 @@ namespace Binance.Orders.Book.Cache
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            Symbol = symbol;
+            Symbol = symbol.FixSymbol();
 
             _bufferBlock = new BufferBlock<DepthUpdateEventArgs>(new DataflowBlockOptions()
             {
@@ -127,8 +127,12 @@ namespace Binance.Orders.Book.Cache
                         var orderBook = await _api.GetOrderBookAsync(Symbol)
                             .ConfigureAwait(false);
 
+                        // Modify this order book cache.
                         if (orderBook != null)
+                        {
+                            Symbol = orderBook.Symbol;
                             Modify(orderBook.LastUpdateId, orderBook.Bids.Select(b => (b.Price, b.Quantity)), orderBook.Asks.Select(a => (a.Price, a.Quantity)));
+                        }
                     }
 
                     if (@event.FirstUpdateId > LastUpdateId + 1)

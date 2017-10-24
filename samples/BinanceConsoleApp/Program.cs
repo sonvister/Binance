@@ -410,7 +410,7 @@ namespace BinanceConsoleApp
                             symbol = args[2];
                         }
 
-                        if (endpoint == "depth")
+                        if (endpoint.Equals("depth", StringComparison.OrdinalIgnoreCase))
                         {
                             if (_liveTask != null)
                             {
@@ -434,7 +434,7 @@ namespace BinanceConsoleApp
                                 Console.WriteLine($"  ...live order book enabled for symbol: {symbol} ...use 'live off' to disable.");
                             }
                         }
-                        else if (endpoint == "kline")
+                        else if (endpoint.Equals("kline", StringComparison.OrdinalIgnoreCase))
                         {
                             if (_liveTask != null)
                             {
@@ -461,10 +461,10 @@ namespace BinanceConsoleApp
                             lock (_consoleSync)
                             {
                                 Console.WriteLine();
-                                Console.WriteLine($"  ...live kline feed enabled for symbol: {symbol}, interval: {args[3]} ...use 'live off' to disable.");
+                                Console.WriteLine($"  ...live kline feed enabled for symbol: {symbol}, interval: {interval} ...use 'live off' to disable.");
                             }
                         }
-                        else if (endpoint == "trades")
+                        else if (endpoint.Equals("trades", StringComparison.OrdinalIgnoreCase))
                         {
                             if (_liveTask != null)
                             {
@@ -488,7 +488,7 @@ namespace BinanceConsoleApp
                                 Console.WriteLine($"  ...live trades feed enabled for symbol: {symbol} ...use 'live off' to disable.");
                             }
                         }
-                        else if (endpoint == "account")
+                        else if (endpoint.Equals("account", StringComparison.OrdinalIgnoreCase))
                         {
                             if (_liveTask != null)
                             {
@@ -503,6 +503,8 @@ namespace BinanceConsoleApp
 
                             _userDataClient = _serviceProvider.GetService<IUserDataWebSocketClient>();
                             _userDataClient.AccountUpdate += OnAccountUpdateEvent;
+                            _userDataClient.OrderUpdate += OnOrderUpdateEvent;
+                            _userDataClient.TradeUpdate += OnTradeUpdateEvent;
 
                             _liveTask = Task.Run(() => _userDataClient.SubscribeAsync(_user, _liveTokenSource.Token));
 
@@ -512,7 +514,7 @@ namespace BinanceConsoleApp
                                 Console.WriteLine($"  ...live account feed enabled ...use 'live off' to disable.");
                             }
                         }
-                        else if (endpoint == "off")
+                        else if (endpoint.Equals("off", StringComparison.OrdinalIgnoreCase))
                         {
                             await DisableLiveTask();
                         }
@@ -1034,6 +1036,7 @@ namespace BinanceConsoleApp
             _userDataClient = null;
 
             _liveTokenSource = null;
+            _liveTask = null;
         }
 
         private static void OnOrderBookUpdated(object sender, OrderBookUpdateEventArgs e)
@@ -1067,6 +1070,26 @@ namespace BinanceConsoleApp
         private static void OnAccountUpdateEvent(object sender, AccountUpdateEventArgs e)
         {
             Display(e.Account);
+        }
+
+        private static void OnOrderUpdateEvent(object sender, OrderUpdateEventArgs e)
+        {
+            lock (_consoleSync)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Order [{e.Order.Id}] updated: {e.ExecutionType}"); // TODO
+                Console.WriteLine();
+            }
+        }
+
+        private static void OnTradeUpdateEvent(object sender, TradeUpdateEventArgs e)
+        {
+            lock (_consoleSync)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Trade [{e.Trade.Id}] updated."); // TODO
+                Console.WriteLine();
+            }
         }
 
         private static void Display(Account account)

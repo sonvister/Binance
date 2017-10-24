@@ -108,10 +108,10 @@ namespace Binance
         /// <param name="type"></param>
         /// <param name="quantity"></param>
         /// <param name="price"></param>
-        /// <param name="newClientOrderId"></param>
+        /// <param name="newClientOrderId">A unique id for the order. Automatically generated if not sent.</param>
         /// <param name="timeInForce"></param>
-        /// <param name="stopPrice"></param>
-        /// <param name="icebergQty"></param>
+        /// <param name="stopPrice">Used with stop orders.</param>
+        /// <param name="icebergQty">Used with iceberg orders.</param>
         /// <param name="recvWindow"></param>
         /// <param name="isTestOnly">If true, test new order creation and signature/recvWindow; creates and validates a new order but does not send it into the matching engine.</param>
         /// <param name="token"></param>
@@ -119,7 +119,7 @@ namespace Binance
         Task<string> PlaceOrderAsync(IBinanceUser user, string symbol, OrderSide side, OrderType type, decimal quantity, decimal price, string newClientOrderId = null, TimeInForce? timeInForce = null, decimal stopPrice = 0, decimal icebergQty = 0, long recvWindow = BinanceApi.RecvWindowDefault, bool isTestOnly = false, CancellationToken token = default);
 
         /// <summary>
-        /// Check an order's status.
+        /// Check an order's status. Either orderId or origClientOrderId must be sent.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="symbol"></param>
@@ -160,7 +160,7 @@ namespace Binance
         /// <param name="user"></param>
         /// <param name="symbol"></param>
         /// <param name="orderId"></param>
-        /// <param name="limit"></param>
+        /// <param name="limit">Default 500; max 500.</param>
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>

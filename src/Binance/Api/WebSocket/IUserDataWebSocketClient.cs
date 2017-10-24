@@ -14,6 +14,16 @@ namespace Binance
         /// </summary>
         event EventHandler<AccountUpdateEventArgs> AccountUpdate;
 
+        /// <summary>
+        /// The order update event.
+        /// </summary>
+        event EventHandler<OrderUpdateEventArgs> OrderUpdate;
+
+        /// <summary>
+        /// The trade update event.
+        /// </summary>
+        event EventHandler<TradeUpdateEventArgs> TradeUpdate;
+
         #endregion Public Events
 
         #region Public Methods
