@@ -938,6 +938,20 @@ namespace BinanceConsoleApp
                             Console.WriteLine();
                         }
                     }
+                    // Debug
+                    else if (stdin.StartsWith("debug", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var args = stdin.Split(' ');
+
+                        // ...for development testing only...
+
+                        lock (_consoleSync)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine($"  Done.");
+                            Console.WriteLine();
+                        }
+                    }
                     else
                     {
                         lock (_consoleSync)

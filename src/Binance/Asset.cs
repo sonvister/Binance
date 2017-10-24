@@ -1,4 +1,4 @@
-﻿namespace Binance.Accounts
+﻿namespace Binance
 {
     public static class Asset
     {

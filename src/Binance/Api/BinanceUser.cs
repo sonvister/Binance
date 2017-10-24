@@ -30,7 +30,7 @@ namespace Binance.Api
         /// </summary>
         /// <param name="key">The user's API key.</param>
         /// <param name="secret">The user's API secret (optional).</param>
-        public BinanceUser(string key, string secret)
+        public BinanceUser(string key, string secret = null)
         {
             Throw.IfNullOrWhiteSpace(key, nameof(key));
 

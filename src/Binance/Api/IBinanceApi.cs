@@ -3,7 +3,6 @@ using Binance.Api;
 using Binance.Orders;
 using Binance.Orders.Book;
 using Binance.Trades;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,11 +29,11 @@ namespace Binance
         Task<bool> PingAsync(CancellationToken token = default);
 
         /// <summary>
-        /// Test connectivity to the server and get the current time.
+        /// Test connectivity to the server and get the current time (timestamp).
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<DateTime> GetTimeAsync(CancellationToken token = default);
+        Task<long> GetTimestampAsync(CancellationToken token = default);
 
         #endregion Connectivity
 

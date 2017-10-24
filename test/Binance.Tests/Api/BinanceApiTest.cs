@@ -1,6 +1,5 @@
 //#define LIVE
 
-using Binance.Api;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -11,8 +10,10 @@ namespace Binance.Api
     {
 #if LIVE
 
+        #region Connectivity
+
         [Fact]
-        public async Task PingAsync()
+        public async Task Ping()
         {
             var api = new BinanceApi();
 
@@ -20,7 +21,17 @@ namespace Binance.Api
         }
 
         [Fact]
-        public async Task TimeAsync()
+        public async Task GetTimestamp()
+        {
+            var api = new BinanceApi();
+
+            var timestamp = await api.GetTimestampAsync();
+
+            Assert.True(timestamp > DateTimeOffset.UtcNow.AddSeconds(-30).ToUnixTimeMilliseconds());
+        }
+
+        [Fact]
+        public async Task GetTime()
         {
             var api = new BinanceApi();
 
@@ -30,16 +41,36 @@ namespace Binance.Api
             Assert.Equal(DateTimeKind.Utc, time.Kind);
         }
 
+        #endregion Connectivity
+
+        #region Market Data
+
+
+
+        #endregion Market Data
+
+        #region Accounts
+
+
+
+        #endregion Accounts
+
 #else
         /*
         [Fact]
-        public async Task PingAsync()
+        public async Task Ping()
         {
             await Task.CompletedTask; // TODO
         }
 
         [Fact]
-        public async Task TimeAsync()
+        public async Task GetTimestamp()
+        {
+            await Task.CompletedTask; // TODO
+        }
+
+        [Fact]
+        public async Task GetTime()
         {
             await Task.CompletedTask; // TODO
         }

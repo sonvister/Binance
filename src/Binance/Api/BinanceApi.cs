@@ -66,13 +66,6 @@ namespace Binance.Api
                 == BinanceJsonApi.SuccessfulTestResponse;
         }
 
-        public virtual async Task<DateTime> GetTimeAsync(CancellationToken token = default)
-        {
-            var timestamp = await GetTimestampAsync(token);
-
-            return DateTimeOffset.FromUnixTimeMilliseconds(timestamp).UtcDateTime;
-        }
-
         public virtual async Task<long> GetTimestampAsync(CancellationToken token = default)
         {
             var json = await JsonApi.GetServerTimeAsync(token)
@@ -299,19 +292,16 @@ namespace Binance.Api
                 TimeInForce = limitOrder?.TimeInForce ?? TimeInForce.GTC
             };
 
+            // Place the order.
+            var json = await JsonApi.PlaceOrderAsync(user, clientOrder.Symbol, clientOrder.Side, clientOrder.Type, clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce, clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, clientOrder.IsTestOnly, token);
+
             if (clientOrder.IsTestOnly)
             {
-                // Place the TEST order.
-                var json = await JsonApi.TestOrderAsync(user, clientOrder.Symbol, clientOrder.Side, clientOrder.Type, clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce, clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, token);
-
                 if (json != BinanceJsonApi.SuccessfulTestResponse)
                     throw new BinanceApiException($"{nameof(PlaceAsync)} failed order placement test.");
             }
             else
             {
-                // Place the order.
-                var json = await JsonApi.PlaceOrderAsync(user, clientOrder.Symbol, clientOrder.Side, clientOrder.Type, clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce, clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, token);
-
                 try
                 {
                     FillOrder(order, JObject.Parse(json));
@@ -333,7 +323,7 @@ namespace Binance.Api
             var json = await JsonApi.GetOrderAsync(user, symbol, orderId, null, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var order = new Order() { Symbol = symbol.ToUpper() };
+            var order = new Order() { Symbol = symbol.FixSymbol() };
 
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
@@ -349,7 +339,7 @@ namespace Binance.Api
             var json = await JsonApi.GetOrderAsync(user, symbol, NullId, origClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var order = new Order() { Symbol = symbol.ToUpper() };
+            var order = new Order() { Symbol = symbol.FixSymbol() };
 
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
@@ -369,6 +359,10 @@ namespace Binance.Api
 
         public virtual async Task<string> CancelOrderAsync(IBinanceUser user, string symbol, long orderId, string newClientOrderId = null, long recvWindow = RecvWindowDefault, CancellationToken token = default)
         {
+            if (orderId < 0)
+                throw new ArgumentException("ID must not be less than 0.", nameof(orderId));
+
+            // Cancel order using order ID.
             var json = await JsonApi.CancelOrderAsync(user, symbol, orderId, null, newClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
 
@@ -381,6 +375,9 @@ namespace Binance.Api
 
         public virtual async Task<string> CancelOrderAsync(IBinanceUser user, string symbol, string origClientOrderId, string newClientOrderId = null, long recvWindow = RecvWindowDefault, CancellationToken token = default)
         {
+            Throw.IfNullOrWhiteSpace(origClientOrderId, nameof(origClientOrderId));
+
+            // Cancel order using original client order ID.
             var json = await JsonApi.CancelOrderAsync(user, symbol, NullId, origClientOrderId, newClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
 
@@ -395,6 +392,7 @@ namespace Binance.Api
         {
             Throw.IfNull(order, nameof(order));
 
+            // Cancel order using order ID.
             return CancelOrderAsync(user, order.Symbol, order.Id, newClientOrderId, recvWindow, token);
         }
 
@@ -410,7 +408,7 @@ namespace Binance.Api
                 var orders = new List<Order>();
                 foreach (var jToken in jArray)
                 {
-                    var order = new Order() { Symbol = symbol.ToUpper() };
+                    var order = new Order() { Symbol = symbol.FixSymbol() };
 
                     FillOrder(order, jToken);
 
@@ -436,7 +434,7 @@ namespace Binance.Api
                 var orders = new List<Order>();
                 foreach (var jToken in jArray)
                 {
-                    var order = new Order() { Symbol = symbol.ToUpper() };
+                    var order = new Order() { Symbol = symbol.FixSymbol() };
 
                     FillOrder(order, jToken);
 

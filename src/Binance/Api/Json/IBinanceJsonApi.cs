@@ -113,28 +113,10 @@ namespace Binance
         /// <param name="stopPrice"></param>
         /// <param name="icebergQty"></param>
         /// <param name="recvWindow"></param>
+        /// <param name="isTestOnly">If true, test new order creation and signature/recvWindow; creates and validates a new order but does not send it into the matching engine.</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> PlaceOrderAsync(IBinanceUser user, string symbol, OrderSide side, OrderType type, decimal quantity, decimal price, string newClientOrderId = null, TimeInForce? timeInForce = null, decimal stopPrice = 0, decimal icebergQty = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
-
-        /// <summary>
-        /// Test new order creation and signature/recvWindow.
-        /// Creates and validates a new order but does not send it into the matching engine.
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="symbol"></param>
-        /// <param name="side"></param>
-        /// <param name="type"></param>
-        /// <param name="quantity"></param>
-        /// <param name="price"></param>
-        /// <param name="newClientOrderId"></param>
-        /// <param name="timeInForce"></param>
-        /// <param name="stopPrice"></param>
-        /// <param name="icebergQty"></param>
-        /// <param name="recvWindow"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task<string> TestOrderAsync(IBinanceUser user, string symbol, OrderSide side, OrderType type, decimal quantity, decimal price, string newClientOrderId = null, TimeInForce? timeInForce = null, decimal stopPrice = 0, decimal icebergQty = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<string> PlaceOrderAsync(IBinanceUser user, string symbol, OrderSide side, OrderType type, decimal quantity, decimal price, string newClientOrderId = null, TimeInForce? timeInForce = null, decimal stopPrice = 0, decimal icebergQty = 0, long recvWindow = BinanceApi.RecvWindowDefault, bool isTestOnly = false, CancellationToken token = default);
 
         /// <summary>
         /// Check an order's status.
@@ -216,7 +198,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> WithdrawAsync(IBinanceUser user, string asset, string address, decimal amount, string name, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<string> WithdrawAsync(IBinanceUser user, string asset, string address, decimal amount, string name = null, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
 
         /// <summary>
         /// Get the deposit history.
@@ -229,7 +211,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetDepositsAsync(IBinanceUser user, string asset, DepositStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<string> GetDepositsAsync(IBinanceUser user, string asset = null, DepositStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
 
         /// <summary>
         /// Get the withdrawal history.
@@ -242,7 +224,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetWithdrawalsAsync(IBinanceUser user, string asset, WithdrawalStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<string> GetWithdrawalsAsync(IBinanceUser user, string asset = null, WithdrawalStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
 
         #endregion Account
 
