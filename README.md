@@ -191,6 +191,7 @@ Utilize the depth of market WebSocket client to create a real-time, synchronized
         // ...
         
         cts.Cancel(); // end the order book task.
+        await task; // wait for task to complete.
     }
 ```
 ```
@@ -337,6 +338,7 @@ Get real-time depth update events.
         // ...
 
         cts.Cancel();
+        await task;
     }
 ```
 ```
@@ -347,7 +349,7 @@ void OnDepthUpdateEvent(object sender, DepthUpdateEventArgs e)
 ```
 
 ### Kline Endpoint
-Get real-time kline events.
+Get real-time kline/candlestick events.
 ```c#
     using (var client = serviceProvider.GetService<IKlineWebSocketClient>())
     {
@@ -358,6 +360,7 @@ Get real-time kline events.
         // ...
         
         cts.Cancel();
+        await task;
     }
 ```
 ```
@@ -379,6 +382,7 @@ Get real-time aggregate trade events.
         // ...
         
         cts.Cancel();
+        await task;
     }
 ```
 ```
@@ -394,16 +398,27 @@ Get real-time account update events.
     using (var client = serviceProvider.GetService<IUserDataWebSocketClient>())
     {
         client.AccountUpdate += OnAccountUpdateEvent;
+        client.OrderUpdate += OnOrderUpdateEvent;
+        client.TradeUpdate += OnTradeUpdateEvent;
         
         var task = Task.Run(() => client.SubscribeAsync(user, cts.Token));
         
         // ...
         
         cts.Cancel();
+        await task;
     }
 ```
 ```
 void OnAccountUpdateEvent(object sender, AccountUpdateEventArgs e)
+{
+    // ...
+}
+void OnOrderUpdateEvent(object sender, OrderUpdateEventArgs e)
+{
+    // ...
+}
+void OnTradeUpdateEvent(object sender, TradeUpdateEventArgs e)
 {
     // ...
 }
