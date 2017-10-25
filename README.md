@@ -1,5 +1,5 @@
 # Binance ![Icon](https://github.com/sonvister/Binance/blob/master/logo.png?raw=true)
-A full-featured .NET standard 2.0 [Binance API](https://www.binance.com/restapipub.html) facade designed for ease of use.
+A full-featured .NET Standard 2.0 **[Binance API](https://www.binance.com/restapipub.html)** facade designed for ease of use.
 
 ## Installation
 Using [Nuget](https://www.nuget.org/packages/Binance/) Package Manager:
@@ -17,8 +17,8 @@ PM> Install-Package Binance
 * Web API interface includes automatic **rate limiting** and system-to-server **time synchronization**.
 * Easy to use **websocket endpoint clients** and a ready-to-use **order book cache** (*w/ event subscribing*).
 * Multiple .NET Core **sample applications**, including a 'minimal' live display of market depth for a symbol.
-* Integrated use of the extensible Microsoft **dependency injection** and **logging** frameworks.
-* The JSON API is implemented as a singleton with a single, **cached HttpClient** for performance.
+* Limited third-party dependencies with the extensible Microsoft **dependency injection** and **logging** frameworks.
+* The JSON API is implemented as a singleton (using DI framework) with a **cached HttpClient** for performance.
 
 ## Getting Started
 ### General Information
