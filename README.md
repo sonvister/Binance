@@ -15,27 +15,17 @@ PM> Install-Package Binance
 * API exceptions include the Binance server **ERROR code and message** with exceptions for easier troubleshooting.
 * Implementation supports **multiple users** (*authentication details passed via method injection*).
 * Web API interface includes automatic **rate limiting** and system-to-server **time synchronization**.
-* Easy to use **websocket endpoint clients** and an higher-level **order book cache** (*w/ event subscribing*).
+* Easy to use **websocket endpoint clients** and a ready-to-use **order book cache** (*w/ event subscribing*).
 * Multiple .NET Core **sample applications**, including a 'minimal' live display of market depth for a symbol.
 * Integrated use of the extensible Microsoft **dependency injection** and **logging** frameworks.
 * The JSON API is implemented as a singleton with a single, **cached HttpClient** for performance.
-
-## Configuration
-To access some Binance endpoint features, your web **API Key and Secret** may be required.
-You can either modify the '**WebApiKey**' and '**WebApiSecret**' configuration values in **appsettings.json**.
-Or use the following commands to configure the .NET user secrets for the project:
-```
-dotnet user-secrets set BinanceWebApiKey <your api key>
-dotnet user-secrets set BinanceWebApiSecret <your api secret>
-```
-For more information: https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets
 
 ## Getting Started
 ### General Information
 - All IEnumerable<> data is returned in **ascending** order. Oldest first, newest last.
 - All timestamp related fields are in milliseconds (Unix time).
 
-### Examples
+### Example Applications
 #### Minimal
 The first example (*recommended*) uses dependency injection, while the second *minimal* example does not.
 **NOTE**: C# 7.1 is required for async Main (*set language version in project advanced build properties*).
@@ -56,12 +46,13 @@ namespace ConsoleApp
                 .AddBinance()
                 .BuildServiceProvider();
 
-            var api = services.GetService<IBinanceApi>();
+            using (var api = services.GetService<IBinanceApi>())
+            {
+                if (await api.PingAsync())
+                    Console.WriteLine("SUCCESSFUL!");
 
-            if (await api.PingAsync())
-                Console.WriteLine("SUCCESSFUL!");
-
-            Console.ReadKey(true);
+                Console.ReadKey(true);
+            }
         }
     }
 }
@@ -77,12 +68,13 @@ namespace ConsoleApp
     {
         static async Task Main(string[] args) // C# 7.1
         {
-            var api = new BinanceApi();
+            using (var api = new BinanceApi())
+            {
+                if (await api.PingAsync())
+                    Console.WriteLine("SUCCESSFUL!");
 
-            if (await api.PingAsync())
-                Console.WriteLine("SUCCESSFUL!");
-
-            Console.ReadKey(true);
+                Console.ReadKey(true);
+            }
         }
     }
 }
@@ -96,12 +88,16 @@ NOTE: Handling exceptions with this level of precision is only applicable to act
 ```c#
 try
 {
-    var order = await api.PlaceAsync(user, new MarketOrder()
+    using (var api = new BinanceApi())
+    using (var user = new BinanceUser("api-key", "api-secret"))
     {
-        Symbol = Symbol.BTC_USDT,
-        Side = OrderSide.Sell,
-        Quantity = 1
-    });
+        var order = await api.PlaceAsync(user, new MarketOrder()
+        {
+            Symbol = Symbol.BTC_USDT,
+            Side = OrderSide.Sell,
+            Quantity = 1
+        });
+    }
 }
 catch (BinanceUnknownStatusException)
 {
@@ -124,6 +120,18 @@ catch (Exception)
     // ...
 }
 ```
+#### Sample Application Configuration
+If using the BinanceConsoleApp sample you may see this message when accessing non-public API methods:
+
+To access some Binance endpoint features, your **API Key and Secret** may be required.
+You can either modify the '**ApiKey**' and '**ApiSecret**' configuration values in **appsettings.json**.
+Or use the following commands to configure the .NET user secrets for the project:
+```
+dotnet user-secrets set BinanceApiKey <your api key>
+dotnet user-secrets set BinanceApiSecret <your api secret>
+```
+For more information: https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets
+
 
 ## API Methods
 ## Connectivity
@@ -213,38 +221,47 @@ NOTE: User authentication is method injected so that a single Binance API instan
 Create and place a new *Limit* order.
 NOTE: Client (*or pending*) orders are created as a mutable order placeholder, only after the client order is placed does an Order (*with status*) exist.
 ```c#
-    var order = await api.PlaceAsync(user, new LimitOrder()
+    using (var user = new BinanceUser("api-key", "api-secret"))
     {
-        Symbol = Symbol.BTC_USDT,
-        Side = OrderSide.Buy,
-        Quantity = 1,
-        Price = 5000
-    });
+        var order = await api.PlaceAsync(user, new LimitOrder()
+        {
+            Symbol = Symbol.BTC_USDT,
+            Side = OrderSide.Buy,
+            Quantity = 1,
+            Price = 5000
+        });
+    }
 ```
 
 ### Market Order
 Create and place a new *Market* order. You do not set the price for Market orders.
 NOTE: Client (*or pending*) orders are created as a mutable order placeholder, only after the client order is placed does an Order (*with status*) exist.
 ```c#
-    var order = await api.PlaceAsync(user, new MarketOrder()
+    using (var user = new BinanceUser("api-key", "api-secret"))
     {
-        Symbol = Symbol.BTC_USDT,
-        Side = OrderSide.Sell,
-        Quantity = 1
-    });
+        var order = await api.PlaceAsync(user, new MarketOrder()
+        {
+            Symbol = Symbol.BTC_USDT,
+            Side = OrderSide.Sell,
+            Quantity = 1
+        });
+    }
 ```
 
 ### Test Order
 Create and place a new *Test* order.
 NOTE: To specify an order is for test-only, the **IsTestOnly** flag is set true (*default: false*).
 ```c#
-    var order = await api.PlaceAsync(user, new MarketOrder()
+    using (var user = new BinanceUser("api-key", "api-secret"))
     {
-        Symbol = Symbol.BTC_USDT,
-        Side = OrderSide.Sell,
-        Quantity = 1,
-        IsTestOnly = true
-    });
+        var order = await api.PlaceAsync(user, new MarketOrder()
+        {
+            Symbol = Symbol.BTC_USDT,
+            Side = OrderSide.Sell,
+            Quantity = 1,
+            IsTestOnly = true
+        });
+    }
 ```
 
 ### Query Order

@@ -708,5 +708,29 @@ namespace Binance.Api
         }
 
         #endregion Private Methods
+
+        #region IDisposable
+
+        private bool _disposed = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                JsonApi?.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion
     }
 }

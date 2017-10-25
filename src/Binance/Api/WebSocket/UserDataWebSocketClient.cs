@@ -48,7 +48,7 @@ namespace Binance.Api.WebSocket
         /// </summary>
         /// <param name="api">The Binance API.</param>
         /// <param name="logger">The logger.</param>
-        public UserDataWebSocketClient(IBinanceApi api, ILogger<TradesWebSocketClient> logger = null)
+        public UserDataWebSocketClient(IBinanceApi api, ILogger<UserDataWebSocketClient> logger = null)
             : base(logger)
         {
             _api = api;
@@ -70,7 +70,7 @@ namespace Binance.Api.WebSocket
             _listenKey = await _api.UserStreamStartAsync(user, token)
                 .ConfigureAwait(false);
 
-            _keepAliveTimer = new Timer(OnKeepAliveTimer, token, 30000, 30000);
+            _keepAliveTimer = new Timer(OnKeepAliveTimer, token, 60000, 60000); // TODO
 
             await SubscribeAsync(_listenKey, json =>
             {
@@ -108,23 +108,23 @@ namespace Binance.Api.WebSocket
                 if (eventType == "outboundAccountInfo")
                 {
                     var commissions = new AccountCommissions(
-                        jObject["m"].Value<int>(),
-                        jObject["t"].Value<int>(),
-                        jObject["b"].Value<int>(),
-                        jObject["s"].Value<int>());
+                        jObject["m"].Value<int>(),  // maker
+                        jObject["t"].Value<int>(),  // taker
+                        jObject["b"].Value<int>(),  // buyer
+                        jObject["s"].Value<int>()); // seller
 
                     var status = new AccountStatus(
-                        jObject["T"].Value<bool>(),
-                        jObject["W"].Value<bool>(),
-                        jObject["D"].Value<bool>());
+                        jObject["T"].Value<bool>(),  // can trade
+                        jObject["W"].Value<bool>(),  // can withdraw
+                        jObject["D"].Value<bool>()); // can deposit
 
                     var balances = new List<AccountBalance>();
                     foreach (var entry in jObject["B"])
                     {
                         balances.Add(new AccountBalance(
-                            entry["a"].Value<string>(),
-                            entry["f"].Value<decimal>(),
-                            entry["l"].Value<decimal>()));
+                            entry["a"].Value<string>(),    // asset
+                            entry["f"].Value<decimal>(),   // free amount
+                            entry["l"].Value<decimal>())); // locked amount
                     }
 
                     RaiseAccountUpdateEvent(new AccountUpdateEventArgs(eventTime, new Account(commissions, status, balances)));
@@ -137,31 +137,29 @@ namespace Binance.Api.WebSocket
 
                     var executionType = ConvertOrderExecutionType(jObject["x"].Value<string>());
                     var rejectedReason = ConvertOrderRejectedReason(jObject["r"].Value<string>());
-
-                    // Should this or jObject["c"] be on the order?
-                    var origClientOrderId = jObject["C"].Value<string>();
+                    var newClientOrderId = jObject["c"].Value<string>();
 
                     if (executionType == OrderExecutionType.Trade) // trade update event.
                     {
                         var trade = new AccountTrade(
                             jObject["s"].Value<string>(),  // symbol
                             jObject["t"].Value<long>(),    // ID
-                            jObject["L"].Value<decimal>(), // price (price of last filled trade) // TODO
+                            jObject["L"].Value<decimal>(), // price (price of last filled trade)
                             jObject["z"].Value<decimal>(), // quantity (accumulated quantity of filled trades)
                             jObject["n"].Value<decimal>(), // commission
                             jObject["N"].Value<string>(),  // commission asset
                             jObject["T"].Value<long>(),    // timestamp
-                            jObject["w"].Value<bool>(),    // is buyer // TODO
+                            order.Side == OrderSide.Buy,   // is buyer
                             jObject["m"].Value<bool>(),    // is buyer maker
-                            jObject["M"].Value<bool>());   // is best price // TODO
+                            jObject["M"].Value<bool>());   // is best price
                         
-                        var quantityOfLastFilledTrade = jObject["l"].Value<decimal>(); // TODO
+                        var quantityOfLastFilledTrade = jObject["l"].Value<decimal>();
 
-                        RaiseTradeUpdateEvent(new TradeUpdateEventArgs(eventTime, order, executionType, rejectedReason, trade));
+                        RaiseTradeUpdateEvent(new TradeUpdateEventArgs(eventTime, order, executionType, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
                     }
                     else // order update event.
                     {
-                        RaiseOrderUpdateEvent(new OrderUpdateEventArgs(eventTime, order, executionType, rejectedReason));
+                        RaiseOrderUpdateEvent(new OrderUpdateEventArgs(eventTime, order, executionType, rejectedReason, newClientOrderId));
                     }
                 }
                 else
@@ -229,6 +227,10 @@ namespace Binance.Api.WebSocket
 
         #region Private Methods
 
+        /// <summary>
+        /// Keep-alive timer callback.
+        /// </summary>
+        /// <param name="state"></param>
         private async void OnKeepAliveTimer(object state)
         {
             try
@@ -238,10 +240,15 @@ namespace Binance.Api.WebSocket
             }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(UserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}");
+                _logger?.LogWarning(e, $"{nameof(UserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: \"{e.Message}\"");
             }
         }
 
+        /// <summary>
+        /// Deserialize and fill order instance.
+        /// </summary>
+        /// <param name="order"></param>
+        /// <param name="jToken"></param>
         private void FillOrder(Order order, JToken jToken)
         {
             order.Symbol = jToken["s"].Value<string>();
@@ -249,25 +256,19 @@ namespace Binance.Api.WebSocket
             order.Timestamp = jToken["T"].Value<long>();
             order.Price = jToken["p"].Value<decimal>();
             order.OriginalQuantity = jToken["q"].Value<decimal>();
+            order.ExecutedQuantity = jToken["z"].Value<decimal>();
             order.Status = jToken["X"].Value<string>().ConvertOrderStatus();
             order.TimeInForce = jToken["f"].Value<string>().ConvertTimeInForce();
             order.Type = jToken["o"].Value<string>().ConvertOrderType();
             order.Side = jToken["S"].Value<string>().ConvertOrderSide();
+            order.StopPrice = jToken["P"].Value<decimal>(); // TODO
+            order.IcebergQuantity = jToken["F"].Value<decimal>(); // TODO
 
-            // TODO
-            order.ClientOrderId = jToken["c"].Value<string>();
-            //order.ClientOrderId = jToken["C"].Value<string>();
-
-            // TODO
-            //order.ExecutedQuantity =
-            //order.StopPrice = 
-            //order.IcebergQuantity =
-
-            // TODO
-            //jObject["P"] // ignore?
-            //jObject["F"] // ignore?
-            //jObject["g"] // ignore?
-            //jObject["I"] // ignore?
+            order.ClientOrderId = jToken["C"].Value<string>();
+            if (string.Equals(order.ClientOrderId, "null", StringComparison.OrdinalIgnoreCase))
+            {
+                order.ClientOrderId = jToken["c"].Value<string>();
+            }
         }
 
         /// <summary>

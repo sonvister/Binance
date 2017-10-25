@@ -3,13 +3,14 @@ using Binance.Api;
 using Binance.Orders;
 using Binance.Orders.Book;
 using Binance.Trades;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Binance
 {
-    public interface IBinanceApi
+    public interface IBinanceApi : IDisposable
     {
         #region Public Properties
 

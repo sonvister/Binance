@@ -25,7 +25,6 @@ namespace BinanceConsoleApp
         private static IServiceProvider _serviceProvider;
 
         private static IBinanceApi _api;
-
         private static IBinanceUser _user;
 
         private static IOrderBookCache _liveOrderBook;
@@ -68,12 +67,11 @@ namespace BinanceConsoleApp
                     .GetService<ILoggerFactory>()
                         .AddConsole(_configuration.GetSection("Logging.Console"));
 
+                var key = _configuration["BinanceApiKey"] // user secrets configuration.
+                    ?? _configuration.GetSection("Binance")["ApiKey"]; // appsettings.json configuration.
 
-                var key = _configuration["BinanceWebApiKey"] // user secrets configuration.
-                    ?? _configuration.GetSection("Binance")["WebApiKey"]; // appsettings.json configuration.
-
-                var secret = _configuration["BinanceWebApiSecret"] // user secrets configuration.
-                    ?? _configuration.GetSection("Binance")["WebApiSecret"]; // appsettings.json configuration.
+                var secret = _configuration["BinanceApiSecret"] // user secrets configuration.
+                    ?? _configuration.GetSection("Binance")["ApiSecret"]; // appsettings.json configuration.
 
                 if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(secret))
                 {
@@ -83,8 +81,8 @@ namespace BinanceConsoleApp
                 if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(secret))
                 {
                     _user = new BinanceUser(
-                        _configuration["BinanceWebApiKey"],
-                        _configuration["BinanceWebApiSecret"]);
+                        _configuration["BinanceApiKey"],
+                        _configuration["BinanceApiSecret"]);
                 }
 
                 _api = _serviceProvider.GetService<IBinanceApi>();
@@ -107,8 +105,8 @@ namespace BinanceConsoleApp
                 cts?.Cancel();
                 cts?.Dispose();
 
+                _api?.Dispose();
                 _user?.Dispose();
-                _user = null;
 
                 lock (_consoleSync)
                 {
@@ -143,7 +141,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  live depth <symbol>                        enable order book live feed for a symbol.");
                 Console.WriteLine("  live kline <symbol> <interval>             enable kline live feed for a symbol and interval.");
                 Console.WriteLine("  live trades <symbol>                       enable trades live feed for a symbol.");
-                Console.WriteLine("  live account                               enable user data live feed.");
+                Console.WriteLine("  live account|user                          enable user data live feed (api key required).");
                 Console.WriteLine("  live off                                   disable the websocket live feed (there can be only one).");
                 Console.WriteLine();
                 Console.WriteLine(" Account (authentication required):");
@@ -172,14 +170,14 @@ namespace BinanceConsoleApp
         {
             lock (_consoleSync)
             {
-                Console.WriteLine("* NOTICE: To access some Binance endpoint features, your web API Key and Secret may be required.");
+                Console.WriteLine("* NOTICE: To access some Binance endpoint features, your API Key and Secret may be required.");
                 Console.WriteLine();
-                Console.WriteLine("  You can either modify the 'WebApiKey' and 'WebApiSecret' configuration values in appsettings.json.");
+                Console.WriteLine("  You can either modify the 'ApiKey' and 'ApiSecret' configuration values in appsettings.json.");
                 Console.WriteLine();
                 Console.WriteLine("  Or use the following commands to configure the .NET user secrets for the project:");
                 Console.WriteLine();
-                Console.WriteLine("    dotnet user-secrets set BinanceWebApiKey <your api key>");
-                Console.WriteLine("    dotnet user-secrets set BinanceWebApiSecret <your api secret>");
+                Console.WriteLine("    dotnet user-secrets set BinanceApiKey <your api key>");
+                Console.WriteLine("    dotnet user-secrets set BinanceApiSecret <your api secret>");
                 Console.WriteLine();
                 Console.WriteLine("  For more information: https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets");
                 Console.WriteLine();
@@ -488,7 +486,8 @@ namespace BinanceConsoleApp
                                 Console.WriteLine($"  ...live trades feed enabled for symbol: {symbol} ...use 'live off' to disable.");
                             }
                         }
-                        else if (endpoint.Equals("account", StringComparison.OrdinalIgnoreCase))
+                        else if (endpoint.Equals("account", StringComparison.OrdinalIgnoreCase)
+                              || endpoint.Equals("user", StringComparison.OrdinalIgnoreCase))
                         {
                             if (_liveTask != null)
                             {
@@ -496,6 +495,12 @@ namespace BinanceConsoleApp
                                 {
                                     Console.WriteLine($"! A live task is currently active ...use 'live off' to disable.");
                                 }
+                                continue;
+                            }
+
+                            if (_user == null)
+                            {
+                                PrintApiNotice();
                                 continue;
                             }
 

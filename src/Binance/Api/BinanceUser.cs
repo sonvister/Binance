@@ -37,7 +37,9 @@ namespace Binance.Api
             ApiKey = key;
 
             if (!string.IsNullOrWhiteSpace(secret))
+            {
                 _hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
+            }
         }
 
         #endregion Constructors

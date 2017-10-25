@@ -1,4 +1,4 @@
-﻿namespace Binance.Orders
+﻿namespace Binance.Api.WebSocket.Events
 {
     public enum OrderExecutionType
     {
