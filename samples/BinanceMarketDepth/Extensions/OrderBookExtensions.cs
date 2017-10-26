@@ -35,10 +35,12 @@ namespace BinanceMarketDepth
                 else
                 {
                     var size = ask.Quantity;
+
                     while (size-- >= 1)
-                    {
                         bars.Append("-");
-                    }
+
+                    while (bars.Length < 50)
+                        bars.Append(" ");
                 }
 
                 writer.WriteLine($" {ask.Price.ToString("0.00000000").PadLeft(14)} {ask.Quantity.ToString("0.00000000").PadLeft(15)}  {bars}");
@@ -58,10 +60,12 @@ namespace BinanceMarketDepth
                 else
                 {
                     var size = bid.Quantity;
+
                     while (size-- >= 1)
-                    {
                         bars.Append("-");
-                    }
+
+                    while (bars.Length < 50)
+                        bars.Append(" ");
                 }
 
                 writer.WriteLine($" {bid.Price.ToString("0.00000000").PadLeft(14)} {bid.Quantity.ToString("0.00000000").PadLeft(15)}  {bars}");
