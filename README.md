@@ -1,4 +1,4 @@
-# Binance ![Icon](https://github.com/sonvister/Binance/blob/master/logo.png?raw=true)
+# Binance ![](https://github.com/sonvister/Binance/blob/master/logo.png?raw=true)
 A full-featured .NET Standard 2.0 **[Binance API](https://www.binance.com/restapipub.html)** facade designed for ease of use.
 
 ## Installation
@@ -6,23 +6,23 @@ Using [Nuget](https://www.nuget.org/packages/Binance/) Package Manager:
 ```
 PM> Install-Package Binance
 ```
-![Icon](https://img.shields.io/nuget/v/Binance.svg)
+![](https://img.shields.io/nuget/v/Binance.svg)
 
 ## Features
 * **Complete** implementation of [Binance API](https://www.binance.com/restapipub.html) including latest deposit/withdrawal features and WebSocket feeds. 
 * **Simple** API abstraction using domain/value objects that do not expose underlying (*HTTP/REST*) behavior.
 * Unique **dual-layer API design** returning either raw JSON (*low-level*) or deserialized domain/value objects.
-* API exceptions include the Binance server **ERROR code and message** with exceptions for easier troubleshooting.
+* API exceptions include the Binance response **ERROR code and message** for easier troubleshooting.
 * Implementation supports **multiple users** (*authentication details passed via method injection*).
 * Web API interface includes automatic **rate limiting** and system-to-server **time synchronization**.
 * Easy to use **websocket endpoint clients** and a ready-to-use **order book cache** (*w/ event subscribing*).
 * Multiple .NET Core **sample applications**, including a 'minimal' live display of market depth for a symbol.
-* Limited third-party dependencies with the extensible Microsoft **dependency injection** and **logging** frameworks.
-* The JSON API is implemented as a singleton (using DI framework) with a **cached HttpClient** for performance.
+* **Limited dependencies** and use of Microsoft extensions: **dependency injection**, **logging**, and **options**
+* The APIs are implemented as singletons (w/in DI framework) with a **cached HttpClient** for performance.
 
 ## Getting Started
 ### General Information
-- All IEnumerable<> data is returned in **ascending** order. Oldest first, newest last.
+- All `IEnumerable<>` data is returned in **ascending** order. Oldest first, newest last.
 - All timestamp related fields are in milliseconds (Unix time).
 
 ### Example Applications
@@ -121,7 +121,7 @@ catch (Exception)
 }
 ```
 #### Sample Application Configuration
-If using the BinanceConsoleApp sample you may see this message when accessing non-public API methods:
+If using the `BinanceConsoleApp` sample you may see this message when accessing non-public API methods:
 
 To access some Binance endpoint features, your **API Key and Secret** may be required.
 You can either modify the '**ApiKey**' and '**ApiSecret**' configuration values in **appsettings.json**.
@@ -130,7 +130,7 @@ Or use the following commands to configure the .NET user secrets for the project
 dotnet user-secrets set BinanceApiKey <your api key>
 dotnet user-secrets set BinanceApiSecret <your api secret>
 ```
-For more information: https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets
+For more information: <https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets>
 
 
 ## API Methods
