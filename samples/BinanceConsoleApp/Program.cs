@@ -1078,7 +1078,7 @@ namespace BinanceConsoleApp
             lock (_consoleSync)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Order [{e.Order.Id}] update: {e.ExecutionType}");
+                Console.WriteLine($"Order [{e.Order.Id}] update: {e.OrderExecutionType}");
                 Display(e.Order);
                 Console.WriteLine();
             }
@@ -1089,7 +1089,7 @@ namespace BinanceConsoleApp
             lock (_consoleSync)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Order [{e.Order.Id}] update: {e.ExecutionType}");
+                Console.WriteLine($"Order [{e.Order.Id}] update: {e.OrderExecutionType}");
                 Display(e.Order);
                 Console.WriteLine();
                 Display(e.Trade);

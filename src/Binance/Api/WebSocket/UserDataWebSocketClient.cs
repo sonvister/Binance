@@ -278,8 +278,8 @@ namespace Binance.Api.WebSocket
             order.TimeInForce = jToken["f"].Value<string>().ConvertTimeInForce();
             order.Type = jToken["o"].Value<string>().ConvertOrderType();
             order.Side = jToken["S"].Value<string>().ConvertOrderSide();
-            order.StopPrice = jToken["P"].Value<decimal>(); // TODO
-            order.IcebergQuantity = jToken["F"].Value<decimal>(); // TODO
+            order.StopPrice = jToken["P"].Value<decimal>(); // TODO: verify.
+            order.IcebergQuantity = jToken["F"].Value<decimal>(); // TODO: verify.
 
             order.ClientOrderId = jToken["C"].Value<string>();
             if (string.Equals(order.ClientOrderId, "null", StringComparison.OrdinalIgnoreCase))

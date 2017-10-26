@@ -20,12 +20,12 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// Get the order execution type.
         /// </summary>
-        public OrderExecutionType ExecutionType { get; private set; }
+        public OrderExecutionType OrderExecutionType { get; private set; }
 
         /// <summary>
         /// Get the order rejected reason.
         /// </summary>
-        public OrderRejectedReason RejectedReason { get; private set; }
+        public OrderRejectedReason OrderRejectedReason { get; private set; }
 
         /// <summary>
         /// Get the new client order ID.
@@ -41,9 +41,10 @@ namespace Binance.Api.WebSocket.Events
         /// </summary>
         /// <param name="timestamp">The event time.</param>
         /// <param name="order">The order.</param>
-        /// <param name="executionType">The order execution type.</param>
+        /// <param name="orderExecutionType">The order execution type.</param>
+        /// <param name="orderRejectedReason">The order rejected reason.</param>
         /// <param name="newClientOrderId">The new client order ID.</param>
-        public ExecutionEventArgs(long timestamp, Order order, OrderExecutionType executionType, OrderRejectedReason rejectedReason, string newClientOrderId)
+        public ExecutionEventArgs(long timestamp, Order order, OrderExecutionType orderExecutionType, OrderRejectedReason orderRejectedReason, string newClientOrderId)
         {
             if (timestamp <= 0)
                 throw new ArgumentException($"{nameof(OrderUpdateEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
@@ -52,8 +53,8 @@ namespace Binance.Api.WebSocket.Events
 
             Timestamp = timestamp;
             Order = order;
-            ExecutionType = executionType;
-            RejectedReason = rejectedReason;
+            OrderExecutionType = orderExecutionType;
+            OrderRejectedReason = orderRejectedReason;
             NewClientOrderId = newClientOrderId;
         }
 
