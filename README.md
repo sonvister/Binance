@@ -8,7 +8,7 @@ Using [Nuget](https://www.nuget.org/packages/Binance/) Package Manager:
 ```
 PM> Install-Package Binance
 ```
-[![](https://img.shields.io/nuget/v/Binance.svg)](https://www.nuget.org/packages/Binance")
+[![](https://img.shields.io/nuget/v/Binance.svg)](https://www.nuget.org/packages/Binance)\
 [![](https://img.shields.io/nuget/dt/Binance.svg)](https://www.nuget.org/packages/Binance)
 
 ## Features
