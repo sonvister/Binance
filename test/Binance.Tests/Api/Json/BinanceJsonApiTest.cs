@@ -36,7 +36,7 @@ namespace Binance.Api.Json
         {
             using (var api = new BinanceJsonApi())
             {
-                var json = await api.GetOrderBookAsync(Symbol.BTC_USDT, BinanceApi.OrderBookLimitMin);
+                var json = await api.GetOrderBookAsync(Symbol.BTC_USDT, 5);
 
                 Assert.True(IsJsonObject(json));
             }
@@ -49,7 +49,7 @@ namespace Binance.Api.Json
             {
                 var now = DateTimeOffset.UtcNow;
 
-                var json = await api.GetAggregateTradesAsync(Symbol.BTC_USDT, 0, limit: BinanceApi.TradesLimitMin);
+                var json = await api.GetAggregateTradesAsync(Symbol.BTC_USDT, 0, limit: 1);
 
                 Assert.True(IsJsonArray(json));
 
@@ -66,7 +66,7 @@ namespace Binance.Api.Json
             {
                 var now = DateTimeOffset.UtcNow;
 
-                var json = await api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour, limit: BinanceApi.CandlesticksLimitMin);
+                var json = await api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour, limit: 1);
 
                 Assert.True(IsJsonArray(json));
 
@@ -158,9 +158,6 @@ namespace Binance.Api.Json
             using (var api = new BinanceJsonApi())
             {
                 await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetOrderBookAsync(null));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetOrderBookAsync(Symbol.BTC_USDT, -1));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetOrderBookAsync(Symbol.BTC_USDT, 0));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetOrderBookAsync(Symbol.BTC_USDT, BinanceApi.OrderBookLimitMax + 1));
             }
         }
 
@@ -175,9 +172,6 @@ namespace Binance.Api.Json
                 var endTime = now.ToUnixTimeMilliseconds();
 
                 await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetAggregateTradesAsync(null));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetAggregateTradesAsync(Symbol.BTC_USDT, limit: -1));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetAggregateTradesAsync(Symbol.BTC_USDT, limit: 0));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetAggregateTradesAsync(Symbol.BTC_USDT, limit: BinanceApi.TradesLimitMax + 1));
                 await Assert.ThrowsAsync<ArgumentException>("endTime", () => api.GetAggregateTradesAsync(Symbol.BTC_USDT, startTime: startTime, endTime: endTime));
             }
         }
@@ -188,9 +182,6 @@ namespace Binance.Api.Json
             using (var api = new BinanceJsonApi())
             {
                 await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetCandlesticksAsync(null, KlineInterval.Day));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Day, limit: -1));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Day, limit: 0));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Day, limit: BinanceApi.CandlesticksLimitMax + 1));
             }
         }
 
@@ -230,7 +221,6 @@ namespace Binance.Api.Json
         {
             var user = new BinanceUser("api-key");
             var symbol = Symbol.BTC_USDT;
-            long orderId = 0;
 
             using (var api = new BinanceJsonApi())
             {
@@ -245,7 +235,6 @@ namespace Binance.Api.Json
         {
             var user = new BinanceUser("api-key");
             var symbol = Symbol.BTC_USDT;
-            long orderId = 0;
 
             using (var api = new BinanceJsonApi())
             {
@@ -278,9 +267,6 @@ namespace Binance.Api.Json
             {
                 await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetOrdersAsync(null, symbol));
                 await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetOrdersAsync(user, null));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetOrdersAsync(user, symbol, limit: -1));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetOrdersAsync(user, symbol, limit: 0));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetOrdersAsync(user, symbol, limit: BinanceApi.OrdersLimitMax + 1));
             }
         }
 
@@ -304,9 +290,6 @@ namespace Binance.Api.Json
             using (var api = new BinanceJsonApi())
             {
                 await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetTradesAsync(null, symbol));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetTradesAsync(user, symbol, limit: -1));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetTradesAsync(user, symbol, limit: 0));
-                await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetTradesAsync(user, symbol, limit: BinanceApi.TradesLimitMax + 1));
             }
         }
 

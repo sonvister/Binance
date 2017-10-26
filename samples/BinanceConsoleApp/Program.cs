@@ -1099,12 +1099,18 @@ namespace BinanceConsoleApp
 
         private static void Display(Order order)
         {
-            Console.WriteLine($"  {order.Symbol.PadLeft(8)} - {order.Type.ToString().PadLeft(6)} - {order.Side.ToString().PadLeft(4)} - {order.OriginalQuantity.ToString("0.00000000")} @ {order.Price.ToString("0.00000000")} - {order.Status.ToString()}  [ID: {order.Id}]");
+            lock (_consoleSync)
+            {
+                Console.WriteLine($"  {order.Symbol.PadLeft(8)} - {order.Type.ToString().PadLeft(6)} - {order.Side.ToString().PadLeft(4)} - {order.OriginalQuantity.ToString("0.00000000")} @ {order.Price.ToString("0.00000000")} - {order.Status.ToString()}  [ID: {order.Id}]");
+            }
         }
 
         private static void Display(AccountTrade trade)
         {
-            Console.WriteLine($"  {trade.Time().ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyer ? "Buy" : "Sell").PadLeft(4)} - {(trade.IsMaker ? "Maker" : "Taker")} - {trade.Quantity.ToString("0.00000000")} @ {trade.Price.ToString("0.00000000")}{(trade.IsBestPriceMatch ? "*" : " ")} - Fee: {trade.Commission.ToString("0.00000000")} {trade.CommissionAsset} [ID: {trade.Id}]");
+            lock (_consoleSync)
+            {
+                Console.WriteLine($"  {trade.Time().ToLocalTime().ToString().PadLeft(22)} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyer ? "Buy" : "Sell").PadLeft(4)} - {(trade.IsMaker ? "Maker" : "Taker")} - {trade.Quantity.ToString("0.00000000")} @ {trade.Price.ToString("0.00000000")}{(trade.IsBestPriceMatch ? "*" : " ")} - Fee: {trade.Commission.ToString("0.00000000")} {trade.CommissionAsset.PadLeft(5)} [ID: {trade.Id}]");
+            }
         }
 
         private static void Display(Account account)

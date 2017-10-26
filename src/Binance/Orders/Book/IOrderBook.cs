@@ -1,5 +1,4 @@
-﻿using Binance.Api;
-using Binance.Orders.Book;
+﻿using Binance.Orders.Book;
 using System;
 using System.Collections.Generic;
 
@@ -69,7 +68,7 @@ namespace Binance
         /// </summary>
         /// <param name="limit"></param>
         /// <returns></returns>
-        IOrderBook Clone(int limit = BinanceApi.OrderBookLimitDefault);
+        IOrderBook Clone(int limit = default);
 
         #endregion Public Methods
     }

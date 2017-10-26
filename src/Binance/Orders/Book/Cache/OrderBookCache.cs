@@ -1,5 +1,4 @@
-﻿using Binance.Api;
-using Binance.Api.WebSocket;
+﻿using Binance.Api.WebSocket;
 using Binance.Api.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 using System;
@@ -243,7 +242,7 @@ namespace Binance.Orders.Book.Cache
 
         #region ICloneable
 
-        public override IOrderBook Clone(int limit = BinanceApi.OrderBookLimitDefault)
+        public override IOrderBook Clone(int limit = default)
         {
             lock (_sync)
             {

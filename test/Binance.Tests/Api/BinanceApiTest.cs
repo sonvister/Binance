@@ -15,30 +15,33 @@ namespace Binance.Api
         [Fact]
         public async Task Ping()
         {
-            var api = new BinanceApi();
-
-            Assert.True(await api.PingAsync());
+            using (var api = new BinanceApi())
+            {
+                Assert.True(await api.PingAsync());
+            }
         }
 
         [Fact]
         public async Task GetTimestamp()
         {
-            var api = new BinanceApi();
+            using (var api = new BinanceApi())
+            {
+                var timestamp = await api.GetTimestampAsync();
 
-            var timestamp = await api.GetTimestampAsync();
-
-            Assert.True(timestamp > DateTimeOffset.UtcNow.AddSeconds(-30).ToUnixTimeMilliseconds());
+                Assert.True(timestamp > DateTimeOffset.UtcNow.AddSeconds(-30).ToUnixTimeMilliseconds());
+            }
         }
 
         [Fact]
         public async Task GetTime()
         {
-            var api = new BinanceApi();
+            using (var api = new BinanceApi())
+            {
+                var time = await api.GetTimeAsync();
 
-            var time = await api.GetTimeAsync();
-
-            Assert.True(time > DateTime.UtcNow.AddSeconds(-30));
-            Assert.Equal(DateTimeKind.Utc, time.Kind);
+                Assert.True(time > DateTime.UtcNow.AddSeconds(-30));
+                Assert.Equal(DateTimeKind.Utc, time.Kind);
+            }
         }
 
         #endregion Connectivity
@@ -56,25 +59,13 @@ namespace Binance.Api
         #endregion Accounts
 
 #else
-        /*
-        [Fact]
-        public async Task Ping()
-        {
-            await Task.CompletedTask; // TODO
-        }
 
-        [Fact]
-        public async Task GetTimestamp()
-        {
-            await Task.CompletedTask; // TODO
-        }
-
-        [Fact]
-        public async Task GetTime()
-        {
-            await Task.CompletedTask; // TODO
-        }
-        */
 #endif
+
+        #region Market Data
+
+
+
+        #endregion Market Data
     }
 }
