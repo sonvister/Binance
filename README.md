@@ -1,12 +1,15 @@
 # Binance ![](https://github.com/sonvister/Binance/blob/master/logo.png?raw=true)
 A full-featured .NET Standard 2.0 **[Binance API](https://www.binance.com/restapipub.html)** facade designed for ease of use.
 
+[![](https://img.shields.io/github/last-commit/sonvister/Binance.svg)](https://github.com/sonvister/Binance)
+
 ## Installation
 Using [Nuget](https://www.nuget.org/packages/Binance/) Package Manager:
 ```
 PM> Install-Package Binance
 ```
-![](https://img.shields.io/nuget/v/Binance.svg)
+[![](https://img.shields.io/nuget/v/Binance.svg)](https://www.nuget.org/packages/Binance")
+[![](https://img.shields.io/nuget/dt/Binance.svg)](https://www.nuget.org/packages/Binance)
 
 ## Features
 * **Complete** implementation of [Binance API](https://www.binance.com/restapipub.html) including latest deposit/withdrawal features and WebSocket feeds. 
