@@ -72,7 +72,7 @@ namespace Binance.Api.Json
 
             var version = GetType().Assembly.GetName().Version;
 
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", $"Binance/{version.Major}.{version.Minor}.{version.Build}-alpha (.NET; +https://github.com/sonvister/Binance)");
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", $"Binance/{version.Major}.{version.Minor}.{version.Build} (.NET; +https://github.com/sonvister/Binance)");
         }
 
         #endregion Constructors
