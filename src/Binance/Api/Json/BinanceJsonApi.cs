@@ -21,9 +21,6 @@ namespace Binance.Api.Json
 
         public static readonly string SuccessfulTestResponse = "{}";
 
-        public static readonly int RateLimiterCountDefault = 3;
-        public static readonly int RateLimiterDurationSecondsDefault = 1;
-
         #endregion Public Constants
 
         #region Public Properties
@@ -36,6 +33,8 @@ namespace Binance.Api.Json
 
         private const string RequestHeaderKeyName = "X-MBX-APIKEY";
 
+        private const int TimestampOffsetRefreshPeriodMinutesDefault = 60;
+
         #endregion Private Constants
 
         #region Private Fields
@@ -43,8 +42,10 @@ namespace Binance.Api.Json
         private HttpClient _httpClient;
 
         private long _timestampOffset;
-
+        
         private DateTime _timestampOffsetUpdatedAt;
+
+        private SemaphoreSlim _timestampOffsetSync;
 
         private BinanceJsonApiOptions _options;
 
@@ -61,9 +62,11 @@ namespace Binance.Api.Json
             _options = options?.Value;
             _logger = logger;
 
+            _timestampOffsetSync = new SemaphoreSlim(1, 1);
+
             RateLimiter.Configure(
-                options?.Value.RateLimiterCountDefault ?? RateLimiterCountDefault,
-                TimeSpan.FromSeconds(options?.Value.RateLimiterDurationSecondsDefault ?? RateLimiterDurationSecondsDefault));
+                options?.Value.RateLimiterCountDefault ?? Json.RateLimiter.CountDefault,
+                TimeSpan.FromSeconds(options?.Value.RateLimiterDurationSecondsDefault ?? Json.RateLimiter.DurationDefault.TotalSeconds));
 
             _httpClient = new HttpClient()
             {
@@ -530,19 +533,31 @@ namespace Binance.Api.Json
         /// <returns></returns>
         private async Task<long> GetTimestampAsync(CancellationToken token = default)
         {
-            if (DateTime.UtcNow - _timestampOffsetUpdatedAt > TimeSpan.FromHours(1))
+            await _timestampOffsetSync.WaitAsync();
+
+            try
             {
-                var systemTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                if (DateTime.UtcNow - _timestampOffsetUpdatedAt > 
+                    TimeSpan.FromMinutes(_options?.TimestampOffsetRefreshPeriodMinutes ?? TimestampOffsetRefreshPeriodMinutesDefault))
+                {
+                    var systemTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                var json = await GetServerTimeAsync(token).ConfigureAwait(false);
+                    var json = await GetServerTimeAsync(token).ConfigureAwait(false);
 
-                var jObject = JObject.Parse(json);
+                    // Calculate timestamp offset to account for time differences and delays.
+                    _timestampOffset = JObject.Parse(json)["serverTime"].Value<long>() - systemTime;
 
-                // Calculate timestamp offset to account for time differences and delays.
-                _timestampOffset = jObject["serverTime"].Value<long>() - systemTime;
-
-                // Record the current system time to determine when to refresh offset.
-                _timestampOffsetUpdatedAt = DateTime.UtcNow;
+                    // Record the current system time to determine when to refresh offset.
+                    _timestampOffsetUpdatedAt = DateTime.UtcNow;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger?.LogWarning(e, $"{nameof(GetTimestampAsync)} failed to update timestamp offset.");
+            }
+            finally
+            {
+                _timestampOffsetSync.Release();
             }
 
             return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + _timestampOffset;
@@ -640,6 +655,7 @@ namespace Binance.Api.Json
 
             if (disposing)
             {
+                _timestampOffsetSync?.Dispose();
                 _httpClient?.Dispose();
             }
 

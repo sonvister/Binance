@@ -918,7 +918,7 @@ namespace BinanceConsoleApp
                             Console.WriteLine($"  Withdraw request successful: {amount} {asset} => {address}");
                         }
                     }
-                    // Test Orders
+                    // Test-Only Orders (enable/disable)
                     else if (stdin.StartsWith("test", StringComparison.OrdinalIgnoreCase))
                     {
                         var args = stdin.Split(' ');

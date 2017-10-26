@@ -16,5 +16,10 @@
         /// Rate limiter default duration (seconds).
         /// </summary>
         public int RateLimiterDurationSecondsDefault { get; set; }
+
+        /// <summary>
+        /// Timestamp offset refresh period (minutes).
+        /// </summary>
+        public int TimestampOffsetRefreshPeriodMinutes { get; set; }
     }
 }

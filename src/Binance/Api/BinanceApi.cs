@@ -30,10 +30,18 @@ namespace Binance.Api
 
         #region Constructors
 
+        /// <summary>
+        /// Default constructor provides default rate limiter implementation
+        /// and no configuration options or logging functionality.
+        /// </summary>
         public BinanceApi()
             : this(new BinanceJsonApi())
         { }
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="jsonApi"></param>
         public BinanceApi(IBinanceJsonApi jsonApi)
         {
             Throw.IfNull(jsonApi, nameof(jsonApi));
