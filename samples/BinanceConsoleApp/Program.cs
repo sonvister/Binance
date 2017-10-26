@@ -124,40 +124,41 @@ namespace BinanceConsoleApp
                 Console.WriteLine("Commands:");
                 Console.WriteLine();
                 Console.WriteLine(" Connectivity:");
-                Console.WriteLine("  ping                                       test connection to server.");
-                Console.WriteLine("  time                                       get current server time (UTC).");
+                Console.WriteLine("  ping                                                 test connection to server.");
+                Console.WriteLine("  time                                                 display the current server time (UTC).");
                 Console.WriteLine();
                 Console.WriteLine(" Market Data:");
-                Console.WriteLine("  stats <symbol>                             display 24h stats for symbol.");
-                Console.WriteLine("  depth|book <symbol> [limit]                display symbol order book, where limit: [1-100].");
-                Console.WriteLine("  trades <symbol> [limit]                    display latest trades, where limit: [1-500].");
-                Console.WriteLine("  tradesIn <symbol> <start> <end>            display trades within a time range (inclusive).");
-                Console.WriteLine("  tradesFrom <symbol> <tradeId> [limit]      display trades beginning with trade ID.");
-                Console.WriteLine("  candles|klines <symbol> <interval>         display candlestick bars for a symbol.");
-                Console.WriteLine("  symbols                                    display all symbols.");
-                Console.WriteLine("  prices                                     display current price for all symbols.");
-                Console.WriteLine("  tops                                       display order book top price and quantity for all symbols.");
-                Console.WriteLine("  live depth <symbol>                        enable order book live feed for a symbol.");
-                Console.WriteLine("  live kline <symbol> <interval>             enable kline live feed for a symbol and interval.");
-                Console.WriteLine("  live trades <symbol>                       enable trades live feed for a symbol.");
-                Console.WriteLine("  live account|user                          enable user data live feed (api key required).");
-                Console.WriteLine("  live off                                   disable the websocket live feed (there can be only one).");
+                Console.WriteLine("  stats <symbol>                                       display 24h stats for symbol.");
+                Console.WriteLine("  depth|book <symbol> [limit]                          display symbol order book, where limit: [1-100].");
+                Console.WriteLine("  trades <symbol> [limit]                              display latest trades, where limit: [1-500].");
+                Console.WriteLine("  tradesIn <symbol> <start> <end>                      display trades within a time range (inclusive).");
+                Console.WriteLine("  tradesFrom <symbol> <tradeId> [limit]                display trades beginning with trade ID.");
+                Console.WriteLine("  candles|klines <symbol> <interval> [limit]           display candlestick bars for a symbol.");
+                Console.WriteLine("  candlesIn|klinesIn <symbol> <interval> <start> <end> display candlestick bars for a symbol in time range.");
+                Console.WriteLine("  symbols                                              display all symbols.");
+                Console.WriteLine("  prices                                               display current price for all symbols.");
+                Console.WriteLine("  tops                                                 display order book top price and quantity for all symbols.");
+                Console.WriteLine("  live depth <symbol>                                  enable order book live feed for a symbol.");
+                Console.WriteLine("  live kline <symbol> <interval>                       enable kline live feed for a symbol and interval.");
+                Console.WriteLine("  live trades <symbol>                                 enable trades live feed for a symbol.");
+                Console.WriteLine("  live account|user                                    enable user data live feed (api key required).");
+                Console.WriteLine("  live off                                             disable the websocket live feed (there can be only one).");
                 Console.WriteLine();
                 Console.WriteLine(" Account (authentication required):");
-                Console.WriteLine("  limit <side> <symbol> <qty> <price>        create a limit order.");
-                Console.WriteLine("  market <side> <symbol> <qty>               create a market order.");
-                Console.WriteLine("  orders <symbol> [limit]                    display orders for a symbol, where limit: [1-500].");
-                Console.WriteLine("  orders <symbol> open                       display all open orders for a symbol.");
-                Console.WriteLine("  order <symbol> <ID>                        display an order by ID.");
-                Console.WriteLine("  order <symbol> <ID> cancel                 cancel an order by ID.");
-                Console.WriteLine("  account|balances|positions                 display user account information (including balances).");
-                Console.WriteLine("  myTrades <symbol> [limit]                  display user trades of a symbol.");
-                Console.WriteLine("  deposits [asset]                           display user deposits of an asset or all deposits.");
-                Console.WriteLine("  withdrawals [asset]                        display user withdrawals of an asset or all withdrawals.");
-                Console.WriteLine("  withdraw <asset> <address> <amount>        submit a withdraw request (NOTE: 'test only' does NOT apply).");
-                Console.WriteLine("  test <on|off>                              determines if orders are test only (default: on).");
+                Console.WriteLine("  limit <side> <symbol> <qty> <price>                  create a limit order.");
+                Console.WriteLine("  market <side> <symbol> <qty>                         create a market order.");
+                Console.WriteLine("  orders <symbol> [limit]                              display orders for a symbol, where limit: [1-500].");
+                Console.WriteLine("  orders <symbol> open                                 display all open orders for a symbol.");
+                Console.WriteLine("  order <symbol> <ID>                                  display an order by ID.");
+                Console.WriteLine("  order <symbol> <ID> cancel                           cancel an order by ID.");
+                Console.WriteLine("  account|balances|positions                           display user account information (including balances).");
+                Console.WriteLine("  myTrades <symbol> [limit]                            display user trades of a symbol.");
+                Console.WriteLine("  deposits [asset]                                     display user deposits of an asset or all deposits.");
+                Console.WriteLine("  withdrawals [asset]                                  display user withdrawals of an asset or all withdrawals.");
+                Console.WriteLine("  withdraw <asset> <address> <amount>                  submit a withdraw request (NOTE: 'test only' does NOT apply).");
+                Console.WriteLine("  test <on|off>                                        determines if orders are test only (default: on).");
                 Console.WriteLine();
-                Console.WriteLine("  quit | exit                                terminate the application.");
+                Console.WriteLine("  quit | exit                                          terminate the application.");
                 Console.WriteLine();
                 Console.WriteLine(" * default symbol: BTCUSDT");
                 Console.WriteLine(" * default limit: 10");
@@ -344,13 +345,7 @@ namespace BinanceConsoleApp
                             long.TryParse(args[3], out endTime);
                         }
 
-                        int limit = 10;
-                        if (args.Length > 4)
-                        {
-                            int.TryParse(args[4], out limit);
-                        }
-
-                        var trades = await _api.GetAggregateTradesAsync(symbol, startTime: startTime, endTime: endTime, limit: limit, token: token);
+                        var trades = await _api.GetAggregateTradesAsync(symbol, startTime: startTime, endTime: endTime, token: token);
 
                         lock (_consoleSync)
                         {
@@ -391,6 +386,48 @@ namespace BinanceConsoleApp
                             Console.WriteLine();
                         }
                     }
+                    // Candlesticks within time range
+                    else if (stdin.StartsWith("candlesIn", StringComparison.OrdinalIgnoreCase)
+                          || stdin.StartsWith("klinesIn", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var args = stdin.Split(' ');
+
+                        string symbol = Symbol.BTC_USDT;
+                        if (args.Length > 1)
+                        {
+                            symbol = args[1];
+                        }
+
+                        var interval = KlineInterval.Hour;
+                        if (args.Length > 2)
+                        {
+                            interval = args[2].ToKlineInterval();
+                        }
+
+                        long startTime = 0;
+                        if (args.Length > 3)
+                        {
+                            long.TryParse(args[3], out startTime);
+                        }
+
+                        long endTime = 0;
+                        if (args.Length > 4)
+                        {
+                            long.TryParse(args[4], out endTime);
+                        }
+
+                        var candlesticks = await _api.GetCandlesticksAsync(symbol, interval, startTime: startTime, endTime: endTime, token: token);
+
+                        lock (_consoleSync)
+                        {
+                            Console.WriteLine();
+                            foreach (var candlestick in candlesticks)
+                            {
+                                Display(candlestick);
+                            }
+                            Console.WriteLine();
+                        }
+                    }
                     // Candlesticks
                     else if (stdin.StartsWith("candles", StringComparison.OrdinalIgnoreCase)
                           || stdin.StartsWith("klines", StringComparison.OrdinalIgnoreCase))
@@ -422,7 +459,7 @@ namespace BinanceConsoleApp
                             Console.WriteLine();
                             foreach (var candlestick in candlesticks)
                             {
-                                Console.WriteLine($"   O: {candlestick.Open.ToString("0.00000000")} | H: {candlestick.High.ToString("0.00000000")} | L: {candlestick.Low.ToString("0.00000000")} | C: {candlestick.Close.ToString("0.00000000")} | V: {candlestick.Volume.ToString("0.")}");
+                                Display(candlestick);
                             }
                             Console.WriteLine();
                         }
@@ -1181,6 +1218,14 @@ namespace BinanceConsoleApp
             lock (_consoleSync)
             {
                 Console.WriteLine($"  {(trade.IsBuyerMaker ? "SELL" : "BUY").PadLeft(4)}  -  ID: {trade.Id} [{trade.FirstTradeId} - {trade.LastTradeId}]  -  {trade.Quantity.ToString("0.00000000")} @ {trade.Price.ToString("0.00000000")}  -  At Best: {(trade.IsBestPriceMatch ? "Yes" : "No")}  -  {trade.Timestamp}");
+            }
+        }
+
+        private static void Display(Candlestick candlestick)
+        {
+            lock (_consoleSync)
+            {
+                Console.WriteLine($"   O: {candlestick.Open.ToString("0.00000000")} | H: {candlestick.High.ToString("0.00000000")} | L: {candlestick.Low.ToString("0.00000000")} | C: {candlestick.Close.ToString("0.00000000")} | V: {candlestick.Volume.ToString("0.")}  -  {candlestick.OpenTime}");
             }
         }
 
