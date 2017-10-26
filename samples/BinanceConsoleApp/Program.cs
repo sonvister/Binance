@@ -796,7 +796,7 @@ namespace BinanceConsoleApp
                             }
                         }
 
-                        var trades = await _api.GetTradesAsync(_user, symbol, limit, token: token);
+                        var trades = await _api.GetTradesAsync(_user, symbol, limit: limit, token: token);
 
                         lock (_consoleSync)
                         {
