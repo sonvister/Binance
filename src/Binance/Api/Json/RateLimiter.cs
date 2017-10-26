@@ -13,7 +13,7 @@ namespace Binance.Api.Json
 
         public static readonly int CountDefault = 3;
 
-        public static readonly TimeSpan DurationDefault = TimeSpan.FromSeconds(1);
+        public static readonly int DurationSecondsDefault = 1;
 
         #endregion Public Constants
 
@@ -23,7 +23,7 @@ namespace Binance.Api.Json
 
         public int Count { get; private set; } = CountDefault;
 
-        public TimeSpan Duration { get; private set; } = DurationDefault;
+        public TimeSpan Duration { get; private set; } = TimeSpan.FromSeconds(1);
 
         #endregion Public Properties
 

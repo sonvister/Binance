@@ -21,6 +21,8 @@ namespace Binance.Api.Json
 
         public static readonly string SuccessfulTestResponse = "{}";
 
+        public const int TimestampOffsetRefreshPeriodMinutesDefault = 60;
+
         #endregion Public Constants
 
         #region Public Properties
@@ -32,8 +34,6 @@ namespace Binance.Api.Json
         #region Private Constants
 
         private const string RequestHeaderKeyName = "X-MBX-APIKEY";
-
-        private const int TimestampOffsetRefreshPeriodMinutesDefault = 60;
 
         #endregion Private Constants
 
@@ -66,7 +66,7 @@ namespace Binance.Api.Json
 
             RateLimiter.Configure(
                 options?.Value.RateLimiterCountDefault ?? Json.RateLimiter.CountDefault,
-                TimeSpan.FromSeconds(options?.Value.RateLimiterDurationSecondsDefault ?? Json.RateLimiter.DurationDefault.TotalSeconds));
+                TimeSpan.FromSeconds(options?.Value.RateLimiterDurationSecondsDefault ?? Json.RateLimiter.DurationSecondsDefault));
 
             _httpClient = new HttpClient()
             {
