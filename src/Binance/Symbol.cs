@@ -7,6 +7,11 @@
     {
         #region Public Constants
 
+        /// <summary>
+        /// Timestamp of when these symbols were last updated.
+        /// </summary>
+        public static readonly long LastUpdateAt = 1509061856200;
+
         // USDT
         public static readonly string BTC_USDT = "BTCUSDT";
         public static readonly string ETH_USDT = "ETHUSDT";
@@ -51,14 +56,19 @@
         public static readonly string DNT_BTC = "DNTBTC";
         public static readonly string ZEC_BTC = "ZECBTC";
         public static readonly string BNT_BTC = "BNTBTC";
+        public static readonly string AST_BTC = "ASTBTC";
+        public static readonly string DASH_BTC = "DASHBTC";
         public static readonly string OAX_BTC = "OAXBTC";
         public static readonly string ICN_BTC = "ICNBTC";
+        public static readonly string BTG_BTC = "BTGBTC";
+        public static readonly string EVX_BTC = "EVXBTC";
 
         // ETH
         public static readonly string QTUM_ETH  = "QTUMETH";
         public static readonly string EOS_ETH = "EOSETH";
         public static readonly string SNT_ETH = "SNTETH";
         public static readonly string BNT_ETH = "BNTETH";
+        public static readonly string BCC_ETH = "BCCETH";
         public static readonly string BNB_ETH = "BNBETH";
         public static readonly string BTM_ETH = "BTMETH";
         public static readonly string OAX_ETH = "OAXETH";
@@ -67,6 +77,7 @@
         public static readonly string ICN_ETH = "ICNETH";
         public static readonly string WTC_ETH = "WTCETH";
         public static readonly string LRC_ETH = "LRCETH";
+        public static readonly string OMG_ETH = "OMGETH";
         public static readonly string ZRX_ETH = "ZRXETH";
         public static readonly string STRAT_ETH = "STRATETH";
         public static readonly string SNGLS_ETH = "SNGLSETH";
@@ -87,6 +98,10 @@
         public static readonly string MTH_ETH = "MTHETH";
         public static readonly string ENG_ETH = "ENGETH";
         public static readonly string ZEC_ETH = "ZECETH";
+        public static readonly string AST_ETH = "ASTETH";
+        public static readonly string DASH_ETH = "DASHETH";
+        public static readonly string BTG_ETH = "BTGETH";
+        public static readonly string EVX_ETH = "EVXETH";
 
         #endregion Public Constants
     }
