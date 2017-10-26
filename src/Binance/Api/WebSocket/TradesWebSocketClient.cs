@@ -43,7 +43,7 @@ namespace Binance.Api.WebSocket
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            Symbol = symbol.FixSymbol();
+            Symbol = symbol.FormatSymbol();
 
             if (_isSubscribed)
                 throw new InvalidOperationException($"{nameof(TradesWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");

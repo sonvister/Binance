@@ -102,7 +102,7 @@ namespace Binance.Api
                     asks.Add((entry[0].Value<decimal>(), entry[1].Value<decimal>()));
                 }
 
-                return new OrderBook(symbol.FixSymbol(), lastUpdateId, bids, asks);
+                return new OrderBook(symbol.FormatSymbol(), lastUpdateId, bids, asks);
             }
             catch (Exception e)
             {
@@ -123,7 +123,7 @@ namespace Binance.Api
                 foreach (var item in jArray)
                 {
                     var trade = new AggregateTrade(
-                        symbol.FixSymbol(),
+                        symbol.FormatSymbol(),
                         item["a"].Value<long>(),    // ID
                         item["p"].Value<decimal>(), // price
                         item["q"].Value<decimal>(), // quantity
@@ -156,7 +156,7 @@ namespace Binance.Api
                 foreach (var item in jArray)
                 {
                     var candlestick = new Candlestick(
-                        symbol.FixSymbol(),     // symbol
+                        symbol.FormatSymbol(),     // symbol
                         interval,                  // interval
                         item[0].Value<long>(),     // open time
                         item[1].Value<decimal>(),  // open
@@ -190,7 +190,7 @@ namespace Binance.Api
                 var jObject = JObject.Parse(json);
 
                 return new Symbol24hrStats(
-                    symbol.FixSymbol(),
+                    symbol.FormatSymbol(),
                     jObject["priceChange"].Value<decimal>(),
                     jObject["priceChangePercent"].Value<decimal>(),
                     jObject["weightedAvgPrice"].Value<decimal>(),
@@ -277,7 +277,7 @@ namespace Binance.Api
 
             var order = new Order()
             {
-                Symbol = clientOrder.Symbol.FixSymbol(),
+                Symbol = clientOrder.Symbol.FormatSymbol(),
                 OriginalQuantity = clientOrder.Quantity,
                 Price = limitOrder?.Price ?? 0,
                 Side = clientOrder.Side,
@@ -317,7 +317,7 @@ namespace Binance.Api
             var json = await JsonApi.GetOrderAsync(user, symbol, orderId, null, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var order = new Order() { Symbol = symbol.FixSymbol() };
+            var order = new Order() { Symbol = symbol.FormatSymbol() };
 
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
@@ -333,7 +333,7 @@ namespace Binance.Api
             var json = await JsonApi.GetOrderAsync(user, symbol, NullId, origClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var order = new Order() { Symbol = symbol.FixSymbol() };
+            var order = new Order() { Symbol = symbol.FormatSymbol() };
 
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
@@ -402,7 +402,7 @@ namespace Binance.Api
                 var orders = new List<Order>();
                 foreach (var jToken in jArray)
                 {
-                    var order = new Order() { Symbol = symbol.FixSymbol() };
+                    var order = new Order() { Symbol = symbol.FormatSymbol() };
 
                     FillOrder(order, jToken);
 
@@ -428,7 +428,7 @@ namespace Binance.Api
                 var orders = new List<Order>();
                 foreach (var jToken in jArray)
                 {
-                    var order = new Order() { Symbol = symbol.FixSymbol() };
+                    var order = new Order() { Symbol = symbol.FormatSymbol() };
 
                     FillOrder(order, jToken);
 
@@ -492,7 +492,7 @@ namespace Binance.Api
                 foreach (var jToken in jArray)
                 {
                     trades.Add(new AccountTrade(
-                        symbol.FixSymbol(),
+                        symbol.FormatSymbol(),
                         jToken["id"].Value<long>(),
                         jToken["price"].Value<decimal>(),
                         jToken["qty"].Value<decimal>(),

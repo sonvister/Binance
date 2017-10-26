@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.1.5-alpha</Version>
+    <Version>0.1.6-alpha</Version>
     <PackageId>Binance</PackageId>
     <Authors>sonvister</Authors>
     <Company>sonvister</Company>
     <Product>Binance</Product>
-    <AssemblyVersion>0.1.5.0</AssemblyVersion>
+    <AssemblyVersion>0.1.6.0</AssemblyVersion>
     <Description>A full-featured .NET Standard 2.0 Binance API facade designed for ease of use.</Description>
     <Copyright>Copyright © sonvister 2017</Copyright>
     <PackageTags>binance crypto cryptocurrency exchange api</PackageTags>

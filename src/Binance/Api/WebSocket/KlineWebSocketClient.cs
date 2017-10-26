@@ -42,7 +42,7 @@ namespace Binance.Api.WebSocket
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            Symbol = symbol.FixSymbol();
+            Symbol = symbol.FormatSymbol();
 
             if (_isSubscribed)
                 throw new InvalidOperationException($"{nameof(KlineWebSocketClient)} is already subscribed to symbol: \"{symbol}\"");

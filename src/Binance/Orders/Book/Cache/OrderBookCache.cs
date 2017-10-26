@@ -106,7 +106,7 @@ namespace Binance.Orders.Book.Cache
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            Symbol = symbol.FixSymbol();
+            Symbol = symbol.FormatSymbol();
 
             _bufferBlock = new BufferBlock<DepthUpdateEventArgs>(new DataflowBlockOptions()
             {

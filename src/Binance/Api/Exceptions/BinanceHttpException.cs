@@ -76,7 +76,7 @@ namespace Binance.Api
 
             errorMessage = !string.IsNullOrWhiteSpace(errorMessage) ? $" {errorMessage}" : " [NO MSG]";
 
-            return $"[{statusCode}]: '{reasonPhrase}' - ERROR:{errorMessage}{(errorCode != 0 ? $" ({errorCode})" : " [NO CODE]")}";
+            return $"[{statusCode}]: '{reasonPhrase}' -{errorMessage}{(errorCode != 0 ? $" ({errorCode})" : " [NO CODE]")}";
         }
 
         #endregion Private Methods

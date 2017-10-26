@@ -5,6 +5,7 @@ using Binance.Api.WebSocket.Events;
 using Binance.Options;
 using Binance.Orders;
 using Binance.Orders.Book.Cache;
+using Binance.Trades;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -129,7 +130,9 @@ namespace BinanceConsoleApp
                 Console.WriteLine(" Market Data:");
                 Console.WriteLine("  stats <symbol>                             display 24h stats for symbol.");
                 Console.WriteLine("  depth|book <symbol> [limit]                display symbol order book, where limit: [1-100].");
-                Console.WriteLine("  trades <symbol> [limit]                    display latest N trades, where limit: [1-500].");
+                Console.WriteLine("  trades <symbol> [limit]                    display latest trades, where limit: [1-500].");
+                Console.WriteLine("  tradesIn <symbol> <start> <end>            display trades within a time range (inclusive).");
+                Console.WriteLine("  tradesFrom <symbol> <tradeId> [limit]      display trades beginning with trade ID.");
                 Console.WriteLine("  candles|klines <symbol> <interval>         display candlestick bars for a symbol.");
                 Console.WriteLine("  symbols                                    display all symbols.");
                 Console.WriteLine("  prices                                     display current price for all symbols.");
@@ -148,7 +151,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  order <symbol> <ID>                        display an order by ID.");
                 Console.WriteLine("  order <symbol> <ID> cancel                 cancel an order by ID.");
                 Console.WriteLine("  account|balances|positions                 display user account information (including balances).");
-                Console.WriteLine("  mytrades <symbol> [limit]                  display user trades of a symbol.");
+                Console.WriteLine("  myTrades <symbol> [limit]                  display user trades of a symbol.");
                 Console.WriteLine("  deposits [asset]                           display user deposits of an asset or all deposits.");
                 Console.WriteLine("  withdrawals [asset]                        display user withdrawals of an asset or all withdrawals.");
                 Console.WriteLine("  withdraw <asset> <address> <amount>        submit a withdraw request (NOTE: 'test only' does NOT apply).");
@@ -283,6 +286,82 @@ namespace BinanceConsoleApp
                             Console.WriteLine();
                         }
                     }
+                    // Trades from ID
+                    else if (stdin.StartsWith("tradesFrom", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var args = stdin.Split(' ');
+
+                        string symbol = Symbol.BTC_USDT;
+                        if (args.Length > 1)
+                        {
+                            symbol = args[1];
+                        }
+
+                        long fromId = 0;
+                        if (args.Length > 2)
+                        {
+                            long.TryParse(args[2], out fromId);
+                        }
+
+                        int limit = 10;
+                        if (args.Length > 3)
+                        {
+                            int.TryParse(args[3], out limit);
+                        }
+
+                        var trades = await _api.GetAggregateTradesAsync(symbol, fromId: fromId, limit: limit, token: token);
+
+                        lock (_consoleSync)
+                        {
+                            Console.WriteLine();
+                            foreach (var trade in trades)
+                            {
+                                Display(trade);
+                            }
+                            Console.WriteLine();
+                        }
+                    }
+                    // Trades within time range
+                    else if (stdin.StartsWith("tradesIn", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var args = stdin.Split(' ');
+
+                        string symbol = Symbol.BTC_USDT;
+                        if (args.Length > 1)
+                        {
+                            symbol = args[1];
+                        }
+
+                        long startTime = 0;
+                        if (args.Length > 2)
+                        {
+                            long.TryParse(args[2], out startTime);
+                        }
+
+                        long endTime = 0;
+                        if (args.Length > 3)
+                        {
+                            long.TryParse(args[3], out endTime);
+                        }
+
+                        int limit = 10;
+                        if (args.Length > 4)
+                        {
+                            int.TryParse(args[4], out limit);
+                        }
+
+                        var trades = await _api.GetAggregateTradesAsync(symbol, startTime: startTime, endTime: endTime, limit: limit, token: token);
+
+                        lock (_consoleSync)
+                        {
+                            Console.WriteLine();
+                            foreach (var trade in trades)
+                            {
+                                Display(trade);
+                            }
+                            Console.WriteLine();
+                        }
+                    }
                     // Trades
                     else if (stdin.StartsWith("trades", StringComparison.OrdinalIgnoreCase))
                     {
@@ -307,7 +386,7 @@ namespace BinanceConsoleApp
                             Console.WriteLine();
                             foreach (var trade in trades)
                             {
-                                Console.WriteLine($"  {(trade.IsBuyerMaker ? "SELL" : "BUY").PadLeft(4)}  -  ID: {trade.Id} [{trade.FirstTradeId} - {trade.LastTradeId}]  -  {trade.Quantity.ToString("0.00000000")} @ {trade.Price.ToString("0.00000000")}  -  At Best: {(trade.IsBestPriceMatch ? "Yes" : "No")}");
+                                Display(trade);
                             }
                             Console.WriteLine();
                         }
@@ -1094,6 +1173,14 @@ namespace BinanceConsoleApp
                 Console.WriteLine();
                 Display(e.Trade);
                 Console.WriteLine();
+            }
+        }
+
+        private static void Display(AggregateTrade trade)
+        {
+            lock (_consoleSync)
+            {
+                Console.WriteLine($"  {(trade.IsBuyerMaker ? "SELL" : "BUY").PadLeft(4)}  -  ID: {trade.Id} [{trade.FirstTradeId} - {trade.LastTradeId}]  -  {trade.Quantity.ToString("0.00000000")} @ {trade.Price.ToString("0.00000000")}  -  At Best: {(trade.IsBestPriceMatch ? "Yes" : "No")}  -  {trade.Timestamp}");
             }
         }
 

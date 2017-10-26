@@ -100,7 +100,7 @@ namespace Binance.Api.Json
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            var totalParams = $"symbol={symbol.FixSymbol()}";
+            var totalParams = $"symbol={symbol.FormatSymbol()}";
 
             if (limit > 0)
             {
@@ -114,7 +114,7 @@ namespace Binance.Api.Json
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            var totalParams = $"symbol={symbol.FixSymbol()}";
+            var totalParams = $"symbol={symbol.FormatSymbol()}";
 
             if (fromId >= 0)
                 totalParams += $"&fromId={fromId}";
@@ -146,7 +146,7 @@ namespace Binance.Api.Json
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            var totalParams = $"symbol={symbol.FixSymbol()}&interval={interval.AsString()}";
+            var totalParams = $"symbol={symbol.FormatSymbol()}&interval={interval.AsString()}";
 
             if (limit > 0)
                 totalParams += $"&limit={limit}";
@@ -164,7 +164,7 @@ namespace Binance.Api.Json
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            return GetAsync($"/api/v1/ticker/24hr?symbol={symbol.FixSymbol()}", token);
+            return GetAsync($"/api/v1/ticker/24hr?symbol={symbol.FormatSymbol()}", token);
         }
 
         public virtual Task<string> GetPrices(CancellationToken token = default)
@@ -192,7 +192,7 @@ namespace Binance.Api.Json
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FixSymbol()}&side={side.ToString().ToUpper()}&type={type.ToString().ToUpper()}&quantity={quantity}";
+            var totalParams = $"symbol={symbol.FormatSymbol()}&side={side.ToString().ToUpper()}&type={type.ToString().ToUpper()}&quantity={quantity}";
 
             if (price > 0)
                 totalParams += $"&price={price}";
@@ -235,7 +235,7 @@ namespace Binance.Api.Json
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FixSymbol()}";
+            var totalParams = $"symbol={symbol.FormatSymbol()}";
 
             if (orderId >= 0)
                 totalParams += $"&orderId={orderId}";
@@ -267,7 +267,7 @@ namespace Binance.Api.Json
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FixSymbol()}";
+            var totalParams = $"symbol={symbol.FormatSymbol()}";
 
             if (orderId >= 0)
                 totalParams += $"&orderId={orderId}";
@@ -299,7 +299,7 @@ namespace Binance.Api.Json
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FixSymbol()}";
+            var totalParams = $"symbol={symbol.FormatSymbol()}";
 
             if (recvWindow > 0)
                 totalParams += $"&recvWindow={recvWindow}";
@@ -322,7 +322,7 @@ namespace Binance.Api.Json
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FixSymbol()}";
+            var totalParams = $"symbol={symbol.FormatSymbol()}";
 
             if (orderId >= 0)
                 totalParams += $"&orderId={orderId}";
@@ -370,7 +370,7 @@ namespace Binance.Api.Json
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FixSymbol()}";
+            var totalParams = $"symbol={symbol.FormatSymbol()}";
 
             if (fromId >= 0)
                 totalParams += $"&fromId={fromId}";
@@ -403,7 +403,7 @@ namespace Binance.Api.Json
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
-            var totalParams = $"asset={asset.FixSymbol()}&address={address}&amount={amount}";
+            var totalParams = $"asset={asset.FormatSymbol()}&address={address}&amount={amount}";
 
             if (!string.IsNullOrWhiteSpace(name))
                 totalParams += $"&name={name}";
@@ -434,7 +434,7 @@ namespace Binance.Api.Json
 
             if (!string.IsNullOrWhiteSpace(asset))
             {
-                asset = asset.FixSymbol();
+                asset = asset.FormatSymbol();
                 totalParams += $"&asset={asset}";
             }
 
@@ -471,7 +471,7 @@ namespace Binance.Api.Json
 
             if (!string.IsNullOrWhiteSpace(asset))
             {
-                asset = asset.FixSymbol();
+                asset = asset.FormatSymbol();
                 totalParams += $"&asset={asset}";
             }
 

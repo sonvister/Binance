@@ -38,15 +38,20 @@ namespace Binance
         }
 
         /// <summary>
-        /// Try to transform a symbol string to an acceptable format.
+        /// Attempt to transform a symbol string to an acceptable format.
         /// </summary>
         /// <param name="symbol"></param>
         /// <returns></returns>
-        internal static string FixSymbol(this string symbol)
+        internal static string FormatSymbol(this string symbol)
         {
             Throw.IfNullOrWhiteSpace(symbol);
 
-            return symbol.Trim().Replace(" ", string.Empty).Replace("-", string.Empty).Replace("_", string.Empty).Replace("/", string.Empty).ToUpper();
+            return symbol.Trim()
+                .Replace(" ", string.Empty)
+                .Replace("-", string.Empty)
+                .Replace("_", string.Empty)
+                .Replace("/", string.Empty)
+                .ToUpper();
         }
 
         /// <summary>
