@@ -47,7 +47,7 @@ namespace Binance.Api.Json
 
         private DateTime _timestampOffsetUpdatedAt;
 
-        private IOptions<BinanceJsonApiOptions> _options;
+        private BinanceJsonApiOptions _options;
 
         private ILogger<BinanceJsonApi> _logger;
 
@@ -59,7 +59,7 @@ namespace Binance.Api.Json
         {
             RateLimiter = rateLimiter ?? new RateLimiter();
 
-            _options = options;
+            _options = options?.Value;
             _logger = logger;
 
             RateLimiter.Configure(
@@ -192,7 +192,7 @@ namespace Binance.Api.Json
                 throw new ArgumentException($"Order quantity must be greater than 0.", nameof(quantity));
 
             if (recvWindow <= 0)
-                recvWindow = _options?.Value.RecvWindowDefault ?? 0;
+                recvWindow = _options?.RecvWindowDefault ?? 0;
 
             var totalParams = $"symbol={symbol.FixSymbol()}&side={side.ToString().ToUpper()}&type={type.ToString().ToUpper()}&quantity={quantity}";
 
@@ -235,7 +235,7 @@ namespace Binance.Api.Json
                 throw new ArgumentException($"Either '{nameof(orderId)}' or '{nameof(origClientOrderId)}' must be provided, but both were invalid.");
 
             if (recvWindow <= 0)
-                recvWindow = _options?.Value.RecvWindowDefault ?? 0;
+                recvWindow = _options?.RecvWindowDefault ?? 0;
 
             var totalParams = $"symbol={symbol.FixSymbol()}";
 
@@ -267,7 +267,7 @@ namespace Binance.Api.Json
                 throw new ArgumentException($"Either '{nameof(orderId)}' or '{nameof(origClientOrderId)}' must be provided, but both were invalid.");
 
             if (recvWindow <= 0)
-                recvWindow = _options?.Value.RecvWindowDefault ?? 0;
+                recvWindow = _options?.RecvWindowDefault ?? 0;
 
             var totalParams = $"symbol={symbol.FixSymbol()}";
 
@@ -299,7 +299,7 @@ namespace Binance.Api.Json
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (recvWindow <= 0)
-                recvWindow = _options?.Value.RecvWindowDefault ?? 0;
+                recvWindow = _options?.RecvWindowDefault ?? 0;
 
             var totalParams = $"symbol={symbol.FixSymbol()}";
 
@@ -322,7 +322,7 @@ namespace Binance.Api.Json
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (recvWindow <= 0)
-                recvWindow = _options?.Value.RecvWindowDefault ?? 0;
+                recvWindow = _options?.RecvWindowDefault ?? 0;
 
             if (limit < 1 || limit > BinanceApi.OrdersLimitMax)
                 throw new ArgumentException($"Limit must be in the range [1-{BinanceApi.OrdersLimitMax}].", nameof(limit));
@@ -350,7 +350,7 @@ namespace Binance.Api.Json
             Throw.IfNull(user, nameof(user));
 
             if (recvWindow <= 0)
-                recvWindow = _options?.Value.RecvWindowDefault ?? 0;
+                recvWindow = _options?.RecvWindowDefault ?? 0;
 
             var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
 
@@ -370,7 +370,7 @@ namespace Binance.Api.Json
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (recvWindow <= 0)
-                recvWindow = _options?.Value.RecvWindowDefault ?? 0;
+                recvWindow = _options?.RecvWindowDefault ?? 0;
 
             if (limit < 1 || limit > BinanceApi.TradesLimitMax)
                 throw new ArgumentException($"Limit must be in the range [1-{BinanceApi.TradesLimitMax}].", nameof(limit));
@@ -403,7 +403,7 @@ namespace Binance.Api.Json
                 throw new ArgumentException($"Withdraw amount must be greater than 0.", nameof(amount));
 
             if (recvWindow <= 0)
-                recvWindow = _options?.Value.RecvWindowDefault ?? 0;
+                recvWindow = _options?.RecvWindowDefault ?? 0;
 
             var totalParams = $"asset={asset.FixSymbol()}&address={address}&amount={amount}";
 
@@ -428,7 +428,7 @@ namespace Binance.Api.Json
             Throw.IfNull(user, nameof(user));
 
             if (recvWindow <= 0)
-                recvWindow = _options?.Value.RecvWindowDefault ?? 0;
+                recvWindow = _options?.RecvWindowDefault ?? 0;
 
             var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
 
@@ -465,7 +465,7 @@ namespace Binance.Api.Json
             Throw.IfNull(user, nameof(user));
 
             if (recvWindow <= 0)
-                recvWindow = _options?.Value.RecvWindowDefault ?? 0;
+                recvWindow = _options?.RecvWindowDefault ?? 0;
 
             var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
 

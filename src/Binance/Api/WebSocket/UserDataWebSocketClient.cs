@@ -50,7 +50,7 @@ namespace Binance.Api.WebSocket
 
         private Timer _keepAliveTimer;
 
-        private IOptions<UserDataWebSocketClientOptions> _options;
+        private UserDataWebSocketClientOptions _options;
 
         #endregion Private Fields
 
@@ -65,7 +65,7 @@ namespace Binance.Api.WebSocket
             : base(logger)
         {
             _api = api;
-            _options = options;
+            _options = options?.Value;
         }
 
         #endregion Construtors
@@ -84,7 +84,7 @@ namespace Binance.Api.WebSocket
             _listenKey = await _api.UserStreamStartAsync(user, token)
                 .ConfigureAwait(false);
 
-            var period = _options?.Value?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
+            var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
             period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
 
             _keepAliveTimer = new Timer(OnKeepAliveTimer, token, period, period);
