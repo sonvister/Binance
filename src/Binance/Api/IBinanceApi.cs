@@ -108,7 +108,7 @@ namespace Binance
         /// <param name="clientOrder"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<Order> PlaceAsync(IBinanceUser user, ClientOrder clientOrder, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<Order> PlaceAsync(IBinanceUser user, ClientOrder clientOrder, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Get order by ID.
@@ -119,7 +119,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<Order> GetOrderAsync(IBinanceUser user, string symbol, long orderId, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<Order> GetOrderAsync(IBinanceUser user, string symbol, long orderId, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Get order by original client order ID.
@@ -130,7 +130,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<Order> GetOrderAsync(IBinanceUser user, string symbol, string origClientOrderId, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<Order> GetOrderAsync(IBinanceUser user, string symbol, string origClientOrderId, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Get latest order status (fill in place and return order instance).
@@ -140,7 +140,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<Order> GetOrderAsync(IBinanceUser user, Order order, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<Order> GetOrderAsync(IBinanceUser user, Order order, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Cancel and order by ID.
@@ -152,7 +152,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> CancelOrderAsync(IBinanceUser user, string symbol, long orderId, string newClientOrderId = null, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<string> CancelOrderAsync(IBinanceUser user, string symbol, long orderId, string newClientOrderId = null, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Cancel an order by original client order ID.
@@ -164,7 +164,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> CancelOrderAsync(IBinanceUser user, string symbol, string origClientOrderId, string newClientOrderId = null, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<string> CancelOrderAsync(IBinanceUser user, string symbol, string origClientOrderId, string newClientOrderId = null, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Cancel an order.
@@ -175,7 +175,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> CancelAsync(IBinanceUser user, Order order, string newClientOrderId = null, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<string> CancelAsync(IBinanceUser user, Order order, string newClientOrderId = null, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Get all open orders on a symbol.
@@ -185,7 +185,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<Order>> GetOpenOrdersAsync(IBinanceUser user, string symbol, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<IEnumerable<Order>> GetOpenOrdersAsync(IBinanceUser user, string symbol, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Get all account orders; active, canceled, or filled.
@@ -198,14 +198,14 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<Order>> GetOrdersAsync(IBinanceUser user, string symbol, long orderId = BinanceApi.NullId, int limit = BinanceApi.OrdersLimitDefault, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<IEnumerable<Order>> GetOrdersAsync(IBinanceUser user, string symbol, long orderId = BinanceApi.NullId, int limit = BinanceApi.OrdersLimitDefault, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Get current account information.
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<Account> GetAccountAsync(IBinanceUser user, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<Account> GetAccountAsync(IBinanceUser user, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Get trades for a specific account and symbol.
@@ -217,7 +217,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<AccountTrade>> GetTradesAsync(IBinanceUser user, string symbol, int limit = BinanceApi.TradesLimitDefault, long fromId = BinanceApi.NullId, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<IEnumerable<AccountTrade>> GetTradesAsync(IBinanceUser user, string symbol, int limit = BinanceApi.TradesLimitDefault, long fromId = BinanceApi.NullId, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Submit a withdraw request.
@@ -230,7 +230,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task WithdrawAsync(IBinanceUser user, string asset, string address, decimal amount, string name, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task WithdrawAsync(IBinanceUser user, string asset, string address, decimal amount, string name = null, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Get the deposit history.
@@ -243,7 +243,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceUser user, string asset, DepositStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceUser user, string asset, DepositStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
         /// Get the withdrawal history.
@@ -256,7 +256,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<Withdrawal>> GetWithdrawalsAsync(IBinanceUser user, string asset, WithdrawalStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default);
+        Task<IEnumerable<Withdrawal>> GetWithdrawalsAsync(IBinanceUser user, string asset, WithdrawalStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = 0, CancellationToken token = default);
 
         #endregion Account
 

@@ -19,8 +19,6 @@ namespace Binance.Api
     {
         #region Public Constants
 
-        public const long RecvWindowDefault = 5000; // 5 seconds.
-
         #region Order Book
         public const int OrderBookLimitDefault = 100;
 
@@ -291,7 +289,7 @@ namespace Binance.Api
 
         #region Account
 
-        public virtual async Task<Order> PlaceAsync(IBinanceUser user, ClientOrder clientOrder, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<Order> PlaceAsync(IBinanceUser user, ClientOrder clientOrder, long recvWindow = 0, CancellationToken token = default)
         {
             Throw.IfNull(clientOrder, nameof(clientOrder));
 
@@ -334,7 +332,7 @@ namespace Binance.Api
             return order;
         }
 
-        public virtual async Task<Order> GetOrderAsync(IBinanceUser user, string symbol, long orderId, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<Order> GetOrderAsync(IBinanceUser user, string symbol, long orderId, long recvWindow = 0, CancellationToken token = default)
         {
             var json = await JsonApi.GetOrderAsync(user, symbol, orderId, null, recvWindow, token)
                 .ConfigureAwait(false);
@@ -350,7 +348,7 @@ namespace Binance.Api
             return order;
         }
 
-        public virtual async Task<Order> GetOrderAsync(IBinanceUser user, string symbol, string origClientOrderId, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<Order> GetOrderAsync(IBinanceUser user, string symbol, string origClientOrderId, long recvWindow = 0, CancellationToken token = default)
         {
             var json = await JsonApi.GetOrderAsync(user, symbol, NullId, origClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
@@ -366,14 +364,14 @@ namespace Binance.Api
             return order;
         }
 
-        public virtual Task<Order> GetOrderAsync(IBinanceUser user, Order order, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual Task<Order> GetOrderAsync(IBinanceUser user, Order order, long recvWindow = 0, CancellationToken token = default)
         {
             Throw.IfNull(order, nameof(order));
 
             return GetOrderAsync(user, order.Symbol, order.Id, recvWindow, token);
         }
 
-        public virtual async Task<string> CancelOrderAsync(IBinanceUser user, string symbol, long orderId, string newClientOrderId = null, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<string> CancelOrderAsync(IBinanceUser user, string symbol, long orderId, string newClientOrderId = null, long recvWindow = 0, CancellationToken token = default)
         {
             if (orderId < 0)
                 throw new ArgumentException("ID must not be less than 0.", nameof(orderId));
@@ -389,7 +387,7 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<string> CancelOrderAsync(IBinanceUser user, string symbol, string origClientOrderId, string newClientOrderId = null, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<string> CancelOrderAsync(IBinanceUser user, string symbol, string origClientOrderId, string newClientOrderId = null, long recvWindow = 0, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(origClientOrderId, nameof(origClientOrderId));
 
@@ -404,7 +402,7 @@ namespace Binance.Api
             }
         }
 
-        public virtual Task<string> CancelAsync(IBinanceUser user, Order order, string newClientOrderId = null, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual Task<string> CancelAsync(IBinanceUser user, Order order, string newClientOrderId = null, long recvWindow = 0, CancellationToken token = default)
         {
             Throw.IfNull(order, nameof(order));
 
@@ -412,7 +410,7 @@ namespace Binance.Api
             return CancelOrderAsync(user, order.Symbol, order.Id, newClientOrderId, recvWindow, token);
         }
 
-        public virtual async Task<IEnumerable<Order>> GetOpenOrdersAsync(IBinanceUser user, string symbol, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<IEnumerable<Order>> GetOpenOrdersAsync(IBinanceUser user, string symbol, long recvWindow = 0, CancellationToken token = default)
         {
             var json = await JsonApi.GetOpenOrdersAsync(user, symbol, recvWindow, token)
                 .ConfigureAwait(false);
@@ -438,7 +436,7 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<IEnumerable<Order>> GetOrdersAsync(IBinanceUser user, string symbol, long orderId = NullId, int limit = OrdersLimitDefault, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<IEnumerable<Order>> GetOrdersAsync(IBinanceUser user, string symbol, long orderId = NullId, int limit = OrdersLimitDefault, long recvWindow = 0, CancellationToken token = default)
         {
             var json = await JsonApi.GetOrdersAsync(user, symbol, orderId, limit, recvWindow, token)
                 .ConfigureAwait(false);
@@ -464,7 +462,7 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<Account> GetAccountAsync(IBinanceUser user, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<Account> GetAccountAsync(IBinanceUser user, long recvWindow = 0, CancellationToken token = default)
         {
             var json = await JsonApi.GetAccountAsync(user, recvWindow, token)
                 .ConfigureAwait(false);
@@ -501,7 +499,7 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<IEnumerable<AccountTrade>> GetTradesAsync(IBinanceUser user, string symbol, int limit = TradesLimitDefault, long fromId = NullId, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<IEnumerable<AccountTrade>> GetTradesAsync(IBinanceUser user, string symbol, int limit = TradesLimitDefault, long fromId = NullId, long recvWindow = 0, CancellationToken token = default)
         {
             var json = await JsonApi.GetTradesAsync(user, symbol, limit, fromId, recvWindow, token)
                 .ConfigureAwait(false);
@@ -533,7 +531,7 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task WithdrawAsync(IBinanceUser user, string asset, string address, decimal amount, string name, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task WithdrawAsync(IBinanceUser user, string asset, string address, decimal amount, string name = null, long recvWindow = 0, CancellationToken token = default)
         {
             var json = await JsonApi.WithdrawAsync(user, asset, address, amount, name, recvWindow, token)
                 .ConfigureAwait(false);
@@ -557,7 +555,7 @@ namespace Binance.Api
                 throw new BinanceApiException($"Binance API ({nameof(WithdrawAsync)}) failed: \"{message ?? "[No Message]"}\"");
         }
 
-        public virtual async Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceUser user, string asset, DepositStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = BinanceApi.RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceUser user, string asset, DepositStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = 0, CancellationToken token = default)
         {
             var json = await JsonApi.GetDepositsAsync(user, asset, status, startTime, endTime, recvWindow, token)
                 .ConfigureAwait(false);
@@ -600,7 +598,7 @@ namespace Binance.Api
             return deposits;
         }
 
-        public virtual async Task<IEnumerable<Withdrawal>> GetWithdrawalsAsync(IBinanceUser user, string asset, WithdrawalStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = RecvWindowDefault, CancellationToken token = default)
+        public virtual async Task<IEnumerable<Withdrawal>> GetWithdrawalsAsync(IBinanceUser user, string asset, WithdrawalStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = 0, CancellationToken token = default)
         {
             var json = await JsonApi.GetWithdrawalsAsync(user, asset, status, startTime, endTime, recvWindow, token)
                 .ConfigureAwait(false);

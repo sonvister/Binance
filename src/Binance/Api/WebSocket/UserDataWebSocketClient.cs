@@ -1,7 +1,9 @@
 ﻿using Binance.Accounts;
 using Binance.Api.WebSocket.Events;
+using Binance.Options;
 using Binance.Orders;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,15 @@ namespace Binance.Api.WebSocket
     /// </summary>
     public class UserDataWebSocketClient : BinanceWebSocketClient, IUserDataWebSocketClient
     {
+        #region Public Constants
+
+        public static readonly int KeepAliveTimerPeriodMax = 3600000; // 1 hour
+        public static readonly int KeepAliveTimerPeriodMin =   60000; // 1 minute
+
+        public static readonly int KeepAliveTimerPeriodDefault = KeepAliveTimerPeriodMin;
+
+        #endregion Public Constants
+
         #region Public Events
 
         public event EventHandler<AccountUpdateEventArgs> AccountUpdate;
@@ -39,6 +50,8 @@ namespace Binance.Api.WebSocket
 
         private Timer _keepAliveTimer;
 
+        private IOptions<UserDataWebSocketClientOptions> _options;
+
         #endregion Private Fields
 
         #region Constructors
@@ -48,10 +61,11 @@ namespace Binance.Api.WebSocket
         /// </summary>
         /// <param name="api">The Binance API.</param>
         /// <param name="logger">The logger.</param>
-        public UserDataWebSocketClient(IBinanceApi api, ILogger<UserDataWebSocketClient> logger = null)
+        public UserDataWebSocketClient(IBinanceApi api, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)
             : base(logger)
         {
             _api = api;
+            _options = options;
         }
 
         #endregion Construtors
@@ -70,7 +84,10 @@ namespace Binance.Api.WebSocket
             _listenKey = await _api.UserStreamStartAsync(user, token)
                 .ConfigureAwait(false);
 
-            _keepAliveTimer = new Timer(OnKeepAliveTimer, token, 60000, 60000); // TODO
+            var period = _options?.Value?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
+            period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
+
+            _keepAliveTimer = new Timer(OnKeepAliveTimer, token, period, period);
 
             await SubscribeAsync(_listenKey, json =>
             {

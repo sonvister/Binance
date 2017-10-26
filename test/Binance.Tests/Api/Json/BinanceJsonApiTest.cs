@@ -222,8 +222,6 @@ namespace Binance.Api.Json
                 await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.PlaceOrderAsync(null, symbol, orderSide, orderType, quantity, price));
                 await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.PlaceOrderAsync(user, null, orderSide, orderType, quantity, price));
                 await Assert.ThrowsAsync<ArgumentException>("quantity", () => api.PlaceOrderAsync(user, symbol, orderSide, orderType, -1, price));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.PlaceOrderAsync(user, symbol, orderSide, orderType, quantity, price, recvWindow: -1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.PlaceOrderAsync(user, symbol, orderSide, orderType, quantity, price, recvWindow: 0));
             }
         }
 
@@ -239,8 +237,6 @@ namespace Binance.Api.Json
                 await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetOrderAsync(null, symbol));
                 await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetOrderAsync(user, null));
                 await Assert.ThrowsAsync<ArgumentException>(() => api.GetOrderAsync(user, symbol));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetOrderAsync(user, symbol, orderId, recvWindow: -1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetOrderAsync(user, symbol, orderId, recvWindow: 0));
             }
         }
 
@@ -256,8 +252,6 @@ namespace Binance.Api.Json
                 await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.CancelOrderAsync(null, symbol));
                 await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.CancelOrderAsync(user, null));
                 await Assert.ThrowsAsync<ArgumentException>(() => api.GetOrderAsync(user, symbol));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetOrderAsync(user, symbol, orderId, recvWindow: -1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetOrderAsync(user, symbol, orderId, recvWindow: 0));
             }
         }
 
@@ -271,8 +265,6 @@ namespace Binance.Api.Json
             {
                 await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetOpenOrdersAsync(null, symbol));
                 await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetOpenOrdersAsync(user, null));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetOpenOrdersAsync(user, symbol, recvWindow: -1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetOpenOrdersAsync(user, symbol, recvWindow: 0));
             }
         }
 
@@ -289,8 +281,6 @@ namespace Binance.Api.Json
                 await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetOrdersAsync(user, symbol, limit: -1));
                 await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetOrdersAsync(user, symbol, limit: 0));
                 await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetOrdersAsync(user, symbol, limit: BinanceApi.OrdersLimitMax + 1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetOrdersAsync(user, symbol, recvWindow: -1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetOrdersAsync(user, symbol, recvWindow: 0));
             }
         }
 
@@ -302,8 +292,6 @@ namespace Binance.Api.Json
             using (var api = new BinanceJsonApi())
             {
                 await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetAccountAsync(null));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetAccountAsync(user, recvWindow: -1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetAccountAsync(user, recvWindow: 0));
             }
         }
 
@@ -319,8 +307,6 @@ namespace Binance.Api.Json
                 await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetTradesAsync(user, symbol, limit: -1));
                 await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetTradesAsync(user, symbol, limit: 0));
                 await Assert.ThrowsAsync<ArgumentException>("limit", () => api.GetTradesAsync(user, symbol, limit: BinanceApi.TradesLimitMax + 1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetTradesAsync(user, symbol, recvWindow: -1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetTradesAsync(user, symbol, recvWindow: 0));
             }
         }
 
@@ -340,8 +326,6 @@ namespace Binance.Api.Json
                 await Assert.ThrowsAsync<ArgumentNullException>("address", () => api.WithdrawAsync(user, asset, string.Empty, amount));
                 await Assert.ThrowsAsync<ArgumentException>("amount", () => api.WithdrawAsync(user, asset, address, -1));
                 await Assert.ThrowsAsync<ArgumentException>("amount", () => api.WithdrawAsync(user, asset, address, 0));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.WithdrawAsync(user, asset, address, amount, recvWindow: -1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.WithdrawAsync(user, asset, address, amount, recvWindow: 0));
             }
         }
 
@@ -353,8 +337,6 @@ namespace Binance.Api.Json
             using (var api = new BinanceJsonApi())
             {
                 await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetDepositsAsync(null));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetDepositsAsync(user, recvWindow: -1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetDepositsAsync(user, recvWindow: 0));
             }
         }
 
@@ -366,8 +348,6 @@ namespace Binance.Api.Json
             using (var api = new BinanceJsonApi())
             {
                 await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetWithdrawalsAsync(null));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetDepositsAsync(user, recvWindow: -1));
-                await Assert.ThrowsAsync<ArgumentException>("recvWindow", () => api.GetDepositsAsync(user, recvWindow: 0));
             }
         }
 

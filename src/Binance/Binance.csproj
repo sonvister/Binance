@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.1.4-alpha</Version>
+    <Version>0.1.5-alpha</Version>
     <PackageId>Binance</PackageId>
     <Authors>sonvister</Authors>
     <Company>sonvister</Company>
     <Product>Binance</Product>
-    <AssemblyVersion>0.1.4.0</AssemblyVersion>
+    <AssemblyVersion>0.1.5.0</AssemblyVersion>
     <Description>A full-featured .NET Standard 2.0 Binance API facade designed for ease of use.</Description>
     <Copyright>Copyright © sonvister 2017</Copyright>
     <PackageTags>binance crypto cryptocurrency exchange api</PackageTags>
@@ -31,6 +31,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 

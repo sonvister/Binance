@@ -2,6 +2,7 @@
 using Binance.Accounts;
 using Binance.Api;
 using Binance.Api.WebSocket.Events;
+using Binance.Options;
 using Binance.Orders;
 using Binance.Orders.Book.Cache;
 using Microsoft.Extensions.Configuration;
@@ -37,8 +38,6 @@ namespace BinanceConsoleApp
 
         private static readonly object _consoleSync = new object();
 
-        private const long _recvWindow = 15000;
-
         private static bool _isOrdersTestOnly = true;
 
         public static async Task Main(string[] args)
@@ -56,10 +55,9 @@ namespace BinanceConsoleApp
 
                 // Configure services.
                _serviceProvider = new ServiceCollection()
-                    //.Configure<BinanceOptions>(
-                    //    _configuration.GetSection(nameof(BinanceOptions)))
-                    .AddLogging()
-                    .AddApplicationServices()
+                    .AddBinance().AddLogging().AddOptions()
+                    .Configure<BinanceJsonApiOptions>(_configuration.GetSection("Api"))
+                    .Configure<UserDataWebSocketClientOptions>(_configuration.GetSection("UserClient"))
                     .BuildServiceProvider();
 
                 // Configure logging.
@@ -68,21 +66,19 @@ namespace BinanceConsoleApp
                         .AddConsole(_configuration.GetSection("Logging.Console"));
 
                 var key = _configuration["BinanceApiKey"] // user secrets configuration.
-                    ?? _configuration.GetSection("Binance")["ApiKey"]; // appsettings.json configuration.
+                    ?? _configuration.GetSection("User")["ApiKey"]; // appsettings.json configuration.
 
                 var secret = _configuration["BinanceApiSecret"] // user secrets configuration.
-                    ?? _configuration.GetSection("Binance")["ApiSecret"]; // appsettings.json configuration.
+                    ?? _configuration.GetSection("User")["ApiSecret"]; // appsettings.json configuration.
 
                 if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(secret))
                 {
                     PrintApiNotice();
                 }
 
-                if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(secret))
+                if (!string.IsNullOrEmpty(key))
                 {
-                    _user = new BinanceUser(
-                        _configuration["BinanceApiKey"],
-                        _configuration["BinanceApiSecret"]);
+                    _user = new BinanceUser(key, secret);
                 }
 
                 _api = _serviceProvider.GetService<IBinanceApi>();
@@ -577,7 +573,7 @@ namespace BinanceConsoleApp
                             IsTestOnly = _isOrdersTestOnly // *** NOTICE *** 
                         };
 
-                        var order = await _api.PlaceAsync(_user, clientOrder, _recvWindow, token);
+                        var order = await _api.PlaceAsync(_user, clientOrder, token: token);
 
                         if (order != null)
                         {
@@ -623,7 +619,7 @@ namespace BinanceConsoleApp
                             IsTestOnly = _isOrdersTestOnly // *** NOTICE *** 
                         };
 
-                        var order = await _api.PlaceAsync(_user, clientOrder, _recvWindow, token);
+                        var order = await _api.PlaceAsync(_user, clientOrder, token: token);
 
                         if (order != null)
                         {
@@ -669,8 +665,8 @@ namespace BinanceConsoleApp
                         }
 
                         var orders = openOrders
-                            ? await _api.GetOpenOrdersAsync(_user, symbol, _recvWindow, token)
-                            : await _api.GetOrdersAsync(_user, symbol, limit: limit, recvWindow: _recvWindow, token: token);
+                            ? await _api.GetOpenOrdersAsync(_user, symbol, token: token)
+                            : await _api.GetOrdersAsync(_user, symbol, limit: limit, token: token);
 
                         lock (_consoleSync)
                         {
@@ -723,8 +719,8 @@ namespace BinanceConsoleApp
                         if (args.Length > 3 && args[3].Equals("cancel", StringComparison.OrdinalIgnoreCase))
                         {
                             var cancelOrderId = clientOrderId != null
-                               ? await _api.CancelOrderAsync(_user, symbol, clientOrderId, recvWindow: _recvWindow, token: token)
-                               : await _api.CancelOrderAsync(_user, symbol, id, recvWindow: _recvWindow, token: token);
+                               ? await _api.CancelOrderAsync(_user, symbol, clientOrderId, token: token)
+                               : await _api.CancelOrderAsync(_user, symbol, id, token: token);
 
                             lock (_consoleSync)
                             {
@@ -736,8 +732,8 @@ namespace BinanceConsoleApp
                         else
                         {
                             var order = clientOrderId != null
-                                ? await _api.GetOrderAsync(_user, symbol, clientOrderId, _recvWindow, token)
-                                : await _api.GetOrderAsync(_user, symbol, id, _recvWindow, token);
+                                ? await _api.GetOrderAsync(_user, symbol, clientOrderId, token: token)
+                                : await _api.GetOrderAsync(_user, symbol, id, token: token);
 
                             lock (_consoleSync)
                             {
@@ -765,7 +761,7 @@ namespace BinanceConsoleApp
                             continue;
                         }
 
-                        var account = await _api.GetAccountAsync(_user, _recvWindow, token);
+                        var account = await _api.GetAccountAsync(_user, token: token);
 
                         Display(account);
                     }
@@ -800,7 +796,7 @@ namespace BinanceConsoleApp
                             }
                         }
 
-                        var trades = await _api.GetTradesAsync(_user, symbol, limit, recvWindow: _recvWindow, token: token);
+                        var trades = await _api.GetTradesAsync(_user, symbol, limit, token: token);
 
                         lock (_consoleSync)
                         {
@@ -836,7 +832,7 @@ namespace BinanceConsoleApp
                             asset = args[1];
                         }
 
-                        var deposits = await _api.GetDepositsAsync(_user, asset, recvWindow: _recvWindow, token: token);
+                        var deposits = await _api.GetDepositsAsync(_user, asset, token: token);
 
                         lock (_consoleSync)
                         {
@@ -872,7 +868,7 @@ namespace BinanceConsoleApp
                             asset = args[1];
                         }
 
-                        var withdrawals = await _api.GetWithdrawalsAsync(_user, asset, null, 0, 0, _recvWindow, token);
+                        var withdrawals = await _api.GetWithdrawalsAsync(_user, asset, token: token);
 
                         lock (_consoleSync)
                         {
@@ -914,7 +910,7 @@ namespace BinanceConsoleApp
                             continue;
                         }
 
-                        await _api.WithdrawAsync(_user, asset, address, amount, null, _recvWindow, token);
+                        await _api.WithdrawAsync(_user, asset, address, amount, token: token);
 
                         lock (_consoleSync)
                         {
@@ -990,7 +986,7 @@ namespace BinanceConsoleApp
             _liveTokenSource?.Cancel();
 
             // Wait for live task to complete.
-            if (_liveTask != null)
+            if (_liveTask != null && !_liveTask.IsCompleted)
                 await _liveTask;
 
             _liveOrderBook?.Dispose();
