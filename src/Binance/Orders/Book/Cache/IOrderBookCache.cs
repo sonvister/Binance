@@ -42,6 +42,18 @@ namespace Binance
         /// <returns><see cref="Task"/></returns>
         Task SubscribeAsync(string symbol, CancellationToken token = default);
 
+        /// <summary>
+        /// Subscribe the client to the symbol and synchronize this depth of
+        /// market with updates processed by the current <see cref="Thread"/>
+        /// or <see cref="Task"/>. This method will not return until the token
+        /// is canceled, this <see cref="IOrderBookCache"> is disposed, or an
+        /// internal exception occurs.
+        /// </summary>
+        /// <param name="symbol">The symbol.</param>
+        /// <param name="token">The cancellation token.</param>
+        /// <returns><see cref="Task"/></returns>
+        Task SubscribeAsync(string symbol, Action<OrderBookUpdateEventArgs> callback, CancellationToken token = default);
+
         #endregion Public Methods
     }
 }

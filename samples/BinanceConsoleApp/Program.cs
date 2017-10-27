@@ -624,7 +624,7 @@ namespace BinanceConsoleApp
                             _userDataClient.OrderUpdate += OnOrderUpdateEvent;
                             _userDataClient.TradeUpdate += OnTradeUpdateEvent;
 
-                            _liveTask = Task.Run(() => _userDataClient.SubscribeAsync(_user, token: _liveTokenSource.Token));
+                            _liveTask = Task.Run(() => _userDataClient.SubscribeAsync(_user, _liveTokenSource.Token));
 
                             lock (_consoleSync)
                             {

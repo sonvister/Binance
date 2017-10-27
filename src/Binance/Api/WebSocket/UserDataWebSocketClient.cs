@@ -72,7 +72,10 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual async Task SubscribeAsync(IBinanceUser user, Action<UserDataEventArgs> callback = null, CancellationToken token = default)
+        public virtual Task SubscribeAsync(IBinanceUser user, CancellationToken token = default)
+            => SubscribeAsync(user, null, token);
+
+        public virtual async Task SubscribeAsync(IBinanceUser user, Action<UserDataEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 

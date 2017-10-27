@@ -39,7 +39,10 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(string symbol, Action<AggregateTradeEventArgs> callback = null, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, CancellationToken token = default)
+            => SubscribeAsync(symbol, null, token);
+
+        public virtual Task SubscribeAsync(string symbol, Action<AggregateTradeEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 

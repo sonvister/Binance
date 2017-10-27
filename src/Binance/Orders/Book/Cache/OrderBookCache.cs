@@ -79,6 +79,8 @@ namespace Binance.Orders.Book.Cache
         private BufferBlock<DepthUpdateEventArgs> _bufferBlock;
         private ActionBlock<DepthUpdateEventArgs> _actionBlock;
 
+        private Action<OrderBookUpdateEventArgs> _callback;
+
         private readonly object _sync = new object();
 
         #endregion Private Fields
@@ -103,10 +105,15 @@ namespace Binance.Orders.Book.Cache
         #region Public Methods
 
         public Task SubscribeAsync(string symbol, CancellationToken token = default)
+            => SubscribeAsync(symbol, null, token);
+
+        public Task SubscribeAsync(string symbol, Action<OrderBookUpdateEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             Symbol = symbol.FormatSymbol();
+
+            _callback = callback;
 
             _bufferBlock = new BufferBlock<DepthUpdateEventArgs>(new DataflowBlockOptions()
             {
@@ -203,10 +210,13 @@ namespace Binance.Orders.Book.Cache
 
             lock (_sync)
             {
-                base.Modify(lastUpdateId, bids, asks);
+                Modify(lastUpdateId, bids, asks);
             }
 
-            RaiseUpdateEvent(new OrderBookUpdateEventArgs(Clone()));
+            var eventArgs = new OrderBookUpdateEventArgs(Clone());
+
+            _callback?.Invoke(eventArgs);
+            RaiseUpdateEvent(eventArgs);
         }
 
         #endregion Protected Methods
