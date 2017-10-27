@@ -102,17 +102,26 @@ try
         });
     }
 }
-catch (BinanceUnknownStatusException)
+catch (BinanceUnknownStatusException) // ...is BinanceHttpException (status code 504)
 {
-    // Respond to HTTP 504 response errors:
-    //   HTTP 504 return code is used when the API successfully sent the message but not get a response within the timeout period.
-    //   It is important to NOT treat this as a failure; the execution status is UNKNOWN and could have been a success.
+    // HTTP 504 return code is used when the API successfully sent the message but not get a response within the timeout period.
+    // It is important to NOT treat this as a failure; the execution status is UNKNOWN and could have been a success.
 }
-catch (BinanceHttpException)
+catch (BinanceHttpException e) // ...is BinanceApiException
 {
-    // Respond to HTTP response errors/codes:
-    //   HTTP 4XX return codes are used for malformed requests; client side issue.
-    //   HTTP 5XX return codes are used for internal errors; server side issue.
+    // The request failed; handle exception based on HTTP status code.
+    if (e.IsClientError())
+    {
+        // HTTP 4XX return codes are used for for malformed requests; the issue is on the sender's side.
+    }
+    else if (e.IsServerError())
+    {
+        // HTTP 5XX return codes are used for internal errors; the issue is on Binance's side.
+    }
+    else
+    {
+        // Other HTTP return codes... 
+    }
 }
 catch (BinanceApiException)
 {
@@ -120,7 +129,7 @@ catch (BinanceApiException)
 }
 catch (Exception)
 {
-    // ...
+    // Other exceptions...
 }
 ```
 #### Sample Application Configuration
@@ -208,7 +217,10 @@ Utilize the depth of market WebSocket client to create a real-time, synchronized
 ```
 void OnOrderBookUpdate(object sender, OrderBookUpdateEventArgs e)
 {
-    e.OrderBook.Top.Bid.Price; // safely use a snapshot of the updated order book.
+    // NOTE: object 'sender' is IOrderBookCache (live order book)...
+    //       e.OrderBook is a clone/snapshot of the live order book.
+
+    e.OrderBook.Top.Bid.Price;
 }
 ```
 
@@ -351,9 +363,12 @@ Get real-time depth update events.
 ```c#
     using (var client = serviceProvider.GetService<IDepthWebSocketClient>())
     {
-        client.DepthUpdate += OnDepthUpdateEvent;
+        client.DepthUpdate += OnDepthUpdateEvent; // optional event subscribing.
         
-        var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, cts.Token));
+        var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, (e) =>
+        {
+            // optional inline event handler.
+        }, cts.Token));
         
         // ...
 
@@ -373,9 +388,12 @@ Get real-time kline/candlestick events.
 ```c#
     using (var client = serviceProvider.GetService<IKlineWebSocketClient>())
     {
-        client.Kline += OnKlineEvent;
+        client.Kline += OnKlineEvent; // optional event subscribing.
         
-        var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, KlineInterval.Hour, cts.Token));
+        var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, KlineInterval.Hour, (e) =>
+        {
+            // optional inline event handler.
+        }, cts.Token));
         
         // ...
         
@@ -395,9 +413,12 @@ Get real-time aggregate trade events.
 ```c#
     using (var client = serviceProvider.GetService<ITradesWebSocketClient>())
     {
-        client.AggregateTrade += OnAggregateTradeEvent;
+        client.AggregateTrade += OnAggregateTradeEvent; // optional event subscribing.
         
-        var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, cts.Token));
+        var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, (e) => 
+        {
+            // optional inline event handler.
+        }, cts.Token));
         
         // ...
         
@@ -417,11 +438,15 @@ Get real-time account update events.
 ```c#
     using (var client = serviceProvider.GetService<IUserDataWebSocketClient>())
     {
+        // optional (preferred) event subscribing.
         client.AccountUpdate += OnAccountUpdateEvent;
         client.OrderUpdate += OnOrderUpdateEvent;
         client.TradeUpdate += OnTradeUpdateEvent;
         
-        var task = Task.Run(() => client.SubscribeAsync(user, cts.Token));
+        var task = Task.Run(() => client.SubscribeAsync(user, (e) => 
+        {
+            // optional inline event handler (where 'e' is the base UserDataEventArgs type).
+        }, cts.Token));
         
         // ...
         

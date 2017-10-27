@@ -1,7 +1,7 @@
 ﻿namespace Binance
 {
     /// <summary>
-    /// Defined symbols.
+    /// Defined symbols (for convienience/reference only).
     /// </summary>
     public static class Symbol
     {
@@ -10,7 +10,7 @@
         /// <summary>
         /// Timestamp of when these symbols were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1509061856200;
+        public static readonly long LastUpdateAt = 1509075974600;
 
         // USDT
         public static readonly string BTC_USDT = "BTCUSDT";
@@ -62,6 +62,7 @@
         public static readonly string ICN_BTC = "ICNBTC";
         public static readonly string BTG_BTC = "BTGBTC";
         public static readonly string EVX_BTC = "EVXBTC";
+        public static readonly string REQ_BTC = "REQBTC";
 
         // ETH
         public static readonly string QTUM_ETH  = "QTUMETH";
@@ -102,6 +103,7 @@
         public static readonly string DASH_ETH = "DASHETH";
         public static readonly string BTG_ETH = "BTGETH";
         public static readonly string EVX_ETH = "EVXETH";
+        public static readonly string REQ_ETH = "REQETH";
 
         #endregion Public Constants
     }
