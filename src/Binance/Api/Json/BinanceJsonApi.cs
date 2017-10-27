@@ -167,7 +167,7 @@ namespace Binance.Api.Json
             return GetAsync($"/api/v1/ticker/24hr?symbol={symbol.FormatSymbol()}", token);
         }
 
-        public virtual Task<string> GetPrices(CancellationToken token = default)
+        public virtual Task<string> GetPricesAsync(CancellationToken token = default)
         {
             return GetAsync($"/api/v1/ticker/allPrices", token);
         }

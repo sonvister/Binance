@@ -216,7 +216,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<SymbolPrice>> GetPricesAsync(CancellationToken token = default)
         {
-            var json = await JsonApi.GetPrices(token)
+            var json = await JsonApi.GetPricesAsync(token)
                 .ConfigureAwait(false);
 
             try

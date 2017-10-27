@@ -86,7 +86,7 @@ namespace Binance
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetPrices(CancellationToken token = default);
+        Task<string> GetPricesAsync(CancellationToken token = default);
 
         /// <summary>
         /// Get best price/quantity on the order book for all symbols.

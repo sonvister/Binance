@@ -498,7 +498,7 @@ namespace BinanceConsoleApp
                             Console.WriteLine();
                             foreach (var top in tops)
                             {
-                                Console.WriteLine($"  {top.Symbol.PadLeft(8)}  -  {top.Bid.Price.ToString().PadLeft(12)}: {top.Bid.Quantity}  |  {top.Ask.Price}: {top.Ask.Quantity}");
+                                Console.WriteLine($"  {top.Symbol.PadLeft(8)}  -  Bid: {top.Bid.Price.ToString().PadLeft(12)} (qty: {top.Bid.Quantity})  |  Ask: {top.Ask.Price} (qty: {top.Ask.Quantity})");
                             }
                             Console.WriteLine();
                         }
