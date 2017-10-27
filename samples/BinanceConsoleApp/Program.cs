@@ -1189,7 +1189,7 @@ namespace BinanceConsoleApp
 
             lock (_consoleSync)
             {
-                Console.WriteLine($"  {top.Symbol}  -  Bid: {top.Bid.Price.ToString(".00")}  |  {top.MidMarketPrice().ToString(".0000")}  |  Ask: {top.Ask.Price.ToString(".00")}  -  Spread: {top.Spread().ToString(".00")}");
+                Console.WriteLine($"  {top.Symbol}  -  Bid: {top.Bid.Price.ToString(".00000000")}  |  {top.MidMarketPrice().ToString(".00000000")}  |  Ask: {top.Ask.Price.ToString(".00000000")}  -  Spread: {top.Spread().ToString(".00000000")}");
             }
         }
 
