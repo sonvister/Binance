@@ -10,6 +10,11 @@ namespace Binance.Orders
         #region Public Properties
 
         /// <summary>
+        /// Get the user.
+        /// </summary>
+        public IBinanceUser User { get; internal set; }
+
+        /// <summary>
         /// Get the symbol.
         /// </summary>
         public string Symbol { get; internal set; }
@@ -81,6 +86,7 @@ namespace Binance.Orders
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="user"></param>
         /// <param name="symbol"></param>
         /// <param name="id"></param>
         /// <param name="clientOrderId"></param>
@@ -95,6 +101,7 @@ namespace Binance.Orders
         /// <param name="icebergQuantity"></param>
         /// <param name="timestamp"></param>
         public Order(
+            IBinanceUser user,
             string symbol,
             long id,
             string clientOrderId,
@@ -108,6 +115,7 @@ namespace Binance.Orders
             decimal stopPrice,
             decimal icebergQuantity,
             long timestamp)
+            : this(user)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -147,7 +155,12 @@ namespace Binance.Orders
         /// <summary>
         /// Internal constructor.
         /// </summary>
-        internal Order() { }
+        internal Order(IBinanceUser user)
+        {
+            Throw.IfNull(user, nameof(user));
+
+            User = user;
+        }
 
         #endregion Constructors
     }

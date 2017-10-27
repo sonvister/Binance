@@ -12,6 +12,7 @@ namespace Binance.Tests.Api.WebSocket.Events
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
+            var user = new BinanceUser("api-key");
             var symbol = Symbol.BTC_USDT;
             var id = 123456;
             var clientOrderId = "test-order";
@@ -25,7 +26,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             decimal stopPrice = 5000;
             decimal icebergQuantity = 0.1m;
 
-            var order = new Order(symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
 
             var orderExecutionType = OrderExecutionType.New;
             var orderRejectedReason = OrderRejectedReason.None;
@@ -41,6 +42,7 @@ namespace Binance.Tests.Api.WebSocket.Events
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
+            var user = new BinanceUser("api-key");
             var symbol = Symbol.BTC_USDT;
             var id = 123456;
             var clientOrderId = "test-order";
@@ -54,7 +56,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             decimal stopPrice = 5000;
             decimal icebergQuantity = 0.1m;
 
-            var order = new Order(symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
 
             var orderExecutionType = OrderExecutionType.New;
             var orderRejectedReason = OrderRejectedReason.None;

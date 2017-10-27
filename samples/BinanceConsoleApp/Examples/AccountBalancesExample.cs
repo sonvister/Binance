@@ -17,52 +17,60 @@ namespace BinanceConsoleApp.Examples
     {
         public static async Task Main(string[] args)
         {
-            // Load configuration.
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                .AddUserSecrets<AccountBalancesExample>()
-                .Build();
-
-            // Get API key.
-            var key = configuration["BinanceApiKey"] // user secrets configuration.
-                ?? configuration.GetSection("User")["ApiKey"]; // appsettings.json configuration.
-
-            // Get API secret.
-            var secret = configuration["BinanceApiSecret"] // user secrets configuration.
-                ?? configuration.GetSection("User")["ApiSecret"]; // appsettings.json configuration.
-
-            // Configure services.
-            var services = new ServiceCollection()
-                .AddBinance().BuildServiceProvider();
-
-            using (var user = new BinanceUser(key, secret))
-            using (var api = services.GetService<IBinanceApi>())
-            using (var cache = services.GetService<IAccountCache>())
-            using (var cts = new CancellationTokenSource())
+            try
             {
-                // Query and display current account balance.
-                var account = await api.GetAccountAsync(user);
-                Display(account.GetBalance(Asset.BTC));
+                // Load configuration.
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                    .AddUserSecrets<AccountBalancesExample>()
+                    .Build();
 
-                // Display updated account balance.
-                var task = Task.Run(() => cache.SubscribeAsync(user, (e) =>
+                // Get API key.
+                var key = configuration["BinanceApiKey"] // user secrets configuration.
+                    ?? configuration.GetSection("User")["ApiKey"]; // appsettings.json configuration.
+
+                // Get API secret.
+                var secret = configuration["BinanceApiSecret"] // user secrets configuration.
+                    ?? configuration.GetSection("User")["ApiSecret"]; // appsettings.json configuration.
+
+                // Configure services.
+                var services = new ServiceCollection()
+                    .AddBinance().BuildServiceProvider();
+
+                using (var user = new BinanceUser(key, secret))
+                using (var api = services.GetService<IBinanceApi>())
+                using (var cache = services.GetService<IAccountCache>())
+                using (var cts = new CancellationTokenSource())
                 {
-                    Display(e.Account.GetBalance(Asset.BTC));
-                }, cts.Token));
+                    // Query and display current account balance.
+                    var account = await api.GetAccountAsync(user);
 
-                Console.WriteLine("...press any key to exit.");
-                Console.ReadKey(true);
+                    var asset = Asset.BTC;
 
-                cts.Cancel();
-                await task;
+                    Display(account.GetBalance(asset));
+
+                    // Display updated account balance.
+                    var task = Task.Run(() =>
+                        cache.SubscribeAsync(user, (e) => Display(e.Account.GetBalance(asset)), cts.Token));
+
+                    Console.WriteLine("...press any key to exit.");
+                    Console.ReadKey(true);
+
+                    cts.Cancel();
+                    await task;
+                }
             }
+            catch (Exception e) { Console.WriteLine(e.Message); }
         }
 
         private static void Display(AccountBalance balance)
         {
             Console.WriteLine();
-            Console.WriteLine($"  {balance.Asset}:  {balance.Free} (free)   {balance.Locked} (locked)");
+            if (balance == null)
+                Console.WriteLine($"  [None]");
+            else
+                Console.WriteLine($"  {balance.Asset}:  {balance.Free} (free)   {balance.Locked} (locked)");
             Console.WriteLine();
         }
     }

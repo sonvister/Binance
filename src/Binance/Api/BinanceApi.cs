@@ -275,7 +275,7 @@ namespace Binance.Api
 
             var limitOrder = clientOrder as LimitOrder;
 
-            var order = new Order()
+            var order = new Order(user)
             {
                 Symbol = clientOrder.Symbol.FormatSymbol(),
                 OriginalQuantity = clientOrder.Quantity,
@@ -319,7 +319,7 @@ namespace Binance.Api
             var json = await JsonApi.GetOrderAsync(user, symbol, orderId, null, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var order = new Order();
+            var order = new Order(user);
 
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
@@ -336,7 +336,7 @@ namespace Binance.Api
             var json = await JsonApi.GetOrderAsync(user, symbol, NullId, origClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var order = new Order();
+            var order = new Order(user);
 
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
@@ -347,12 +347,21 @@ namespace Binance.Api
             return order;
         }
 
-        public virtual Task<Order> GetOrderAsync(IBinanceUser user, Order order, long recvWindow = default, CancellationToken token = default)
+        public virtual async Task<Order> GetOrderAsync(IBinanceUser user, Order order, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(order, nameof(order));
 
             // Get order using order ID.
-            return GetOrderAsync(user, order.Symbol, order.Id, recvWindow, token);
+            var json = await JsonApi.GetOrderAsync(user, order.Symbol, order.Id, null, recvWindow, token)
+                .ConfigureAwait(false);
+
+            try { FillOrder(order, JObject.Parse(json)); }
+            catch (Exception e)
+            {
+                throw new BinanceApiException($"Binance API ({nameof(GetOrderAsync)}) failed to parse JSON api response: \"{json}\"", e);
+            }
+
+            return order;
         }
 
         public virtual async Task<string> CancelOrderAsync(IBinanceUser user, string symbol, long orderId, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default)
@@ -406,7 +415,7 @@ namespace Binance.Api
                 var orders = new List<Order>();
                 foreach (var jToken in jArray)
                 {
-                    var order = new Order();
+                    var order = new Order(user);
 
                     FillOrder(order, jToken);
 
@@ -432,7 +441,7 @@ namespace Binance.Api
                 var orders = new List<Order>();
                 foreach (var jToken in jArray)
                 {
-                    var order = new Order();
+                    var order = new Order(user);
 
                     FillOrder(order, jToken);
 

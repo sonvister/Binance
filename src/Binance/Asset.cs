@@ -45,5 +45,12 @@
         public static readonly string DNT = nameof(DNT);
         public static readonly string ZEC = nameof(ZEC);
         public static readonly string BNT = nameof(BNT);
+        public static readonly string AST = nameof(AST);
+        public static readonly string DASH = nameof(DASH);
+        public static readonly string OAX = nameof(OAX);
+        public static readonly string ICN = nameof(ICN);
+        public static readonly string BTG = nameof(BTG);
+        public static readonly string EVX = nameof(EVX);
+        public static readonly string REQ = nameof(REQ);
     }
 }

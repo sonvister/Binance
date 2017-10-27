@@ -536,7 +536,7 @@ namespace BinanceConsoleApp
                             _orderBookCache = _serviceProvider.GetService<IOrderBookCache>();
                             _orderBookCache.Update += OnOrderBookUpdated;
 
-                            _liveTask = Task.Run(() => _orderBookCache.SubscribeAsync(symbol, _liveTokenSource.Token));
+                            _liveTask = Task.Run(() => _orderBookCache.SubscribeAsync(symbol, token: _liveTokenSource.Token));
 
                             lock (_consoleSync)
                             {

@@ -153,7 +153,7 @@ namespace Binance.Api.WebSocket
                 }
                 else if (eventType == "executionReport")
                 {
-                    var order = new Order();
+                    var order = new Order(User);
 
                     FillOrder(order, jObject);
 

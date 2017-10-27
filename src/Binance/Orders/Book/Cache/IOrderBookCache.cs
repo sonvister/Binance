@@ -44,9 +44,10 @@ namespace Binance
         /// internal exception occurs.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
+        /// <param name="limit"/>The limit (optional).</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(string symbol, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, int limit = default, CancellationToken token = default);
 
         /// <summary>
         /// Subscribe the client to the symbol and synchronize this depth of
@@ -56,9 +57,11 @@ namespace Binance
         /// internal exception occurs.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
+        /// <param name="callback">An event callback.</param>
+        /// <param name="limit">The limit (optional).</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(string symbol, Action<OrderBookCacheEventArgs> callback, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, Action<OrderBookCacheEventArgs> callback, int limit = default, CancellationToken token = default);
 
         #endregion Public Methods
     }

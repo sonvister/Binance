@@ -17,9 +17,9 @@ namespace Binance.Accounts.Cache
 
         #region Public Properties
 
-        public IUserDataWebSocketClient Client { get; private set; }
-
         public Account Account { get; private set; }
+
+        public IUserDataWebSocketClient Client { get; private set; }
 
         #endregion Public Properties
 

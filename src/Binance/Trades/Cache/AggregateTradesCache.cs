@@ -1,27 +1,30 @@
-﻿using Binance.Api.WebSocket;
-using Binance.Api.WebSocket.Events;
+﻿using Binance.Api.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace Binance.Orders.Book.Cache
+namespace Binance.Trades.Cache
 {
-    public class OrderBookCache : IOrderBookCache
+    public class AggregateTradesCache : IAggregateTradesCache
     {
         #region Public Events
 
-        public event EventHandler<OrderBookCacheEventArgs> Update;
+        public event EventHandler<AggregateTradesCacheEventArgs> Update;
 
         #endregion Public Events
 
         #region Public Properties
 
-        public OrderBook OrderBook => _orderBookClone;
+        public IEnumerable<AggregateTrade> Trades
+        {
+            get { lock (_sync) { return _trades?.ToArray() ?? new AggregateTrade[] { }; } }
+        }
 
-        public IDepthWebSocketClient Client { get; private set; }
+        public ITradesWebSocketClient Client { get; private set; }
 
         #endregion Public Properties
 
@@ -29,23 +32,24 @@ namespace Binance.Orders.Book.Cache
 
         private IBinanceApi _api;
 
-        private ILogger<OrderBookCache> _logger;
+        private ILogger<AggregateTradesCache> _logger;
 
         private bool _leaveWebSocketClientOpen;
 
-        private BufferBlock<DepthUpdateEventArgs> _bufferBlock;
-        private ActionBlock<DepthUpdateEventArgs> _actionBlock;
+        private BufferBlock<AggregateTradeEventArgs> _bufferBlock;
+        private ActionBlock<AggregateTradeEventArgs> _actionBlock;
 
-        private Action<OrderBookCacheEventArgs> _callback;
+        private Action<AggregateTradesCacheEventArgs> _callback;
 
-        private OrderBook _orderBook;
-        private OrderBook _orderBookClone;
+        private Queue<AggregateTrade> _trades;
+
+        private readonly object _sync = new object();
 
         #endregion Private Fields
 
         #region Constructors
 
-        public OrderBookCache(IBinanceApi api, IDepthWebSocketClient client, bool leaveWebSocketClientOpen = false, ILogger<OrderBookCache> logger = null)
+        public AggregateTradesCache(IBinanceApi api, ITradesWebSocketClient client, bool leaveWebSocketClientOpen = false, ILogger<AggregateTradesCache> logger = null)
         {
             Throw.IfNull(api, nameof(api));
             Throw.IfNull(client, nameof(client));
@@ -54,8 +58,10 @@ namespace Binance.Orders.Book.Cache
             _logger = logger;
 
             Client = client;
-            Client.DepthUpdate += OnDepthUpdate;
+            Client.AggregateTrade += OnAggregateTrade;
             _leaveWebSocketClientOpen = leaveWebSocketClientOpen;
+
+            _trades = new Queue<AggregateTrade>();
         }
 
         #endregion Constructors
@@ -65,13 +71,13 @@ namespace Binance.Orders.Book.Cache
         public Task SubscribeAsync(string symbol, int limit = default, CancellationToken token = default)
             => SubscribeAsync(symbol, null, limit, token);
 
-        public Task SubscribeAsync(string symbol, Action<OrderBookCacheEventArgs> callback, int limit = default, CancellationToken token = default)
+        public Task SubscribeAsync(string symbol, Action<AggregateTradesCacheEventArgs> callback, int limit = default, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             _callback = callback;
 
-            _bufferBlock = new BufferBlock<DepthUpdateEventArgs>(new DataflowBlockOptions()
+            _bufferBlock = new BufferBlock<AggregateTradeEventArgs>(new DataflowBlockOptions()
             {
                 EnsureOrdered = true,
                 CancellationToken = token,
@@ -79,46 +85,58 @@ namespace Binance.Orders.Book.Cache
                 MaxMessagesPerTask = DataflowBlockOptions.Unbounded,
             });
 
-            _actionBlock = new ActionBlock<DepthUpdateEventArgs>(async @event =>
+            _actionBlock = new ActionBlock<AggregateTradeEventArgs>(async @event =>
             {
                 try
                 {
-                    // If order book has not been initialized.
-                    if (_orderBook == null)
+                    if (_trades.Count == 0)
                     {
-                        _orderBook = await _api.GetOrderBookAsync(symbol, token: token)
+                        await SynchronizeTradesAsync(symbol, limit: limit, token: token)
                             .ConfigureAwait(false);
                     }
 
-                    // If there is a gap in events (order book out-of-sync).
-                    if (@event.FirstUpdateId > _orderBook.LastUpdateId + 1)
+                    // If there is a gap in the trades received (out-of-sync).
+                    if (@event.Trade.Id > _trades.Last().Id + 1)
                     {
-                        _logger?.LogError($"{nameof(OrderBookCache)}: Synchronization failure (first update ID > last update ID + 1).");
+                        _logger?.LogError($"{nameof(AggregateTradesCache)}: Synchronization failure (trade ID > last trade ID + 1).");
 
                         await Task.Delay(1000)
                             .ConfigureAwait(false); // wait a bit.
 
                         // Re-synchronize.
-                        _orderBook = await _api.GetOrderBookAsync(symbol, token: token)
+                        await SynchronizeTradesAsync(symbol, limit: limit, token: token)
                             .ConfigureAwait(false);
 
                         // If still out-of-sync.
-                        if (@event.FirstUpdateId > _orderBook.LastUpdateId + 1)
+                        if (@event.Trade.Id > _trades.Last().Id + 1)
                         {
-                            _logger?.LogError($"{nameof(OrderBookCache)}: Re-Synchronization failure (first update ID > last update ID + 1).");
+                            _logger?.LogError($"{nameof(AggregateTradesCache)}: Re-Synchronization failure (trade ID > last trade ID + 1).");
 
                             // Reset and wait for next event.
-                            _orderBook = null;
+                            lock (_sync) _trades.Clear();
                             return;
                         }
                     }
 
-                    Modify(@event.LastUpdateId, @event.Bids, @event.Asks, limit);
+                    // If the trade exists in the queue already (occurs after synchronization).
+                    if (_trades.Any(t => t.Id == @event.Trade.Id))
+                        return;
+
+                    lock (_sync)
+                    {
+                        _trades.Dequeue();
+                        _trades.Enqueue(@event.Trade);
+                    }
+
+                    var eventArgs = new AggregateTradesCacheEventArgs(_trades.ToArray());
+
+                    _callback?.Invoke(eventArgs);
+                    RaiseUpdateEvent(eventArgs);
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, $"{nameof(OrderBookCache)}: \"{e.Message}\"");
+                    _logger?.LogError(e, $"{nameof(AggregateTradesCache)}: \"{e.Message}\"");
                 }
             }, new ExecutionDataflowBlockOptions()
             {
@@ -131,7 +149,7 @@ namespace Binance.Orders.Book.Cache
 
             _bufferBlock.LinkTo(_actionBlock);
 
-            return Client.SubscribeAsync(symbol, token: token);
+            return Client.SubscribeAsync(symbol, token);
         }
 
         #endregion Public Methods
@@ -139,40 +157,19 @@ namespace Binance.Orders.Book.Cache
         #region Protected Methods
 
         /// <summary>
-        /// Raise order book cache update event.
+        /// Raise account cache update event.
         /// </summary>
         /// <param name="args"></param>
-        protected virtual void RaiseUpdateEvent(OrderBookCacheEventArgs args)
+        protected virtual void RaiseUpdateEvent(AggregateTradesCacheEventArgs args)
         {
             Throw.IfNull(args, nameof(args));
 
             try { Update?.Invoke(this, args); }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
+                LogException(e, $"{nameof(AggregateTradesCache)}.{nameof(RaiseUpdateEvent)}");
                 throw;
             }
-        }
-
-        /// <summary>
-        /// Update the order book.
-        /// </summary>
-        /// <param name="lastUpdateId"></param>
-        /// <param name="bids"></param>
-        /// <param name="asks"></param>
-        protected virtual void Modify(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks, int limit)
-        {
-            if (lastUpdateId < _orderBook.LastUpdateId)
-                return;
-
-            _orderBook.Modify(lastUpdateId, bids, asks);
-
-            _orderBookClone = _orderBook.Clone(limit);
-
-            var eventArgs = new OrderBookCacheEventArgs(_orderBookClone);
-
-            _callback?.Invoke(eventArgs);
-            RaiseUpdateEvent(eventArgs);
         }
 
         #endregion Protected Methods
@@ -180,11 +177,33 @@ namespace Binance.Orders.Book.Cache
         #region Private Methods
 
         /// <summary>
-        /// <see cref="IDepthWebSocketClient"/> event handler.
+        /// Get latest trades.
         /// </summary>
-        /// <param name="sender">The <see cref="IDepthWebSocketClient"/>.</param>
+        /// <param name="symbol"></param>
+        /// <param name="limit"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async Task SynchronizeTradesAsync(string symbol, int limit, CancellationToken token)
+        {
+            var trades = await _api.GetAggregateTradesAsync(symbol, limit: limit, token: token)
+                .ConfigureAwait(false);
+
+            lock (_sync)
+            {
+                _trades.Clear();
+                foreach (var trade in trades)
+                {
+                    _trades.Enqueue(trade);
+                }
+            }
+        }
+
+        /// <summary>
+        /// <see cref="ITradesWebSocketClient"/> event handler.
+        /// </summary>
+        /// <param name="sender">The <see cref="ITradesWebSocketClient"/>.</param>
         /// <param name="event">The event arguments.</param>
-        private void OnDepthUpdate(object sender, DepthUpdateEventArgs @event)
+        private void OnAggregateTrade(object sender, AggregateTradeEventArgs @event)
         {
             // Post event to buffer block (queue).
             _bufferBlock.Post(@event);
@@ -217,7 +236,7 @@ namespace Binance.Orders.Book.Cache
 
             if (disposing)
             {
-                Client.DepthUpdate -= OnDepthUpdate;
+                Client.AggregateTrade -= OnAggregateTrade;
 
                 if (!_leaveWebSocketClientOpen)
                 {

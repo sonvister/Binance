@@ -3,6 +3,7 @@ using Binance.Api;
 using Binance.Api.Json;
 using Binance.Api.WebSocket;
 using Binance.Orders.Book.Cache;
+using Binance.Trades.Cache;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Binance
@@ -23,6 +24,7 @@ namespace Binance
             services.AddTransient<IOrderBookCache, OrderBookCache>();
 
             // Trades
+            services.AddTransient<IAggregateTradesCache, AggregateTradesCache>();
 
             // WebSockets
             services.AddTransient<IDepthWebSocketClient, DepthWebSocketClient>();
