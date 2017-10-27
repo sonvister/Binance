@@ -2,7 +2,7 @@
 
 namespace Binance.Api.WebSocket.Events
 {
-    public sealed class OrderUpdateEventArgs : ExecutionEventArgs, IChronological
+    public sealed class OrderUpdateEventArgs : OrderExecutionEventArgs
     {
         #region Constructors
 

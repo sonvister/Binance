@@ -1,16 +1,10 @@
 ﻿using Binance.Orders;
-using System;
 
 namespace Binance.Api.WebSocket.Events
 {
-    public abstract class ExecutionEventArgs : EventArgs, IChronological
+    public abstract class OrderExecutionEventArgs : UserDataEventArgs
     {
         #region Public Properties
-
-        /// <summary>
-        /// Get the event time.
-        /// </summary>
-        public long Timestamp { get; private set; }
 
         /// <summary>
         /// Get the order.
@@ -44,14 +38,11 @@ namespace Binance.Api.WebSocket.Events
         /// <param name="orderExecutionType">The order execution type.</param>
         /// <param name="orderRejectedReason">The order rejected reason.</param>
         /// <param name="newClientOrderId">The new client order ID.</param>
-        public ExecutionEventArgs(long timestamp, Order order, OrderExecutionType orderExecutionType, OrderRejectedReason orderRejectedReason, string newClientOrderId)
+        public OrderExecutionEventArgs(long timestamp, Order order, OrderExecutionType orderExecutionType, OrderRejectedReason orderRejectedReason, string newClientOrderId)
+            : base(timestamp)
         {
-            if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(OrderUpdateEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
-
             Throw.IfNull(order, nameof(order));
 
-            Timestamp = timestamp;
             Order = order;
             OrderExecutionType = orderExecutionType;
             OrderRejectedReason = orderRejectedReason;

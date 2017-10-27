@@ -300,6 +300,7 @@ namespace Binance.Api
                 {
                     FillOrder(order, JObject.Parse(json));
 
+                    // Update client order properties.
                     clientOrder.Id = order.ClientOrderId;
                     clientOrder.Timestamp = order.Timestamp;
                 }
@@ -314,10 +315,11 @@ namespace Binance.Api
 
         public virtual async Task<Order> GetOrderAsync(IBinanceUser user, string symbol, long orderId, long recvWindow = default, CancellationToken token = default)
         {
+            // Get order using order ID.
             var json = await JsonApi.GetOrderAsync(user, symbol, orderId, null, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var order = new Order() { Symbol = symbol.FormatSymbol() };
+            var order = new Order();
 
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
@@ -330,10 +332,11 @@ namespace Binance.Api
 
         public virtual async Task<Order> GetOrderAsync(IBinanceUser user, string symbol, string origClientOrderId, long recvWindow = default, CancellationToken token = default)
         {
+            // Get order using original client order ID.
             var json = await JsonApi.GetOrderAsync(user, symbol, NullId, origClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var order = new Order() { Symbol = symbol.FormatSymbol() };
+            var order = new Order();
 
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
@@ -348,6 +351,7 @@ namespace Binance.Api
         {
             Throw.IfNull(order, nameof(order));
 
+            // Get order using order ID.
             return GetOrderAsync(user, order.Symbol, order.Id, recvWindow, token);
         }
 
@@ -363,7 +367,7 @@ namespace Binance.Api
             try { return JObject.Parse(json)["clientOrderId"].Value<string>(); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetOrderAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"Binance API ({nameof(CancelOrderAsync)}) failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -378,7 +382,7 @@ namespace Binance.Api
             try { return JObject.Parse(json)["clientOrderId"].Value<string>(); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetOrderAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"Binance API ({nameof(CancelOrderAsync)}) failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -402,7 +406,7 @@ namespace Binance.Api
                 var orders = new List<Order>();
                 foreach (var jToken in jArray)
                 {
-                    var order = new Order() { Symbol = symbol.FormatSymbol() };
+                    var order = new Order();
 
                     FillOrder(order, jToken);
 
@@ -428,7 +432,7 @@ namespace Binance.Api
                 var orders = new List<Order>();
                 foreach (var jToken in jArray)
                 {
-                    var order = new Order() { Symbol = symbol.FormatSymbol() };
+                    var order = new Order();
 
                     FillOrder(order, jToken);
 
@@ -540,8 +544,7 @@ namespace Binance.Api
             var json = await JsonApi.GetDepositsAsync(user, asset, status, startTime, endTime, recvWindow, token)
                 .ConfigureAwait(false);
 
-            bool success = false;
-
+            var success = false;
             var deposits = new List<Deposit>();
 
             try
@@ -583,8 +586,7 @@ namespace Binance.Api
             var json = await JsonApi.GetWithdrawalsAsync(user, asset, status, startTime, endTime, recvWindow, token)
                 .ConfigureAwait(false);
 
-            bool success = false;
-
+            var success = false;
             var withdrawals = new List<Withdrawal>();
 
             try

@@ -72,7 +72,7 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual async Task SubscribeAsync(IBinanceUser user, CancellationToken token = default)
+        public virtual async Task SubscribeAsync(IBinanceUser user, Action<UserDataEventArgs> callback = null, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
@@ -91,7 +91,7 @@ namespace Binance.Api.WebSocket
 
             await SubscribeAsync(_listenKey, json =>
             {
-                try { DeserializeJsonAndRaiseEvent(json); }
+                try { DeserializeJsonAndRaiseEvent(json, callback); }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
@@ -109,7 +109,7 @@ namespace Binance.Api.WebSocket
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        protected virtual void DeserializeJsonAndRaiseEvent(string json)
+        protected virtual void DeserializeJsonAndRaiseEvent(string json, Action<UserDataEventArgs> callback = null)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -144,7 +144,10 @@ namespace Binance.Api.WebSocket
                             entry["l"].Value<decimal>())); // locked amount
                     }
 
-                    RaiseAccountUpdateEvent(new AccountUpdateEventArgs(eventTime, new Account(commissions, status, balances)));
+                    var eventArgs = new AccountUpdateEventArgs(eventTime, new Account(commissions, status, balances));
+
+                    callback?.Invoke(eventArgs);
+                    RaiseAccountUpdateEvent(eventArgs);
                 }
                 else if (eventType == "executionReport")
                 {
@@ -172,11 +175,17 @@ namespace Binance.Api.WebSocket
                         
                         var quantityOfLastFilledTrade = jObject["l"].Value<decimal>();
 
-                        RaiseTradeUpdateEvent(new TradeUpdateEventArgs(eventTime, order, executionType, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+                        var eventArgs = new TradeUpdateEventArgs(eventTime, order, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
+
+                        callback?.Invoke(eventArgs);
+                        RaiseTradeUpdateEvent(eventArgs);
                     }
                     else // order update event.
                     {
-                        RaiseOrderUpdateEvent(new OrderUpdateEventArgs(eventTime, order, executionType, rejectedReason, newClientOrderId));
+                        var eventArgs = new OrderUpdateEventArgs(eventTime, order, executionType, rejectedReason, newClientOrderId);
+
+                        callback?.Invoke(eventArgs);
+                        RaiseOrderUpdateEvent(eventArgs);
                     }
                 }
                 else

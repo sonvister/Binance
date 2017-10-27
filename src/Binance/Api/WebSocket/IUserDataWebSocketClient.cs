@@ -35,9 +35,10 @@ namespace Binance
         /// or an exception occurs.
         /// </summary>
         /// <param name="user">The user.</param>
+        /// <param name="callback">An event callback (optional).</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(IBinanceUser user, CancellationToken token = default);
+        Task SubscribeAsync(IBinanceUser user, Action<UserDataEventArgs> callback = null, CancellationToken token = default);
 
         #endregion Public Methods
     }

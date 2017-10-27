@@ -1,18 +1,18 @@
-﻿using Binance.Accounts;
+﻿using System;
 
 namespace Binance.Api.WebSocket.Events
 {
     /// <summary>
     /// User data web socket client event.
     /// </summary>
-    public sealed class AccountUpdateEventArgs : UserDataEventArgs
+    public abstract class UserDataEventArgs : EventArgs, IChronological
     {
         #region Public Properties
 
         /// <summary>
-        /// Get the account.
+        /// Get the event time.
         /// </summary>
-        public Account Account { get; private set; }
+        public long Timestamp { get; private set; }
 
         #endregion Public Properties
 
@@ -22,13 +22,12 @@ namespace Binance.Api.WebSocket.Events
         /// Constructor.
         /// </summary>
         /// <param name="timestamp">The event time.</param>
-        /// <param name="account">The account.</param>
-        public AccountUpdateEventArgs(long timestamp, Account account)
-            : base(timestamp)
+        public UserDataEventArgs(long timestamp)
         {
-            Throw.IfNull(account, nameof(account));
+            if (timestamp <= 0)
+                throw new ArgumentException($"{nameof(UserDataEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
 
-            Account = account;
+            Timestamp = timestamp;
         }
 
         #endregion Constructors

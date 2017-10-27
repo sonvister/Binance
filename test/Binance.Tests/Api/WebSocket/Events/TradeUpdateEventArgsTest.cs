@@ -28,7 +28,6 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             var order = new Order(symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
 
-            var orderExecutionType = OrderExecutionType.New;
             var orderRejectedReason = OrderRejectedReason.None;
             var newClientOrderId = "new-test-order";
 
@@ -44,9 +43,9 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             decimal quantityOfLastFilledTrade = 1;
 
-            Assert.Throws<ArgumentException>("timestamp", () => new TradeUpdateEventArgs(-1, order, orderExecutionType, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
-            Assert.Throws<ArgumentException>("timestamp", () => new TradeUpdateEventArgs(0, order, orderExecutionType, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
-            Assert.Throws<ArgumentNullException>("order", () => new TradeUpdateEventArgs(timestamp, null, orderExecutionType, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+            Assert.Throws<ArgumentException>("timestamp", () => new TradeUpdateEventArgs(-1, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+            Assert.Throws<ArgumentException>("timestamp", () => new TradeUpdateEventArgs(0, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+            Assert.Throws<ArgumentNullException>("order", () => new TradeUpdateEventArgs(timestamp, null, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
         }
 
         [Fact]
@@ -69,7 +68,6 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             var order = new Order(symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
 
-            var orderExecutionType = OrderExecutionType.New;
             var orderRejectedReason = OrderRejectedReason.None;
             var newClientOrderId = "new-test-order";
 
@@ -85,11 +83,11 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             decimal quantityOfLastFilledTrade = 1;
 
-            var args = new TradeUpdateEventArgs(timestamp, order, orderExecutionType, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
+            var args = new TradeUpdateEventArgs(timestamp, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
 
             Assert.Equal(timestamp, args.Timestamp);
             Assert.Equal(order, args.Order);
-            Assert.Equal(orderExecutionType, args.OrderExecutionType);
+            Assert.Equal(OrderExecutionType.Trade, args.OrderExecutionType);
             Assert.Equal(orderRejectedReason, args.OrderRejectedReason);
             Assert.Equal(newClientOrderId, args.NewClientOrderId);
             Assert.Equal(trade, args.Trade);

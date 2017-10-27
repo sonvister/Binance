@@ -226,7 +226,7 @@ namespace Binance
         /// <param name="asset"></param>
         /// <param name="address"></param>
         /// <param name="amount"></param>
-        /// <param name="name"></param>
+        /// <param name="name">A description of the address (optional).</param>
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>

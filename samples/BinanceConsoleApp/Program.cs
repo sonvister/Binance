@@ -138,15 +138,15 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  symbols                                              display all symbols.");
                 Console.WriteLine("  prices                                               display current price for all symbols.");
                 Console.WriteLine("  tops                                                 display order book top price and quantity for all symbols.");
-                Console.WriteLine("  live depth <symbol>                                  enable order book live feed for a symbol.");
-                Console.WriteLine("  live kline <symbol> <interval>                       enable kline live feed for a symbol and interval.");
+                Console.WriteLine("  live depth|book <symbol>                            enable order book live feed for a symbol.");
+                Console.WriteLine("  live kline|candle <symbol> <interval>                enable kline live feed for a symbol and interval.");
                 Console.WriteLine("  live trades <symbol>                                 enable trades live feed for a symbol.");
                 Console.WriteLine("  live account|user                                    enable user data live feed (api key required).");
                 Console.WriteLine("  live off                                             disable the websocket live feed (there can be only one).");
                 Console.WriteLine();
                 Console.WriteLine(" Account (authentication required):");
-                Console.WriteLine("  limit <side> <symbol> <qty> <price>                  create a limit order.");
-                Console.WriteLine("  market <side> <symbol> <qty>                         create a market order.");
+                Console.WriteLine("  market <side> <symbol> <qty> [stop]                  create a market order.");
+                Console.WriteLine("  limit <side> <symbol> <qty> <price> [stop]           create a limit order.");
                 Console.WriteLine("  orders <symbol> [limit]                              display orders for a symbol, where limit: [1-500].");
                 Console.WriteLine("  orders <symbol> open                                 display all open orders for a symbol.");
                 Console.WriteLine("  order <symbol> <ID>                                  display an order by ID.");
@@ -503,7 +503,7 @@ namespace BinanceConsoleApp
                             Console.WriteLine();
                         }
                     }
-                    // Live Order Book
+                    // Live feeds
                     else if (stdin.StartsWith("live", StringComparison.OrdinalIgnoreCase))
                     {
                         var args = stdin.Split(' ');
@@ -520,7 +520,8 @@ namespace BinanceConsoleApp
                             symbol = args[2];
                         }
 
-                        if (endpoint.Equals("depth", StringComparison.OrdinalIgnoreCase))
+                        if (endpoint.Equals("depth", StringComparison.OrdinalIgnoreCase)
+                            || endpoint.Equals("book", StringComparison.OrdinalIgnoreCase))
                         {
                             if (_liveTask != null)
                             {
@@ -544,7 +545,8 @@ namespace BinanceConsoleApp
                                 Console.WriteLine($"  ...live order book enabled for symbol: {symbol} ...use 'live off' to disable.");
                             }
                         }
-                        else if (endpoint.Equals("kline", StringComparison.OrdinalIgnoreCase))
+                        else if (endpoint.Equals("kline", StringComparison.OrdinalIgnoreCase)
+                              || endpoint.Equals("candle", StringComparison.OrdinalIgnoreCase))
                         {
                             if (_liveTask != null)
                             {
@@ -566,7 +568,7 @@ namespace BinanceConsoleApp
                             _klineClient = _serviceProvider.GetService<IKlineWebSocketClient>();
                             _klineClient.Kline += OnKlineEvent;
 
-                            _liveTask = Task.Run(() => _klineClient.SubscribeAsync(symbol, interval, _liveTokenSource.Token));
+                            _liveTask = Task.Run(() => _klineClient.SubscribeAsync(symbol, interval, (e) => { Display(e.Candlestick); }, _liveTokenSource.Token));
 
                             lock (_consoleSync)
                             {
@@ -588,9 +590,8 @@ namespace BinanceConsoleApp
                             _liveTokenSource = new CancellationTokenSource();
 
                             _tradesClient = _serviceProvider.GetService<ITradesWebSocketClient>();
-                            _tradesClient.AggregateTrade += OnAggregateTradeEvent;
 
-                            _liveTask = Task.Run(() => _tradesClient.SubscribeAsync(symbol, _liveTokenSource.Token));
+                            _liveTask = Task.Run(() => _tradesClient.SubscribeAsync(symbol, (e) => { Display(e.Trade); }, _liveTokenSource.Token));
 
                             lock (_consoleSync)
                             {
@@ -623,7 +624,7 @@ namespace BinanceConsoleApp
                             _userDataClient.OrderUpdate += OnOrderUpdateEvent;
                             _userDataClient.TradeUpdate += OnTradeUpdateEvent;
 
-                            _liveTask = Task.Run(() => _userDataClient.SubscribeAsync(_user, _liveTokenSource.Token));
+                            _liveTask = Task.Run(() => _userDataClient.SubscribeAsync(_user, token: _liveTokenSource.Token));
 
                             lock (_consoleSync)
                             {
@@ -645,7 +646,65 @@ namespace BinanceConsoleApp
                             continue;
                         }
                     }
-                    // Limit
+                    // Market order
+                    else if (stdin.StartsWith("market", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var args = stdin.Split(' ');
+
+                        if (args.Length < 4)
+                        {
+                            lock (_consoleSync)
+                                Console.WriteLine("A side, symbol, and quantity are required.");
+                            continue;
+                        }
+
+                        if (!Enum.TryParse(typeof(OrderSide), args[1], true, out var side))
+                        {
+                            lock (_consoleSync)
+                                Console.WriteLine("A valid order side is required ('buy' or 'sell').");
+                            continue;
+                        }
+
+                        var symbol = args[2];
+
+                        if (!decimal.TryParse(args[3], out var quantity) || quantity <= 0)
+                        {
+                            lock (_consoleSync)
+                                Console.WriteLine("A quantity greater than 0 is required.");
+                            continue;
+                        }
+
+                        decimal stopPrice = 0;
+                        if (args.Length > 4)
+                        {
+                            if (!decimal.TryParse(args[4], out stopPrice) || stopPrice <= 0)
+                            {
+                                lock (_consoleSync)
+                                    Console.WriteLine("A stop price greater than 0 is required.");
+                                continue;
+                            }
+                        }
+
+                        var clientOrder = new MarketOrder()
+                        {
+                            Symbol = symbol,
+                            Side = (OrderSide)side,
+                            Quantity = quantity,
+                            StopPrice = stopPrice,
+                            IsTestOnly = _isOrdersTestOnly // *** NOTICE *** 
+                        };
+
+                        var order = await _api.PlaceAsync(_user, clientOrder, token: token);
+
+                        if (order != null)
+                        {
+                            lock (_consoleSync)
+                            {
+                                Console.WriteLine($"{(clientOrder.IsTestOnly ? "~ TEST ~ " : "")}>> MARKET {order.Side} order (ID: {order.Id}) placed for {order.OriginalQuantity.ToString("0.00000000")} {order.Symbol} @ {order.Price.ToString("0.00000000")}.");
+                            }
+                        }
+                    }
+                    // Limit order
                     else if (stdin.StartsWith("limit", StringComparison.OrdinalIgnoreCase))
                     {
                         var args = stdin.Split(' ');
@@ -680,12 +739,24 @@ namespace BinanceConsoleApp
                             continue;
                         }
 
+                        decimal stopPrice = 0;
+                        if (args.Length > 5)
+                        {
+                            if (!decimal.TryParse(args[5], out stopPrice) || stopPrice <= 0)
+                            {
+                                lock (_consoleSync)
+                                    Console.WriteLine("A stop price greater than 0 is required.");
+                                continue;
+                            }
+                        }
+
                         var clientOrder = new LimitOrder()
                         {
                             Symbol = symbol,
                             Side = (OrderSide)side,
                             Quantity = quantity,
                             Price = price,
+                            StopPrice = stopPrice,
                             IsTestOnly = _isOrdersTestOnly // *** NOTICE *** 
                         };
 
@@ -695,53 +766,7 @@ namespace BinanceConsoleApp
                         {
                             lock (_consoleSync)
                             {
-                                Console.WriteLine($"{(clientOrder.IsTestOnly ? "TEST " : "")}>> Limit order (ID: {order.Id}) placed for {order.OriginalQuantity.ToString("0.00000000")} {order.Symbol} @ {order.Price.ToString("0.00000000")}.");
-                            }
-                        }
-                    }
-                    // Market
-                    else if (stdin.StartsWith("market", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var args = stdin.Split(' ');
-
-                        if (args.Length < 4)
-                        {
-                            lock (_consoleSync)
-                                Console.WriteLine("A side, symbol, and quantity are required.");
-                            continue;
-                        }
-
-                        if (!Enum.TryParse(typeof(OrderSide), args[1], true, out var side))
-                        {
-                            lock (_consoleSync)
-                                Console.WriteLine("A valid order side is required ('buy' or 'sell').");
-                            continue;
-                        }
-
-                        var symbol = args[2];
-
-                        if (!decimal.TryParse(args[3], out var quantity) || quantity <= 0)
-                        {
-                            lock (_consoleSync)
-                                Console.WriteLine("A quantity greater than 0 is required.");
-                            continue;
-                        }
-
-                        var clientOrder = new MarketOrder()
-                        {
-                            Symbol = symbol,
-                            Side = (OrderSide)side,
-                            Quantity = quantity,
-                            IsTestOnly = _isOrdersTestOnly // *** NOTICE *** 
-                        };
-
-                        var order = await _api.PlaceAsync(_user, clientOrder, token: token);
-
-                        if (order != null)
-                        {
-                            lock (_consoleSync)
-                            {
-                                Console.WriteLine($"{(clientOrder.IsTestOnly ? "~ TEST ~ " : "")}>> Market order (ID: {order.Id}) placed for {order.OriginalQuantity.ToString("0.00000000")} {order.Symbol} @ {order.Price.ToString("0.00000000")}.");
+                                Console.WriteLine($"{(clientOrder.IsTestOnly ? "TEST " : "")}>> LIMIT {order.Side} order (ID: {order.Id}) placed for {order.OriginalQuantity.ToString("0.00000000")} {order.Symbol} @ {order.Price.ToString("0.00000000")}.");
                             }
                         }
                     }
@@ -1158,13 +1183,13 @@ namespace BinanceConsoleApp
 
         private static void OnOrderBookUpdated(object sender, OrderBookUpdateEventArgs e)
         {
-            // NOTE: object 'sender' is IDepthOfMarket (live order book)...
-            //       e.OrderBook is a clone (snapshot) of the live order book.
+            // NOTE: object 'sender' is IOrderBookCache (live order book)...
+            //       e.OrderBook is a clone/snapshot of the live order book.
             var top = e.OrderBook.Top;
 
             lock (_consoleSync)
             {
-                Console.WriteLine($"    {top.Symbol}  -  Bid: {top.Bid.Price.ToString(".00")}  |  {top.MidMarketPrice().ToString(".0000")}  |  Ask: {top.Ask.Price.ToString(".00")}  -  Spread: {top.Spread().ToString(".00")}");
+                Console.WriteLine($"  {top.Symbol}  -  Bid: {top.Bid.Price.ToString(".00")}  |  {top.MidMarketPrice().ToString(".0000")}  |  Ask: {top.Ask.Price.ToString(".00")}  -  Spread: {top.Spread().ToString(".00")}");
             }
         }
 
@@ -1172,15 +1197,7 @@ namespace BinanceConsoleApp
         {
             lock (_consoleSync)
             {
-                Console.WriteLine($"    {e.Candlestick.Symbol}  -  O: {e.Candlestick.Open.ToString("0.00000000")}  |  H: {e.Candlestick.High.ToString("0.00000000")}  |  L: {e.Candlestick.Low.ToString("0.00000000")}  |  C: {e.Candlestick.Close.ToString("0.00000000")}{(e.IsFinal ? "*" : "")}");
-            }
-        }
-
-        private static void OnAggregateTradeEvent(object sender, AggregateTradeEventArgs e)
-        {
-            lock (_consoleSync)
-            {
-                Console.WriteLine($"  {e.Trade.Time().ToLocalTime()} - {e.Trade.Symbol.PadLeft(8)} - {(e.Trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {e.Trade.Quantity.ToString("0.00000000")} @ {e.Trade.Price.ToString("0.00000000")}{(e.Trade.IsBestPriceMatch ? "*" : " ")} - [ID: {e.Trade.Id}]");
+                Console.WriteLine($"    Candlestick [{e.Candlestick.OpenTime}] - Is Final: {(e.IsFinal ? "YES" : "NO")}");
             }
         }
 
@@ -1217,7 +1234,7 @@ namespace BinanceConsoleApp
         {
             lock (_consoleSync)
             {
-                Console.WriteLine($"  {(trade.IsBuyerMaker ? "SELL" : "BUY").PadLeft(4)}  -  ID: {trade.Id} [{trade.FirstTradeId} - {trade.LastTradeId}]  -  {trade.Quantity.ToString("0.00000000")} @ {trade.Price.ToString("0.00000000")}  -  At Best: {(trade.IsBestPriceMatch ? "Yes" : "No")}  -  {trade.Timestamp}");
+                Console.WriteLine($"  {trade.Time().ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity.ToString("0.00000000")} @ {trade.Price.ToString("0.00000000")}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Timestamp}");
             }
         }
 
@@ -1225,7 +1242,7 @@ namespace BinanceConsoleApp
         {
             lock (_consoleSync)
             {
-                Console.WriteLine($"   O: {candlestick.Open.ToString("0.00000000")} | H: {candlestick.High.ToString("0.00000000")} | L: {candlestick.Low.ToString("0.00000000")} | C: {candlestick.Close.ToString("0.00000000")} | V: {candlestick.Volume.ToString("0.")}  -  {candlestick.OpenTime}");
+                Console.WriteLine($"  {candlestick.Symbol} - O: {candlestick.Open.ToString("0.00000000")} | H: {candlestick.High.ToString("0.00000000")} | L: {candlestick.Low.ToString("0.00000000")} | C: {candlestick.Close.ToString("0.00000000")} | V: {candlestick.Volume.ToString("0.")} - [{candlestick.OpenTime}]");
             }
         }
 

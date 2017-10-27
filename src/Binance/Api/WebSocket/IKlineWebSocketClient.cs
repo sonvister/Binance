@@ -26,9 +26,10 @@ namespace Binance
         /// </summary>
         /// <param name="symbol">The symbol.</param>
         /// <param name="interval">The interval.</param>
+        /// <param name="callback">An event callback (optional).</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(string symbol, KlineInterval interval, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, KlineInterval interval, Action<KlineEventArgs> callback = null, CancellationToken token = default);
 
         #endregion Public Methods
     }

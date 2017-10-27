@@ -25,9 +25,10 @@ namespace Binance
         /// or an exception occurs.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
+        /// <param name="callback"/>An event callback (optional).</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(string symbol, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, Action<AggregateTradeEventArgs> callback = null, CancellationToken token = default);
 
         #endregion Public Methods
     }

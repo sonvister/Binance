@@ -38,7 +38,7 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(string symbol, KlineInterval interval, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, KlineInterval interval, Action<KlineEventArgs> callback = null, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -54,6 +54,7 @@ namespace Binance.Api.WebSocket
                     var eventArgs = DeserializeJson(json);
                     if (eventArgs != null)
                     {
+                        callback?.Invoke(eventArgs);
                         RaiseUpdateEvent(eventArgs);
                     }
                 }

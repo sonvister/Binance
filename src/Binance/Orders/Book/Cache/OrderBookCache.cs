@@ -167,7 +167,7 @@ namespace Binance.Orders.Book.Cache
 
             _bufferBlock.LinkTo(_actionBlock);
 
-            return Client.SubscribeAsync(symbol, token);
+            return Client.SubscribeAsync(symbol, token: token);
         }
 
         #endregion Public Methods
