@@ -1,5 +1,4 @@
 ﻿using Binance;
-using Binance.Orders.Book.Cache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -9,54 +8,48 @@ using System.Threading.Tasks;
 
 namespace BinanceMarketDepth
 {
+    /// <summary>
+    /// Demonstrate how to maintain a local order book cache for a symbol
+    /// and respond to real-time order book update events.
+    /// </summary>
     class Program
     {
-        private static IConfigurationRoot _configuration;
-        private static int _orderBookLimit = 12;
-
         static async Task Main(string[] args)
         {
-            var cts = new CancellationTokenSource();
-            IOrderBookCache orderBook = null;
+            // Load configuration.
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                .Build();
 
-            try
+            // Configure services.
+            var services = new ServiceCollection()
+                .AddBinance().BuildServiceProvider();
+
+            // Get configuration settings.
+            var orderBookLimit = 12;
+            var symbol = configuration.GetSection("OrderBook")?["Symbol"] ?? Symbol.BTC_USDT;
+            try { orderBookLimit = Convert.ToInt32(configuration.GetSection("OrderBook")?["Limit"]); } catch { }
+            // NOTE: Currently the Depth WebSocket Endpoint/Client only supports maximum limit of 100.
+
+            using (var cache = services.GetService<IOrderBookCache>())
+            using (var cts = new CancellationTokenSource())
             {
-                _configuration = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                    .Build();
+                var task = Task.Run(() => cache.SubscribeAsync(symbol, (e) =>
+                {
+                    // Display the updated order book.
+                    Console.SetCursorPosition(0, 0);
+                    e.OrderBook.Print(Console.Out, orderBookLimit);
 
-                var services = new ServiceCollection()
-                    .AddBinance()
-                    .BuildServiceProvider();
-
-                var symbol = _configuration.GetSection("OrderBook")?["Symbol"] ?? Symbol.BTC_USDT;
-                try { _orderBookLimit = Convert.ToInt32(_configuration.GetSection("OrderBook")?["Limit"]); } catch { }
-
-                orderBook = services.GetService<IOrderBookCache>();
-                orderBook.Update += OnOrderBookUpdated;
-
-                var task = Task.Run(() => orderBook.SubscribeAsync(symbol, cts.Token));
+                    Console.WriteLine();
+                    Console.WriteLine("...press any key to exit.");
+                }, cts.Token));
 
                 Console.ReadKey(true); // ...press any key to exit.
-                cts?.Cancel();
+
+                cts.Cancel();
                 await task;
             }
-            catch (Exception e) { Console.WriteLine(e.Message); }
-            finally
-            {
-                orderBook?.Dispose();
-                cts?.Dispose();
-            }
-        }
-
-        private static void OnOrderBookUpdated(object sender, OrderBookUpdateEventArgs e)
-        {
-            Console.SetCursorPosition(0, 0);
-            e.OrderBook.Print(Console.Out, _orderBookLimit);
-
-            Console.WriteLine();
-            Console.WriteLine("...press any key to exit.");
         }
     }
 }

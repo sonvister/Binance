@@ -5,14 +5,14 @@ namespace Binance.Orders.Book.Cache
     /// <summary>
     /// Depth of market updated event.
     /// </summary>
-    public class OrderBookUpdateEventArgs : EventArgs
+    public class OrderBookCacheEventArgs : EventArgs
     {
         #region Public Properties
 
         /// <summary>
         /// The depth of market snapshot (order book).
         /// </summary>
-        public IOrderBook OrderBook { get; private set; }
+        public OrderBook OrderBook { get; private set; }
 
         #endregion Public Properties
 
@@ -22,7 +22,7 @@ namespace Binance.Orders.Book.Cache
         /// Constructor.
         /// </summary>
         /// <param name="orderBook"></param>
-        public OrderBookUpdateEventArgs(IOrderBook orderBook)
+        public OrderBookCacheEventArgs(OrderBook orderBook)
         {
             Throw.IfNull(orderBook);
 

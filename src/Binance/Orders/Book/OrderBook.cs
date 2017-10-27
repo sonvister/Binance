@@ -7,25 +7,25 @@ namespace Binance.Orders.Book
     /// <summary>
     /// An snapshot of the depth of market (DOM) for a specific symbol with aggregate price level quantities.
     /// </summary>
-    public class OrderBook : IOrderBook
+    public sealed class OrderBook : ICloneable
     {
         #region Public Properties
 
         /// <summary>
         /// Get the symbol.
         /// </summary>
-        public string Symbol { get; protected set; }
+        public string Symbol { get; private set; }
 
         /// <summary>
         /// Get the last update ID.
         /// </summary>
-        public virtual long LastUpdateId { get; protected set; }
+        public long LastUpdateId { get; private set; }
 
         /// <summary>
         /// Get the order book top (best ask and bid) or null
         /// if either the bid or ask is not available.
         /// </summary>
-        public virtual OrderBookTop Top
+        public OrderBookTop Top
         {
             get
             {
@@ -42,23 +42,23 @@ namespace Binance.Orders.Book
         /// <summary>
         /// Get the buyer bids in order of decreasing price.
         /// </summary>
-        public virtual IEnumerable<OrderBookPriceLevel> Bids
+        public IEnumerable<OrderBookPriceLevel> Bids
             => _bids.Select(_ => new OrderBookPriceLevel(_.Key, _.Value));
 
         /// <summary>
         /// Get the seller asks in order of increasing price.
         /// </summary>
-        public virtual IEnumerable<OrderBookPriceLevel> Asks
+        public IEnumerable<OrderBookPriceLevel> Asks
             => _asks.Select(_ => new OrderBookPriceLevel(_.Key, _.Value));
 
         #endregion Public Properties
 
-        #region Protected Fields
+        #region Private Fields
 
-        protected SortedDictionary<decimal, decimal> _bids;
-        protected SortedDictionary<decimal, decimal> _asks;
+        private SortedDictionary<decimal, decimal> _bids;
+        private SortedDictionary<decimal, decimal> _asks;
 
-        #endregion Protected Fields
+        #endregion Private Fields
 
         #region Constructors
 
@@ -70,7 +70,6 @@ namespace Binance.Orders.Book
         /// <param name="bids">The bids (price and quantity) in any sequence.</param>
         /// <param name="asks">The asks (price and quantity) in any sequence.</param>
         public OrderBook(string symbol, long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
-            : this()
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
             Throw.IfNull(bids, nameof(bids));
@@ -82,6 +81,9 @@ namespace Binance.Orders.Book
             Symbol = symbol;
             LastUpdateId = lastUpdateId;
 
+            _bids = new SortedDictionary<decimal, decimal>(new ReverseComparer<decimal>());
+            _asks = new SortedDictionary<decimal, decimal>();
+
             foreach (var bid in bids)
             {
                 _bids.Add(bid.Item1, bid.Item2);
@@ -91,15 +93,6 @@ namespace Binance.Orders.Book
             {
                 _asks.Add(ask.Item1, ask.Item2);
             }
-        }
-
-        /// <summary>
-        /// Constructor for subclass which is responsible for initializing/updating properties.
-        /// </summary>
-        protected OrderBook()
-        {
-            _bids = new SortedDictionary<decimal, decimal>(new ReverseComparer<decimal>());
-            _asks = new SortedDictionary<decimal, decimal>();
         }
 
         #endregion Constructors
@@ -185,7 +178,7 @@ namespace Binance.Orders.Book
 
         #endregion Public Methods
 
-        #region Protected Methods
+        #region Internal Methods
 
         /// <summary>
         /// Modify the order book.
@@ -193,7 +186,7 @@ namespace Binance.Orders.Book
         /// <param name="lastUpdateId"></param>
         /// <param name="bids"></param>
         /// <param name="asks"></param>
-        protected virtual void Modify(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
+        internal void Modify(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
         {
             foreach (var bid in bids)
             {
@@ -214,7 +207,7 @@ namespace Binance.Orders.Book
             LastUpdateId = lastUpdateId;
         }
 
-        #endregion Protected Methods
+        #endregion Internal Methods
 
         #region ICloneable
 
@@ -222,7 +215,7 @@ namespace Binance.Orders.Book
         /// Get a duplicate order book (deep copy).
         /// </summary>
         /// <returns></returns>
-        public virtual IOrderBook Clone(int limit = default)
+        public OrderBook Clone(int limit = default)
         {
             if (limit > 0)
                 return new OrderBook(Symbol, LastUpdateId, _bids.Take(limit).Select(_ => (_.Key, _.Value)), _asks.Take(limit).Select(_ => (_.Key, _.Value)));

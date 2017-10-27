@@ -1,9 +1,8 @@
 ﻿using Binance;
 using Binance.Accounts;
-using Binance.Api;
 using Binance.Api.WebSocket.Events;
-using Binance.Options;
 using Binance.Orders;
+using Binance.Orders.Book;
 using Binance.Orders.Book.Cache;
 using Binance.Trades;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +28,7 @@ namespace BinanceConsoleApp
         private static IBinanceApi _api;
         private static IBinanceUser _user;
 
-        private static IOrderBookCache _liveOrderBook;
+        private static IOrderBookCache _orderBookCache;
         private static IKlineWebSocketClient _klineClient;
         private static ITradesWebSocketClient _tradesClient;
         private static IUserDataWebSocketClient _userDataClient;
@@ -270,11 +269,11 @@ namespace BinanceConsoleApp
                             int.TryParse(args[2], out limit);
                         }
 
-                        IOrderBook orderBook = null;
+                        OrderBook orderBook = null;
 
                         // If live order book is active (for symbol), get cached data.
-                        if (_liveOrderBook != null && _liveOrderBook.Symbol == symbol)
-                            orderBook = _liveOrderBook.Clone(limit); // get snapshot.
+                        if (_orderBookCache != null && _orderBookCache.OrderBook.Symbol == symbol)
+                            orderBook = _orderBookCache.OrderBook; // get snapshot.
 
                         // Query order book from API, if needed.
                         if (orderBook == null)
@@ -534,10 +533,10 @@ namespace BinanceConsoleApp
 
                             _liveTokenSource = new CancellationTokenSource();
 
-                            _liveOrderBook = _serviceProvider.GetService<IOrderBookCache>();
-                            _liveOrderBook.Update += OnOrderBookUpdated;
+                            _orderBookCache = _serviceProvider.GetService<IOrderBookCache>();
+                            _orderBookCache.Update += OnOrderBookUpdated;
 
-                            _liveTask = Task.Run(() => _liveOrderBook.SubscribeAsync(symbol, _liveTokenSource.Token));
+                            _liveTask = Task.Run(() => _orderBookCache.SubscribeAsync(symbol, _liveTokenSource.Token));
 
                             lock (_consoleSync)
                             {
@@ -1130,14 +1129,14 @@ namespace BinanceConsoleApp
             if (_liveTask != null && !_liveTask.IsCompleted)
                 await _liveTask;
 
-            _liveOrderBook?.Dispose();
+            _orderBookCache?.Dispose();
             _klineClient?.Dispose();
             _tradesClient?.Dispose();
             _userDataClient?.Dispose();
 
             _liveTokenSource?.Dispose();
 
-            if (_liveOrderBook != null)
+            if (_orderBookCache != null)
             {
                 lock (_consoleSync) 
                 {
@@ -1145,7 +1144,7 @@ namespace BinanceConsoleApp
                     Console.WriteLine($"  ...live order book feed disabled.");
                 }
             }
-            _liveOrderBook = null;
+            _orderBookCache = null;
 
             if (_klineClient != null)
             {
@@ -1181,7 +1180,7 @@ namespace BinanceConsoleApp
             _liveTask = null;
         }
 
-        private static void OnOrderBookUpdated(object sender, OrderBookUpdateEventArgs e)
+        private static void OnOrderBookUpdated(object sender, OrderBookCacheEventArgs e)
         {
             // NOTE: object 'sender' is IOrderBookCache (live order book)...
             //       e.OrderBook is a clone/snapshot of the live order book.

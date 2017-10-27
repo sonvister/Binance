@@ -1,6 +1,6 @@
 ﻿using Binance.Api.WebSocket;
 
-namespace Binance.Options
+namespace Binance
 {
     public sealed class UserDataWebSocketClientOptions
     {

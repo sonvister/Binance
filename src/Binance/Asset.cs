@@ -1,5 +1,8 @@
 ﻿namespace Binance
 {
+    /// <summary>
+    /// Defined assets (for convenience/reference only).
+    /// </summary>
     public static class Asset
     {
         public static readonly string BTC = nameof(BTC);

@@ -9,7 +9,7 @@ namespace Binance
         /// </summary>
         /// <param name="orderBook"></param>
         /// <returns></returns>
-        public static OrderBookPriceLevel Ask(this IOrderBook orderBook)
+        public static OrderBookPriceLevel Ask(this OrderBook orderBook)
         {
             Throw.IfNull(orderBook, nameof(orderBook));
 
@@ -21,7 +21,7 @@ namespace Binance
         /// </summary>
         /// <param name="orderBook"></param>
         /// <returns></returns>
-        public static OrderBookPriceLevel Bid(this IOrderBook orderBook)
+        public static OrderBookPriceLevel Bid(this OrderBook orderBook)
         {
             Throw.IfNull(orderBook, nameof(orderBook));
 
@@ -33,7 +33,7 @@ namespace Binance
         /// </summary>
         /// <param name="orderBook"></param>
         /// <returns></returns>
-        public static decimal Spread(this IOrderBook orderBook)
+        public static decimal Spread(this OrderBook orderBook)
         {
             Throw.IfNull(orderBook, nameof(orderBook));
 
@@ -57,7 +57,7 @@ namespace Binance
         /// </summary>
         /// <param name="orderBook"></param>
         /// <returns></returns>
-        public static decimal MidMarketPrice(this IOrderBook orderBook)
+        public static decimal MidMarketPrice(this OrderBook orderBook)
         {
             Throw.IfNull(orderBook, nameof(orderBook));
 

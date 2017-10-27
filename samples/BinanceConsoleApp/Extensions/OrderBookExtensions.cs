@@ -1,4 +1,5 @@
 ﻿using Binance;
+using Binance.Orders.Book;
 using System;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace BinanceConsoleApp
         /// <param name="orderBook"></param>
         /// <param name="writer"></param>
         /// <param name="limit"></param>
-        public static void Print(this IOrderBook orderBook, TextWriter writer, int limit = 25)
+        public static void Print(this OrderBook orderBook, TextWriter writer, int limit = 25)
         {
             if (orderBook == null)
                 throw new ArgumentNullException(nameof(orderBook));

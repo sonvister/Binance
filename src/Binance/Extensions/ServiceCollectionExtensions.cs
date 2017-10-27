@@ -1,4 +1,5 @@
-﻿using Binance.Api;
+﻿using Binance.Accounts.Cache;
+using Binance.Api;
 using Binance.Api.Json;
 using Binance.Api.WebSocket;
 using Binance.Orders.Book.Cache;
@@ -11,6 +12,7 @@ namespace Binance
         public static IServiceCollection AddBinance(this IServiceCollection services)
         {
             // Accounts
+            services.AddTransient<IAccountCache, AccountCache>();
 
             // API
             services.AddSingleton<IBinanceJsonApi, BinanceJsonApi>();

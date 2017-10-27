@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Binance.Api
+namespace Binance
 {
     /// <summary>
     /// Binance user <see cref="IBinanceUser"/> implementation.

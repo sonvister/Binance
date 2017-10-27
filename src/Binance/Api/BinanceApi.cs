@@ -475,7 +475,7 @@ namespace Binance.Api
                         entry["locked"].Value<decimal>()));
                 }
 
-                return new Account(commissions, status, balances);
+                return new Account(user, commissions, status, balances);
             }
             catch (Exception e)
             {

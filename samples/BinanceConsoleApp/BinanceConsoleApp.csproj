@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Examples\AccountBalancesExample.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Binance" Version="0.1.6-alpha" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.0.0" />
@@ -28,6 +32,14 @@
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Examples\AccountBalancesExample.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Binance\Binance.csproj" />
   </ItemGroup>
   
   <ItemGroup>

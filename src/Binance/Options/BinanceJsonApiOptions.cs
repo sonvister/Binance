@@ -1,6 +1,6 @@
 ﻿using Binance.Api.Json;
 
-namespace Binance.Options
+namespace Binance
 {
     public sealed class BinanceJsonApiOptions
     {

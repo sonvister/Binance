@@ -1,6 +1,5 @@
 ﻿using Binance.Accounts;
 using Binance.Api.WebSocket.Events;
-using Binance.Options;
 using Binance.Orders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -147,7 +146,7 @@ namespace Binance.Api.WebSocket
                             entry["l"].Value<decimal>())); // locked amount
                     }
 
-                    var eventArgs = new AccountUpdateEventArgs(eventTime, new Account(commissions, status, balances));
+                    var eventArgs = new AccountUpdateEventArgs(eventTime, new Account(User, commissions, status, balances));
 
                     callback?.Invoke(eventArgs);
                     RaiseAccountUpdateEvent(eventArgs);

@@ -1,5 +1,4 @@
 ﻿using Binance.Accounts;
-using Binance.Options;
 using Binance.Orders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

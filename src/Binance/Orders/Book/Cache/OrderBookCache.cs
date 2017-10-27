@@ -3,66 +3,23 @@ using Binance.Api.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace Binance.Orders.Book.Cache
 {
-    public class OrderBookCache : OrderBook, IOrderBookCache
+    public class OrderBookCache : IOrderBookCache
     {
         #region Public Events
 
-        public event EventHandler<OrderBookUpdateEventArgs> Update;
+        public event EventHandler<OrderBookCacheEventArgs> Update;
 
         #endregion Public Events
 
         #region Public Properties
 
-        /// <summary>
-        /// Get last update ID (synchronized).
-        /// </summary>
-        public override long LastUpdateId
-        {
-            get
-            {
-                lock (_sync) return base.LastUpdateId;
-            }
-        }
-
-        /// <summary>
-        /// Get order book top (synchronized) if availabie, otherwise null.
-        /// </summary>
-        public override OrderBookTop Top
-        {
-            get
-            {
-                lock (_sync) return LastUpdateId > 0 ? base.Top : null;
-            }
-        }
-
-        /// <summary>
-        /// Get bids (synchronized) if available, otherwise empty enumerable.
-        /// </summary>
-        public override IEnumerable<OrderBookPriceLevel> Bids
-        {
-            get
-            {
-                lock (_sync) return LastUpdateId > 0 ? base.Bids : new OrderBookPriceLevel[] { };
-            }
-        }
-
-        /// <summary>
-        /// Get asks (synchronized) if available, otherwise empty enumerable.
-        /// </summary>
-        public override IEnumerable<OrderBookPriceLevel> Asks
-        {
-            get
-            {
-                lock (_sync) return LastUpdateId > 0 ? base.Asks : new OrderBookPriceLevel[] { };
-            }
-        }
+        public OrderBook OrderBook => _orderBookClone;
 
         public IDepthWebSocketClient Client { get; private set; }
 
@@ -79,9 +36,10 @@ namespace Binance.Orders.Book.Cache
         private BufferBlock<DepthUpdateEventArgs> _bufferBlock;
         private ActionBlock<DepthUpdateEventArgs> _actionBlock;
 
-        private Action<OrderBookUpdateEventArgs> _callback;
+        private Action<OrderBookCacheEventArgs> _callback;
 
-        private readonly object _sync = new object();
+        private OrderBook _orderBook;
+        private OrderBook _orderBookClone;
 
         #endregion Private Fields
 
@@ -107,11 +65,9 @@ namespace Binance.Orders.Book.Cache
         public Task SubscribeAsync(string symbol, CancellationToken token = default)
             => SubscribeAsync(symbol, null, token);
 
-        public Task SubscribeAsync(string symbol, Action<OrderBookUpdateEventArgs> callback, CancellationToken token = default)
+        public Task SubscribeAsync(string symbol, Action<OrderBookCacheEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
-
-            Symbol = symbol.FormatSymbol();
 
             _callback = callback;
 
@@ -128,40 +84,31 @@ namespace Binance.Orders.Book.Cache
                 try
                 {
                     // If order book has not been initialized.
-                    if (LastUpdateId == 0)
+                    if (_orderBook == null)
                     {
-                        var orderBook = await _api.GetOrderBookAsync(Symbol)
+                        _orderBook = await _api.GetOrderBookAsync(symbol, token: token)
                             .ConfigureAwait(false);
-
-                        // Modify this order book cache.
-                        if (orderBook != null)
-                        {
-                            Symbol = orderBook.Symbol;
-                            Modify(orderBook.LastUpdateId, orderBook.Bids.Select(b => (b.Price, b.Quantity)), orderBook.Asks.Select(a => (a.Price, a.Quantity)));
-                        }
                     }
 
-                    if (@event.FirstUpdateId > LastUpdateId + 1)
+                    // If there is a gap in events (order book out-of-sync).
+                    if (@event.FirstUpdateId > _orderBook.LastUpdateId + 1)
                     {
-                        _logger?.LogError($"{nameof(DepthWebSocketClient)}: Synchronization failure (first update ID > last update ID + 1).");
+                        _logger?.LogError($"{nameof(OrderBookCache)}: Synchronization failure (first update ID > last update ID + 1).");
 
                         await Task.Delay(1000)
                             .ConfigureAwait(false); // wait a bit.
 
-                        var orderBook = await _api.GetOrderBookAsync(Symbol)
+                        _orderBook = await _api.GetOrderBookAsync(symbol)
                             .ConfigureAwait(false);
-
-                        if (orderBook != null)
-                            Modify(orderBook.LastUpdateId, orderBook.Bids.Select(b => (b.Price, b.Quantity)), orderBook.Asks.Select(a => (a.Price, a.Quantity)));
                     }
-                    // NOTE: This does not handle re-synchronizing if still unsynchronized...
+                    // NOTE: This does not handle re-synchronizing if still out-of-sync...
 
                     Modify(@event.LastUpdateId, @event.Bids, @event.Asks);
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, $"{nameof(DepthWebSocketClient)}: \"{e.Message}\"");
+                    _logger?.LogError(e, $"{nameof(OrderBookCache)}: \"{e.Message}\"");
                 }
             }, new ExecutionDataflowBlockOptions()
             {
@@ -182,10 +129,10 @@ namespace Binance.Orders.Book.Cache
         #region Protected Methods
 
         /// <summary>
-        /// Raise depth of market update event.
+        /// Raise order book cache update event.
         /// </summary>
         /// <param name="args"></param>
-        protected virtual void RaiseUpdateEvent(OrderBookUpdateEventArgs args)
+        protected virtual void RaiseUpdateEvent(OrderBookCacheEventArgs args)
         {
             Throw.IfNull(args, nameof(args));
 
@@ -203,17 +150,16 @@ namespace Binance.Orders.Book.Cache
         /// <param name="lastUpdateId"></param>
         /// <param name="bids"></param>
         /// <param name="asks"></param>
-        protected override void Modify(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
+        protected virtual void Modify(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
         {
-            if (lastUpdateId < LastUpdateId)
+            if (lastUpdateId < _orderBook.LastUpdateId)
                 return;
 
-            lock (_sync)
-            {
-                Modify(lastUpdateId, bids, asks);
-            }
+            _orderBook.Modify(lastUpdateId, bids, asks);
 
-            var eventArgs = new OrderBookUpdateEventArgs(Clone());
+            _orderBookClone = _orderBook.Clone();
+
+            var eventArgs = new OrderBookCacheEventArgs(_orderBookClone);
 
             _callback?.Invoke(eventArgs);
             RaiseUpdateEvent(eventArgs);
@@ -224,9 +170,9 @@ namespace Binance.Orders.Book.Cache
         #region Private Methods
 
         /// <summary>
-        /// <see cref="DepthWebSocketClient"/> event handler.
+        /// <see cref="IDepthWebSocketClient"/> event handler.
         /// </summary>
-        /// <param name="sender">The <see cref="DepthWebSocketClient"/>.</param>
+        /// <param name="sender">The <see cref="IDepthWebSocketClient"/>.</param>
         /// <param name="event">The event arguments.</param>
         private void OnDepthUpdate(object sender, DepthUpdateEventArgs @event)
         {
@@ -249,18 +195,6 @@ namespace Binance.Orders.Book.Cache
         }
 
         #endregion Private Methods
-
-        #region ICloneable
-
-        public override IOrderBook Clone(int limit = default)
-        {
-            lock (_sync)
-            {
-                return base.Clone(limit);
-            }
-        }
-
-        #endregion ICloneable
 
         #region IDisposable
 

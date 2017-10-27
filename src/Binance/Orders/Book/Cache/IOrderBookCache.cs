@@ -1,4 +1,5 @@
-﻿using Binance.Orders.Book.Cache;
+﻿using Binance.Orders.Book;
+using Binance.Orders.Book.Cache;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,19 +9,24 @@ namespace Binance
     /// <summary>
     /// A live depth of market with update events to maintain an order book cache.
     /// </summary>
-    public interface IOrderBookCache : IOrderBook, IDisposable
+    public interface IOrderBookCache : IDisposable
     {
         #region Public Events
 
         /// <summary>
-        /// Order book updated event.
+        /// Order book cache update event.
         /// </summary>
-        event EventHandler<OrderBookUpdateEventArgs> Update;
+        event EventHandler<OrderBookCacheEventArgs> Update;
 
         #endregion Public Events
 
         #region Public Properties
 
+        /// <summary>
+        /// The order book.
+        /// </summary>
+        OrderBook OrderBook { get; }
+        
         /// <summary>
         /// The client that provides order book synchronization.
         /// </summary>
@@ -52,7 +58,7 @@ namespace Binance
         /// <param name="symbol">The symbol.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(string symbol, Action<OrderBookUpdateEventArgs> callback, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, Action<OrderBookCacheEventArgs> callback, CancellationToken token = default);
 
         #endregion Public Methods
     }
