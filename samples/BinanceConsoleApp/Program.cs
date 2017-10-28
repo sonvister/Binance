@@ -1,6 +1,7 @@
 ﻿using Binance;
 using Binance.Accounts;
 using Binance.Api.WebSocket.Events;
+using Binance.Candlesticks;
 using Binance.Orders;
 using Binance.Orders.Book;
 using Binance.Orders.Book.Cache;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -29,8 +31,8 @@ namespace BinanceConsoleApp
         private static IBinanceUser _user;
 
         private static IOrderBookCache _orderBookCache;
-        private static IKlineWebSocketClient _klineClient;
-        private static ITradesWebSocketClient _tradesClient;
+        private static ICandlesticksCache _klineCache;
+        private static IAggregateTradesCache _tradesCache;
         private static IUserDataWebSocketClient _userDataClient;
 
         private static Task _liveTask;
@@ -273,7 +275,7 @@ namespace BinanceConsoleApp
 
                         // If live order book is active (for symbol), get cached data.
                         if (_orderBookCache != null && _orderBookCache.OrderBook.Symbol == symbol)
-                            orderBook = _orderBookCache.OrderBook; // get snapshot.
+                            orderBook = _orderBookCache.OrderBook; // get local cache.
 
                         // Query order book from API, if needed.
                         if (orderBook == null)
@@ -373,7 +375,14 @@ namespace BinanceConsoleApp
                             int.TryParse(args[2], out limit);
                         }
 
-                        var trades = await _api.GetAggregateTradesAsync(symbol, limit: limit, token: token);
+                        IEnumerable<AggregateTrade> trades = null;
+
+                        // If live order book is active (for symbol), get cached data.
+                        if (_tradesCache != null && _tradesCache.Trades.FirstOrDefault()?.Symbol == symbol)
+                            trades = _tradesCache.Trades.Reverse().Take(limit); // get local cache.
+
+                        if (trades == null)
+                            trades = (await _api.GetAggregateTradesAsync(symbol, limit: limit, token: token)).Reverse();
 
                         lock (_consoleSync)
                         {
@@ -451,7 +460,14 @@ namespace BinanceConsoleApp
                             int.TryParse(args[3], out limit);
                         }
 
-                        var candlesticks = await _api.GetCandlesticksAsync(symbol, interval, limit, token: token);
+                        IEnumerable<Candlestick> candlesticks = null;
+
+                        // If live order book is active (for symbol), get cached data.
+                        if (_klineCache != null && _klineCache.Candlesticks.FirstOrDefault()?.Symbol == symbol)
+                            candlesticks = _klineCache.Candlesticks.Reverse().Take(limit); // get local cache.
+
+                        if (candlesticks == null)
+                            candlesticks = await _api.GetCandlesticksAsync(symbol, interval, limit, token: token);
 
                         lock (_consoleSync)
                         {
@@ -564,10 +580,10 @@ namespace BinanceConsoleApp
 
                             _liveTokenSource = new CancellationTokenSource();
 
-                            _klineClient = _serviceProvider.GetService<IKlineWebSocketClient>();
-                            _klineClient.Kline += OnKlineEvent;
+                            _klineCache = _serviceProvider.GetService<ICandlesticksCache>();
+                            _klineCache.Client.Kline += OnKlineEvent;
 
-                            _liveTask = Task.Run(() => _klineClient.SubscribeAsync(symbol, interval, (e) => { Display(e.Candlestick); }, _liveTokenSource.Token));
+                            _liveTask = Task.Run(() => _klineCache.SubscribeAsync(symbol, interval, (e) => { Display(e.Candlesticks.Last()); }, token: _liveTokenSource.Token));
 
                             lock (_consoleSync)
                             {
@@ -588,9 +604,9 @@ namespace BinanceConsoleApp
 
                             _liveTokenSource = new CancellationTokenSource();
 
-                            _tradesClient = _serviceProvider.GetService<ITradesWebSocketClient>();
+                            _tradesCache = _serviceProvider.GetService<IAggregateTradesCache>();
 
-                            _liveTask = Task.Run(() => _tradesClient.SubscribeAsync(symbol, (e) => { Display(e.Trade); }, _liveTokenSource.Token));
+                            _liveTask = Task.Run(() => _tradesCache.SubscribeAsync(symbol, (e) => { Display(e.LatestTrade()); }, token: _liveTokenSource.Token));
 
                             lock (_consoleSync)
                             {
@@ -1130,8 +1146,8 @@ namespace BinanceConsoleApp
                 await _liveTask;
 
             _orderBookCache?.Dispose();
-            _klineClient?.Dispose();
-            _tradesClient?.Dispose();
+            _tradesCache?.Dispose();
+            _klineCache?.Dispose();
             _userDataClient?.Dispose();
 
             _liveTokenSource?.Dispose();
@@ -1146,7 +1162,7 @@ namespace BinanceConsoleApp
             }
             _orderBookCache = null;
 
-            if (_klineClient != null)
+            if (_klineCache != null)
             {
                 lock (_consoleSync)
                 {
@@ -1154,9 +1170,9 @@ namespace BinanceConsoleApp
                     Console.WriteLine($"  ...live kline feed disabled.");
                 }
             }
-            _klineClient = null;
+            _klineCache = null;
 
-            if (_tradesClient != null)
+            if (_tradesCache != null)
             {
                 lock (_consoleSync)
                 {
@@ -1164,7 +1180,7 @@ namespace BinanceConsoleApp
                     Console.WriteLine($"  ...live trades feed disabled.");
                 }
             }
-            _tradesClient = null;
+            _tradesCache = null;
 
             if (_userDataClient != null)
             {
@@ -1196,7 +1212,7 @@ namespace BinanceConsoleApp
         {
             lock (_consoleSync)
             {
-                Console.WriteLine($"    Candlestick [{e.Candlestick.OpenTime}] - Is Final: {(e.IsFinal ? "YES" : "NO")}");
+                Console.WriteLine($" Candlestick [{e.Candlestick.OpenTime}] - Is Final: {(e.IsFinal ? "YES" : "NO")}");
             }
         }
 
@@ -1241,7 +1257,7 @@ namespace BinanceConsoleApp
         {
             lock (_consoleSync)
             {
-                Console.WriteLine($"  {candlestick.Symbol} - O: {candlestick.Open.ToString("0.00000000")} | H: {candlestick.High.ToString("0.00000000")} | L: {candlestick.Low.ToString("0.00000000")} | C: {candlestick.Close.ToString("0.00000000")} | V: {candlestick.Volume.ToString("0.")} - [{candlestick.OpenTime}]");
+                Console.WriteLine($"  {candlestick.Symbol} - O: {candlestick.Open.ToString("0.00000000")} | H: {candlestick.High.ToString("0.00000000")} | L: {candlestick.Low.ToString("0.00000000")} | C: {candlestick.Close.ToString("0.00000000")} | V: {candlestick.Volume.ToString("0.00")} - [{candlestick.OpenTime}]");
             }
         }
 

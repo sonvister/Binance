@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinanceMarketDepth", "sampl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinanceTradeHistory", "samples\BinanceTradeHistory\BinanceTradeHistory.csproj", "{2AF6EC27-BFBF-4949-8F38-46FEFEE2B512}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinancePriceChart", "samples\BinancePriceChart\BinancePriceChart.csproj", "{535586E1-7303-4C9C-9139-6B36EF1D22AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{2AF6EC27-BFBF-4949-8F38-46FEFEE2B512}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AF6EC27-BFBF-4949-8F38-46FEFEE2B512}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AF6EC27-BFBF-4949-8F38-46FEFEE2B512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{535586E1-7303-4C9C-9139-6B36EF1D22AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{535586E1-7303-4C9C-9139-6B36EF1D22AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{535586E1-7303-4C9C-9139-6B36EF1D22AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{535586E1-7303-4C9C-9139-6B36EF1D22AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +63,7 @@ Global
 		{840727F6-90BB-48E8-AEF9-C40C58B1D5C1} = {925FB95E-D498-43BC-9458-5FFCDB79693D}
 		{DBD08B7C-969D-4B55-84A4-9E869878DC66} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
 		{2AF6EC27-BFBF-4949-8F38-46FEFEE2B512} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
+		{535586E1-7303-4C9C-9139-6B36EF1D22AE} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1D98031F-42D5-47D4-8F4E-D2B81629EEA4}

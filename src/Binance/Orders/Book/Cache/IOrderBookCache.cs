@@ -23,7 +23,7 @@ namespace Binance
         #region Public Properties
 
         /// <summary>
-        /// The order book.
+        /// The order book. Can be null if not yet synchronized or out-of-sync.
         /// </summary>
         OrderBook OrderBook { get; }
         

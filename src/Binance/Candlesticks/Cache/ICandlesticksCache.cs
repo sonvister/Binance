@@ -1,4 +1,4 @@
-﻿using Binance.Trades;
+﻿using Binance.Candlesticks;
 using Binance.Trades.Cache;
 using System;
 using System.Collections.Generic;
@@ -7,28 +7,28 @@ using System.Threading.Tasks;
 
 namespace Binance
 {
-    public interface IAggregateTradesCache : IDisposable
+    public interface ICandlesticksCache : IDisposable
     {
         #region Public Events
 
         /// <summary>
-        /// Aggregate trades update event.
+        /// Candlesticks update event.
         /// </summary>
-        event EventHandler<AggregateTradesCacheEventArgs> Update;
+        event EventHandler<CandlesticksCacheEventArgs> Update;
 
         #endregion Public Events
 
         #region Public Properties
 
         /// <summary>
-        /// The latest trades. Can be empty if not yet synchronized or out-of-sync.
+        /// The candlesticks. Can be empty if not yet synchronized or out-of-sync.
         /// </summary>
-        IEnumerable<AggregateTrade> Trades { get; }
+        IEnumerable<Candlestick> Candlesticks { get; }
 
         /// <summary>
-        /// The client that provides trade information.
+        /// The client that provides candlestick information.
         /// </summary>
-        ITradesWebSocketClient Client { get; }
+        IKlineWebSocketClient Client { get; }
 
         #endregion Public Properties
 
@@ -38,20 +38,22 @@ namespace Binance
         /// 
         /// </summary>
         /// <param name="symbol"></param>
+        /// <param name="interval"></param>
         /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SubscribeAsync(string symbol, int limit = default, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, KlineInterval interval, int limit = default, CancellationToken token = default);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="symbol"></param>
+        /// <param name="interval"></param>
         /// <param name="callback"></param>
         /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SubscribeAsync(string symbol, Action<AggregateTradesCacheEventArgs> callback, int limit = default, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, KlineInterval interval, Action<CandlesticksCacheEventArgs> callback, int limit = default, CancellationToken token = default);
 
         #endregion Public Methods
     }

@@ -20,6 +20,9 @@ namespace Binance
             services.AddTransient<IRateLimiter, RateLimiter>();
             services.AddSingleton<IBinanceApi, BinanceApi>();
 
+            // Candlesticks
+            services.AddTransient<ICandlesticksCache, CandlesticksCache>();
+
             // Orders
             services.AddTransient<IOrderBookCache, OrderBookCache>();
 

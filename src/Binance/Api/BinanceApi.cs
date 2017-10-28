@@ -1,5 +1,6 @@
 ﻿using Binance.Accounts;
 using Binance.Api.Json;
+using Binance.Candlesticks;
 using Binance.Orders;
 using Binance.Orders.Book;
 using Binance.Trades;

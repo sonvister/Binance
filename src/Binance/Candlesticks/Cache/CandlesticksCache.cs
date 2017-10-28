@@ -1,4 +1,5 @@
 ﻿using Binance.Api.WebSocket.Events;
+using Binance.Candlesticks;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,22 +10,22 @@ using System.Threading.Tasks.Dataflow;
 
 namespace Binance.Trades.Cache
 {
-    public class AggregateTradesCache : IAggregateTradesCache
+    public class CandlesticksCache : ICandlesticksCache
     {
         #region Public Events
 
-        public event EventHandler<AggregateTradesCacheEventArgs> Update;
+        public event EventHandler<CandlesticksCacheEventArgs> Update;
 
         #endregion Public Events
 
         #region Public Properties
 
-        public IEnumerable<AggregateTrade> Trades
+        public IEnumerable<Candlestick> Candlesticks
         {
-            get { lock (_sync) { return _trades?.ToArray() ?? new AggregateTrade[] { }; } }
+            get { lock (_sync) { return _candlesticks?.ToArray() ?? new Candlestick[] { }; } }
         }
 
-        public ITradesWebSocketClient Client { get; private set; }
+        public IKlineWebSocketClient Client { get; private set; }
 
         #endregion Public Properties
 
@@ -32,16 +33,16 @@ namespace Binance.Trades.Cache
 
         private IBinanceApi _api;
 
-        private ILogger<AggregateTradesCache> _logger;
+        private ILogger<CandlesticksCache> _logger;
 
         private bool _leaveWebSocketClientOpen;
 
-        private BufferBlock<AggregateTradeEventArgs> _bufferBlock;
-        private ActionBlock<AggregateTradeEventArgs> _actionBlock;
+        private BufferBlock<KlineEventArgs> _bufferBlock;
+        private ActionBlock<KlineEventArgs> _actionBlock;
 
-        private Action<AggregateTradesCacheEventArgs> _callback;
+        private Action<CandlesticksCacheEventArgs> _callback;
 
-        private Queue<AggregateTrade> _trades;
+        private List<Candlestick> _candlesticks;
 
         private readonly object _sync = new object();
 
@@ -49,7 +50,7 @@ namespace Binance.Trades.Cache
 
         #region Constructors
 
-        public AggregateTradesCache(IBinanceApi api, ITradesWebSocketClient client, bool leaveWebSocketClientOpen = false, ILogger<AggregateTradesCache> logger = null)
+        public CandlesticksCache(IBinanceApi api, IKlineWebSocketClient client, bool leaveWebSocketClientOpen = false, ILogger<CandlesticksCache> logger = null)
         {
             Throw.IfNull(api, nameof(api));
             Throw.IfNull(client, nameof(client));
@@ -58,26 +59,26 @@ namespace Binance.Trades.Cache
             _logger = logger;
 
             Client = client;
-            Client.AggregateTrade += OnAggregateTrade;
+            Client.Kline += OnKline;
             _leaveWebSocketClientOpen = leaveWebSocketClientOpen;
 
-            _trades = new Queue<AggregateTrade>();
+            _candlesticks = new List<Candlestick>();
         }
 
         #endregion Constructors
 
         #region Public Methods
 
-        public Task SubscribeAsync(string symbol, int limit = default, CancellationToken token = default)
-            => SubscribeAsync(symbol, null, limit, token);
+        public Task SubscribeAsync(string symbol, KlineInterval interval, int limit = default, CancellationToken token = default)
+            => SubscribeAsync(symbol, interval, null, limit, token);
 
-        public Task SubscribeAsync(string symbol, Action<AggregateTradesCacheEventArgs> callback, int limit = default, CancellationToken token = default)
+        public Task SubscribeAsync(string symbol, KlineInterval interval, Action<CandlesticksCacheEventArgs> callback, int limit = default, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             _callback = callback;
 
-            _bufferBlock = new BufferBlock<AggregateTradeEventArgs>(new DataflowBlockOptions()
+            _bufferBlock = new BufferBlock<KlineEventArgs>(new DataflowBlockOptions()
             {
                 EnsureOrdered = true,
                 CancellationToken = token,
@@ -85,50 +86,25 @@ namespace Binance.Trades.Cache
                 MaxMessagesPerTask = DataflowBlockOptions.Unbounded,
             });
 
-            _actionBlock = new ActionBlock<AggregateTradeEventArgs>(async @event =>
+            _actionBlock = new ActionBlock<KlineEventArgs>(async @event =>
             {
                 try
                 {
-                    if (_trades.Count == 0)
+                    if (_candlesticks.Count == 0)
                     {
-                        await SynchronizeTradesAsync(symbol, limit, token)
+                        await SynchronizeCandlesticksAsync(symbol, interval, limit, token)
                             .ConfigureAwait(false);
                     }
 
-                    // If there is a gap in the trades received (out-of-sync).
-                    if (@event.Trade.Id > _trades.Last().Id + 1)
-                    {
-                        _logger?.LogError($"{nameof(AggregateTradesCache)}: Synchronization failure (trade ID > last trade ID + 1).");
-
-                        await Task.Delay(1000)
-                            .ConfigureAwait(false); // wait a bit.
-
-                        // Re-synchronize.
-                        await SynchronizeTradesAsync(symbol, limit, token)
-                            .ConfigureAwait(false);
-
-                        // If still out-of-sync.
-                        if (@event.Trade.Id > _trades.Last().Id + 1)
-                        {
-                            _logger?.LogError($"{nameof(AggregateTradesCache)}: Re-Synchronization failure (trade ID > last trade ID + 1).");
-
-                            // Reset and wait for next event.
-                            lock (_sync) _trades.Clear();
-                            return;
-                        }
-                    }
-
-                    // If the trade exists in the queue already (occurs after synchronization).
-                    if (_trades.Any(t => t.Id == @event.Trade.Id))
-                        return;
+                    var candlestick = _candlesticks.FirstOrDefault(c => c.OpenTime == @event.Candlestick.OpenTime);
 
                     lock (_sync)
                     {
-                        _trades.Dequeue();
-                        _trades.Enqueue(@event.Trade);
+                        _candlesticks.Remove(candlestick ?? _candlesticks.First());
+                        _candlesticks.Add(@event.Candlestick);
                     }
 
-                    var eventArgs = new AggregateTradesCacheEventArgs(_trades.ToArray());
+                    var eventArgs = new CandlesticksCacheEventArgs(_candlesticks.ToArray());
 
                     _callback?.Invoke(eventArgs);
                     RaiseUpdateEvent(eventArgs);
@@ -136,7 +112,7 @@ namespace Binance.Trades.Cache
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, $"{nameof(AggregateTradesCache)}: \"{e.Message}\"");
+                    _logger?.LogError(e, $"{nameof(CandlesticksCache)}: \"{e.Message}\"");
                 }
             }, new ExecutionDataflowBlockOptions()
             {
@@ -149,7 +125,7 @@ namespace Binance.Trades.Cache
 
             _bufferBlock.LinkTo(_actionBlock);
 
-            return Client.SubscribeAsync(symbol, token);
+            return Client.SubscribeAsync(symbol, interval, token);
         }
 
         #endregion Public Methods
@@ -157,17 +133,17 @@ namespace Binance.Trades.Cache
         #region Protected Methods
 
         /// <summary>
-        /// Raise aggregate trades cache update event.
+        /// Raise candlesticks cache update event.
         /// </summary>
         /// <param name="args"></param>
-        protected virtual void RaiseUpdateEvent(AggregateTradesCacheEventArgs args)
+        protected virtual void RaiseUpdateEvent(CandlesticksCacheEventArgs args)
         {
             Throw.IfNull(args, nameof(args));
 
             try { Update?.Invoke(this, args); }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(AggregateTradesCache)}.{nameof(RaiseUpdateEvent)}");
+                LogException(e, $"{nameof(CandlesticksCache)}.{nameof(RaiseUpdateEvent)}");
                 throw;
             }
         }
@@ -180,30 +156,31 @@ namespace Binance.Trades.Cache
         /// Get latest trades.
         /// </summary>
         /// <param name="symbol"></param>
+        /// <param name="interval"></param>
         /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        private async Task SynchronizeTradesAsync(string symbol, int limit, CancellationToken token)
+        private async Task SynchronizeCandlesticksAsync(string symbol, KlineInterval interval, int limit, CancellationToken token)
         {
-            var trades = await _api.GetAggregateTradesAsync(symbol, limit: limit, token: token)
+            var candlesticks = await _api.GetCandlesticksAsync(symbol, interval, limit: limit, token: token)
                 .ConfigureAwait(false);
 
             lock (_sync)
             {
-                _trades.Clear();
-                foreach (var trade in trades)
+                _candlesticks.Clear();
+                foreach (var candlestick in candlesticks)
                 {
-                    _trades.Enqueue(trade);
+                    _candlesticks.Add(candlestick);
                 }
             }
         }
 
         /// <summary>
-        /// <see cref="ITradesWebSocketClient"/> event handler.
+        /// <see cref="IKlineWebSocketClient"/> event handler.
         /// </summary>
-        /// <param name="sender">The <see cref="ITradesWebSocketClient"/>.</param>
+        /// <param name="sender">The <see cref="IKlineWebSocketClient"/>.</param>
         /// <param name="event">The event arguments.</param>
-        private void OnAggregateTrade(object sender, AggregateTradeEventArgs @event)
+        private void OnKline(object sender, KlineEventArgs @event)
         {
             // Post event to buffer block (queue).
             _bufferBlock.Post(@event);
@@ -236,7 +213,7 @@ namespace Binance.Trades.Cache
 
             if (disposing)
             {
-                Client.AggregateTrade -= OnAggregateTrade;
+                Client.Kline -= OnKline;
 
                 if (!_leaveWebSocketClientOpen)
                 {

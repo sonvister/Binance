@@ -1,4 +1,5 @@
 ﻿using Binance.Api.WebSocket.Events;
+using Binance.Candlesticks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;

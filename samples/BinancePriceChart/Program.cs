@@ -1,5 +1,5 @@
 ﻿using Binance;
-using Binance.Trades;
+using Binance.Candlesticks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -33,19 +33,21 @@ namespace BinanceTradeHistory
 
                 // Get configuration settings.
                 var limit = 25;
-                var symbol = configuration.GetSection("TradeHistory")?["Symbol"] ?? Symbol.BTC_USDT;
-                try { limit = Convert.ToInt32(configuration.GetSection("TradeHistory")?["Limit"]); } catch { }
+                var symbol = configuration.GetSection("PriceChart")?["Symbol"] ?? Symbol.BTC_USDT;
+                try { limit = Convert.ToInt32(configuration.GetSection("PriceChart")?["Limit"]); } catch { }
 
                 using (var api = services.GetService<IBinanceApi>())
-                using (var cache = services.GetService<IAggregateTradesCache>())
+                using (var cache = services.GetService<ICandlesticksCache>())
                 using (var cts = new CancellationTokenSource())
                 {
+                    var interval = KlineInterval.Minute;
+
                     // Query and display the latest aggregate trades for the symbol.
-                    Display(await api.GetAggregateTradesAsync(symbol, limit: limit, token: cts.Token));
+                    Display(await api.GetCandlesticksAsync(symbol, interval, limit: limit, token: cts.Token));
 
                     // Monitor latest aggregate trades and display updates in real-time.
                     var task = Task.Run(() =>
-                        cache.SubscribeAsync(symbol, (e) => Display(e.Trades),limit, cts.Token));
+                        cache.SubscribeAsync(symbol, interval, (e) => Display(e.Candlesticks), limit, cts.Token));
 
                     Console.ReadKey(true); // ...press any key to exit.
 
@@ -56,12 +58,12 @@ namespace BinanceTradeHistory
             catch (Exception e) { Console.WriteLine(e.Message); }
         }
 
-        private static void Display(IEnumerable<AggregateTrade> trades)
+        private static void Display(IEnumerable<Candlestick> candlesticks)
         {
             Console.SetCursorPosition(0, 0);
-            foreach (var trade in trades.Reverse())
+            foreach (var candlestick in candlesticks.Reverse())
             {
-                Console.WriteLine($"  {trade.Time().ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity.ToString("0.00000000")} @ {trade.Price.ToString("0.00000000")}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Timestamp}           ");
+                Console.WriteLine($"  {candlestick.Symbol} - O: {candlestick.Open.ToString("0.00000000")} | H: {candlestick.High.ToString("0.00000000")} | L: {candlestick.Low.ToString("0.00000000")} | C: {candlestick.Close.ToString("0.00000000")} | V: {candlestick.Volume.ToString("0.00")} - [{candlestick.OpenTime}]");
             }
             Console.WriteLine();
             Console.WriteLine("...press any key to exit.");

@@ -1,4 +1,5 @@
-﻿using Binance.Orders;
+﻿using Binance.Candlesticks;
+using Binance.Orders;
 using System;
 
 namespace Binance

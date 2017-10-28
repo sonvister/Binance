@@ -1,4 +1,5 @@
 ﻿using Binance.Api.WebSocket.Events;
+using Binance.Candlesticks;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

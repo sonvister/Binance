@@ -11,7 +11,7 @@ namespace Binance
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static AggregateTrade GetLatestTrade(this AggregateTradesCacheEventArgs args)
+        public static AggregateTrade LatestTrade(this AggregateTradesCacheEventArgs args)
         {
             return args.Trades.LastOrDefault();
         }

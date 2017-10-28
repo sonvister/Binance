@@ -1,5 +1,6 @@
 //#define LIVE
 
+using Binance.Candlesticks;
 using Binance.Orders;
 using System;
 using System.Threading.Tasks;

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace BinanceMarketDepth
 {
     /// <summary>
-    /// Demonstrate how to maintain a local order book cache for a symbol
+    /// Demonstrate how to maintain an order book cache for a symbol
     /// and respond to real-time depth-of-market update events.
     /// </summary>
     class Program
@@ -55,11 +55,6 @@ namespace BinanceMarketDepth
             catch (Exception e) { Console.WriteLine(e.Message); }
         }
 
-        /// <summary>
-        /// Display order book.
-        /// </summary>
-        /// <param name="orderBook"></param>
-        /// <param name="limit"></param>
         private static void Display(OrderBook orderBook)
         {
             Console.SetCursorPosition(0, 0);

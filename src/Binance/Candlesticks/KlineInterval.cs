@@ -1,4 +1,4 @@
-﻿namespace Binance
+﻿namespace Binance.Candlesticks
 {
     public enum KlineInterval
     {
