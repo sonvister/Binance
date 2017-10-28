@@ -12,6 +12,9 @@ namespace BinanceConsoleApp.Examples
     /// <summary>
     /// Demonstrate how to get current account balances, maintain a local cache
     /// and respond to real-time changes in account balances.
+    /// 
+    /// Usage: Change the 'Build Action' property to 'C# compiler' for this
+    ///        class and change the sampe property to 'None' for Program.cs.
     /// </summary>
     class AccountBalancesExample
     {

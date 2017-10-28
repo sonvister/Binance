@@ -33,7 +33,7 @@ namespace Binance.Cache
 
         private ILogger<AccountCache> _logger;
 
-        private bool _leaveWebSocketClientOpen;
+        private bool _leaveClientOpen;
 
         private BufferBlock<AccountUpdateEventArgs> _bufferBlock;
         private ActionBlock<AccountUpdateEventArgs> _actionBlock;
@@ -44,17 +44,15 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public AccountCache(IBinanceApi api, IUserDataWebSocketClient client, bool leaveWebSocketClientOpen = false, ILogger<AccountCache> logger = null)
+        public AccountCache(IBinanceApi api, IUserDataWebSocketClient client, bool leaveClientOpen = false, ILogger<AccountCache> logger = null)
         {
             Throw.IfNull(api, nameof(api));
             Throw.IfNull(client, nameof(client));
 
             _api = api;
-            _logger = logger;
-
             Client = client;
-            Client.AccountUpdate += OnAccountUpdate;
-            _leaveWebSocketClientOpen = leaveWebSocketClientOpen;
+            _leaveClientOpen = leaveClientOpen;
+            _logger = logger;
         }
 
         #endregion Constructors
@@ -68,12 +66,29 @@ namespace Binance.Cache
         {
             Throw.IfNull(user, nameof(user));
 
+            LinkTo(Client, callback, _leaveClientOpen);
+
+            return Client.SubscribeAsync(user, token: token);
+        }
+
+        public void LinkTo(IUserDataWebSocketClient client, Action<AccountCacheEventArgs> callback = null, bool leaveClientOpen = true)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            if (_bufferBlock != null)
+            {
+                if (client == Client)
+                    throw new InvalidOperationException($"{nameof(AccountCache)} is already linked to this {nameof(IUserDataWebSocketClient)}.");
+                else
+                    throw new InvalidOperationException($"{nameof(AccountCache)} is linked to another {nameof(IUserDataWebSocketClient)}.");
+            }
+
             _callback = callback;
+            _leaveClientOpen = leaveClientOpen;
 
             _bufferBlock = new BufferBlock<AccountUpdateEventArgs>(new DataflowBlockOptions()
             {
                 EnsureOrdered = true,
-                CancellationToken = token,
                 BoundedCapacity = DataflowBlockOptions.Unbounded,
                 MaxMessagesPerTask = DataflowBlockOptions.Unbounded,
             });
@@ -91,13 +106,12 @@ namespace Binance.Cache
                 BoundedCapacity = 1,
                 EnsureOrdered = true,
                 MaxDegreeOfParallelism = 1,
-                CancellationToken = token,
                 SingleProducerConstrained = true,
             });
 
             _bufferBlock.LinkTo(_actionBlock);
 
-            return Client.SubscribeAsync(user, token: token);
+            Client.AccountUpdate += OnAccountUpdate;
         }
 
         #endregion Public Methods
@@ -178,7 +192,7 @@ namespace Binance.Cache
             {
                 Client.AccountUpdate -= OnAccountUpdate;
 
-                if (!_leaveWebSocketClientOpen)
+                if (!_leaveClientOpen)
                 {
                     Client.Dispose();
                 }

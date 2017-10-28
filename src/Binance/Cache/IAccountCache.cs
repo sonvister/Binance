@@ -52,6 +52,15 @@ namespace Binance.Cache
         /// <returns></returns>
         Task SubscribeAsync(IBinanceApiUser user, Action<AccountCacheEventArgs> callback, CancellationToken token = default);
 
+        /// <summary>
+        /// Link to a subscribed <see cref="IUserDataWebSocketClient"/>.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="callback"></param>
+        /// <param name="leaveClientOpen"></param>
+        /// <returns></returns>
+        void LinkTo(IUserDataWebSocketClient client, Action<AccountCacheEventArgs> callback = null, bool leaveClientOpen = true);
+
         #endregion Public Methods
     }
 }
