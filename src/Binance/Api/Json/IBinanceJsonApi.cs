@@ -174,7 +174,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetAccountAsync(IBinanceApiUser user, long recvWindow = default, CancellationToken token = default);
+        Task<string> GetAccountInfoAsync(IBinanceApiUser user, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get trades for a specific account and symbol.

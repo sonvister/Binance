@@ -240,7 +240,7 @@ namespace Binance.Api.Json.Tests
 
             using (var api = new BinanceJsonApi())
             {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetAccountAsync(null));
+                await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetAccountInfoAsync(null));
             }
         }
 

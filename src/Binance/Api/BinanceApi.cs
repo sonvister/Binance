@@ -470,9 +470,9 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<AccountInfo> GetAccountAsync(IBinanceApiUser user, long recvWindow = default, CancellationToken token = default)
+        public virtual async Task<AccountInfo> GetAccountInfoAsync(IBinanceApiUser user, long recvWindow = default, CancellationToken token = default)
         {
-            var json = await JsonApi.GetAccountAsync(user, recvWindow, token)
+            var json = await JsonApi.GetAccountInfoAsync(user, recvWindow, token)
                 .ConfigureAwait(false);
 
             try
@@ -503,7 +503,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetAccountAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetAccountInfoAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 

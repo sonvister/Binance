@@ -1,5 +1,7 @@
 ﻿using Binance;
-using Binance.Accounts;
+using Binance.Account;
+using Binance.Api;
+using Binance.Cache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -7,18 +9,17 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BinanceConsoleApp.Examples
+namespace BinanceConsoleApp
 {
     /// <summary>
     /// Demonstrate how to get current account balances, maintain a local cache
     /// and respond to real-time changes in account balances.
     /// 
-    /// Usage: Change the 'Build Action' property to 'C# compiler' for this
-    ///        class and change the sampe property to 'None' for Program.cs.
+    /// To use, call AccountBalancesExample.ExampleMain() from Program.Main().
     /// </summary>
-    class AccountBalancesExample
+    internal class AccountBalancesExample
     {
-        public static async Task Main(string[] args)
+        public static async Task ExampleMain(string[] args)
         {
             try
             {
@@ -41,13 +42,13 @@ namespace BinanceConsoleApp.Examples
                 var services = new ServiceCollection()
                     .AddBinance().BuildServiceProvider();
 
-                using (var user = new BinanceUser(key, secret))
+                using (var user = new BinanceApiUser(key, secret))
                 using (var api = services.GetService<IBinanceApi>())
                 using (var cache = services.GetService<IAccountCache>())
                 using (var cts = new CancellationTokenSource())
                 {
                     // Query and display current account balance.
-                    var account = await api.GetAccountAsync(user);
+                    var account = await api.GetAccountInfoAsync(user);
 
                     var asset = Asset.BTC;
 
@@ -57,7 +58,7 @@ namespace BinanceConsoleApp.Examples
                     var task = Task.Run(() =>
                         cache.SubscribeAsync(user, (e) => Display(e.Account.GetBalance(asset)), cts.Token));
 
-                    Console.WriteLine("...press any key to exit.");
+                    Console.WriteLine("...press any key to continue.");
                     Console.ReadKey(true);
 
                     cts.Cancel();

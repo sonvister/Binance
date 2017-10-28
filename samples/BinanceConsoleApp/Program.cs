@@ -47,6 +47,11 @@ namespace BinanceConsoleApp
 
         public static async Task Main(string[] args)
         {
+            // Un-comment to run example(s)...
+            //await AccountBalancesExample.ExampleMain(args);
+            //await MinimalWithDependencyInjection.ExampleMain(args);
+            //await MinimalWithoutDependencyInjection.ExampleMain(args);
+
             var cts = new CancellationTokenSource();
 
             try

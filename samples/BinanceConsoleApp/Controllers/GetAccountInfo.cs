@@ -18,7 +18,7 @@ namespace BinanceConsoleApp.Controllers
                 return true;
             }
 
-            var account = await Program._api.GetAccountAsync(Program._user, token: token);
+            var account = await Program._api.GetAccountInfoAsync(Program._user, token: token);
 
             Program.Display(account);
 

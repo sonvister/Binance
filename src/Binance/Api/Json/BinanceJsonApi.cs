@@ -343,7 +343,7 @@ namespace Binance.Api.Json
                 .ConfigureAwait(false);
         }
 
-        public virtual async Task<string> GetAccountAsync(IBinanceApiUser user, long recvWindow = default, CancellationToken token = default)
+        public virtual async Task<string> GetAccountInfoAsync(IBinanceApiUser user, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
