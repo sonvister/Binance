@@ -160,14 +160,13 @@ namespace Binance.Api
         Task<Order> GetOrderAsync(IBinanceApiUser user, string symbol, string origClientOrderId, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
-        /// Get latest order status (fill in place and return order instance).
+        /// Get latest order status (fill in place and return the order instance).
         /// </summary>
-        /// <param name="user"></param>
         /// <param name="order"></param>
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<Order> GetOrderAsync(IBinanceApiUser user, Order order, long recvWindow = default, CancellationToken token = default);
+        Task<Order> GetAsync(Order order, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Cancel and order by ID.
@@ -196,13 +195,12 @@ namespace Binance.Api
         /// <summary>
         /// Cancel an order.
         /// </summary>
-        /// <param name="user"></param>
         /// <param name="order"></param>
         /// <param name="newClientOrderId"></param>
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> CancelAsync(IBinanceApiUser user, Order order, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default);
+        Task<string> CancelAsync(Order order, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get all open orders on a symbol.

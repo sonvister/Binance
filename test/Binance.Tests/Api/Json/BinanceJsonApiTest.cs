@@ -2,7 +2,9 @@
 
 using Binance.Account.Orders;
 using Binance.Market;
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -10,104 +12,94 @@ namespace Binance.Api.Json.Tests
 {
     public class BinanceJsonApiTest
     {
+        private ServiceProvider _serviceProvider;
+
+        private IBinanceJsonApi _api;
+
+        public BinanceJsonApiTest()
+        {
+            // Configure services.
+            _serviceProvider = new ServiceCollection()
+                 .AddBinance().BuildServiceProvider();
+
+            // Get IBinanceApi service.
+            _api = _serviceProvider.GetService<IBinanceJsonApi>();
+        }
+
 #if LIVE
 
         [Fact]
         public async Task Ping()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                Assert.Equal(BinanceJsonApi.SuccessfulTestResponse, await api.PingAsync());
-            }
+            Assert.Equal(BinanceJsonApi.SuccessfulTestResponse, await _api.PingAsync());
         }
 
         [Fact]
         public async Task GetServerTime()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                var json = await api.GetServerTimeAsync();
+            var json = await _api.GetServerTimeAsync();
 
-                Assert.True(IsJsonObject(json));
-            }
+            Assert.True(IsJsonObject(json));
         }
 
         [Fact]
         public async Task GetOrderBook()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                var json = await api.GetOrderBookAsync(Symbol.BTC_USDT, 5);
+            var json = await _api.GetOrderBookAsync(Symbol.BTC_USDT, 5);
 
-                Assert.True(IsJsonObject(json));
-            }
+            Assert.True(IsJsonObject(json));
         }
 
         [Fact]
         public async Task GetTrades()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                var now = DateTimeOffset.UtcNow;
+            var now = DateTimeOffset.UtcNow;
 
-                var json = await api.GetAggregateTradesAsync(Symbol.BTC_USDT, 0, limit: 1);
+            var json = await _api.GetAggregateTradesAsync(Symbol.BTC_USDT, 0, limit: 1);
 
-                Assert.True(IsJsonArray(json));
+            Assert.True(IsJsonArray(json));
 
-                json = await api.GetAggregateTradesAsync(Symbol.BTC_USDT, startTime: now.AddMinutes(-1).ToUnixTimeMilliseconds(), endTime: now.ToUnixTimeMilliseconds());
+            json = await _api.GetAggregateTradesAsync(Symbol.BTC_USDT, startTime: now.AddMinutes(-1).ToUnixTimeMilliseconds(), endTime: now.ToUnixTimeMilliseconds());
 
-                Assert.True(IsJsonArray(json));
-            }
+            Assert.True(IsJsonArray(json));
         }
 
         [Fact]
         public async Task GetCandlesticks()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                var now = DateTimeOffset.UtcNow;
+            var now = DateTimeOffset.UtcNow;
 
-                var json = await api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour, limit: 1);
+            var json = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour, limit: 1);
 
-                Assert.True(IsJsonArray(json));
+            Assert.True(IsJsonArray(json));
 
-                json = await api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Minute, startTime: now.AddMinutes(-1).ToUnixTimeMilliseconds(), endTime: now.ToUnixTimeMilliseconds());
+            json = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Minute, startTime: now.AddMinutes(-1).ToUnixTimeMilliseconds(), endTime: now.ToUnixTimeMilliseconds());
 
-                Assert.True(IsJsonArray(json));
-            }
+            Assert.True(IsJsonArray(json));
         }
 
         [Fact]
         public async Task Get24hrStats()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                var json = await api.Get24hStatsAsync(Symbol.BTC_USDT);
+            var json = await _api.Get24hStatsAsync(Symbol.BTC_USDT);
 
-                Assert.True(IsJsonObject(json));
-            }
+            Assert.True(IsJsonObject(json));
         }
 
         [Fact]
         public async Task GetPrices()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                var json = await api.GetPrices();
+            var json = await _api.GetPricesAsync();
 
-                Assert.True(IsJsonArray(json));
-            }
+            Assert.True(IsJsonArray(json));
         }
 
         [Fact]
         public async Task GetOrderBookTops()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                var json = await api.GetOrderBookTopsAsync();
+            var json = await _api.GetOrderBookTopsAsync();
 
-                Assert.True(IsJsonArray(json));
-            }
+            Assert.True(IsJsonArray(json));
         }
 
         /*
@@ -117,21 +109,18 @@ namespace Binance.Api.Json.Tests
             const int count = 3;
             const int intervals = 2;
 
-            using (var api = new BinanceJsonApi())
-            {
-                api.RateLimiter.IsEnabled = true;
-                api.RateLimiter.Configure(count, TimeSpan.FromSeconds(1));
+            _api.RateLimiter.IsEnabled = true;
+            _api.RateLimiter.Configure(count, TimeSpan.FromSeconds(1));
 
-                var stopwatch = Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
 
-                for (var i = 0; i < count * intervals; i++)
-                    await api.PingAsync();
+            for (var i = 0; i < count * intervals; i++)
+                await _api.PingAsync();
 
-                stopwatch.Stop();
+            stopwatch.Stop();
 
-                Assert.True(stopwatch.ElapsedMilliseconds > api.RateLimiter.Duration.TotalMilliseconds * intervals);
-                Assert.False(count <= 3 && stopwatch.ElapsedMilliseconds > api.RateLimiter.Duration.TotalMilliseconds * (intervals + 1));
-            }
+            Assert.True(stopwatch.ElapsedMilliseconds > _api.RateLimiter.Duration.TotalMilliseconds * intervals);
+            Assert.False(count <= 3 && stopwatch.ElapsedMilliseconds > _api.RateLimiter.Duration.TotalMilliseconds * (intervals + 1));
         }
         //*/
 
@@ -156,43 +145,31 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task GetOrderBookThrows()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetOrderBookAsync(null));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetOrderBookAsync(null));
         }
 
         [Fact]
         public async Task GetAggregateTradesThrows()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                var now = DateTimeOffset.UtcNow;
+            var now = DateTimeOffset.UtcNow;
 
-                var startTime = DateTimeOffset.UtcNow.AddHours(-24).ToUnixTimeMilliseconds();
-                var endTime = now.ToUnixTimeMilliseconds();
+            var startTime = DateTimeOffset.UtcNow.AddHours(-24).ToUnixTimeMilliseconds();
+            var endTime = now.ToUnixTimeMilliseconds();
 
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetAggregateTradesAsync(null));
-                await Assert.ThrowsAsync<ArgumentException>("endTime", () => api.GetAggregateTradesAsync(Symbol.BTC_USDT, startTime: startTime, endTime: endTime));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetAggregateTradesAsync(null));
+            await Assert.ThrowsAsync<ArgumentException>("endTime", () => _api.GetAggregateTradesAsync(Symbol.BTC_USDT, startTime: startTime, endTime: endTime));
         }
 
         [Fact]
         public async Task GetCandlesticksThrows()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetCandlesticksAsync(null, KlineInterval.Day));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetCandlesticksAsync(null, KlineInterval.Day));
         }
 
         [Fact]
         public async Task Get24hStatsThrows()
         {
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.Get24hStatsAsync(null));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.Get24hStatsAsync(null));
         }
 
         #endregion Market Data
@@ -209,12 +186,9 @@ namespace Binance.Api.Json.Tests
             decimal quantity = 1;
             decimal price = 0;
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.PlaceOrderAsync(null, symbol, orderSide, orderType, quantity, price));
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.PlaceOrderAsync(user, null, orderSide, orderType, quantity, price));
-                await Assert.ThrowsAsync<ArgumentException>("quantity", () => api.PlaceOrderAsync(user, symbol, orderSide, orderType, -1, price));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.PlaceOrderAsync(null, symbol, orderSide, orderType, quantity, price));
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.PlaceOrderAsync(user, null, orderSide, orderType, quantity, price));
+            await Assert.ThrowsAsync<ArgumentException>("quantity", () => _api.PlaceOrderAsync(user, symbol, orderSide, orderType, -1, price));
         }
 
         [Fact]
@@ -223,12 +197,9 @@ namespace Binance.Api.Json.Tests
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetOrderAsync(null, symbol));
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetOrderAsync(user, null));
-                await Assert.ThrowsAsync<ArgumentException>(() => api.GetOrderAsync(user, symbol));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetOrderAsync(null, symbol));
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetOrderAsync(user, null));
+            await Assert.ThrowsAsync<ArgumentException>(() => _api.GetOrderAsync(user, symbol));
         }
 
         [Fact]
@@ -237,12 +208,9 @@ namespace Binance.Api.Json.Tests
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.CancelOrderAsync(null, symbol));
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.CancelOrderAsync(user, null));
-                await Assert.ThrowsAsync<ArgumentException>(() => api.GetOrderAsync(user, symbol));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.CancelOrderAsync(null, symbol));
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.CancelOrderAsync(user, null));
+            await Assert.ThrowsAsync<ArgumentException>(() => _api.GetOrderAsync(user, symbol));
         }
 
         [Fact]
@@ -251,11 +219,8 @@ namespace Binance.Api.Json.Tests
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetOpenOrdersAsync(null, symbol));
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetOpenOrdersAsync(user, null));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetOpenOrdersAsync(null, symbol));
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetOpenOrdersAsync(user, null));
         }
 
         [Fact]
@@ -264,11 +229,8 @@ namespace Binance.Api.Json.Tests
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetOrdersAsync(null, symbol));
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => api.GetOrdersAsync(user, null));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetOrdersAsync(null, symbol));
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetOrdersAsync(user, null));
         }
 
         [Fact]
@@ -278,7 +240,7 @@ namespace Binance.Api.Json.Tests
 
             using (var api = new BinanceJsonApi())
             {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetAccountAsync(null));
+                await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetAccountAsync(null));
             }
         }
 
@@ -288,10 +250,7 @@ namespace Binance.Api.Json.Tests
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetTradesAsync(null, symbol));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetTradesAsync(null, symbol));
         }
 
         [Fact]
@@ -302,15 +261,12 @@ namespace Binance.Api.Json.Tests
             var address = "12345678901234567890";
             decimal amount = 1;
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.WithdrawAsync(null, asset, address, amount));
-                await Assert.ThrowsAsync<ArgumentNullException>("asset", () => api.WithdrawAsync(user, null, address, amount));
-                await Assert.ThrowsAsync<ArgumentNullException>("address", () => api.WithdrawAsync(user, asset, null, amount));
-                await Assert.ThrowsAsync<ArgumentNullException>("address", () => api.WithdrawAsync(user, asset, string.Empty, amount));
-                await Assert.ThrowsAsync<ArgumentException>("amount", () => api.WithdrawAsync(user, asset, address, -1));
-                await Assert.ThrowsAsync<ArgumentException>("amount", () => api.WithdrawAsync(user, asset, address, 0));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.WithdrawAsync(null, asset, address, amount));
+            await Assert.ThrowsAsync<ArgumentNullException>("asset", () => _api.WithdrawAsync(user, null, address, amount));
+            await Assert.ThrowsAsync<ArgumentNullException>("address", () => _api.WithdrawAsync(user, asset, null, amount));
+            await Assert.ThrowsAsync<ArgumentNullException>("address", () => _api.WithdrawAsync(user, asset, string.Empty, amount));
+            await Assert.ThrowsAsync<ArgumentException>("amount", () => _api.WithdrawAsync(user, asset, address, -1));
+            await Assert.ThrowsAsync<ArgumentException>("amount", () => _api.WithdrawAsync(user, asset, address, 0));
         }
 
         [Fact]
@@ -318,10 +274,7 @@ namespace Binance.Api.Json.Tests
         {
             var user = new BinanceApiUser("api-key");
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetDepositsAsync(null));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetDepositsAsync(null));
         }
 
         [Fact]
@@ -329,10 +282,7 @@ namespace Binance.Api.Json.Tests
         {
             var user = new BinanceApiUser("api-key");
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.GetWithdrawalsAsync(null));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetWithdrawalsAsync(null));
         }
 
         #endregion Account
@@ -344,10 +294,7 @@ namespace Binance.Api.Json.Tests
         {
             var user = new BinanceApiUser("api-key");
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.UserStreamStartAsync(null));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.UserStreamStartAsync(null));
         }
 
         [Fact]
@@ -356,12 +303,9 @@ namespace Binance.Api.Json.Tests
             var user = new BinanceApiUser("api-key");
             var listenKey = "listen-key";
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.UserStreamKeepAliveAsync(null, listenKey));
-                await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => api.UserStreamKeepAliveAsync(user, null));
-                await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => api.UserStreamKeepAliveAsync(user, string.Empty));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.UserStreamKeepAliveAsync(null, listenKey));
+            await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => _api.UserStreamKeepAliveAsync(user, null));
+            await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => _api.UserStreamKeepAliveAsync(user, string.Empty));
         }
 
         [Fact]
@@ -370,12 +314,9 @@ namespace Binance.Api.Json.Tests
             var user = new BinanceApiUser("api-key");
             var listenKey = "listen-key";
 
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => api.UserStreamCloseAsync(null, listenKey));
-                await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => api.UserStreamCloseAsync(user, null));
-                await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => api.UserStreamCloseAsync(user, string.Empty));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.UserStreamCloseAsync(null, listenKey));
+            await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => _api.UserStreamCloseAsync(user, null));
+            await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => _api.UserStreamCloseAsync(user, string.Empty));
         }
 
         #endregion User Stream

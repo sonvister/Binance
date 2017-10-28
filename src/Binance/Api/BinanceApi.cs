@@ -109,35 +109,12 @@ namespace Binance.Api
             }
         }
 
-        private IEnumerable<AggregateTrade> ParseAggregateTrades(string symbol, string json)
-        {
-            var jArray = JArray.Parse(json);
-
-            var trades = new List<AggregateTrade>();
-            foreach (var item in jArray)
-            {
-                var trade = new AggregateTrade(
-                    symbol.FormatSymbol(),
-                    item["a"].Value<long>(),    // ID
-                    item["p"].Value<decimal>(), // price
-                    item["q"].Value<decimal>(), // quantity
-                    item["f"].Value<long>(),    // first trade ID
-                    item["l"].Value<long>(),    // last trade ID
-                    item["T"].Value<long>(),    // timestamp
-                    item["m"].Value<bool>(),    // is buyer maker
-                    item["M"].Value<bool>());   // is best price
-
-                trades.Add(trade);
-            }
-            return trades;
-        }
-
         public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, int limit = default, CancellationToken token = default)
         {
             var json = await JsonApi.GetAggregateTradesAsync(symbol, NullId, limit, 0, 0, token)
                 .ConfigureAwait(false);
 
-            try { return ParseAggregateTrades(symbol, json); }
+            try { return DeserializeAggregateTrades(symbol, json); }
             catch (Exception e)
             {
                 throw new BinanceApiException($"Binance API ({nameof(GetAggregateTradesAsync)}) failed to parse JSON api response: \"{json}\"", e);
@@ -152,7 +129,7 @@ namespace Binance.Api
             var json = await JsonApi.GetAggregateTradesAsync(symbol, fromId, limit, 0, 0, token)
                 .ConfigureAwait(false);
 
-            try { return ParseAggregateTrades(symbol, json); }
+            try { return DeserializeAggregateTrades(symbol, json); }
             catch (Exception e)
             {
                 throw new BinanceApiException($"Binance API ({nameof(GetAggregateTradesFromAsync)}) failed to parse JSON api response: \"{json}\"", e);
@@ -169,7 +146,7 @@ namespace Binance.Api
             var json = await JsonApi.GetAggregateTradesAsync(symbol, NullId, 0, startTime, endTime, token)
                 .ConfigureAwait(false);
 
-            try { return ParseAggregateTrades(symbol, json); }
+            try { return DeserializeAggregateTrades(symbol, json); }
             catch (Exception e)
             {
                 throw new BinanceApiException($"Binance API ({nameof(GetAggregateTradesInAsync)}) failed to parse JSON api response: \"{json}\"", e);
@@ -385,12 +362,12 @@ namespace Binance.Api
             return order;
         }
 
-        public virtual async Task<Order> GetOrderAsync(IBinanceApiUser user, Order order, long recvWindow = default, CancellationToken token = default)
+        public virtual async Task<Order> GetAsync(Order order, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(order, nameof(order));
 
             // Get order using order ID.
-            var json = await JsonApi.GetOrderAsync(user, order.Symbol, order.Id, null, recvWindow, token)
+            var json = await JsonApi.GetOrderAsync(order.User, order.Symbol, order.Id, null, recvWindow, token)
                 .ConfigureAwait(false);
 
             try { FillOrder(order, JObject.Parse(json)); }
@@ -433,12 +410,12 @@ namespace Binance.Api
             }
         }
 
-        public virtual Task<string> CancelAsync(IBinanceApiUser user, Order order, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default)
+        public virtual Task<string> CancelAsync(Order order, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(order, nameof(order));
 
             // Cancel order using order ID.
-            return CancelOrderAsync(user, order.Symbol, order.Id, newClientOrderId, recvWindow, token);
+            return CancelOrderAsync(order.User, order.Symbol, order.Id, newClientOrderId, recvWindow, token);
         }
 
         public virtual async Task<IEnumerable<Order>> GetOpenOrdersAsync(IBinanceApiUser user, string symbol, long recvWindow = default, CancellationToken token = default)
@@ -709,6 +686,35 @@ namespace Binance.Api
         #endregion User Data Stream
 
         #region Private Methods
+
+        /// <summary>
+        /// Deserialize aggregate trade.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        private IEnumerable<AggregateTrade> DeserializeAggregateTrades(string symbol, string json)
+        {
+            var jArray = JArray.Parse(json);
+
+            var trades = new List<AggregateTrade>();
+            foreach (var item in jArray)
+            {
+                var trade = new AggregateTrade(
+                    symbol.FormatSymbol(),
+                    item["a"].Value<long>(),    // ID
+                    item["p"].Value<decimal>(), // price
+                    item["q"].Value<decimal>(), // quantity
+                    item["f"].Value<long>(),    // first trade ID
+                    item["l"].Value<long>(),    // last trade ID
+                    item["T"].Value<long>(),    // timestamp
+                    item["m"].Value<bool>(),    // is buyer maker
+                    item["M"].Value<bool>());   // is best price
+
+                trades.Add(trade);
+            }
+            return trades;
+        }
 
         /// <summary>
         /// Deserialize order.
