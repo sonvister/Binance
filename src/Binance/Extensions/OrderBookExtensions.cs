@@ -1,4 +1,4 @@
-﻿using Binance.Orders.Book;
+﻿using Binance.Market;
 
 namespace Binance
 {

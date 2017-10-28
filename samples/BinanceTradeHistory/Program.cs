@@ -1,5 +1,7 @@
 ﻿using Binance;
-using Binance.Trades;
+using Binance.Api;
+using Binance.Cache;
+using Binance.Market;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;

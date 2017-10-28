@@ -1,7 +1,7 @@
-﻿using Binance.Accounts;
+﻿using Binance.Account;
+using Binance.Account.Orders;
 using Binance.Api;
-using Binance.Candlesticks;
-using Binance.Orders;
+using Binance.Market;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

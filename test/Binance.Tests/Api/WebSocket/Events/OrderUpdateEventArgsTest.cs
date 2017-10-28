@@ -1,9 +1,8 @@
-﻿using Binance.Api.WebSocket.Events;
-using Binance.Orders;
+﻿using Binance.Account.Orders;
 using System;
 using Xunit;
 
-namespace Binance.Tests.Api.WebSocket.Events
+namespace Binance.Api.WebSocket.Events.Tests
 {
     public class OrderUpdateEventArgsTest
     {

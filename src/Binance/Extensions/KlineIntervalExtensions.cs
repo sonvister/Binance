@@ -1,4 +1,4 @@
-﻿using Binance.Candlesticks;
+﻿using Binance.Market;
 using System;
 
 namespace Binance

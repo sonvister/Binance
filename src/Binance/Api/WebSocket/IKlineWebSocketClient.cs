@@ -1,10 +1,10 @@
 ﻿using Binance.Api.WebSocket.Events;
-using Binance.Candlesticks;
+using Binance.Market;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Binance
+namespace Binance.Api.WebSocket
 {
     public interface IKlineWebSocketClient : IDisposable
     {

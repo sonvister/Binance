@@ -1,15 +1,12 @@
-﻿using Binance.Accounts;
-using Binance.Api;
-using Binance.Candlesticks;
-using Binance.Orders;
-using Binance.Orders.Book;
-using Binance.Trades;
+﻿using Binance.Account;
+using Binance.Account.Orders;
+using Binance.Market;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Binance
+namespace Binance.Api
 {
     public interface IBinanceApi : IDisposable
     {
@@ -206,7 +203,7 @@ namespace Binance
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<Account> GetAccountAsync(IBinanceUser user, long recvWindow = default, CancellationToken token = default);
+        Task<AccountInfo> GetAccountAsync(IBinanceUser user, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get trades for a specific account and symbol.

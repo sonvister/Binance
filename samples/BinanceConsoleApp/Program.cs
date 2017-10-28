@@ -1,11 +1,12 @@
 ﻿using Binance;
-using Binance.Accounts;
+using Binance.Account;
+using Binance.Account.Orders;
+using Binance.Api;
+using Binance.Api.WebSocket;
 using Binance.Api.WebSocket.Events;
-using Binance.Candlesticks;
-using Binance.Orders;
-using Binance.Orders.Book;
-using Binance.Orders.Book.Cache;
-using Binance.Trades;
+using Binance.Cache;
+using Binance.Cache.Events;
+using Binance.Market;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -1277,7 +1278,7 @@ namespace BinanceConsoleApp
             }
         }
 
-        private static void Display(Account account)
+        private static void Display(AccountInfo account)
         {
             lock (_consoleSync)
             {

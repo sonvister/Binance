@@ -1,4 +1,4 @@
-﻿using Binance.Accounts;
+﻿using Binance.Account;
 
 namespace Binance.Api.WebSocket.Events
 {
@@ -12,7 +12,7 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// Get the account.
         /// </summary>
-        public Account Account { get; private set; }
+        public AccountInfo Account { get; private set; }
 
         #endregion Public Properties
 
@@ -23,7 +23,7 @@ namespace Binance.Api.WebSocket.Events
         /// </summary>
         /// <param name="timestamp">The event time.</param>
         /// <param name="account">The account.</param>
-        public AccountUpdateEventArgs(long timestamp, Account account)
+        public AccountUpdateEventArgs(long timestamp, AccountInfo account)
             : base(timestamp)
         {
             Throw.IfNull(account, nameof(account));

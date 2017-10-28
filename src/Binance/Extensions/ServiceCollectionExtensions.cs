@@ -1,9 +1,7 @@
-﻿using Binance.Accounts.Cache;
-using Binance.Api;
+﻿using Binance.Api;
 using Binance.Api.Json;
 using Binance.Api.WebSocket;
-using Binance.Orders.Book.Cache;
-using Binance.Trades.Cache;
+using Binance.Cache;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Binance

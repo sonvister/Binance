@@ -1,9 +1,7 @@
-﻿using Binance.Accounts;
+﻿using Binance.Account;
+using Binance.Account.Orders;
 using Binance.Api.Json;
-using Binance.Candlesticks;
-using Binance.Orders;
-using Binance.Orders.Book;
-using Binance.Trades;
+using Binance.Market;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -456,7 +454,7 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<Account> GetAccountAsync(IBinanceUser user, long recvWindow = default, CancellationToken token = default)
+        public virtual async Task<AccountInfo> GetAccountAsync(IBinanceUser user, long recvWindow = default, CancellationToken token = default)
         {
             var json = await JsonApi.GetAccountAsync(user, recvWindow, token)
                 .ConfigureAwait(false);
@@ -485,7 +483,7 @@ namespace Binance.Api
                         entry["locked"].Value<decimal>()));
                 }
 
-                return new Account(user, commissions, status, balances);
+                return new AccountInfo(user, commissions, status, balances);
             }
             catch (Exception e)
             {

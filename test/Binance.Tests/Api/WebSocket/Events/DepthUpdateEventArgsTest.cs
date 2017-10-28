@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace Binance.Api.WebSocket.Events
+namespace Binance.Api.WebSocket.Events.Tests
 {
     public class DepthUpdateEventArgsTest
     {

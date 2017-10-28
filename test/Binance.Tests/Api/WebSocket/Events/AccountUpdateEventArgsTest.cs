@@ -1,10 +1,8 @@
-﻿using Binance.Accounts;
-using Binance.Api;
-using Binance.Api.WebSocket.Events;
+﻿using Binance.Account;
 using System;
 using Xunit;
 
-namespace Binance.Tests.Api.WebSocket.Events
+namespace Binance.Api.WebSocket.Events.Tests
 {
     public class AccountUpdateEventArgsTest
     {
@@ -18,7 +16,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             var status = new AccountStatus(true, true, true);
             var balances = new AccountBalance[] { new AccountBalance("BTC", 0.1m, 0.2m) };
 
-            var account = new Account(user, commissions, status, balances);
+            var account = new AccountInfo(user, commissions, status, balances);
 
             Assert.Throws<ArgumentException>("timestamp", () => new AccountUpdateEventArgs(-1, account));
             Assert.Throws<ArgumentException>("timestamp", () => new AccountUpdateEventArgs(0, account));
@@ -35,7 +33,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             var status = new AccountStatus(true, true, true);
             var balances = new AccountBalance[] { new AccountBalance("BTC", 0.1m, 0.2m) };
 
-            var account = new Account(user, commissions, status, balances);
+            var account = new AccountInfo(user, commissions, status, balances);
 
             var args = new AccountUpdateEventArgs(timestamp, account);
 

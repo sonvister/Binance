@@ -1,6 +1,6 @@
-﻿using Binance.Accounts;
-using Binance.Candlesticks;
-using Binance.Orders;
+﻿using Binance.Account;
+using Binance.Account.Orders;
+using Binance.Market;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;

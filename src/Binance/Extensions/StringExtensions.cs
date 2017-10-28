@@ -1,5 +1,5 @@
-﻿using Binance.Candlesticks;
-using Binance.Orders;
+﻿using Binance.Account.Orders;
+using Binance.Market;
 using System;
 
 namespace Binance

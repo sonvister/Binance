@@ -1,5 +1,5 @@
-﻿using Binance.Trades;
-using Binance.Trades.Cache;
+﻿using Binance.Cache.Events;
+using Binance.Market;
 using System.Linq;
 
 namespace Binance

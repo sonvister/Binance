@@ -3,7 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Binance
+namespace Binance.Api.WebSocket
 {
     /// <summary>
     /// The depth client ...what makes order book synchronization possible.

@@ -1,5 +1,5 @@
-﻿using Binance.Accounts;
-using Binance.Orders;
+﻿using Binance.Account;
+using Binance.Account.Orders;
 
 namespace Binance.Api.WebSocket.Events
 {

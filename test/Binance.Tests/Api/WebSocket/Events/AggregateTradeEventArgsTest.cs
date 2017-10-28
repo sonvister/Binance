@@ -1,9 +1,8 @@
-﻿using Binance.Api.WebSocket.Events;
-using Binance.Trades;
+﻿using Binance.Market;
 using System;
 using Xunit;
 
-namespace Binance.Tests.Api.WebSocket.Events
+namespace Binance.Api.WebSocket.Events.Tests
 {
     public class AggregateTradeEventArgsTest
     {

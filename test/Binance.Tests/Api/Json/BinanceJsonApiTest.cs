@@ -1,12 +1,12 @@
 //#define LIVE
 
-using Binance.Candlesticks;
-using Binance.Orders;
+using Binance.Account.Orders;
+using Binance.Market;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Binance.Api.Json
+namespace Binance.Api.Json.Tests
 {
     public class BinanceJsonApiTest
     {

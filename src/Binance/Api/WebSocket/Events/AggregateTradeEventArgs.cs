@@ -1,4 +1,4 @@
-﻿using Binance.Trades;
+﻿using Binance.Market;
 using System;
 
 namespace Binance.Api.WebSocket.Events

@@ -4,7 +4,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Binance.Api
+namespace Binance.Api.Tests
 {
     public class BinanceApiTest
     {

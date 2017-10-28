@@ -1,4 +1,4 @@
-﻿using Binance.Orders;
+﻿using Binance.Account.Orders;
 
 namespace Binance.Api.WebSocket.Events
 {

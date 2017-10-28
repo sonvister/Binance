@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Binance
+namespace Binance.Api
 {
     public interface IBinanceUser : IDisposable
     {
