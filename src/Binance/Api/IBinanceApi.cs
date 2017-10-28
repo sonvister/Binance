@@ -52,13 +52,32 @@ namespace Binance.Api
         /// If fromdId, startTime, and endTime are not sent, the most recent aggregate trades will be returned.
         /// </summary>
         /// <param name="symbol"></param>
+        /// <param name="limit">Default 500; max 500.</param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, int limit = default, CancellationToken token = default);
+
+        /// <summary>
+        /// Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
+        /// If fromdId, startTime, and endTime are not sent, the most recent aggregate trades will be returned.
+        /// </summary>
+        /// <param name="symbol"></param>
         /// <param name="fromId">ID to get aggregate trades from INCLUSIVE.</param>
         /// <param name="limit">Default 500; max 500.</param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IEnumerable<AggregateTrade>> GetAggregateTradesFromAsync(string symbol, long fromId, int limit = default, CancellationToken token = default);
+
+        /// <summary>
+        /// Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
+        /// If fromdId, startTime, and endTime are not sent, the most recent aggregate trades will be returned.
+        /// </summary>
+        /// <param name="symbol"></param>
         /// <param name="startTime">Timestamp in ms to get aggregate trades from INCLUSIVE.</param>
         /// <param name="endTime">Timestamp in ms to get aggregate trades until INCLUSIVE.</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, long fromId = BinanceApi.NullId, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default);
+        Task<IEnumerable<AggregateTrade>> GetAggregateTradesInAsync(string symbol, long startTime, long endTime, CancellationToken token = default);
 
         /// <summary>
         /// Get Kline/candlestick bars for a symbol. Klines are uniquely identified by their open time.

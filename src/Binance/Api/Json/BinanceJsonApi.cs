@@ -136,7 +136,7 @@ namespace Binance.Api.Json
                 var end = DateTimeOffset.FromUnixTimeMilliseconds(endTime);
 
                 if ((end - start).Duration() >= TimeSpan.FromHours(24))
-                    throw new ArgumentException("The interval between startTime and endTime must be less than 24 hours.", nameof(endTime));
+                    throw new ArgumentException($"The interval between {nameof(startTime)} and {nameof(endTime)} must be less than 24 hours.", nameof(endTime));
             }
 
             return GetAsync($"/api/v1/aggTrades?{totalParams}", token);

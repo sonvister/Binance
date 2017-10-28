@@ -109,36 +109,70 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, long fromId = NullId, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
+        private IEnumerable<AggregateTrade> ParseAggregateTrades(string symbol, string json)
         {
-            var json = await JsonApi.GetAggregateTradesAsync(symbol, fromId, limit, startTime, endTime, token)
+            var jArray = JArray.Parse(json);
+
+            var trades = new List<AggregateTrade>();
+            foreach (var item in jArray)
+            {
+                var trade = new AggregateTrade(
+                    symbol.FormatSymbol(),
+                    item["a"].Value<long>(),    // ID
+                    item["p"].Value<decimal>(), // price
+                    item["q"].Value<decimal>(), // quantity
+                    item["f"].Value<long>(),    // first trade ID
+                    item["l"].Value<long>(),    // last trade ID
+                    item["T"].Value<long>(),    // timestamp
+                    item["m"].Value<bool>(),    // is buyer maker
+                    item["M"].Value<bool>());   // is best price
+
+                trades.Add(trade);
+            }
+            return trades;
+        }
+
+        public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, int limit = default, CancellationToken token = default)
+        {
+            var json = await JsonApi.GetAggregateTradesAsync(symbol, NullId, limit, 0, 0, token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                var jArray = JArray.Parse(json);
-
-                var trades = new List<AggregateTrade>();
-                foreach (var item in jArray)
-                {
-                    var trade = new AggregateTrade(
-                        symbol.FormatSymbol(),
-                        item["a"].Value<long>(),    // ID
-                        item["p"].Value<decimal>(), // price
-                        item["q"].Value<decimal>(), // quantity
-                        item["f"].Value<long>(),    // first trade ID
-                        item["l"].Value<long>(),    // last trade ID
-                        item["T"].Value<long>(),    // timestamp
-                        item["m"].Value<bool>(),    // is buyer maker
-                        item["M"].Value<bool>());   // is best price
-
-                    trades.Add(trade);
-                }
-                return trades;
-            }
+            try { return ParseAggregateTrades(symbol, json); }
             catch (Exception e)
             {
                 throw new BinanceApiException($"Binance API ({nameof(GetAggregateTradesAsync)}) failed to parse JSON api response: \"{json}\"", e);
+            }
+        }
+
+        public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesFromAsync(string symbol, long fromId, int limit = default, CancellationToken token = default)
+        {
+            if (fromId < 0)
+                throw new ArgumentException("ID must not be less than 0.", nameof(fromId));
+
+            var json = await JsonApi.GetAggregateTradesAsync(symbol, fromId, limit, 0, 0, token)
+                .ConfigureAwait(false);
+
+            try { return ParseAggregateTrades(symbol, json); }
+            catch (Exception e)
+            {
+                throw new BinanceApiException($"Binance API ({nameof(GetAggregateTradesFromAsync)}) failed to parse JSON api response: \"{json}\"", e);
+            }
+        }
+
+        public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesInAsync(string symbol, long startTime, long endTime, CancellationToken token = default)
+        {
+            if (startTime <= 0)
+                throw new ArgumentException("Timestamp must be greater than 0.", nameof(startTime));
+            if (endTime < startTime)
+                throw new ArgumentException($"Timestamp must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
+
+            var json = await JsonApi.GetAggregateTradesAsync(symbol, NullId, 0, startTime, endTime, token)
+                .ConfigureAwait(false);
+
+            try { return ParseAggregateTrades(symbol, json); }
+            catch (Exception e)
+            {
+                throw new BinanceApiException($"Binance API ({nameof(GetAggregateTradesInAsync)}) failed to parse JSON api response: \"{json}\"", e);
             }
         }
 

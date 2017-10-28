@@ -312,7 +312,7 @@ namespace BinanceConsoleApp
                             int.TryParse(args[3], out limit);
                         }
 
-                        var trades = await _api.GetAggregateTradesAsync(symbol, fromId: fromId, limit: limit, token: token);
+                        var trades = await _api.GetAggregateTradesFromAsync(symbol, fromId, limit, token: token);
 
                         lock (_consoleSync)
                         {
@@ -347,7 +347,7 @@ namespace BinanceConsoleApp
                             long.TryParse(args[3], out endTime);
                         }
 
-                        var trades = await _api.GetAggregateTradesAsync(symbol, startTime: startTime, endTime: endTime, token: token);
+                        var trades = await _api.GetAggregateTradesInAsync(symbol, startTime, endTime, token: token);
 
                         lock (_consoleSync)
                         {
@@ -383,7 +383,7 @@ namespace BinanceConsoleApp
                             trades = _tradesCache.Trades.Reverse().Take(limit); // get local cache.
 
                         if (trades == null)
-                            trades = (await _api.GetAggregateTradesAsync(symbol, limit: limit, token: token)).Reverse();
+                            trades = (await _api.GetAggregateTradesAsync(symbol, limit, token: token)).Reverse();
 
                         lock (_consoleSync)
                         {
