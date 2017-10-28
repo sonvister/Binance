@@ -70,7 +70,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetTimestampAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetTimestampAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -105,7 +105,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetOrderBookAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrderBookAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -117,7 +117,7 @@ namespace Binance.Api
             try { return DeserializeAggregateTrades(symbol, json); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetAggregateTradesAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetAggregateTradesAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -132,7 +132,7 @@ namespace Binance.Api
             try { return DeserializeAggregateTrades(symbol, json); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetAggregateTradesFromAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetAggregateTradesFromAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -149,7 +149,7 @@ namespace Binance.Api
             try { return DeserializeAggregateTrades(symbol, json); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetAggregateTradesInAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetAggregateTradesInAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -186,7 +186,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetCandlesticksAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetCandlesticksAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -220,7 +220,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(Get24hrStatsAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(Get24hrStatsAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -242,7 +242,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetPricesAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetPricesAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -271,7 +271,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetOrderBookTopsAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrderBookTopsAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -309,7 +309,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(PlaceAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(PlaceAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
 
             return order;
@@ -325,7 +325,7 @@ namespace Binance.Api
             var json = await JsonApi.PlaceOrderAsync(user, clientOrder.Symbol, clientOrder.Side, clientOrder.Type, clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce, clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, true, token);
 
             if (json != BinanceJsonApi.SuccessfulTestResponse)
-                throw new BinanceApiException($"{nameof(PlaceAsync)} failed order placement test.");
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(TestPlaceAsync)} failed order placement test.");
         }
 
         public virtual async Task<Order> GetOrderAsync(IBinanceApiUser user, string symbol, long orderId, long recvWindow = default, CancellationToken token = default)
@@ -339,7 +339,7 @@ namespace Binance.Api
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetOrderAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrderAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
 
             return order;
@@ -356,7 +356,7 @@ namespace Binance.Api
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetOrderAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrderAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
 
             return order;
@@ -373,7 +373,7 @@ namespace Binance.Api
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetOrderAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrderAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
 
             return order;
@@ -391,7 +391,7 @@ namespace Binance.Api
             try { return JObject.Parse(json)["clientOrderId"].Value<string>(); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(CancelOrderAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(CancelOrderAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -406,7 +406,7 @@ namespace Binance.Api
             try { return JObject.Parse(json)["clientOrderId"].Value<string>(); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(CancelOrderAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(CancelOrderAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -440,7 +440,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetOpenOrdersAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOpenOrdersAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -466,7 +466,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetOrdersAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrdersAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -503,7 +503,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetAccountAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetAccountAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -535,7 +535,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetTradesAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetTradesAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -556,11 +556,11 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(WithdrawAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(WithdrawAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
 
             if (!success)
-                throw new BinanceApiException($"Binance API ({nameof(WithdrawAsync)}) failed: \"{message ?? "[No Message]"}\"");
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(WithdrawAsync)} failed: \"{message ?? "[No Message]"}\"");
         }
 
         public virtual async Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceApiUser user, string asset, DepositStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default)
@@ -596,11 +596,11 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetDepositsAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetDepositsAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
 
             if (!success)
-                throw new BinanceApiException($"Binance API ({nameof(GetDepositsAsync)}) failed.");
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetDepositsAsync)} failed.");
 
             return deposits;
         }
@@ -640,11 +640,11 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(GetWithdrawalsAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetWithdrawalsAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
 
             if (!success)
-                throw new BinanceApiException($"Binance API ({nameof(GetWithdrawalsAsync)}) failed.");
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetWithdrawalsAsync)} failed.");
 
             return withdrawals;
         }
@@ -661,7 +661,7 @@ namespace Binance.Api
             try { return JObject.Parse(json)["listenKey"].Value<string>(); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"Binance API ({nameof(UserStreamStartAsync)}) failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(UserStreamStartAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -671,7 +671,7 @@ namespace Binance.Api
                 .ConfigureAwait(false);
 
             if (json != BinanceJsonApi.SuccessfulTestResponse)
-                throw new BinanceApiException($"{nameof(UserStreamKeepAliveAsync)} failed.");
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(UserStreamKeepAliveAsync)} failed.");
         }
 
         public async Task UserStreamCloseAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default)
@@ -680,7 +680,7 @@ namespace Binance.Api
                 .ConfigureAwait(false);
 
             if (json != BinanceJsonApi.SuccessfulTestResponse)
-                throw new BinanceApiException($"{nameof(UserStreamKeepAliveAsync)} failed.");
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(UserStreamCloseAsync)} failed.");
         }
 
         #endregion User Data Stream
