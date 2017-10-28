@@ -41,7 +41,7 @@ namespace Binance.Cache
         /// <param name="user"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SubscribeAsync(IBinanceUser user, CancellationToken token = default);
+        Task SubscribeAsync(IBinanceApiUser user, CancellationToken token = default);
 
         /// <summary>
         /// 
@@ -50,7 +50,7 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SubscribeAsync(IBinanceUser user, Action<AccountCacheEventArgs> callback, CancellationToken token = default);
+        Task SubscribeAsync(IBinanceApiUser user, Action<AccountCacheEventArgs> callback, CancellationToken token = default);
 
         #endregion Public Methods
     }

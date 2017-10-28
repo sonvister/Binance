@@ -202,7 +202,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task PlaceOrderThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
             var orderSide = OrderSide.Sell;
             var orderType = OrderType.Market;
@@ -220,7 +220,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task GetOrderThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
             using (var api = new BinanceJsonApi())
@@ -234,7 +234,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task CancelOrderThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
             using (var api = new BinanceJsonApi())
@@ -248,7 +248,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task GetOpenOrdersThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
             using (var api = new BinanceJsonApi())
@@ -261,7 +261,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task GetOrdersThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
             using (var api = new BinanceJsonApi())
@@ -274,7 +274,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task GetAccountThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
 
             using (var api = new BinanceJsonApi())
             {
@@ -285,7 +285,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task GetTradesThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
             using (var api = new BinanceJsonApi())
@@ -297,7 +297,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task WithdrawThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var asset = Asset.BTC;
             var address = "12345678901234567890";
             decimal amount = 1;
@@ -316,7 +316,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task GetDepositsThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
 
             using (var api = new BinanceJsonApi())
             {
@@ -327,7 +327,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task GetWithdrawalsThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
 
             using (var api = new BinanceJsonApi())
             {
@@ -342,7 +342,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task UserStreamStartThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
 
             using (var api = new BinanceJsonApi())
             {
@@ -353,7 +353,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task UserStreamKeepAliveThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var listenKey = "listen-key";
 
             using (var api = new BinanceJsonApi())
@@ -367,7 +367,7 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task UserStreamCloseThrows()
         {
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var listenKey = "listen-key";
 
             using (var api = new BinanceJsonApi())

@@ -2,7 +2,7 @@
 
 namespace Binance.Api
 {
-    public interface IBinanceUser : IDisposable
+    public interface IBinanceApiUser : IDisposable
     {
         #region Public Properties
 

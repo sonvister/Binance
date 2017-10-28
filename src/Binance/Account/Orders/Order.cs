@@ -13,7 +13,7 @@ namespace Binance.Account.Orders
         /// <summary>
         /// Get the user.
         /// </summary>
-        public IBinanceUser User { get; internal set; }
+        public IBinanceApiUser User { get; internal set; }
 
         /// <summary>
         /// Get the symbol.
@@ -102,7 +102,7 @@ namespace Binance.Account.Orders
         /// <param name="icebergQuantity"></param>
         /// <param name="timestamp"></param>
         public Order(
-            IBinanceUser user,
+            IBinanceApiUser user,
             string symbol,
             long id,
             string clientOrderId,
@@ -156,7 +156,7 @@ namespace Binance.Account.Orders
         /// <summary>
         /// Internal constructor.
         /// </summary>
-        internal Order(IBinanceUser user)
+        internal Order(IBinanceApiUser user)
         {
             Throw.IfNull(user, nameof(user));
 

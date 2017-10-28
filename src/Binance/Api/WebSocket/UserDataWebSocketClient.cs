@@ -37,7 +37,7 @@ namespace Binance.Api.WebSocket
 
         #region Public Properties
 
-        public IBinanceUser User { get; private set; }
+        public IBinanceApiUser User { get; private set; }
 
         #endregion Public Properties
 
@@ -71,10 +71,10 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(IBinanceUser user, CancellationToken token = default)
+        public virtual Task SubscribeAsync(IBinanceApiUser user, CancellationToken token = default)
             => SubscribeAsync(user, null, token);
 
-        public virtual async Task SubscribeAsync(IBinanceUser user, Action<UserDataEventArgs> callback, CancellationToken token = default)
+        public virtual async Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 

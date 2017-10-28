@@ -13,7 +13,7 @@ namespace Binance.Account
         /// <summary>
         /// Get the account user.
         /// </summary>
-        public IBinanceUser User { get; private set; }
+        public IBinanceApiUser User { get; private set; }
 
         /// <summary>
         /// Get the account commissions.
@@ -41,7 +41,7 @@ namespace Binance.Account
         /// <param name="commissions">The account commissions.</param>
         /// <param name="status">The account status.</param>
         /// <param name="balances">The account balances.</param>
-        public AccountInfo(IBinanceUser user, AccountCommissions commissions, AccountStatus status, IEnumerable<AccountBalance> balances = null)
+        public AccountInfo(IBinanceApiUser user, AccountCommissions commissions, AccountStatus status, IEnumerable<AccountBalance> balances = null)
         {
             Throw.IfNull(user, nameof(user));
             Throw.IfNull(commissions, nameof(commissions));

@@ -61,10 +61,10 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public Task SubscribeAsync(IBinanceUser user, CancellationToken token = default)
+        public Task SubscribeAsync(IBinanceApiUser user, CancellationToken token = default)
             => SubscribeAsync(user, null, token);
 
-        public Task SubscribeAsync(IBinanceUser user, Action<AccountCacheEventArgs> callback, CancellationToken token = default)
+        public Task SubscribeAsync(IBinanceApiUser user, Action<AccountCacheEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 

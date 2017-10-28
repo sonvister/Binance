@@ -5,9 +5,9 @@ using System.Text;
 namespace Binance.Api
 {
     /// <summary>
-    /// Binance user <see cref="IBinanceUser"/> implementation.
+    /// Binance API user <see cref="IBinanceApiUser"/> implementation.
     /// </summary>
-    public sealed class BinanceUser : IBinanceUser
+    public sealed class BinanceApiUser : IBinanceApiUser
     {
         #region Public Properties
 
@@ -24,13 +24,13 @@ namespace Binance.Api
         #region Constructors
 
         /// <summary>
-        /// Construct an <see cref="IBinanceUser"/> instance providing an API
+        /// Construct an <see cref="IBinanceApiUser"/> instance providing an API
         /// key and optional API secret. The API secret is not required for 
         /// the user stream methods, but is required for other account methods.
         /// </summary>
         /// <param name="key">The user's API key.</param>
         /// <param name="secret">The user's API secret (optional).</param>
-        public BinanceUser(string key, string secret = null)
+        public BinanceApiUser(string key, string secret = null)
         {
             Throw.IfNullOrWhiteSpace(key, nameof(key));
 

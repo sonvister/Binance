@@ -117,7 +117,7 @@ namespace Binance
         /// <param name="isTestOnly">If true, test new order creation and signature/recvWindow; creates and validates a new order but does not send it into the matching engine.</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> PlaceOrderAsync(IBinanceUser user, string symbol, OrderSide side, OrderType type, decimal quantity, decimal price, string newClientOrderId = null, TimeInForce? timeInForce = null, decimal stopPrice = 0, decimal icebergQty = 0, long recvWindow = default, bool isTestOnly = false, CancellationToken token = default);
+        Task<string> PlaceOrderAsync(IBinanceApiUser user, string symbol, OrderSide side, OrderType type, decimal quantity, decimal price, string newClientOrderId = null, TimeInForce? timeInForce = null, decimal stopPrice = 0, decimal icebergQty = 0, long recvWindow = default, bool isTestOnly = false, CancellationToken token = default);
 
         /// <summary>
         /// Check an order's status. Either orderId or origClientOrderId must be sent.
@@ -129,7 +129,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetOrderAsync(IBinanceUser user, string symbol, long orderId = BinanceApi.NullId, string origClientOrderId = null, long recvWindow = default, CancellationToken token = default);
+        Task<string> GetOrderAsync(IBinanceApiUser user, string symbol, long orderId = BinanceApi.NullId, string origClientOrderId = null, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Cancel an active order.
@@ -142,7 +142,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> CancelOrderAsync(IBinanceUser user, string symbol, long orderId = BinanceApi.NullId, string origClientOrderId = null, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default);
+        Task<string> CancelOrderAsync(IBinanceApiUser user, string symbol, long orderId = BinanceApi.NullId, string origClientOrderId = null, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get all open orders on a symbol.
@@ -152,7 +152,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetOpenOrdersAsync(IBinanceUser user, string symbol, long recvWindow = default, CancellationToken token = default);
+        Task<string> GetOpenOrdersAsync(IBinanceApiUser user, string symbol, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get all account orders; active, canceled, or filled.
@@ -165,7 +165,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetOrdersAsync(IBinanceUser user, string symbol, long orderId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default);
+        Task<string> GetOrdersAsync(IBinanceApiUser user, string symbol, long orderId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get current account information.
@@ -174,7 +174,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetAccountAsync(IBinanceUser user, long recvWindow = default, CancellationToken token = default);
+        Task<string> GetAccountAsync(IBinanceApiUser user, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get trades for a specific account and symbol.
@@ -186,7 +186,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetTradesAsync(IBinanceUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default);
+        Task<string> GetTradesAsync(IBinanceApiUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Submit a withdraw request.
@@ -199,7 +199,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> WithdrawAsync(IBinanceUser user, string asset, string address, decimal amount, string name = null, long recvWindow = default, CancellationToken token = default);
+        Task<string> WithdrawAsync(IBinanceApiUser user, string asset, string address, decimal amount, string name = null, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get the deposit history.
@@ -212,7 +212,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetDepositsAsync(IBinanceUser user, string asset = null, DepositStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default);
+        Task<string> GetDepositsAsync(IBinanceApiUser user, string asset = null, DepositStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get the withdrawal history.
@@ -225,7 +225,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetWithdrawalsAsync(IBinanceUser user, string asset = null, WithdrawalStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default);
+        Task<string> GetWithdrawalsAsync(IBinanceApiUser user, string asset = null, WithdrawalStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default);
 
         #endregion Account
 
@@ -237,7 +237,7 @@ namespace Binance
         /// <param name="user"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> UserStreamStartAsync(IBinanceUser user, CancellationToken token = default);
+        Task<string> UserStreamStartAsync(IBinanceApiUser user, CancellationToken token = default);
 
         /// <summary>
         /// Ping a user data stream to prevent a time out.
@@ -246,7 +246,7 @@ namespace Binance
         /// <param name="listenKey"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> UserStreamKeepAliveAsync(IBinanceUser user, string listenKey, CancellationToken token = default);
+        Task<string> UserStreamKeepAliveAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default);
 
         /// <summary>
         /// Close out a user data stream.
@@ -255,7 +255,7 @@ namespace Binance
         /// <param name="listenKey"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> UserStreamCloseAsync(IBinanceUser user, string listenKey, CancellationToken token = default);
+        Task<string> UserStreamCloseAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default);
 
         #endregion User Stream
     }

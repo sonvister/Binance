@@ -40,11 +40,6 @@
         public decimal IcebergQuantity { get; set; }
 
         /// <summary>
-        /// Get or set the flag for test only placement.
-        /// </summary>
-        public bool IsTestOnly { get; set; }
-
-        /// <summary>
         /// Get the transact time.
         /// </summary>
         public long Timestamp { get; internal set; }

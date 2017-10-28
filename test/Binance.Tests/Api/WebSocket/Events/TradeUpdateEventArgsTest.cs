@@ -12,7 +12,7 @@ namespace Binance.Api.WebSocket.Events.Tests
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
             var id = 123456;
             var clientOrderId = "test-order";
@@ -53,7 +53,7 @@ namespace Binance.Api.WebSocket.Events.Tests
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
             var id = 123456;
             var clientOrderId = "test-order";

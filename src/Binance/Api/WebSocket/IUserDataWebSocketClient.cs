@@ -37,7 +37,7 @@ namespace Binance.Api.WebSocket
         /// <param name="user">The user.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(IBinanceUser user, CancellationToken token = default);
+        Task SubscribeAsync(IBinanceApiUser user, CancellationToken token = default);
 
         /// <summary>
         /// Subscribe to the specified user key and begin receiving account
@@ -49,7 +49,7 @@ namespace Binance.Api.WebSocket
         /// <param name="callback">An event callback.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(IBinanceUser user, Action<UserDataEventArgs> callback, CancellationToken token = default);
+        Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token = default);
 
         #endregion Public Methods
     }

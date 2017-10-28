@@ -11,7 +11,7 @@ namespace Binance.Api.WebSocket.Events.Tests
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);
             var balances = new AccountBalance[] { new AccountBalance("BTC", 0.1m, 0.2m) };
@@ -28,7 +28,7 @@ namespace Binance.Api.WebSocket.Events.Tests
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            var user = new BinanceUser("api-key");
+            var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);
             var balances = new AccountBalance[] { new AccountBalance("BTC", 0.1m, 0.2m) };

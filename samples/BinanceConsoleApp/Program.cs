@@ -29,7 +29,7 @@ namespace BinanceConsoleApp
         private static IServiceProvider _serviceProvider;
 
         private static IBinanceApi _api;
-        private static IBinanceUser _user;
+        private static IBinanceApiUser _user;
 
         private static IOrderBookCache _orderBookCache;
         private static ICandlesticksCache _klineCache;
@@ -81,7 +81,7 @@ namespace BinanceConsoleApp
 
                 if (!string.IsNullOrEmpty(key))
                 {
-                    _user = new BinanceUser(key, secret);
+                    _user = new BinanceApiUser(key, secret);
                 }
 
                 _api = _serviceProvider.GetService<IBinanceApi>();
@@ -706,17 +706,27 @@ namespace BinanceConsoleApp
                             Symbol = symbol,
                             Side = (OrderSide)side,
                             Quantity = quantity,
-                            StopPrice = stopPrice,
-                            IsTestOnly = _isOrdersTestOnly // *** NOTICE *** 
-                        };
+                            StopPrice = stopPrice                        };
 
-                        var order = await _api.PlaceAsync(_user, clientOrder, token: token);
-
-                        if (order != null)
+                        if (_isOrdersTestOnly)
                         {
+                            await _api.TestPlaceAsync(_user, clientOrder, token: token);
+
                             lock (_consoleSync)
                             {
-                                Console.WriteLine($"{(clientOrder.IsTestOnly ? "~ TEST ~ " : "")}>> MARKET {order.Side} order (ID: {order.Id}) placed for {order.OriginalQuantity.ToString("0.00000000")} {order.Symbol} @ {order.Price.ToString("0.00000000")}.");
+                                Console.WriteLine($"~ TEST ~ >> MARKET {clientOrder.Side} order (ID: {clientOrder.Id}) placed for {clientOrder.Quantity.ToString("0.00000000")} {clientOrder.Symbol}");
+                            }
+                        }
+                        else
+                        {
+                            var order = await _api.PlaceAsync(_user, clientOrder, token: token);
+
+                            if (order != null)
+                            {
+                                lock (_consoleSync)
+                                {
+                                    Console.WriteLine($">> MARKET {order.Side} order (ID: {order.Id}) placed for {order.OriginalQuantity.ToString("0.00000000")} {order.Symbol} @ {order.Price.ToString("0.00000000")}");
+                                }
                             }
                         }
                     }
@@ -772,17 +782,28 @@ namespace BinanceConsoleApp
                             Side = (OrderSide)side,
                             Quantity = quantity,
                             Price = price,
-                            StopPrice = stopPrice,
-                            IsTestOnly = _isOrdersTestOnly // *** NOTICE *** 
+                            StopPrice = stopPrice
                         };
 
-                        var order = await _api.PlaceAsync(_user, clientOrder, token: token);
-
-                        if (order != null)
+                        if (_isOrdersTestOnly)
                         {
+                            await _api.TestPlaceAsync(_user, clientOrder, token: token);
+
                             lock (_consoleSync)
                             {
-                                Console.WriteLine($"{(clientOrder.IsTestOnly ? "TEST " : "")}>> LIMIT {order.Side} order (ID: {order.Id}) placed for {order.OriginalQuantity.ToString("0.00000000")} {order.Symbol} @ {order.Price.ToString("0.00000000")}.");
+                                Console.WriteLine($"~ TEST ~ >> MARKET {clientOrder.Side} order (ID: {clientOrder.Id}) placed for {clientOrder.Quantity.ToString("0.00000000")} {clientOrder.Symbol} @ {clientOrder.Price.ToString("0.00000000")}");
+                            }
+                        }
+                        else
+                        {
+                            var order = await _api.PlaceAsync(_user, clientOrder, token: token);
+
+                            if (order != null)
+                            {
+                                lock (_consoleSync)
+                                {
+                                    Console.WriteLine($">> LIMIT {order.Side} order (ID: {order.Id}) placed for {order.OriginalQuantity.ToString("0.00000000")} {order.Symbol} @ {order.Price.ToString("0.00000000")}");
+                                }
                             }
                         }
                     }
