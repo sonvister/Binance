@@ -9,8 +9,8 @@ namespace Binance.Account.Tests
         public void Throws()
         {
             var asset = Asset.BTC;
-            var amount = 1.23m;
-            var timestamp = 1234567890;
+            decimal amount = 1.23m;
+            long timestamp = 1234567890;
             var status = WithdrawalStatus.Completed;
             var address = "0x12345678901234567890";
 
@@ -25,8 +25,8 @@ namespace Binance.Account.Tests
         public void Properties()
         {
             var asset = Asset.BTC;
-            var amount = 1.23m;
-            var timestamp = 1234567890;
+            decimal amount = 1.23m;
+            long timestamp = 1234567890;
             var status = WithdrawalStatus.Completed;
             var address = "0x12345678901234567890";
             var txId = "21436587092143658709";
