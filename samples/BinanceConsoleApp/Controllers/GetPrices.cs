@@ -4,16 +4,16 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class GetPrices : IHandleCommand
+    internal class GetPrices : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.Equals("prices", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            var prices = await Program._api.GetPricesAsync(token);
+            var prices = await Program.Api.GetPricesAsync(token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 foreach (var price in prices)

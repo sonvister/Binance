@@ -10,7 +10,7 @@ namespace Binance.Cache.Events
         /// <summary>
         /// Get the account.
         /// </summary>
-        public AccountInfo Account { get; private set; }
+        public AccountInfo Account { get; }
 
         #endregion Public Properties
 

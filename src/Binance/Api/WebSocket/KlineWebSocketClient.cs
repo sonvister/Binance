@@ -48,7 +48,7 @@ namespace Binance.Api.WebSocket
 
             Symbol = symbol.FormatSymbol();
 
-            if (_isSubscribed)
+            if (IsSubscribed)
                 throw new InvalidOperationException($"{nameof(KlineWebSocketClient)} is already subscribed to symbol: \"{symbol}\"");
 
             return SubscribeAsync($"{Symbol.ToLower()}@kline_{interval.AsString()}", json =>
@@ -85,7 +85,7 @@ namespace Binance.Api.WebSocket
 
             try
             {
-                _logger?.LogTrace($"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJson)}: \"{json}\"");
+                Logger?.LogTrace($"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJson)}: \"{json}\"");
 
                 var jObject = JObject.Parse(json);
 
@@ -93,7 +93,7 @@ namespace Binance.Api.WebSocket
 
                 if (eventType == "kline")
                 {
-                    var symbol = jObject["s"].Value<string>();
+                    //var symbol = jObject["s"].Value<string>();
                     var eventTime = jObject["E"].Value<long>();
 
                     var firstTradeId = jObject["k"]["f"].Value<long>();
@@ -122,7 +122,7 @@ namespace Binance.Api.WebSocket
                 }
                 else
                 {
-                    _logger?.LogWarning($"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
+                    Logger?.LogWarning($"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
                 }
             }
             catch (OperationCanceledException) { }

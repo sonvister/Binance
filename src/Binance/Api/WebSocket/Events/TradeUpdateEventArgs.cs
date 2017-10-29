@@ -10,12 +10,12 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// Get the trade.
         /// </summary>
-        public AccountTrade Trade { get; private set; }
+        public AccountTrade Trade { get; }
 
         /// <summary>
         /// Get the quantity of the last filled trade
         /// </summary>
-        public decimal QuantityOfLastFilledTrade { get; private set; }
+        public decimal QuantityOfLastFilledTrade { get; }
 
         #endregion Public Properties
 

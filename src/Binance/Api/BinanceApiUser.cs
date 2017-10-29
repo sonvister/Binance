@@ -11,7 +11,7 @@ namespace Binance.Api
     {
         #region Public Properties
 
-        public string ApiKey { get; private set; }
+        public string ApiKey { get; }
 
         #endregion Public Properties
 
@@ -60,9 +60,9 @@ namespace Binance.Api
 
         #region IDisposable
 
-        private bool _disposed = false;
+        private bool _disposed;
 
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (_disposed)
                 return;

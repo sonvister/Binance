@@ -1,12 +1,11 @@
-﻿using Binance.Account;
-using Binance.Account.Orders;
-using Binance.Api;
-using Binance.Market;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Account;
+using Binance.Account.Orders;
+using Binance.Market;
 
-namespace Binance
+namespace Binance.Api.Json
 {
     public interface IBinanceJsonApi : IDisposable
     {
@@ -80,7 +79,7 @@ namespace Binance
         /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> Get24hStatsAsync(string symbol, CancellationToken token = default);
+        Task<string> Get24HourStatisticsAsync(string symbol, CancellationToken token = default);
 
         /// <summary>
         /// Get latest price for all symbols.

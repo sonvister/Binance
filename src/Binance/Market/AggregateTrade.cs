@@ -9,17 +9,17 @@ namespace Binance.Market
         /// <summary>
         /// Get the first trade ID.
         /// </summary>
-        public long FirstTradeId { get; private set; }
+        public long FirstTradeId { get; }
 
         /// <summary>
         /// Get the last trade ID.
         /// </summary>
-        public long LastTradeId { get; private set; }
+        public long LastTradeId { get; }
 
         /// <summary>
         /// Get flag indicating if the buyer the maker.
         /// </summary>
-        public bool IsBuyerMaker { get; private set; }
+        public bool IsBuyerMaker { get; }
 
         #endregion Public Properties
 

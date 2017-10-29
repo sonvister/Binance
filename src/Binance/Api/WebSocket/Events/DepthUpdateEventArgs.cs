@@ -13,32 +13,32 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// The symbol.
         /// </summary>
-        public string Symbol { get; private set; }
+        public string Symbol { get; }
 
         /// <summary>
         /// The event time.
         /// </summary>
-        public long Timestamp { get; private set; }
+        public long Timestamp { get; }
 
         /// <summary>
         /// The first update ID (inclusive).
         /// </summary>
-        public long FirstUpdateId { get; private set; }
+        public long FirstUpdateId { get; }
 
         /// <summary>
         /// The last update ID (inclusive).
         /// </summary>
-        public long LastUpdateId { get; private set; }
+        public long LastUpdateId { get; }
 
         /// <summary>
         /// The bids (price and quantity) to update.
         /// </summary>
-        public IEnumerable<(decimal, decimal)> Bids { get; private set; }
+        public IEnumerable<(decimal, decimal)> Bids { get; }
 
         /// <summary>
         /// The asks (price and quantity) to update.
         /// </summary>
-        public IEnumerable<(decimal, decimal)> Asks { get; private set; }
+        public IEnumerable<(decimal, decimal)> Asks { get; }
 
         #endregion Public Properties
 
@@ -49,6 +49,8 @@ namespace Binance.Api.WebSocket.Events
         /// </summary>
         /// <param name="timestamp">The event time.</param>
         /// <param name="symbol">The symbol.</param>
+        /// <param name="firstUpdateId"></param>
+        /// <param name="lastUpdateId"></param>
         /// <param name="bids">The bids.</param>
         /// <param name="asks">The asks.</param>
         public DepthUpdateEventArgs(long timestamp, string symbol, long firstUpdateId, long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)

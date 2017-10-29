@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class GetCandlesticks : IHandleCommand
+    internal class GetCandlesticks : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -41,13 +41,13 @@ namespace BinanceConsoleApp.Controllers
             IEnumerable<Candlestick> candlesticks = null;
 
             // If live order book is active (for symbol), get cached data.
-            if (Program._klineCache != null && Program._klineCache.Candlesticks.FirstOrDefault()?.Symbol == symbol)
-                candlesticks = Program._klineCache.Candlesticks.Reverse().Take(limit); // get local cache.
+            if (Program.KlineCache != null && Program.KlineCache.Candlesticks.FirstOrDefault()?.Symbol == symbol)
+                candlesticks = Program.KlineCache.Candlesticks.Reverse().Take(limit); // get local cache.
 
             if (candlesticks == null)
-                candlesticks = await Program._api.GetCandlesticksAsync(symbol, interval, limit, token: token);
+                candlesticks = await Program.Api.GetCandlesticksAsync(symbol, interval, limit, token: token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 foreach (var candlestick in candlesticks)

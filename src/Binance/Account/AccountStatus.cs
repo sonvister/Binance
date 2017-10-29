@@ -10,17 +10,17 @@
         /// <summary>
         /// Get the flag indicating if the account can trade.
         /// </summary>
-        public bool CanTrade { get; private set; }
+        public bool CanTrade { get; }
 
         /// <summary>
         /// Get the flag indicating if the account can withdraw.
         /// </summary>
-        public bool CanWithdraw { get; private set; }
+        public bool CanWithdraw { get; }
 
         /// <summary>
         /// Get the flag indicating if the account can deposit.
         /// </summary>
-        public bool CanDeposit { get; private set; }
+        public bool CanDeposit { get; }
 
         #endregion Public Properties
 

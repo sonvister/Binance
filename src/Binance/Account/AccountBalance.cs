@@ -12,17 +12,17 @@ namespace Binance.Account
         /// <summary>
         /// Get the asset.
         /// </summary>
-        public string Asset { get; private set; }
+        public string Asset { get; }
 
         /// <summary>
         /// Get the free (available) amount.
         /// </summary>
-        public decimal Free { get; private set; }
+        public decimal Free { get; }
 
         /// <summary>
         /// Get the locked (on hold) amount.
         /// </summary>
-        public decimal Locked { get; private set; }
+        public decimal Locked { get; }
 
         #endregion Public Properties
 

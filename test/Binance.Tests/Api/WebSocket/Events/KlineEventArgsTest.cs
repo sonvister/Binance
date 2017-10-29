@@ -1,8 +1,9 @@
-﻿using Binance.Market;
-using System;
+﻿using System;
+using Binance.Api.WebSocket.Events;
+using Binance.Market;
 using Xunit;
 
-namespace Binance.Api.WebSocket.Events.Tests
+namespace Binance.Tests.Api.WebSocket.Events
 {
     public class KlineEventArgsTest
     {
@@ -10,23 +11,23 @@ namespace Binance.Api.WebSocket.Events.Tests
         public void Throws()
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            long firstTradeId = 1234567890;
-            long lastTradeId = 1234567899;
-            var isFinal = true;
+            const long firstTradeId = 1234567890;
+            const long lastTradeId = 1234567899;
+            const bool isFinal = true;
 
             var symbol = Symbol.BTC_USDT;
-            var interval = KlineInterval.Hour;
-            long openTime = 1234567890;
-            decimal open = 4950;
-            decimal high = 5100;
-            decimal low = 4900;
-            decimal close = 5050;
-            decimal volume = 1000;
-            long closeTime = 2345678901;
-            long quoteAssetVolume = 5000000;
-            int numberOfTrades = 555555;
-            decimal takerBuyBaseAssetVolume = 4444;
-            decimal takerBuyQuoteAssetVolume = 333;
+            const KlineInterval interval = KlineInterval.Hour;
+            const long openTime = 1234567890;
+            const decimal open = 4950;
+            const decimal high = 5100;
+            const decimal low = 4900;
+            const decimal close = 5050;
+            const decimal volume = 1000;
+            const long closeTime = 2345678901;
+            const long quoteAssetVolume = 5000000;
+            const int numberOfTrades = 555555;
+            const decimal takerBuyBaseAssetVolume = 4444;
+            const decimal takerBuyQuoteAssetVolume = 333;
 
             var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
 
@@ -42,23 +43,23 @@ namespace Binance.Api.WebSocket.Events.Tests
         public void Properties()
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            long firstTradeId = 1234567890;
-            long lastTradeId = 1234567899;
-            var isFinal = true;
+            const long firstTradeId = 1234567890;
+            const long lastTradeId = 1234567899;
+            const bool isFinal = true;
 
             var symbol = Symbol.BTC_USDT;
-            var interval = KlineInterval.Hour;
-            long openTime = 1234567890;
-            decimal open = 4950;
-            decimal high = 5100;
-            decimal low = 4900;
-            decimal close = 5050;
-            decimal volume = 1000;
-            long closeTime = 2345678901;
-            long quoteAssetVolume = 5000000;
-            int numberOfTrades = 555555;
-            decimal takerBuyBaseAssetVolume = 4444;
-            decimal takerBuyQuoteAssetVolume = 333;
+            const KlineInterval interval = KlineInterval.Hour;
+            const long openTime = 1234567890;
+            const decimal open = 4950;
+            const decimal high = 5100;
+            const decimal low = 4900;
+            const decimal close = 5050;
+            const decimal volume = 1000;
+            const long closeTime = 2345678901;
+            const long quoteAssetVolume = 5000000;
+            const int numberOfTrades = 555555;
+            const decimal takerBuyBaseAssetVolume = 4444;
+            const decimal takerBuyQuoteAssetVolume = 333;
 
             var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
 

@@ -13,12 +13,12 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// Get the event time.
         /// </summary>
-        public long Timestamp { get; private set; }
+        public long Timestamp { get; }
 
         /// <summary>
         /// Get the aggregate trade.
         /// </summary>
-        public AggregateTrade Trade { get; private set; }
+        public AggregateTrade Trade { get; }
 
         #endregion Public Properties
 

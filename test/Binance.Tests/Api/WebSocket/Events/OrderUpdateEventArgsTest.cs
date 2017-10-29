@@ -1,8 +1,10 @@
-﻿using Binance.Account.Orders;
-using System;
+﻿using System;
+using Binance.Account.Orders;
+using Binance.Api;
+using Binance.Api.WebSocket.Events;
 using Xunit;
 
-namespace Binance.Api.WebSocket.Events.Tests
+namespace Binance.Tests.Api.WebSocket.Events
 {
     public class OrderUpdateEventArgsTest
     {
@@ -13,23 +15,23 @@ namespace Binance.Api.WebSocket.Events.Tests
 
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
-            var id = 123456;
-            var clientOrderId = "test-order";
-            decimal price = 4999;
-            decimal originalQuantity = 1;
-            decimal executedQuantity = 0.5m;
-            var status = OrderStatus.PartiallyFilled;
-            var timeInForce = TimeInForce.IOC;
-            var orderType = OrderType.Market;
-            var orderSide = OrderSide.Sell;
-            decimal stopPrice = 5000;
-            decimal icebergQuantity = 0.1m;
+            const long id = 123456;
+            const string clientOrderId = "test-order";
+            const decimal price = 4999;
+            const decimal originalQuantity = 1;
+            const decimal executedQuantity = 0.5m;
+            const OrderStatus status = OrderStatus.PartiallyFilled;
+            const TimeInForce timeInForce = TimeInForce.IOC;
+            const OrderType orderType = OrderType.Market;
+            const OrderSide orderSide = OrderSide.Sell;
+            const decimal stopPrice = 5000;
+            const decimal icebergQuantity = 0.1m;
 
             var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
 
-            var orderExecutionType = OrderExecutionType.New;
-            var orderRejectedReason = OrderRejectedReason.None;
-            var newClientOrderId = "new-test-order";
+            const OrderExecutionType orderExecutionType = OrderExecutionType.New;
+            const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
+            const string newClientOrderId = "new-test-order";
 
             Assert.Throws<ArgumentException>("timestamp", () => new OrderUpdateEventArgs(-1, order, orderExecutionType, orderRejectedReason, newClientOrderId));
             Assert.Throws<ArgumentException>("timestamp", () => new OrderUpdateEventArgs(0, order, orderExecutionType, orderRejectedReason, newClientOrderId));
@@ -43,23 +45,23 @@ namespace Binance.Api.WebSocket.Events.Tests
 
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
-            var id = 123456;
-            var clientOrderId = "test-order";
-            decimal price = 4999;
-            decimal originalQuantity = 1;
-            decimal executedQuantity = 0.5m;
-            var status = OrderStatus.PartiallyFilled;
-            var timeInForce = TimeInForce.IOC;
-            var orderType = OrderType.Market;
-            var orderSide = OrderSide.Sell;
-            decimal stopPrice = 5000;
-            decimal icebergQuantity = 0.1m;
+            const long id = 123456;
+            const string clientOrderId = "test-order";
+            const decimal price = 4999;
+            const decimal originalQuantity = 1;
+            const decimal executedQuantity = 0.5m;
+            const OrderStatus status = OrderStatus.PartiallyFilled;
+            const TimeInForce timeInForce = TimeInForce.IOC;
+            const OrderType orderType = OrderType.Market;
+            const OrderSide orderSide = OrderSide.Sell;
+            const decimal stopPrice = 5000;
+            const decimal icebergQuantity = 0.1m;
 
             var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
 
-            var orderExecutionType = OrderExecutionType.New;
-            var orderRejectedReason = OrderRejectedReason.None;
-            var newClientOrderId = "new-test-order";
+            const OrderExecutionType orderExecutionType = OrderExecutionType.New;
+            const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
+            const string newClientOrderId = "new-test-order";
 
             var args = new OrderUpdateEventArgs(timestamp, order, orderExecutionType, orderRejectedReason, newClientOrderId);
 

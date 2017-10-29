@@ -27,7 +27,7 @@ namespace Binance.Api.Json
 
         #region Public Properties
 
-        public IRateLimiter RateLimiter { get; private set; }
+        public IRateLimiter RateLimiter { get; }
 
         #endregion Public Properties
 
@@ -39,17 +39,17 @@ namespace Binance.Api.Json
 
         #region Private Fields
 
-        private HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
         private long _timestampOffset;
         
         private DateTime _timestampOffsetUpdatedAt;
 
-        private SemaphoreSlim _timestampOffsetSync;
+        private readonly SemaphoreSlim _timestampOffsetSync;
 
-        private BinanceJsonApiOptions _options;
+        private readonly BinanceJsonApiOptions _options;
 
-        private ILogger<BinanceJsonApi> _logger;
+        private readonly ILogger<BinanceJsonApi> _logger;
 
         #endregion Private Fields
 
@@ -160,7 +160,7 @@ namespace Binance.Api.Json
             return GetAsync($"/api/v1/klines?{totalParams}", token);
         }
 
-        public virtual Task<string> Get24hStatsAsync(string symbol, CancellationToken token = default)
+        public virtual Task<string> Get24HourStatisticsAsync(string symbol, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -169,12 +169,12 @@ namespace Binance.Api.Json
 
         public virtual Task<string> GetPricesAsync(CancellationToken token = default)
         {
-            return GetAsync($"/api/v1/ticker/allPrices", token);
+            return GetAsync("/api/v1/ticker/allPrices", token);
         }
 
         public virtual Task<string> GetOrderBookTopsAsync(CancellationToken token = default)
         {
-            return GetAsync($"/api/v1/ticker/allBookTickers", token);
+            return GetAsync("/api/v1/ticker/allBookTickers", token);
         }
 
         #endregion Market Data
@@ -187,7 +187,7 @@ namespace Binance.Api.Json
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (quantity <= 0)
-                throw new ArgumentException($"Order quantity must be greater than 0.", nameof(quantity));
+                throw new ArgumentException("Order quantity must be greater than 0.", nameof(quantity));
 
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
@@ -398,7 +398,7 @@ namespace Binance.Api.Json
             Throw.IfNullOrWhiteSpace(address, nameof(address));
 
             if (amount <= 0)
-                throw new ArgumentException($"Withdraw amount must be greater than 0.", nameof(amount));
+                throw new ArgumentException("Withdraw amount must be greater than 0.", nameof(amount));
 
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
@@ -503,7 +503,7 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
 
-            return PostAsync($"/api/v1/userDataStream", string.Empty, token, user);
+            return PostAsync("/api/v1/userDataStream", string.Empty, token, user);
         }
 
         public virtual Task<string> UserStreamKeepAliveAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default)
@@ -533,7 +533,7 @@ namespace Binance.Api.Json
         /// <returns></returns>
         private async Task<long> GetTimestampAsync(CancellationToken token = default)
         {
-            await _timestampOffsetSync.WaitAsync();
+            await _timestampOffsetSync.WaitAsync(token);
 
             try
             {
@@ -599,7 +599,7 @@ namespace Binance.Api.Json
 
             if (!bypassDelay)
             {
-                await RateLimiter.DelayAsync()
+                await RateLimiter.DelayAsync(token)
                     .ConfigureAwait(false);
             }
 
@@ -610,35 +610,35 @@ namespace Binance.Api.Json
                     return await response.Content.ReadAsStringAsync()
                         .ConfigureAwait(false);
                 }
-                else if (response.StatusCode == HttpStatusCode.GatewayTimeout)
+
+                if (response.StatusCode == HttpStatusCode.GatewayTimeout)
                 {
                     throw new BinanceUnknownStatusException();
                 }
-                else
+
+                var error = await response.Content.ReadAsStringAsync()
+                    .ConfigureAwait(false);
+
+                var errorCode = 0;
+                string errorMessage = null;
+
+                // ReSharper disable once InvertIf
+                if (!string.IsNullOrWhiteSpace(error) && error.IsJsonObject())
                 {
-                    var error = await response.Content.ReadAsStringAsync()
-                        .ConfigureAwait(false);
-
-                    int errorCode = 0;
-                    string errorMessage = null;
-
-                    if (!string.IsNullOrWhiteSpace(error) && error.IsJsonObject())
+                    try // to parse server error response.
                     {
-                        try // to parse server error response.
-                        {
-                            var jObject = JObject.Parse(error);
+                        var jObject = JObject.Parse(error);
 
-                            errorCode = jObject["code"]?.Value<int>() ?? 0;
-                            errorMessage = jObject["msg"]?.Value<string>() ?? null;
-                        }
-                        catch (Exception e)
-                        {
-                            _logger?.LogError(e, $"Failed to parse server error response: \"{error}\"");
-                        }
+                        errorCode = jObject["code"]?.Value<int>() ?? 0;
+                        errorMessage = jObject["msg"]?.Value<string>();
                     }
-
-                    throw new BinanceHttpException(response.StatusCode, response.ReasonPhrase, errorCode, errorMessage);
+                    catch (Exception e)
+                    {
+                        _logger?.LogError(e, $"Failed to parse server error response: \"{error}\"");
+                    }
                 }
+
+                throw new BinanceHttpException(response.StatusCode, response.ReasonPhrase, errorCode, errorMessage);
             }
         }
 
@@ -646,7 +646,7 @@ namespace Binance.Api.Json
 
         #region IDisposable
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         protected virtual void Dispose(bool disposing)
         {

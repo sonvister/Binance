@@ -8,7 +8,9 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable AccessToDisposedClosure
 
+// ReSharper disable once CheckNamespace
 namespace BinanceConsoleApp
 {
     /// <summary>
@@ -48,7 +50,7 @@ namespace BinanceConsoleApp
                 using (var cts = new CancellationTokenSource())
                 {
                     // Query and display current account balance.
-                    var account = await api.GetAccountInfoAsync(user);
+                    var account = await api.GetAccountInfoAsync(user, token: cts.Token);
 
                     var asset = Asset.BTC;
 
@@ -56,7 +58,7 @@ namespace BinanceConsoleApp
 
                     // Display updated account balance.
                     var task = Task.Run(() =>
-                        cache.SubscribeAsync(user, (e) => Display(e.Account.GetBalance(asset)), cts.Token));
+                        cache.SubscribeAsync(user, (e) => Display(e.Account.GetBalance(asset)), cts.Token), cts.Token);
 
                     Console.WriteLine("...press any key to continue.");
                     Console.ReadKey(true);
@@ -71,10 +73,9 @@ namespace BinanceConsoleApp
         private static void Display(AccountBalance balance)
         {
             Console.WriteLine();
-            if (balance == null)
-                Console.WriteLine($"  [None]");
-            else
-                Console.WriteLine($"  {balance.Asset}:  {balance.Free} (free)   {balance.Locked} (locked)");
+            Console.WriteLine(balance == null
+                ? "  [None]"
+                : $"  {balance.Asset}:  {balance.Free} (free)   {balance.Locked} (locked)");
             Console.WriteLine();
         }
     }

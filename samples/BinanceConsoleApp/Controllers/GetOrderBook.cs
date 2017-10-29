@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class GetOrderBook : IHandleCommand
+    internal class GetOrderBook : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -38,14 +38,14 @@ namespace BinanceConsoleApp.Controllers
             OrderBook orderBook = null;
 
             // If live order book is active (for symbol), get cached data.
-            if (Program._orderBookCache != null && Program._orderBookCache.OrderBook.Symbol == symbol)
-                orderBook = Program._orderBookCache.OrderBook; // get local cache.
+            if (Program.OrderBookCache != null && Program.OrderBookCache.OrderBook.Symbol == symbol)
+                orderBook = Program.OrderBookCache.OrderBook; // get local cache.
 
             // Query order book from API, if needed.
             if (orderBook == null)
-                orderBook = await Program._api.GetOrderBookAsync(symbol, limit, token);
+                orderBook = await Program.Api.GetOrderBookAsync(symbol, limit, token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 orderBook.Print(Console.Out, limit);

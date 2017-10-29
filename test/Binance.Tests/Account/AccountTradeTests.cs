@@ -1,23 +1,24 @@
 ﻿using System;
+using Binance.Account;
 using Xunit;
 
-namespace Binance.Account.Tests
+namespace Binance.Tests.Account
 {
     public class AccountTradeTests
     {
         [Fact]
         public void Throws()
         {
-            string symbol = Symbol.BTC_USDT;
-            long id = 12345;
-            decimal price = 5000;
-            decimal quantity = 1;
-            decimal commission = 10;
-            string commissionAsset = "BNB";
-            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            bool isBuyer = true;
-            bool isMaker = true;
-            bool isBestPriceMatch = true;
+            var symbol = Symbol.BTC_USDT;
+            const long id = 12345;
+            const decimal price = 5000;
+            const decimal quantity = 1;
+            const decimal commission = 10;
+            const string commissionAsset = "BNB";
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            const bool isBuyer = true;
+            const bool isMaker = true;
+            const bool isBestPriceMatch = true;
 
             Assert.Throws<ArgumentNullException>("symbol", () => new AccountTrade(null, id, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch));
 
@@ -35,16 +36,16 @@ namespace Binance.Account.Tests
         [Fact]
         public void Properties()
         {
-            string symbol = Symbol.BTC_USDT;
-            long id = 12345;
-            decimal price = 5000;
-            decimal quantity = 1;
-            decimal commission = 10;
-            string commissionAsset = "BNB";
-            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            bool isBuyer = true;
-            bool isMaker = true;
-            bool isBestPriceMatch = true;
+            var symbol = Symbol.BTC_USDT;
+            const long id = 12345;
+            const decimal price = 5000;
+            const decimal quantity = 1;
+            const decimal commission = 10;
+            const string commissionAsset = "BNB";
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            const bool isBuyer = true;
+            const bool isMaker = true;
+            const bool isBestPriceMatch = true;
 
             var trade = new AccountTrade(symbol, id, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch);
 

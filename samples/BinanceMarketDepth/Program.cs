@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable AccessToDisposedClosure
 
 namespace BinanceMarketDepth
 {
@@ -15,16 +16,16 @@ namespace BinanceMarketDepth
     /// Demonstrate how to maintain an order book cache for a symbol
     /// and respond to real-time depth-of-market update events.
     /// </summary>
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main()
         {
             try
             {
                 // Load configuration.
                 var configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile("appsettings.json", true, false)
                     .Build();
 
                 // Configure services.
@@ -34,7 +35,8 @@ namespace BinanceMarketDepth
                 // Get configuration settings.
                 var limit = 10;
                 var symbol = configuration.GetSection("OrderBook")?["Symbol"] ?? Symbol.BTC_USDT;
-                try { limit = Convert.ToInt32(configuration.GetSection("OrderBook")?["Limit"]); } catch { }
+                try { limit = Convert.ToInt32(configuration.GetSection("OrderBook")?["Limit"]); }
+                catch { /* ignored */ }
                 // NOTE: Currently the Depth WebSocket Endpoint/Client only supports maximum limit of 100.
 
                 using (var api = services.GetService<IBinanceApi>())
@@ -46,7 +48,7 @@ namespace BinanceMarketDepth
 
                     // Monitor order book and display updates in real-time.
                     var task = Task.Run(() =>
-                        cache.SubscribeAsync(symbol, (e) => Display(e.OrderBook), limit, cts.Token));
+                        cache.SubscribeAsync(symbol, (e) => Display(e.OrderBook), limit, cts.Token), cts.Token);
 
                     Console.ReadKey(true); // ...press any key to exit.
 

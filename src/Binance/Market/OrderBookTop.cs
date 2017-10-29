@@ -12,17 +12,17 @@ namespace Binance.Market
         /// <summary>
         /// The symbol.
         /// </summary>
-        public string Symbol { get; private set; }
+        public string Symbol { get; }
 
         /// <summary>
         /// Best bid price and quantity.
         /// </summary>
-        public OrderBookPriceLevel Bid { get; private set; }
+        public OrderBookPriceLevel Bid { get; }
 
         /// <summary>
         /// Best ask price and quantity.
         /// </summary>
-        public OrderBookPriceLevel Ask { get; private set; }
+        public OrderBookPriceLevel Ask { get; }
 
         #endregion Public Properties
 

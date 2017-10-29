@@ -13,27 +13,27 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// Get the event time.
         /// </summary>
-        public long Timestamp { get; private set; }
+        public long Timestamp { get; }
 
         /// <summary>
         /// Get the candlestick.
         /// </summary>
-        public Candlestick Candlestick { get; private set; }
+        public Candlestick Candlestick { get; }
 
         /// <summary>
         /// Get the first trade ID.
         /// </summary>
-        public long FirstTradeId { get; private set; }
+        public long FirstTradeId { get; }
 
         /// <summary>
         /// Get the last trade ID.
         /// </summary>
-        public long LastTradeId { get; private set; }
+        public long LastTradeId { get; }
 
         /// <summary>
         /// Get whether the candlestick is final.
         /// </summary>
-        public bool IsFinal { get; private set; }
+        public bool IsFinal { get; }
 
         #endregion Public Properties
 

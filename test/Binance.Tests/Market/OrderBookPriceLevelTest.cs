@@ -1,7 +1,8 @@
 ﻿using System;
+using Binance.Market;
 using Xunit;
 
-namespace Binance.Market.Tests
+namespace Binance.Tests.Market
 {
     public class OrderBookPriceLevelTest
     {
@@ -15,8 +16,8 @@ namespace Binance.Market.Tests
         [Fact]
         public void Zeroed()
         {
-            decimal price = 0;
-            decimal quantity = 0;
+            const decimal price = 0;
+            const decimal quantity = 0;
 
             var level = new OrderBookPriceLevel(price, quantity);
 
@@ -27,8 +28,8 @@ namespace Binance.Market.Tests
         [Fact]
         public void Properties()
         {
-            decimal price = 0.123456789m;
-            decimal quantity = 0.987654321m;
+            const decimal price = 0.123456789m;
+            const decimal quantity = 0.987654321m;
 
             var level = new OrderBookPriceLevel(price, quantity);
 
@@ -39,8 +40,8 @@ namespace Binance.Market.Tests
         [Fact]
         public void Clone()
         {
-            decimal price = 0.123456789m;
-            decimal quantity = 0.987654321m;
+            const decimal price = 0.123456789m;
+            const decimal quantity = 0.987654321m;
 
             var level = new OrderBookPriceLevel(price, quantity);
 

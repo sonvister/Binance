@@ -1,7 +1,8 @@
 ﻿using System;
+using Binance.Account;
 using Xunit;
 
-namespace Binance.Account.Tests
+namespace Binance.Tests.Account
 {
     public class DepositTest
     {
@@ -9,9 +10,9 @@ namespace Binance.Account.Tests
         public void Throws()
         {
             var asset = Asset.BTC;
-            var amount = 1.23m;
+            const decimal amount = 1.23m;
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            var status = DepositStatus.Success;
+            const DepositStatus status = DepositStatus.Success;
 
             Assert.Throws<ArgumentNullException>("asset", () => new Deposit(null, amount, timestamp, status));
             Assert.Throws<ArgumentException>("amount", () => new Deposit(asset, -1, timestamp, status));
@@ -24,9 +25,9 @@ namespace Binance.Account.Tests
         public void Properties()
         {
             var asset = Asset.BTC;
-            var amount = 1.23m;
+            const decimal amount = 1.23m;
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            var status = DepositStatus.Success;
+            const DepositStatus status = DepositStatus.Success;
 
             var deposit = new Deposit(asset, amount, timestamp, status);
 

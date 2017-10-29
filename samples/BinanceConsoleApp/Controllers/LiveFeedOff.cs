@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class LiveFeedOff : IHandleCommand
+    internal class LiveFeedOff : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -13,7 +13,7 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string endpoint = "";
+            var endpoint = string.Empty;
             if (args.Length > 1)
             {
                 endpoint = args[1];

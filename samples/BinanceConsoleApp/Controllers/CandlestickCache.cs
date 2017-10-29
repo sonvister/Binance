@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class CandlestickCache : IHandleCommand
+    internal class CandlestickCache : IHandleCommand
     {
         public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -19,13 +19,13 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string endpoint = "";
+            var endpoint = string.Empty;
             if (args.Length > 1)
             {
                 endpoint = args[1];
             }
 
-            string symbol = Symbol.BTC_USDT;
+            var symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
             {
                 symbol = args[2];
@@ -35,11 +35,11 @@ namespace BinanceConsoleApp.Controllers
                 && !endpoint.Equals("candle", StringComparison.OrdinalIgnoreCase))
                 return Task.FromResult(false);
 
-            if (Program._liveTask != null)
+            if (Program.LiveTask != null)
             {
-                lock (Program._consoleSync)
+                lock (Program.ConsoleSync)
                 {
-                    Console.WriteLine($"! A live task is currently active ...use 'live off' to disable.");
+                    Console.WriteLine("! A live task is currently active ...use 'live off' to disable.");
                 }
                 return Task.FromResult(true);
             }
@@ -50,17 +50,17 @@ namespace BinanceConsoleApp.Controllers
                 interval = args[3].ToKlineInterval();
             }
 
-            Program._liveTokenSource = new CancellationTokenSource();
+            Program.LiveTokenSource = new CancellationTokenSource();
 
-            Program._klineCache = Program._serviceProvider.GetService<ICandlesticksCache>();
-            Program._klineCache.Client.Kline += OnKlineEvent;
+            Program.KlineCache = Program.ServiceProvider.GetService<ICandlesticksCache>();
+            Program.KlineCache.Client.Kline += OnKlineEvent;
 
-            Program._liveTask = Task.Run(() =>
+            Program.LiveTask = Task.Run(() =>
             {
-                Program._klineCache.SubscribeAsync(symbol, interval, (e) => { Program.Display(e.Candlesticks.Last()); }, token: Program._liveTokenSource.Token);
-            });
+                Program.KlineCache.SubscribeAsync(symbol, interval, (e) => { Program.Display(e.Candlesticks.Last()); }, token: Program.LiveTokenSource.Token);
+            }, token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 Console.WriteLine($"  ...live kline feed enabled for symbol: {symbol}, interval: {interval} ...use 'live off' to disable.");
@@ -71,7 +71,7 @@ namespace BinanceConsoleApp.Controllers
 
         private void OnKlineEvent(object sender, KlineEventArgs e)
         {
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine($" Candlestick [{e.Candlestick.OpenTime}] - Is Final: {(e.IsFinal ? "YES" : "NO")}");
             }

@@ -1,7 +1,8 @@
 ﻿using System;
+using Binance.Api.WebSocket.Events;
 using Xunit;
 
-namespace Binance.Api.WebSocket.Events.Tests
+namespace Binance.Tests.Api.WebSocket.Events
 {
     public class DepthUpdateEventArgsTest
     {
@@ -10,8 +11,8 @@ namespace Binance.Api.WebSocket.Events.Tests
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var symbol = Symbol.BTC_USDT;
-            long firstUpdateId = 1234567890;
-            long lastUpdateId = 1234567899;
+            const long firstUpdateId = 1234567890;
+            const long lastUpdateId = 1234567899;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
 
@@ -34,8 +35,8 @@ namespace Binance.Api.WebSocket.Events.Tests
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var symbol = Symbol.BTC_USDT;
-            long firstUpdateId = 1234567890;
-            long lastUpdateId = 1234567899;
+            const long firstUpdateId = 1234567890;
+            const long lastUpdateId = 1234567899;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
 

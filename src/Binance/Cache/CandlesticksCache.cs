@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+// ReSharper disable InconsistentlySynchronizedField
 
 namespace Binance.Cache
 {
@@ -28,15 +29,15 @@ namespace Binance.Cache
             get { lock (_sync) { return _candlesticks?.ToArray() ?? new Candlestick[] { }; } }
         }
 
-        public IKlineWebSocketClient Client { get; private set; }
+        public IKlineWebSocketClient Client { get; }
 
         #endregion Public Properties
 
         #region Private Fields
 
-        private IBinanceApi _api;
+        private readonly IBinanceApi _api;
 
-        private ILogger<CandlesticksCache> _logger;
+        private readonly ILogger<CandlesticksCache> _logger;
 
         private bool _leaveWebSocketClientOpen;
 
@@ -45,7 +46,7 @@ namespace Binance.Cache
 
         private Action<CandlesticksCacheEventArgs> _callback;
 
-        private List<Candlestick> _candlesticks;
+        private readonly List<Candlestick> _candlesticks;
 
         private readonly object _sync = new object();
 
@@ -207,7 +208,7 @@ namespace Binance.Cache
 
         #region IDisposable
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         protected virtual void Dispose(bool disposing)
         {

@@ -4,6 +4,7 @@ using Binance.Api.WebSocket;
 using Binance.Cache;
 using Microsoft.Extensions.DependencyInjection;
 
+// ReSharper disable once CheckNamespace
 namespace Binance
 {
     public static class ServiceCollectionExtensions

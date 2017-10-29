@@ -1,32 +1,33 @@
 #define LIVE
 
+using System;
+using System.Threading.Tasks;
 using Binance.Account.Orders;
+using Binance.Api;
+using Binance.Api.Json;
 using Binance.Market;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Binance.Api.Json.Tests
+namespace Binance.Tests.Api.Json
 {
     public class BinanceJsonApiTest
     {
-        private ServiceProvider _serviceProvider;
-
-        private IBinanceJsonApi _api;
+        private readonly IBinanceJsonApi _api;
 
         public BinanceJsonApiTest()
         {
             // Configure services.
-            _serviceProvider = new ServiceCollection()
-                 .AddBinance().BuildServiceProvider();
+            var serviceProvider = new ServiceCollection()
+                .AddBinance().BuildServiceProvider();
 
             // Get IBinanceApi service.
-            _api = _serviceProvider.GetService<IBinanceJsonApi>();
+            _api = serviceProvider.GetService<IBinanceJsonApi>();
         }
 
 #if LIVE
+
+        #region Connectivity
 
         [Fact]
         public async Task Ping()
@@ -42,6 +43,10 @@ namespace Binance.Api.Json.Tests
             Assert.True(IsJsonObject(json));
         }
 
+        #endregion Connectivity
+
+        #region Market Data
+
         [Fact]
         public async Task GetOrderBook()
         {
@@ -55,7 +60,7 @@ namespace Binance.Api.Json.Tests
         {
             var now = DateTimeOffset.UtcNow;
 
-            var json = await _api.GetAggregateTradesAsync(Symbol.BTC_USDT, 0, limit: 1);
+            var json = await _api.GetAggregateTradesAsync(Symbol.BTC_USDT, 0, 1);
 
             Assert.True(IsJsonArray(json));
 
@@ -69,7 +74,7 @@ namespace Binance.Api.Json.Tests
         {
             var now = DateTimeOffset.UtcNow;
 
-            var json = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour, limit: 1);
+            var json = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour, 1);
 
             Assert.True(IsJsonArray(json));
 
@@ -79,9 +84,9 @@ namespace Binance.Api.Json.Tests
         }
 
         [Fact]
-        public async Task Get24hrStats()
+        public async Task Get24HourStatistics()
         {
-            var json = await _api.Get24hStatsAsync(Symbol.BTC_USDT);
+            var json = await _api.Get24HourStatisticsAsync(Symbol.BTC_USDT);
 
             Assert.True(IsJsonObject(json));
         }
@@ -101,6 +106,8 @@ namespace Binance.Api.Json.Tests
 
             Assert.True(IsJsonArray(json));
         }
+
+        #endregion Market Data
 
         /*
         [Fact]
@@ -124,13 +131,13 @@ namespace Binance.Api.Json.Tests
         }
         //*/
 
-        private bool IsJsonObject(string json)
+        private static bool IsJsonObject(string json)
         {
             return !string.IsNullOrWhiteSpace(json)
                 && json.StartsWith("{") && json.EndsWith("}");
         }
 
-        private bool IsJsonArray(string json)
+        private static bool IsJsonArray(string json)
         {
             return !string.IsNullOrWhiteSpace(json)
                 && json.StartsWith("[") && json.EndsWith("]");
@@ -167,9 +174,9 @@ namespace Binance.Api.Json.Tests
         }
 
         [Fact]
-        public async Task Get24hStatsThrows()
+        public async Task Get24HourStatisticsThrows()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.Get24hStatsAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.Get24HourStatisticsAsync(null));
         }
 
         #endregion Market Data
@@ -236,18 +243,12 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task GetAccountThrows()
         {
-            var user = new BinanceApiUser("api-key");
-
-            using (var api = new BinanceJsonApi())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetAccountInfoAsync(null));
-            }
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetAccountInfoAsync(null));
         }
 
         [Fact]
         public async Task GetTradesThrows()
         {
-            var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
             await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetTradesAsync(null, symbol));
@@ -258,8 +259,8 @@ namespace Binance.Api.Json.Tests
         {
             var user = new BinanceApiUser("api-key");
             var asset = Asset.BTC;
-            var address = "12345678901234567890";
-            decimal amount = 1;
+            const string address = "12345678901234567890";
+            const decimal amount = 1;
 
             await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.WithdrawAsync(null, asset, address, amount));
             await Assert.ThrowsAsync<ArgumentNullException>("asset", () => _api.WithdrawAsync(user, null, address, amount));
@@ -272,16 +273,12 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task GetDepositsThrows()
         {
-            var user = new BinanceApiUser("api-key");
-
             await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetDepositsAsync(null));
         }
 
         [Fact]
         public async Task GetWithdrawalsThrows()
         {
-            var user = new BinanceApiUser("api-key");
-
             await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetWithdrawalsAsync(null));
         }
 
@@ -292,8 +289,6 @@ namespace Binance.Api.Json.Tests
         [Fact]
         public async Task UserStreamStartThrows()
         {
-            var user = new BinanceApiUser("api-key");
-
             await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.UserStreamStartAsync(null));
         }
 
@@ -301,7 +296,7 @@ namespace Binance.Api.Json.Tests
         public async Task UserStreamKeepAliveThrows()
         {
             var user = new BinanceApiUser("api-key");
-            var listenKey = "listen-key";
+            const string listenKey = "listen-key";
 
             await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.UserStreamKeepAliveAsync(null, listenKey));
             await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => _api.UserStreamKeepAliveAsync(user, null));
@@ -312,7 +307,7 @@ namespace Binance.Api.Json.Tests
         public async Task UserStreamCloseThrows()
         {
             var user = new BinanceApiUser("api-key");
-            var listenKey = "listen-key";
+            const string listenKey = "listen-key";
 
             await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.UserStreamCloseAsync(null, listenKey));
             await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => _api.UserStreamCloseAsync(user, null));

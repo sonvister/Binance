@@ -3,10 +3,11 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class GetTrades : IHandleCommand
+    internal class GetTrades : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -14,7 +15,7 @@ namespace BinanceConsoleApp.Controllers
                 && !command.Equals("mytrades", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            if (Program._user == null)
+            if (Program.User == null)
             {
                 Program.PrintApiNotice();
                 return true;
@@ -22,8 +23,8 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string symbol = Symbol.BTC_USDT;
-            int limit = 10;
+            var symbol = Symbol.BTC_USDT;
+            var limit = 10;
 
             if (args.Length > 1)
             {
@@ -42,9 +43,9 @@ namespace BinanceConsoleApp.Controllers
                 }
             }
 
-            var trades = await Program._api.GetTradesAsync(Program._user, symbol, limit: limit, token: token);
+            var trades = await Program.Api.GetTradesAsync(Program.User, symbol, limit: limit, token: token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 if (!trades.Any())

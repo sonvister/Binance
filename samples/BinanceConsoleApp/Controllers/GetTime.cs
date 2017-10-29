@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class GetTime : IHandleCommand
+    internal class GetTime : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.Equals("time", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            var time = await Program._api.GetTimeAsync(token);
+            var time = await Program.Api.GetTimeAsync(token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine($"  {time.Kind.ToString().ToUpper()} Time: {time}  [Local: {time.ToLocalTime()}]");
                 Console.WriteLine();

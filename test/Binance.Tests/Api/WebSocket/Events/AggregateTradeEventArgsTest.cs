@@ -1,8 +1,9 @@
-﻿using Binance.Market;
-using System;
+﻿using System;
+using Binance.Api.WebSocket.Events;
+using Binance.Market;
 using Xunit;
 
-namespace Binance.Api.WebSocket.Events.Tests
+namespace Binance.Tests.Api.WebSocket.Events
 {
     public class AggregateTradeEventArgsTest
     {
@@ -11,14 +12,14 @@ namespace Binance.Api.WebSocket.Events.Tests
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            string symbol = Symbol.BTC_USDT;
-            long id = 12345;
-            decimal price = 5000;
-            decimal quantity = 1;
-            long firstTradeId = 123456;
-            long lastTradeId = 234567;
-            bool isBuyerMaker = true;
-            bool isBestPriceMatch = true;
+            var symbol = Symbol.BTC_USDT;
+            const long id = 12345;
+            const decimal price = 5000;
+            const decimal quantity = 1;
+            const long firstTradeId = 123456;
+            const long lastTradeId = 234567;
+            const bool isBuyerMaker = true;
+            const bool isBestPriceMatch = true;
 
             var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch);
 
@@ -31,14 +32,14 @@ namespace Binance.Api.WebSocket.Events.Tests
         {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            string symbol = Symbol.BTC_USDT;
-            long id = 12345;
-            decimal price = 5000;
-            decimal quantity = 1;
-            long firstTradeId = 123456;
-            long lastTradeId = 234567;
-            bool isBuyerMaker = true;
-            bool isBestPriceMatch = true;
+            var symbol = Symbol.BTC_USDT;
+            const long id = 12345;
+            const decimal price = 5000;
+            const decimal quantity = 1;
+            const long firstTradeId = 123456;
+            const long lastTradeId = 234567;
+            const bool isBuyerMaker = true;
+            const bool isBestPriceMatch = true;
 
             var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch);
 

@@ -48,7 +48,7 @@ namespace Binance.Api.WebSocket
 
             Symbol = symbol.FormatSymbol();
 
-            if (_isSubscribed)
+            if (IsSubscribed)
                 throw new InvalidOperationException($"{nameof(TradesWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");
 
             return SubscribeAsync($"{Symbol.ToLower()}@aggTrade", json =>
@@ -85,7 +85,7 @@ namespace Binance.Api.WebSocket
 
             try
             {
-                _logger?.LogTrace($"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJson)}: \"{json}\"");
+                Logger?.LogTrace($"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJson)}: \"{json}\"");
 
                 var jObject = JObject.Parse(json);
 
@@ -110,7 +110,7 @@ namespace Binance.Api.WebSocket
                 }
                 else
                 {
-                    _logger?.LogWarning($"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
+                    Logger?.LogWarning($"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
                 }
             }
             catch (OperationCanceledException) { }

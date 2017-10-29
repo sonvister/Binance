@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+// ReSharper disable once CheckNamespace
 namespace BinanceMarketDepth
 {
     public static class OrderBookExtensions

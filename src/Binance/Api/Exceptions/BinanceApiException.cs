@@ -1,5 +1,6 @@
 ﻿using System;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.Api
 {
     /// <summary>
@@ -10,7 +11,6 @@ namespace Binance.Api
         #region Constructors
 
         public BinanceApiException()
-            : base()
         { }
 
         public BinanceApiException(string message)

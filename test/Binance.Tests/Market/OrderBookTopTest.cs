@@ -1,7 +1,8 @@
 ﻿using System;
+using Binance.Market;
 using Xunit;
 
-namespace Binance.Market.Tests
+namespace Binance.Tests.Market
 {
     public class OrderBookTopTest
     {
@@ -9,9 +10,9 @@ namespace Binance.Market.Tests
         public void Throws()
         {
             var symbol = Symbol.BTC_USDT;
-            decimal bidPrice = 0.123456789m;
-            decimal bidQuantity = 0.987654321m;
-            decimal askQuantity = 1.987654321m;
+            const decimal bidPrice = 0.123456789m;
+            const decimal bidQuantity = 0.987654321m;
+            const decimal askQuantity = 1.987654321m;
 
             Assert.Throws<ArgumentException>("askPrice", () => new OrderBookTop(symbol, bidPrice, bidQuantity, bidPrice - 1, askQuantity));
         }
@@ -20,10 +21,10 @@ namespace Binance.Market.Tests
         public void Properties()
         {
             var symbol = Symbol.BTC_USDT;
-            decimal bidPrice = 0.123456789m;
-            decimal bidQuantity = 0.987654321m;
-            decimal askPrice = 1.123456789m;
-            decimal askQuantity = 1.987654321m;
+            const decimal bidPrice = 0.123456789m;
+            const decimal bidQuantity = 0.987654321m;
+            const decimal askPrice = 1.123456789m;
+            const decimal askQuantity = 1.987654321m;
 
             var top = new OrderBookTop(symbol, bidPrice, bidQuantity, askPrice, askQuantity);
 
@@ -38,10 +39,10 @@ namespace Binance.Market.Tests
         public void Clone()
         {
             var symbol = Symbol.BTC_USDT;
-            decimal bidPrice = 0.123456789m;
-            decimal bidQuantity = 0.987654321m;
-            decimal askPrice = 1.123456789m;
-            decimal askQuantity = 1.987654321m;
+            const decimal bidPrice = 0.123456789m;
+            const decimal bidQuantity = 0.987654321m;
+            const decimal askPrice = 1.123456789m;
+            const decimal askQuantity = 1.987654321m;
 
             var top = new OrderBookTop(symbol, bidPrice, bidQuantity, askPrice, askQuantity);
 

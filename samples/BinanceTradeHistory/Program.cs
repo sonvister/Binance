@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable AccessToDisposedClosure
 
 namespace BinanceTradeHistory
 {
@@ -17,16 +18,16 @@ namespace BinanceTradeHistory
     /// Demonstrate how to maintain an aggregate trades cache for a symbol
     /// and respond to real-time aggregate trade events.
     /// </summary>
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main()
         {
             try
             {
                 // Load configuration.
                 var configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile("appsettings.json", true, false)
                     .Build();
 
                 // Configure services.
@@ -36,7 +37,8 @@ namespace BinanceTradeHistory
                 // Get configuration settings.
                 var limit = 25;
                 var symbol = configuration.GetSection("TradeHistory")?["Symbol"] ?? Symbol.BTC_USDT;
-                try { limit = Convert.ToInt32(configuration.GetSection("TradeHistory")?["Limit"]); } catch { }
+                try { limit = Convert.ToInt32(configuration.GetSection("TradeHistory")?["Limit"]); }
+                catch { /* ignored */ }
 
                 using (var api = services.GetService<IBinanceApi>())
                 using (var cache = services.GetService<IAggregateTradesCache>())
@@ -47,7 +49,7 @@ namespace BinanceTradeHistory
 
                     // Monitor latest aggregate trades and display updates in real-time.
                     var task = Task.Run(() =>
-                        cache.SubscribeAsync(symbol, (e) => Display(e.Trades),limit, cts.Token));
+                        cache.SubscribeAsync(symbol, (e) => Display(e.Trades),limit, cts.Token), cts.Token);
 
                     Console.ReadKey(true); // ...press any key to exit.
 
@@ -63,7 +65,7 @@ namespace BinanceTradeHistory
             Console.SetCursorPosition(0, 0);
             foreach (var trade in trades.Reverse())
             {
-                Console.WriteLine($"  {trade.Time().ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity.ToString("0.00000000")} @ {trade.Price.ToString("0.00000000")}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Timestamp}           ");
+                Console.WriteLine($"  {trade.Time().ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Timestamp}           ");
             }
             Console.WriteLine();
             Console.WriteLine("...press any key to exit.");

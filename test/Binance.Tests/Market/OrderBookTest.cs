@@ -1,7 +1,8 @@
 ﻿using System;
+using Binance.Market;
 using Xunit;
 
-namespace Binance.Market.Tests
+namespace Binance.Tests.Market
 {
     public class OrderBookTest
     {
@@ -9,7 +10,7 @@ namespace Binance.Market.Tests
         public void Throws()
         {
             var symbol = Symbol.BTC_USDT;
-            var lastUpdateId = 1234567890;
+            const long lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
 
@@ -27,7 +28,7 @@ namespace Binance.Market.Tests
         public void Properties()
         {
             var symbol = Symbol.BTC_USDT;
-            var lastUpdateId = 1234567890;
+            const long lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
 
@@ -50,7 +51,7 @@ namespace Binance.Market.Tests
         public void Clone()
         {
             var symbol = Symbol.BTC_USDT;
-            var lastUpdateId = 1234567890;
+            const long lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
 
@@ -80,7 +81,7 @@ namespace Binance.Market.Tests
         public void Quantity()
         {
             var symbol = Symbol.BTC_USDT;
-            var lastUpdateId = 1234567890;
+            const long lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
 
@@ -100,7 +101,7 @@ namespace Binance.Market.Tests
         public void MidMarketPrice()
         {
             var symbol = Symbol.BTC_USDT;
-            var lastUpdateId = 1234567890;
+            const long lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
 
@@ -113,7 +114,7 @@ namespace Binance.Market.Tests
         public void Depth()
         {
             var symbol = Symbol.BTC_USDT;
-            var lastUpdateId = 1234567890;
+            const long lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
 
@@ -128,7 +129,7 @@ namespace Binance.Market.Tests
         public void Volume()
         {
             var symbol = Symbol.BTC_USDT;
-            var lastUpdateId = 1234567890;
+            const long lastUpdateId = 1234567890;
             var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
 

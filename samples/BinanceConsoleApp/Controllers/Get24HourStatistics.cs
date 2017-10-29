@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class Get24hrStats : IHandleCommand
+    internal class Get24HourStatistics : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -15,20 +15,20 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string symbol = Symbol.BTC_USDT;
+            var symbol = Symbol.BTC_USDT;
             if (args.Length > 1)
             {
                 symbol = args[1];
             }
 
-            var stats = await Program._api.Get24hrStatsAsync(symbol, token);
+            var stats = await Program.Api.Get24HourStatisticsAsync(symbol, token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 Console.WriteLine($"  24-hour statistics for {stats.Symbol}:");
-                Console.WriteLine($"    %: {stats.PriceChangePercent.ToString("0.00")} | O: {stats.OpenPrice.ToString("0.00000000")} | H: {stats.HighPrice.ToString("0.00000000")} | L: {stats.LowPrice.ToString("0.00000000")} | V: {stats.Volume.ToString("0.")}");
-                Console.WriteLine($"    Bid: {stats.BidPrice.ToString("0.00000000")} | Last: {stats.LastPrice.ToString("0.00000000")} | Ask: {stats.AskPrice.ToString("0.00000000")} | Avg: {stats.WeightedAveragePrice.ToString("0.00000000")}");
+                Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
+                Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
                 Console.WriteLine();
             }
 

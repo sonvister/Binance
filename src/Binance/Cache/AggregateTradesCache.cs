@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+// ReSharper disable InconsistentlySynchronizedField
 
 namespace Binance.Cache
 {
@@ -28,15 +29,15 @@ namespace Binance.Cache
             get { lock (_sync) { return _trades?.ToArray() ?? new AggregateTrade[] { }; } }
         }
 
-        public ITradesWebSocketClient Client { get; private set; }
+        public ITradesWebSocketClient Client { get; }
 
         #endregion Public Properties
 
         #region Private Fields
 
-        private IBinanceApi _api;
+        private readonly IBinanceApi _api;
 
-        private ILogger<AggregateTradesCache> _logger;
+        private readonly ILogger<AggregateTradesCache> _logger;
 
         private bool _leaveWebSocketClientOpen;
 
@@ -45,7 +46,7 @@ namespace Binance.Cache
 
         private Action<AggregateTradesCacheEventArgs> _callback;
 
-        private Queue<AggregateTrade> _trades;
+        private readonly Queue<AggregateTrade> _trades;
 
         private readonly object _sync = new object();
 
@@ -104,7 +105,7 @@ namespace Binance.Cache
                     {
                         _logger?.LogError($"{nameof(AggregateTradesCache)}: Synchronization failure (trade ID > last trade ID + 1).");
 
-                        await Task.Delay(1000)
+                        await Task.Delay(1000, token)
                             .ConfigureAwait(false); // wait a bit.
 
                         // Re-synchronize.
@@ -231,7 +232,7 @@ namespace Binance.Cache
 
         #region IDisposable
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         protected virtual void Dispose(bool disposing)
         {

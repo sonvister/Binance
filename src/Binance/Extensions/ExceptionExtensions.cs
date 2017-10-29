@@ -1,10 +1,11 @@
 ﻿using System;
 
+// ReSharper disable once CheckNamespace
 namespace Binance
 {
     public static class ExceptionExtensions
     {
-        private static readonly string IsLoggedKey = "Binance.IsLogged";
+        private const string IsLoggedKey = "Binance.IsLogged";
 
         /// <summary>
         /// Return true if this exception has been logged by this library already.

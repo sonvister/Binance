@@ -15,14 +15,14 @@ namespace Binance.Api.WebSocket
     {
         #region Protected Fields
 
-        protected ClientWebSocket _webSocket;
+        protected ClientWebSocket WebSocket;
 
-        protected BufferBlock<string> _bufferBlock;
-        protected ActionBlock<string> _actionBlock;
+        protected BufferBlock<string> BufferBlock;
+        protected ActionBlock<string> ActionBlock;
 
-        protected bool _isSubscribed;
+        protected bool IsSubscribed;
 
-        protected ILogger _logger;
+        protected ILogger Logger;
 
         #endregion Protected Fields
 
@@ -40,9 +40,9 @@ namespace Binance.Api.WebSocket
         /// 
         /// </summary>
         /// <param name="logger"></param>
-        public BinanceWebSocketClient(ILogger logger = null)
+        protected BinanceWebSocketClient(ILogger logger = null)
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         #endregion Constructors
@@ -60,7 +60,7 @@ namespace Binance.Api.WebSocket
         {
             try
             {
-                _bufferBlock = new BufferBlock<string>(new DataflowBlockOptions()
+                BufferBlock = new BufferBlock<string>(new DataflowBlockOptions()
                 {
                     EnsureOrdered = true,
                     CancellationToken = token,
@@ -68,7 +68,7 @@ namespace Binance.Api.WebSocket
                     MaxMessagesPerTask = DataflowBlockOptions.Unbounded,
                 });
 
-                _actionBlock = new ActionBlock<string>(action,
+                ActionBlock = new ActionBlock<string>(action,
                     new ExecutionDataflowBlockOptions()
                     {
                         BoundedCapacity = 1,
@@ -78,27 +78,27 @@ namespace Binance.Api.WebSocket
                         SingleProducerConstrained = true,
                     });
 
-                _bufferBlock.LinkTo(_actionBlock);
+                BufferBlock.LinkTo(ActionBlock);
 
-                _webSocket = new ClientWebSocket();
-                _webSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+                WebSocket = new ClientWebSocket();
+                WebSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
 
                 var uri = new Uri($"{BaseUri}{uriPath}");
 
-                await _webSocket
+                await WebSocket
                     .ConnectAsync(uri, token)
                     .ConfigureAwait(false);
 
-                if (_webSocket.State != WebSocketState.Open)
+                if (WebSocket.State != WebSocketState.Open)
                 {
-                    _logger?.LogError($"{nameof(DepthWebSocketClient)}.{nameof(SubscribeAsync)}: WebSocket connect failed (State: {_webSocket.State}).");
-                    _webSocket.Dispose();
+                    Logger?.LogError($"{nameof(DepthWebSocketClient)}.{nameof(SubscribeAsync)}: WebSocket connect failed (State: {WebSocket.State}).");
+                    WebSocket.Dispose();
                     return;
                 }
 
-                _isSubscribed = true;
+                IsSubscribed = true;
 
-                await ReceiveEventData(_webSocket, token)
+                await ReceiveEventData(WebSocket, token)
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException) { }
@@ -127,34 +127,37 @@ namespace Binance.Api.WebSocket
 
                 var stringBuilder = new StringBuilder();
 
-                WebSocketReceiveResult result = null;
-
                 while (webSocket.State == WebSocketState.Open)
                 {
+                    WebSocketReceiveResult result;
                     do
                     {
                         result = await webSocket
                             .ReceiveAsync(buffer, token)
                             .ConfigureAwait(false);
 
-                        if (result.MessageType == WebSocketMessageType.Close)
+                        switch (result.MessageType)
                         {
-                            if (result.CloseStatus.HasValue)
-                            {
-                                _logger?.LogWarning($"{nameof(BinanceWebSocketClient)}.{nameof(ReceiveEventData)}: WebSocket closed ({result.CloseStatus.Value}): \"{result.CloseStatusDescription ?? "[no reason provided]"}\"");
-                            }
+                            case WebSocketMessageType.Close:
+                                if (result.CloseStatus.HasValue)
+                                {
+                                    Logger?.LogWarning($"{nameof(BinanceWebSocketClient)}.{nameof(ReceiveEventData)}: WebSocket closed ({result.CloseStatus.Value}): \"{result.CloseStatusDescription ?? "[no reason provided]"}\"");
+                                }
+                                await webSocket
+                                    .CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
+                                    .ConfigureAwait(false);
+                                break;
 
-                            await webSocket
-                                .CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
-                                .ConfigureAwait(false);
-                        }
-                        else if (result.MessageType == WebSocketMessageType.Text && result.Count > 0)
-                        {
-                            stringBuilder.Append(Encoding.UTF8.GetString(bytes, 0, result.Count));
-                        }
-                        else
-                        {
-                            _logger?.LogWarning($"{nameof(BinanceWebSocketClient)}.{nameof(ReceiveEventData)}: Received binary message type.");
+                            case WebSocketMessageType.Text when result.Count > 0:
+                                stringBuilder.Append(Encoding.UTF8.GetString(bytes, 0, result.Count));
+                                break;
+
+                            case WebSocketMessageType.Binary:
+                                Logger?.LogWarning($"{nameof(BinanceWebSocketClient)}.{nameof(ReceiveEventData)}: Received binary message type.");
+                                break;
+
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(result.MessageType), "Unknown result message type.");
                         }
                     }
                     while (!result.EndOfMessage);
@@ -165,11 +168,11 @@ namespace Binance.Api.WebSocket
 
                     if (!string.IsNullOrWhiteSpace(json))
                     {
-                        _bufferBlock.Post(json);
+                        BufferBlock.Post(json);
                     }
                     else
                     {
-                        _logger?.LogWarning($"{nameof(BinanceWebSocketClient)}.{nameof(ReceiveEventData)}: Received empty JSON message.");
+                        Logger?.LogWarning($"{nameof(BinanceWebSocketClient)}.{nameof(ReceiveEventData)}: Received empty JSON message.");
                     }
                 }
             }
@@ -188,18 +191,16 @@ namespace Binance.Api.WebSocket
         /// <param name="source"></param>
         protected void LogException(Exception e, string source)
         {
-            if (!e.IsLogged())
-            {
-                _logger?.LogError(e, $"{source}: \"{e.Message}\"");
-                e.Logged();
-            }
+            if (e.IsLogged()) return;
+            Logger?.LogError(e, $"{source}: \"{e.Message}\"");
+            e.Logged();
         }
 
         #endregion Protected Methods
 
         #region IDisposable
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -210,15 +211,15 @@ namespace Binance.Api.WebSocket
             {
                 try
                 {
-                    _webSocket?.Dispose();
+                    WebSocket?.Dispose();
 
-                    _bufferBlock?.Complete();
-                    _actionBlock?.Complete();
+                    BufferBlock?.Complete();
+                    ActionBlock?.Complete();
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, $"{nameof(BinanceWebSocketClient)}.{nameof(Dispose)}: \"{e.Message}\"");
+                    Logger?.LogError(e, $"{nameof(BinanceWebSocketClient)}.{nameof(Dispose)}: \"{e.Message}\"");
                 }
             }
 

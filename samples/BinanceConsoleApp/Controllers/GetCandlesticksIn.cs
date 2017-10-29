@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class GetCandlesticksIn : IHandleCommand
+    internal class GetCandlesticksIn : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -42,9 +42,9 @@ namespace BinanceConsoleApp.Controllers
                 long.TryParse(args[4], out endTime);
             }
 
-            var candlesticks = await Program._api.GetCandlesticksAsync(symbol, interval, startTime: startTime, endTime: endTime, token: token);
+            var candlesticks = await Program.Api.GetCandlesticksAsync(symbol, interval, startTime: startTime, endTime: endTime, token: token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 foreach (var candlestick in candlesticks)

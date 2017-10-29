@@ -23,15 +23,13 @@ namespace Binance.Cache
 
         public AccountInfo Account { get; private set; }
 
-        public IUserDataWebSocketClient Client { get; private set; }
+        public IUserDataWebSocketClient Client { get; }
 
         #endregion Public Properties
 
         #region Private Fields
 
-        private IBinanceApi _api;
-
-        private ILogger<AccountCache> _logger;
+        private readonly ILogger<AccountCache> _logger;
 
         private bool _leaveClientOpen;
 
@@ -44,12 +42,10 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public AccountCache(IBinanceApi api, IUserDataWebSocketClient client, bool leaveClientOpen = false, ILogger<AccountCache> logger = null)
+        public AccountCache(IUserDataWebSocketClient client, bool leaveClientOpen = false, ILogger<AccountCache> logger = null)
         {
-            Throw.IfNull(api, nameof(api));
             Throw.IfNull(client, nameof(client));
 
-            _api = api;
             Client = client;
             _leaveClientOpen = leaveClientOpen;
             _logger = logger;
@@ -79,8 +75,8 @@ namespace Binance.Cache
             {
                 if (client == Client)
                     throw new InvalidOperationException($"{nameof(AccountCache)} is already linked to this {nameof(IUserDataWebSocketClient)}.");
-                else
-                    throw new InvalidOperationException($"{nameof(AccountCache)} is linked to another {nameof(IUserDataWebSocketClient)}.");
+
+                throw new InvalidOperationException($"{nameof(AccountCache)} is linked to another {nameof(IUserDataWebSocketClient)}.");
             }
 
             _callback = callback;
@@ -181,7 +177,7 @@ namespace Binance.Cache
 
         #region IDisposable
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         protected virtual void Dispose(bool disposing)
         {

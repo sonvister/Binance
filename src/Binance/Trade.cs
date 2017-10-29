@@ -12,32 +12,32 @@ namespace Binance
         /// <summary>
         /// Get the symbol.
         /// </summary>
-        public string Symbol { get; private set; }
+        public string Symbol { get; }
 
         /// <summary>
         /// Get the trade ID.
         /// </summary>
-        public long Id { get; private set; }
+        public long Id { get; }
 
         /// <summary>
         /// Get the price.
         /// </summary>
-        public decimal Price { get; private set; }
+        public decimal Price { get; }
 
         /// <summary>
         /// Get the quantity.
         /// </summary>
-        public decimal Quantity { get; private set; }
+        public decimal Quantity { get; }
 
         /// <summary>
         /// Get the trade timestamp.
         /// </summary>
-        public long Timestamp { get; private set; }
+        public long Timestamp { get; }
 
         /// <summary>
         /// Get flag indicating if the trade was the best price match.
         /// </summary>
-        public bool IsBestPriceMatch { get; private set; }
+        public bool IsBestPriceMatch { get; }
 
         #endregion Public Properties
 

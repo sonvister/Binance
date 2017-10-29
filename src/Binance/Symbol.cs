@@ -1,4 +1,5 @@
-﻿namespace Binance
+﻿// ReSharper disable InconsistentNaming
+namespace Binance
 {
     /// <summary>
     /// Defined symbols (for convienience/reference only).

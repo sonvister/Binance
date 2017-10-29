@@ -1,9 +1,10 @@
-﻿using Binance.Api;
-using System;
+﻿using System;
 using System.Linq;
+using Binance.Account;
+using Binance.Api;
 using Xunit;
 
-namespace Binance.Account.Tests
+namespace Binance.Tests.Account
 {
     public class AccountInfoTest
     {
@@ -13,8 +14,6 @@ namespace Binance.Account.Tests
             var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);
-
-            var account = new AccountInfo(user, commissions, status);
 
             Assert.Throws<ArgumentNullException>("user", () => new AccountInfo(null, commissions, status));
             Assert.Throws<ArgumentNullException>("commissions", () => new AccountInfo(user, null, status));
@@ -27,7 +26,7 @@ namespace Binance.Account.Tests
             var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);
-            var balances = new AccountBalance[] { new AccountBalance("BTC", 0.1m, 0.2m) };
+            var balances = new[] { new AccountBalance("BTC", 0.1m, 0.2m) };
 
             var account = new AccountInfo(user, commissions, status);
 

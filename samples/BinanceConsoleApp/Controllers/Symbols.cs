@@ -5,18 +5,16 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class Symbols : IHandleCommand
+    internal class Symbols : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.Equals("symbols", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            var args = command.Split(' ');
+            var symbols = await Program.Api.SymbolsAsync(token);
 
-            var symbols = await Program._api.SymbolsAsync(token);
-
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 Console.WriteLine(string.Join(", ", symbols));

@@ -11,7 +11,7 @@ namespace Binance.Cache.Events
         /// <summary>
         /// The latest trades.
         /// </summary>
-        public IEnumerable<AggregateTrade> Trades { get; private set; }
+        public IEnumerable<AggregateTrade> Trades { get; }
 
         #endregion Public Properties
 

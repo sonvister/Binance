@@ -1,6 +1,7 @@
 ﻿using Binance;
 using Microsoft.Extensions.DependencyInjection;
 
+// ReSharper disable once CheckNamespace
 namespace BinanceConsoleApp
 {
     internal static class ServiceCollectionExtensions

@@ -24,15 +24,15 @@ namespace Binance.Cache
 
         public OrderBook OrderBook => _orderBookClone;
 
-        public IDepthWebSocketClient Client { get; private set; }
+        public IDepthWebSocketClient Client { get; }
 
         #endregion Public Properties
 
         #region Private Fields
 
-        private IBinanceApi _api;
+        private readonly IBinanceApi _api;
 
-        private ILogger<OrderBookCache> _logger;
+        private readonly ILogger<OrderBookCache> _logger;
 
         private bool _leaveWebSocketClientOpen;
 
@@ -98,7 +98,7 @@ namespace Binance.Cache
                     {
                         _logger?.LogError($"{nameof(OrderBookCache)}: Synchronization failure (first update ID > last update ID + 1).");
 
-                        await Task.Delay(1000)
+                        await Task.Delay(1000, token)
                             .ConfigureAwait(false); // wait a bit.
 
                         // Re-synchronize.
@@ -163,6 +163,7 @@ namespace Binance.Cache
         /// <param name="lastUpdateId"></param>
         /// <param name="bids"></param>
         /// <param name="asks"></param>
+        /// <param name="limit"></param>
         protected virtual void Modify(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks, int limit)
         {
             if (lastUpdateId < _orderBook.LastUpdateId)
@@ -211,7 +212,7 @@ namespace Binance.Cache
 
         #region IDisposable
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         protected virtual void Dispose(bool disposing)
         {

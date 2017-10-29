@@ -10,22 +10,22 @@
         /// <summary>
         /// Get the commission.
         /// </summary>
-        public decimal Commission { get; private set; }
+        public decimal Commission { get; }
 
         /// <summary>
         /// Get the commission asset.
         /// </summary>
-        public string CommissionAsset { get; private set; }
+        public string CommissionAsset { get; }
 
         /// <summary>
         /// Get is buyer flag.
         /// </summary>
-        public bool IsBuyer { get; private set; }
+        public bool IsBuyer { get; }
 
         /// <summary>
         /// Get is maker flag.
         /// </summary>
-        public bool IsMaker { get; private set; }
+        public bool IsMaker { get; }
 
         #endregion Public Properties
 

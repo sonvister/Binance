@@ -9,22 +9,22 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// Get the order.
         /// </summary>
-        public Order Order { get; private set; }
+        public Order Order { get; }
 
         /// <summary>
         /// Get the order execution type.
         /// </summary>
-        public OrderExecutionType OrderExecutionType { get; private set; }
+        public OrderExecutionType OrderExecutionType { get; }
 
         /// <summary>
         /// Get the order rejected reason.
         /// </summary>
-        public OrderRejectedReason OrderRejectedReason { get; private set; }
+        public OrderRejectedReason OrderRejectedReason { get; }
 
         /// <summary>
         /// Get the new client order ID.
         /// </summary>
-        public string NewClientOrderId { get; private set; }
+        public string NewClientOrderId { get; }
 
         #endregion Public Properties
 

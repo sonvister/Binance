@@ -1,8 +1,9 @@
-﻿using Binance.Api;
-using System;
+﻿using System;
+using Binance.Account.Orders;
+using Binance.Api;
 using Xunit;
 
-namespace Binance.Account.Orders.Tests
+namespace Binance.Tests.Account.Orders
 {
     public class OrderTest
     {
@@ -11,18 +12,18 @@ namespace Binance.Account.Orders.Tests
         {
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
-            var id = 123456;
-            var clientOrderId = "test-order";
-            decimal price = 4999;
-            decimal originalQuantity = 1;
-            decimal executedQuantity = 0.5m;
-            var status = OrderStatus.PartiallyFilled;
-            var timeInForce = TimeInForce.IOC;
-            var orderType = OrderType.Market;
-            var orderSide = OrderSide.Sell;
-            decimal stopPrice = 5000;
-            decimal icebergQuantity = 0.1m;
-            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            const int id = 123456;
+            const string clientOrderId = "test-order";
+            const decimal price = 4999;
+            const decimal originalQuantity = 1;
+            const decimal executedQuantity = 0.5m;
+            const OrderStatus status = OrderStatus.PartiallyFilled;
+            const TimeInForce timeInForce = TimeInForce.IOC;
+            const OrderType orderType = OrderType.Market;
+            const OrderSide orderSide = OrderSide.Sell;
+            const decimal stopPrice = 5000;
+            const decimal icebergQuantity = 0.1m;
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             Assert.Throws<ArgumentNullException>("user", () => new Order(null, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp));
             Assert.Throws<ArgumentNullException>("symbol", () => new Order(user, null, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp));
@@ -41,18 +42,18 @@ namespace Binance.Account.Orders.Tests
         {
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
-            var id = 123456;
-            var clientOrderId = "test-order";
-            decimal price = 4999;
-            decimal originalQuantity = 1;
-            decimal executedQuantity = 0.5m;
-            var status = OrderStatus.PartiallyFilled;
-            var timeInForce = TimeInForce.IOC;
-            var orderType = OrderType.Market;
-            var orderSide = OrderSide.Sell;
-            decimal stopPrice = 5000;
-            decimal icebergQuantity = 0.1m;
-            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            const int id = 123456;
+            const string clientOrderId = "test-order";
+            const decimal price = 4999;
+            const decimal originalQuantity = 1;
+            const decimal executedQuantity = 0.5m;
+            const OrderStatus status = OrderStatus.PartiallyFilled;
+            const TimeInForce timeInForce = TimeInForce.IOC;
+            const OrderType orderType = OrderType.Market;
+            const OrderSide orderSide = OrderSide.Sell;
+            const decimal stopPrice = 5000;
+            const decimal icebergQuantity = 0.1m;
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
 

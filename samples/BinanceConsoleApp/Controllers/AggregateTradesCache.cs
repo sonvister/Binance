@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class AggregateTradesCache : IHandleCommand
+    internal class AggregateTradesCache : IHandleCommand
     {
         public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -16,13 +16,13 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string endpoint = "";
+            var endpoint = string.Empty;
             if (args.Length > 1)
             {
                 endpoint = args[1];
             }
 
-            string symbol = Symbol.BTC_USDT;
+            var symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
             {
                 symbol = args[2];
@@ -31,25 +31,25 @@ namespace BinanceConsoleApp.Controllers
             if (!endpoint.Equals("trades", StringComparison.OrdinalIgnoreCase))
                 return Task.FromResult(false);
 
-            if (Program._liveTask != null)
+            if (Program.LiveTask != null)
             {
-                lock (Program._consoleSync)
+                lock (Program.ConsoleSync)
                 {
-                    Console.WriteLine($"! A live task is currently active ...use 'live off' to disable.");
+                    Console.WriteLine("! A live task is currently active ...use 'live off' to disable.");
                 }
                 return Task.FromResult(true);
             }
 
-            Program._liveTokenSource = new CancellationTokenSource();
+            Program.LiveTokenSource = new CancellationTokenSource();
 
-            Program._tradesCache = Program._serviceProvider.GetService<IAggregateTradesCache>();
+            Program.TradesCache = Program.ServiceProvider.GetService<IAggregateTradesCache>();
 
-            Program._liveTask = Task.Run(() =>
+            Program.LiveTask = Task.Run(() =>
             {
-                Program._tradesCache.SubscribeAsync(symbol, (e) => { Program.Display(e.LatestTrade()); }, token: Program._liveTokenSource.Token);
-            });
+                Program.TradesCache.SubscribeAsync(symbol, (e) => { Program.Display(e.LatestTrade()); }, token: Program.LiveTokenSource.Token);
+            }, token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 Console.WriteLine($"  ...live trades feed enabled for symbol: {symbol} ...use 'live off' to disable.");

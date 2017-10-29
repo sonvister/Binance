@@ -41,11 +41,11 @@ namespace Binance.Cache
         /// Subscribe the client to the symbol and synchronize this depth of
         /// market with updates processed by the current <see cref="Thread"/>
         /// or <see cref="Task"/>. This method will not return until the token
-        /// is canceled, this <see cref="IOrderBookCache"> is disposed, or an
+        /// is canceled, this <see cref="IOrderBookCache"/> is disposed, or an
         /// internal exception occurs.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
-        /// <param name="limit"/>The limit (optional).</param>
+        /// <param name="limit">The limit (optional).</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
         Task SubscribeAsync(string symbol, int limit = default, CancellationToken token = default);
@@ -54,7 +54,7 @@ namespace Binance.Cache
         /// Subscribe the client to the symbol and synchronize this depth of
         /// market with updates processed by the current <see cref="Thread"/>
         /// or <see cref="Task"/>. This method will not return until the token
-        /// is canceled, this <see cref="IOrderBookCache"> is disposed, or an
+        /// is canceled, this <see cref="IOrderBookCache"/> is disposed, or an
         /// internal exception occurs.
         /// </summary>
         /// <param name="symbol">The symbol.</param>

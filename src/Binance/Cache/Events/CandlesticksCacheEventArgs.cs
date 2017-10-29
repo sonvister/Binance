@@ -11,7 +11,7 @@ namespace Binance.Cache.Events
         /// <summary>
         /// The candlesticks.
         /// </summary>
-        public IEnumerable<Candlestick> Candlesticks { get; private set; }
+        public IEnumerable<Candlestick> Candlesticks { get; }
 
         #endregion Public Properties
 

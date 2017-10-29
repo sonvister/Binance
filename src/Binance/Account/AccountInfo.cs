@@ -13,22 +13,22 @@ namespace Binance.Account
         /// <summary>
         /// Get the account user.
         /// </summary>
-        public IBinanceApiUser User { get; private set; }
+        public IBinanceApiUser User { get; }
 
         /// <summary>
         /// Get the account commissions.
         /// </summary>
-        public AccountCommissions Commissions { get; private set; }
+        public AccountCommissions Commissions { get; }
 
         /// <summary>
         /// Get the account status.
         /// </summary>
-        public AccountStatus Status { get; private set; }
+        public AccountStatus Status { get; }
         
         /// <summary>
         /// Get the account balances.
         /// </summary>
-        public IEnumerable<AccountBalance> Balances { get; private set; }
+        public IEnumerable<AccountBalance> Balances { get; }
 
         #endregion Public Properties
 

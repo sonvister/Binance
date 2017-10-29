@@ -9,22 +9,22 @@ namespace Binance.Account
         /// <summary>
         /// Get the asset.
         /// </summary>
-        public string Asset { get; private set; }
+        public string Asset { get; }
 
         /// <summary>
         /// Get the amount.
         /// </summary>
-        public decimal Amount { get; private set; }
+        public decimal Amount { get; }
 
         /// <summary>
         /// Get the insert time.
         /// </summary>
-        public long Timestamp { get; private set; }
+        public long Timestamp { get; }
 
         /// <summary>
         /// Get the status.
         /// </summary>
-        public DepositStatus Status { get; private set; }
+        public DepositStatus Status { get; }
 
         #endregion Public Properties
 

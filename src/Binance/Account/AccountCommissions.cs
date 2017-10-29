@@ -12,22 +12,22 @@ namespace Binance.Account
         /// <summary>
         /// Get the maker commission.
         /// </summary>
-        public int Maker { get; private set; }
+        public int Maker { get; }
 
         /// <summary>
         /// Get the taker commission.
         /// </summary>
-        public int Taker { get; private set; }
+        public int Taker { get; }
 
         /// <summary>
         /// Get the buyer commission.
         /// </summary>
-        public int Buyer { get; private set; }
+        public int Buyer { get; }
 
         /// <summary>
         /// Get the seller commission.
         /// </summary>
-        public int Seller { get; private set; }
+        public int Seller { get; }
 
         #endregion Public Properties
 

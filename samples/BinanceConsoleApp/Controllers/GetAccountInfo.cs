@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class GetAccountInfo : IHandleCommand
+    internal class GetAccountInfo : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -12,13 +12,13 @@ namespace BinanceConsoleApp.Controllers
                 && !command.Equals("balances", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            if (Program._user == null)
+            if (Program.User == null)
             {
                 Program.PrintApiNotice();
                 return true;
             }
 
-            var account = await Program._api.GetAccountInfoAsync(Program._user, token: token);
+            var account = await Program.Api.GetAccountInfoAsync(Program.User, token: token);
 
             Program.Display(account);
 

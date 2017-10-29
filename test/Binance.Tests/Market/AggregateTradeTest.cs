@@ -1,22 +1,23 @@
 ﻿using System;
+using Binance.Market;
 using Xunit;
 
-namespace Binance.Market.Tests
+namespace Binance.Tests.Market
 {
     public class AggregateTradeTests
     {
         [Fact]
         public void Throws()
         {
-            string symbol = Symbol.BTC_USDT;
-            long id = 12345;
-            decimal price = 5000;
-            decimal quantity = 1;
-            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            long firstTradeId = 123456;
-            long lastTradeId = 234567;
-            bool isBuyerMaker = true;
-            bool isBestPriceMatch = true;
+            var symbol = Symbol.BTC_USDT;
+            const long id = 12345;
+            const decimal price = 5000;
+            const decimal quantity = 1;
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            const long firstTradeId = 123456;
+            const long lastTradeId = 234567;
+            const bool isBuyerMaker = true;
+            const bool isBestPriceMatch = true;
 
             Assert.Throws<ArgumentNullException>("symbol", () => new AggregateTrade(null, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch));
 
@@ -36,15 +37,15 @@ namespace Binance.Market.Tests
         [Fact]
         public void Properties()
         {
-            string symbol = Symbol.BTC_USDT;
-            long id = 12345;
-            decimal price = 5000;
-            decimal quantity = 1;
-            long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            long firstTradeId = 123456;
-            long lastTradeId = 234567;
-            bool isBuyerMaker = true;
-            bool isBestPriceMatch = true;
+            var symbol = Symbol.BTC_USDT;
+            const long id = 12345;
+            const decimal price = 5000;
+            const decimal quantity = 1;
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            const long firstTradeId = 123456;
+            const long lastTradeId = 234567;
+            const bool isBuyerMaker = true;
+            const bool isBestPriceMatch = true;
 
             var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch);
 

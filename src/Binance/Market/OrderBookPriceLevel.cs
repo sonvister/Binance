@@ -12,12 +12,12 @@ namespace Binance.Market
         /// <summary>
         /// Get the price.
         /// </summary>
-        public decimal Price { get; private set; }
+        public decimal Price { get; }
 
         /// <summary>
         /// Get the aggregate quantity.
         /// </summary>
-        public decimal Quantity { get; private set; }
+        public decimal Quantity { get; }
 
         #endregion Public Properties
 

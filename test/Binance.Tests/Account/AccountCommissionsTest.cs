@@ -1,7 +1,8 @@
 ﻿using System;
+using Binance.Account;
 using Xunit;
 
-namespace Binance.Account.Tests
+namespace Binance.Tests.Account
 {
     public class AccountCommissionsTest
     {

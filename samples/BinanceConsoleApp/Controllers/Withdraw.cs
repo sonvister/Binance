@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class Withdraw : IHandleCommand
+    internal class Withdraw : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -15,7 +15,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (args.Length < 4)
             {
-                lock (Program._consoleSync)
+                lock (Program.ConsoleSync)
                     Console.WriteLine("An asset, address, and amount are required.");
                 return true;
             }
@@ -26,14 +26,14 @@ namespace BinanceConsoleApp.Controllers
 
             if (!decimal.TryParse(args[3], out var amount) || amount <= 0)
             {
-                lock (Program._consoleSync)
+                lock (Program.ConsoleSync)
                     Console.WriteLine("An amount greater than 0 is required.");
                 return true;
             }
 
-            await Program._api.WithdrawAsync(Program._user, asset, address, amount, token: token);
+            await Program.Api.WithdrawAsync(Program.User, asset, address, amount, token: token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 Console.WriteLine($"  Withdraw request successful: {amount} {asset} => {address}");

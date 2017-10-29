@@ -13,7 +13,7 @@ namespace Binance.Cache.Events
         /// <summary>
         /// The depth of market snapshot (order book).
         /// </summary>
-        public OrderBook OrderBook { get; private set; }
+        public OrderBook OrderBook { get; }
 
         #endregion Public Properties
 

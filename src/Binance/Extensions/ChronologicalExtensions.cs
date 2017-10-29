@@ -1,5 +1,6 @@
 ﻿using System;
 
+// ReSharper disable once CheckNamespace
 namespace Binance
 {
     public static class ChronologicalExtensions
@@ -7,7 +8,7 @@ namespace Binance
         /// <summary>
         /// Convert timestamp to <see cref="DateTime"/> (UTC).
         /// </summary>
-        /// <param name="">The trade.</param>
+        /// <param name="chronological"></param>
         /// <returns></returns>
         public static DateTime Time(this IChronological chronological)
         {

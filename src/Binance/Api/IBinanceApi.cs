@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Api.Json;
 
 namespace Binance.Api
 {
@@ -98,7 +99,7 @@ namespace Binance.Api
         /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<Symbol24hrStats> Get24hrStatsAsync(string symbol, CancellationToken token = default);
+        Task<Symbol24HourStatistics> Get24HourStatisticsAsync(string symbol, CancellationToken token = default);
 
         /// <summary>
         /// Get latest price for all symbols.
@@ -123,6 +124,7 @@ namespace Binance.Api
         /// </summary>
         /// <param name="user"></param>
         /// <param name="clientOrder"></param>
+        /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
         Task<Order> PlaceAsync(IBinanceApiUser user, ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default);
@@ -133,6 +135,7 @@ namespace Binance.Api
         /// </summary>
         /// <param name="user"></param>
         /// <param name="clientOrder"></param>
+        /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
         Task TestPlaceAsync(IBinanceApiUser user, ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default);
@@ -228,6 +231,8 @@ namespace Binance.Api
         /// <summary>
         /// Get current account information.
         /// </summary>
+        /// <param name="user"></param>
+        /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
         Task<AccountInfo> GetAccountInfoAsync(IBinanceApiUser user, long recvWindow = default, CancellationToken token = default);

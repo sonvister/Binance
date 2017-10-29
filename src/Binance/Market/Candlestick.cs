@@ -12,67 +12,67 @@ namespace Binance.Market
         /// <summary>
         /// Get the symbol.
         /// </summary>
-        public string Symbol { get; private set; }
+        public string Symbol { get; }
 
         /// <summary>
         /// Get the interval.
         /// </summary>
-        public KlineInterval Interval { get; private set; }
+        public KlineInterval Interval { get; }
 
         /// <summary>
         /// Get the open time.
         /// </summary>
-        public long OpenTime { get; private set; }
+        public long OpenTime { get; }
 
         /// <summary>
         /// Get the open price in quote asset units.
         /// </summary>
-        public decimal Open { get; private set; }
+        public decimal Open { get; }
 
         /// <summary>
         /// Get the high price in quote asset units.
         /// </summary>
-        public decimal High { get; private set; }
+        public decimal High { get; }
 
         /// <summary>
         /// Get the low price in quote asset units.
         /// </summary>
-        public decimal Low { get; private set; }
+        public decimal Low { get; }
 
         /// <summary>
         /// Get the close price in quote asset units.
         /// </summary>
-        public decimal Close { get; private set; }
+        public decimal Close { get; }
 
         /// <summary>
         /// Get the volume in base asset units.
         /// </summary>
-        public decimal Volume { get; private set; }
+        public decimal Volume { get; }
 
         /// <summary>
         /// Get the close time.
         /// </summary>
-        public long CloseTime { get; private set; }
+        public long CloseTime { get; }
 
         /// <summary>
         /// Get the volume in quote asset units.
         /// </summary>
-        public decimal QuoteAssetVolume { get; private set; }
+        public decimal QuoteAssetVolume { get; }
 
         /// <summary>
         /// Get the number of trades.
         /// </summary>
-        public long NumberOfTrades { get; private set; }
+        public long NumberOfTrades { get; }
 
         /// <summary>
         /// Get the taker buy base asset volume.
         /// </summary>
-        public decimal TakerBuyBaseAssetVolume { get; private set; }
+        public decimal TakerBuyBaseAssetVolume { get; }
 
         /// <summary>
         /// Get the taker buy quote asset volume.
         /// </summary>
-        public decimal TakerBuyQuoteAssetVolume { get; private set; }
+        public decimal TakerBuyQuoteAssetVolume { get; }
 
         #endregion Public Properties
 

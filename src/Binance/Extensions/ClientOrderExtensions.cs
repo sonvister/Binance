@@ -1,6 +1,7 @@
 ﻿using Binance.Account.Orders;
 
-namespace Binance.Extensions
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     public static class ClientOrderExtensions
     {

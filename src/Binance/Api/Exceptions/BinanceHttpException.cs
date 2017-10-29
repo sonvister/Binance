@@ -1,5 +1,6 @@
 ﻿using System.Net;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.Api
 {
     /// <summary>
@@ -12,22 +13,22 @@ namespace Binance.Api
         /// <summary>
         /// Get the HTTP response status code.
         /// </summary>
-        public HttpStatusCode StatusCode { get; private set; }
+        public HttpStatusCode StatusCode { get; }
 
         /// <summary>
         /// Get the HTTP respone reason phrase.
         /// </summary>
-        public string ReasonPhrase { get; private set; }
+        public string ReasonPhrase { get; }
 
         /// <summary>
         /// Get the endpoint error code.
         /// </summary>
-        public int ErrorCode { get; private set; }
+        public int ErrorCode { get; }
 
         /// <summary>
         /// Get the endpoint error message.
         /// </summary>
-        public string ErrorMessage { get; private set; }
+        public string ErrorMessage { get; }
 
         #endregion Public Properties
 

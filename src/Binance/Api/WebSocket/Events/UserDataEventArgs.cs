@@ -12,7 +12,7 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// Get the event time.
         /// </summary>
-        public long Timestamp { get; private set; }
+        public long Timestamp { get; }
 
         #endregion Public Properties
 

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class GetOrCancelOrder : IHandleCommand
+    internal class GetOrCancelOrder : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -36,10 +36,10 @@ namespace BinanceConsoleApp.Controllers
             if (args.Length > 3 && args[3].Equals("cancel", StringComparison.OrdinalIgnoreCase))
             {
                 var cancelOrderId = clientOrderId != null
-                    ? await Program._api.CancelOrderAsync(Program._user, symbol, clientOrderId, token: token)
-                    : await Program._api.CancelOrderAsync(Program._user, symbol, id, token: token);
+                    ? await Program.Api.CancelOrderAsync(Program.User, symbol, clientOrderId, token: token)
+                    : await Program.Api.CancelOrderAsync(Program.User, symbol, id, token: token);
 
-                lock (Program._consoleSync)
+                lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
                     Console.WriteLine($"Cancel Order ID: {cancelOrderId}");
@@ -49,10 +49,10 @@ namespace BinanceConsoleApp.Controllers
             else
             {
                 var order = clientOrderId != null
-                    ? await Program._api.GetOrderAsync(Program._user, symbol, clientOrderId, token: token)
-                    : await Program._api.GetOrderAsync(Program._user, symbol, id, token: token);
+                    ? await Program.Api.GetOrderAsync(Program.User, symbol, clientOrderId, token: token)
+                    : await Program.Api.GetOrderAsync(Program.User, symbol, id, token: token);
 
-                lock (Program._consoleSync)
+                lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
                     if (order == null)

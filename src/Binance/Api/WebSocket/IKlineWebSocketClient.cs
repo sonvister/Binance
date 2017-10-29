@@ -22,7 +22,7 @@ namespace Binance.Api.WebSocket
         /// <summary>
         /// Subscribe to the specified symbol and begin receiving kline
         /// events. Awaits on this method will not return until the token is
-        /// canceled, this <see cref="IKlineWebSocketClient"> is disposed,
+        /// canceled, this <see cref="IKlineWebSocketClient"/> is disposed,
         /// or an exception occurs.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
@@ -34,7 +34,7 @@ namespace Binance.Api.WebSocket
         /// <summary>
         /// Subscribe to the specified symbol and begin receiving kline
         /// events. Awaits on this method will not return until the token is
-        /// canceled, this <see cref="IKlineWebSocketClient"> is disposed,
+        /// canceled, this <see cref="IKlineWebSocketClient"/> is disposed,
         /// or an exception occurs.
         /// </summary>
         /// <param name="symbol">The symbol.</param>

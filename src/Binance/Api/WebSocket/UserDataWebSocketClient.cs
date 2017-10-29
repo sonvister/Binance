@@ -59,6 +59,7 @@ namespace Binance.Api.WebSocket
         /// Constructor.
         /// </summary>
         /// <param name="api">The Binance API.</param>
+        /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
         public UserDataWebSocketClient(IBinanceApi api, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)
             : base(logger)
@@ -80,7 +81,7 @@ namespace Binance.Api.WebSocket
 
             User = user;
 
-            if (_isSubscribed)
+            if (IsSubscribed)
                 throw new InvalidOperationException($"{nameof(UserDataWebSocketClient)} is already subscribed to a user.");
 
             _listenKey = await _api.UserStreamStartAsync(user, token)
@@ -110,6 +111,7 @@ namespace Binance.Api.WebSocket
         /// Deserialize event JSON.
         /// </summary>
         /// <param name="json"></param>
+        /// <param name="callback"></param>
         /// <returns></returns>
         protected virtual void DeserializeJsonAndRaiseEvent(string json, Action<UserDataEventArgs> callback = null)
         {
@@ -117,7 +119,7 @@ namespace Binance.Api.WebSocket
 
             try
             {
-                _logger?.LogTrace($"{nameof(UserDataWebSocketClient)}: \"{json}\"");
+                Logger?.LogTrace($"{nameof(UserDataWebSocketClient)}: \"{json}\"");
 
                 var jObject = JObject.Parse(json);
 
@@ -192,7 +194,7 @@ namespace Binance.Api.WebSocket
                 }
                 else
                 {
-                    _logger?.LogWarning($"{nameof(UserDataWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}) - \"{json}\"");
+                    Logger?.LogWarning($"{nameof(UserDataWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}) - \"{json}\"");
                 }
             }
             catch (OperationCanceledException) { }
@@ -268,7 +270,7 @@ namespace Binance.Api.WebSocket
             }
             catch (Exception e)
             {
-                _logger?.LogWarning(e, $"{nameof(UserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: \"{e.Message}\"");
+                Logger?.LogWarning(e, $"{nameof(UserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: \"{e.Message}\"");
             }
         }
 
@@ -339,7 +341,7 @@ namespace Binance.Api.WebSocket
                 case "ACCOUNT_INACTIVE": return OrderRejectedReason.AccountInactive;
                 case "ACCOUNT_CANNOT_SETTLE": return OrderRejectedReason.AccountCannotSettle;
                 default:
-                    _logger?.LogError($"Failed to convert order rejected reason: \"{rejectedReason}\"");
+                    Logger?.LogError($"Failed to convert order rejected reason: \"{rejectedReason}\"");
                     return OrderRejectedReason.None;
             }
         }
@@ -348,7 +350,7 @@ namespace Binance.Api.WebSocket
 
         #region IDisposable
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         protected override void Dispose(bool disposing)
         {
@@ -370,7 +372,7 @@ namespace Binance.Api.WebSocket
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}.{nameof(Dispose)}: \"{e.Message}\"");
+                    Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}.{nameof(Dispose)}: \"{e.Message}\"");
                 }
             }
 

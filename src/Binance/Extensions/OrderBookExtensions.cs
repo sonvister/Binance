@@ -1,5 +1,6 @@
 ﻿using Binance.Market;
 
+// ReSharper disable once CheckNamespace
 namespace Binance
 {
     public static class OrderBookExtensions

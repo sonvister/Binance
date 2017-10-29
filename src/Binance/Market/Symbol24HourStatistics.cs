@@ -1,98 +1,98 @@
 ﻿using System;
 
-namespace Binance.Api
+namespace Binance.Market
 {
     /// <summary>
     /// Symbol 24-hour statistics.
     /// </summary>
-    public sealed class Symbol24hrStats
+    public sealed class Symbol24HourStatistics
     {
         #region Public Properties
 
         /// <summary>
         /// The symbol.
         /// </summary>
-        public string Symbol { get; private set; }
+        public string Symbol { get; }
 
         /// <summary>
         /// The price change amount.
         /// </summary>
-        public decimal PriceChange { get; private set; }
+        public decimal PriceChange { get; }
 
         /// <summary>
         /// The price change percent
         /// </summary>
-        public decimal PriceChangePercent { get; private set; }
+        public decimal PriceChangePercent { get; }
 
         /// <summary>
         /// The weighted average price.
         /// </summary>
-        public decimal WeightedAveragePrice { get; private set; }
+        public decimal WeightedAveragePrice { get; }
 
         /// <summary>
         /// The previous close price.
         /// </summary>
-        public decimal PreviousClosePrice { get; private set; }
+        public decimal PreviousClosePrice { get; }
 
         /// <summary>
         /// The last price.
         /// </summary>
-        public decimal LastPrice { get; private set; }
+        public decimal LastPrice { get; }
 
         /// <summary>
         /// The bid price.
         /// </summary>
-        public decimal BidPrice { get; private set; }
+        public decimal BidPrice { get; }
 
         /// <summary>
         /// The ask price
         /// </summary>
-        public decimal AskPrice { get; private set; }
+        public decimal AskPrice { get; }
 
         /// <summary>
         /// The open price.
         /// </summary>
-        public decimal OpenPrice { get; private set; }
+        public decimal OpenPrice { get; }
 
         /// <summary>
         /// The high price.
         /// </summary>
-        public decimal HighPrice { get; private set; }
+        public decimal HighPrice { get; }
 
         /// <summary>
         /// The low price.
         /// </summary>
-        public decimal LowPrice { get; private set; }
+        public decimal LowPrice { get; }
 
         /// <summary>
         /// The volume.
         /// </summary>
-        public decimal Volume { get; private set; }
+        public decimal Volume { get; }
 
         /// <summary>
         /// The open time.
         /// </summary>
-        public decimal OpenTime { get; private set; }
+        public decimal OpenTime { get; }
 
         /// <summary>
         /// The close time.
         /// </summary>
-        public decimal CloseTime { get; private set; }
+        public decimal CloseTime { get; }
 
         /// <summary>
         /// The first trade ID.
         /// </summary>
-        public long FirstTradeId { get; private set; }
+        public long FirstTradeId { get; }
 
         /// <summary>
         /// The last trade ID.
         /// </summary>
-        public long LastTradeId { get; private set; }
+        public long LastTradeId { get; }
 
         /// <summary>
         /// The trade count.
         /// </summary>
-        public long TradeCount { get; private set; }
+        public long TradeCount { get; }
 
         #endregion Public Properties
 
@@ -118,7 +118,7 @@ namespace Binance.Api
         /// <param name="firstTradeId"></param>
         /// <param name="lastTradeId"></param>
         /// <param name="tradeCount"></param>
-        public Symbol24hrStats(
+        public Symbol24HourStatistics(
             string symbol,
             decimal priceChange,
             decimal priceChangePercent,
@@ -140,45 +140,45 @@ namespace Binance.Api
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (weightedAveragePrice < 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} price must not be less than 0.", nameof(weightedAveragePrice));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} price must not be less than 0.", nameof(weightedAveragePrice));
             if (previousClosePrice < 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} price must not be less than 0.", nameof(previousClosePrice));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} price must not be less than 0.", nameof(previousClosePrice));
             if (lastPrice < 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} price must not be less than 0.", nameof(lastPrice));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} price must not be less than 0.", nameof(lastPrice));
             if (bidPrice < 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} price must not be less than 0.", nameof(bidPrice));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} price must not be less than 0.", nameof(bidPrice));
             if (askPrice < 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} price must not be less than 0.", nameof(askPrice));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} price must not be less than 0.", nameof(askPrice));
             if (openPrice < 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} price must not be less than 0.", nameof(openPrice));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} price must not be less than 0.", nameof(openPrice));
             if (highPrice < 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} price must not be less than 0.", nameof(highPrice));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} price must not be less than 0.", nameof(highPrice));
             if (lowPrice < 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} price must not be less than 0.", nameof(lowPrice));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} price must not be less than 0.", nameof(lowPrice));
             if (lowPrice > highPrice)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} low price must be less than or equal to high price.", nameof(lowPrice));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} low price must be less than or equal to high price.", nameof(lowPrice));
 
             if (volume < 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} volume must be greater than or equal to 0.", nameof(volume));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} volume must be greater than or equal to 0.", nameof(volume));
 
             if (openTime <= 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} time must be greater than 0.", nameof(openTime));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} time must be greater than 0.", nameof(openTime));
             if (closeTime <= 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} time must be greater than 0.", nameof(closeTime));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} time must be greater than 0.", nameof(closeTime));
             if (openTime >= closeTime)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} open time must be less than close time.", nameof(openTime));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} open time must be less than close time.", nameof(openTime));
 
             //if (firstTradeId < 0) // ...fails due to symbol 'ETC' (?) with -1 trade ID.
             //    throw new ArgumentException($"{nameof(Symbol24hrStats)} trade ID must be greater than 0.", nameof(firstTradeId));
             //if (lastTradeId < 0) // ...fails due to symbol 'ETC' (?) with -1 trade ID.
             //    throw new ArgumentException($"{nameof(Symbol24hrStats)} trade ID must be greater than 0.", nameof(lastTradeId));
             if (lastTradeId < firstTradeId)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
 
             if (tradeCount < 0)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} trade count must be greater than or equal to 0.", nameof(tradeCount));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} trade count must be greater than or equal to 0.", nameof(tradeCount));
             if (tradeCount != 0 && tradeCount != lastTradeId - firstTradeId + 1)
-                throw new ArgumentException($"{nameof(Symbol24hrStats)} trade count must be equal to last trade ID - first trade ID + 1.", nameof(tradeCount));
+                throw new ArgumentException($"{nameof(Symbol24HourStatistics)} trade count must be equal to last trade ID - first trade ID + 1.", nameof(tradeCount));
 
             Symbol = symbol;
             PriceChange = priceChange;

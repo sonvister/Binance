@@ -14,7 +14,7 @@ namespace Binance.Market
         /// <summary>
         /// Get the symbol.
         /// </summary>
-        public string Symbol { get; private set; }
+        public string Symbol { get; }
 
         /// <summary>
         /// Get the last update ID.
@@ -55,8 +55,8 @@ namespace Binance.Market
 
         #region Private Fields
 
-        private SortedDictionary<decimal, decimal> _bids;
-        private SortedDictionary<decimal, decimal> _asks;
+        private readonly SortedDictionary<decimal, decimal> _bids;
+        private readonly SortedDictionary<decimal, decimal> _asks;
 
         #endregion Private Fields
 
@@ -215,12 +215,18 @@ namespace Binance.Market
         /// Get a duplicate order book (deep copy).
         /// </summary>
         /// <returns></returns>
-        public OrderBook Clone(int limit = default)
+        public OrderBook Clone()
         {
-            if (limit > 0)
-                return new OrderBook(Symbol, LastUpdateId, _bids.Take(limit).Select(_ => (_.Key, _.Value)), _asks.Take(limit).Select(_ => (_.Key, _.Value)));
-            else
-                return new OrderBook(Symbol, LastUpdateId, _bids.Select(_ => (_.Key, _.Value)), _asks.Select(_ => (_.Key, _.Value)));
+            return new OrderBook(Symbol, LastUpdateId, _bids.Select(_ => (_.Key, _.Value)), _asks.Select(_ => (_.Key, _.Value)));
+        }
+
+        /// <summary>
+        /// Get a duplicate order book (deep copy).
+        /// </summary>
+        /// <returns></returns>
+        public OrderBook Clone(int limit)
+        {
+            return new OrderBook(Symbol, LastUpdateId, _bids.Take(limit).Select(_ => (_.Key, _.Value)), _asks.Take(limit).Select(_ => (_.Key, _.Value)));
         }
 
         /// <summary>

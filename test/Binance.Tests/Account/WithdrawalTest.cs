@@ -1,7 +1,8 @@
 ﻿using System;
+using Binance.Account;
 using Xunit;
 
-namespace Binance.Account.Tests
+namespace Binance.Tests.Account
 {
     public class WithdrawalTest
     {
@@ -9,10 +10,10 @@ namespace Binance.Account.Tests
         public void Throws()
         {
             var asset = Asset.BTC;
-            decimal amount = 1.23m;
-            long timestamp = 1234567890;
-            var status = WithdrawalStatus.Completed;
-            var address = "0x12345678901234567890";
+            const decimal amount = 1.23m;
+            const long timestamp = 1234567890;
+            const WithdrawalStatus status = WithdrawalStatus.Completed;
+            const string address = "0x12345678901234567890";
 
             Assert.Throws<ArgumentNullException>("asset", () => new Withdrawal(null, amount, timestamp, status, address));
             Assert.Throws<ArgumentException>("amount", () => new Withdrawal(asset, -1, timestamp, status, address));
@@ -25,11 +26,11 @@ namespace Binance.Account.Tests
         public void Properties()
         {
             var asset = Asset.BTC;
-            decimal amount = 1.23m;
-            long timestamp = 1234567890;
-            var status = WithdrawalStatus.Completed;
-            var address = "0x12345678901234567890";
-            var txId = "21436587092143658709";
+            const decimal amount = 1.23m;
+            const long timestamp = 1234567890;
+            const WithdrawalStatus status = WithdrawalStatus.Completed;
+            const string address = "0x12345678901234567890";
+            const string txId = "21436587092143658709";
 
             var withdrawal = new Withdrawal(asset, amount, timestamp, status, address, txId);
 

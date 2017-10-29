@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -48,7 +48,7 @@ namespace Binance.Api.WebSocket
 
             Symbol = symbol.FormatSymbol();
 
-            if (_isSubscribed)
+            if (IsSubscribed)
                 throw new InvalidOperationException($"{nameof(DepthWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");
 
             return SubscribeAsync($"{Symbol.ToLower()}@depth", json =>
@@ -56,11 +56,11 @@ namespace Binance.Api.WebSocket
                 try
                 {
                     var eventArgs = DeserializeJson(json);
-                    if (eventArgs != null)
-                    {
-                        callback?.Invoke(eventArgs);
-                        RaiseUpdateEvent(eventArgs);
-                    }
+                    if (eventArgs == null)
+                        return;
+
+                    callback?.Invoke(eventArgs);
+                    RaiseUpdateEvent(eventArgs);
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
@@ -85,7 +85,7 @@ namespace Binance.Api.WebSocket
 
             try
             {
-                _logger?.LogTrace($"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJson)}: \"{json}\"");
+                Logger?.LogTrace($"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJson)}: \"{json}\"");
 
                 var jObject = JObject.Parse(json);
 
@@ -97,23 +97,15 @@ namespace Binance.Api.WebSocket
                     var eventTime = jObject["E"].Value<long>();
 
                     var firstUpdateId = jObject["U"].Value<long>();
-
                     var lastUpdateId = jObject["u"].Value<long>();
 
-                    var bids = new List<(decimal, decimal)>();
-                    foreach (var entry in jObject["b"])
-                        bids.Add((entry[0].Value<decimal>(), entry[1].Value<decimal>()));
-
-                    var asks = new List<(decimal, decimal)>();
-                    foreach (var entry in jObject["a"])
-                        asks.Add((entry[0].Value<decimal>(), entry[1].Value<decimal>()));
+                    var bids = jObject["b"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
+                    var asks = jObject["a"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
 
                     return new DepthUpdateEventArgs(eventTime, symbol, firstUpdateId, lastUpdateId, bids, asks);
                 }
-                else
-                {
-                    _logger?.LogWarning($"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
-                }
+
+                Logger?.LogWarning($"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
             }
             catch (OperationCanceledException) { }
             catch (Exception e)

@@ -1,6 +1,7 @@
 ﻿using Binance.Market;
 using System;
 
+// ReSharper disable once CheckNamespace
 namespace Binance
 {
     internal static class KlineIntervalExtensions

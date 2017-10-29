@@ -2,6 +2,7 @@
 using Binance.Market;
 using System;
 
+// ReSharper disable once CheckNamespace
 namespace Binance
 {
     public static class StringExtensions

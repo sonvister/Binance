@@ -1,8 +1,10 @@
-﻿using Binance.Account;
-using System;
+﻿using System;
+using Binance.Account;
+using Binance.Api;
+using Binance.Api.WebSocket.Events;
 using Xunit;
 
-namespace Binance.Api.WebSocket.Events.Tests
+namespace Binance.Tests.Api.WebSocket.Events
 {
     public class AccountUpdateEventArgsTest
     {
@@ -14,7 +16,7 @@ namespace Binance.Api.WebSocket.Events.Tests
             var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);
-            var balances = new AccountBalance[] { new AccountBalance("BTC", 0.1m, 0.2m) };
+            var balances = new[] { new AccountBalance("BTC", 0.1m, 0.2m) };
 
             var account = new AccountInfo(user, commissions, status, balances);
 
@@ -31,7 +33,7 @@ namespace Binance.Api.WebSocket.Events.Tests
             var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);
-            var balances = new AccountBalance[] { new AccountBalance("BTC", 0.1m, 0.2m) };
+            var balances = new[] { new AccountBalance("BTC", 0.1m, 0.2m) };
 
             var account = new AccountInfo(user, commissions, status, balances);
 

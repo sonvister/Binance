@@ -1,15 +1,18 @@
-﻿using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
+using Binance.Account;
+using Xunit;
 
-namespace Binance.Account.Tests
+namespace Binance.Tests.Account
 {
     public class AccountStatusTest
     {
         [Fact]
+        [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalse")]
         public void Properties()
         {
-            bool canTrade = true;
-            bool canWithdraw = false;
-            bool canDeposit = false;
+            var canTrade = true;
+            var canWithdraw = false;
+            var canDeposit = false;
 
             var status = new AccountStatus(canTrade, canWithdraw, canDeposit);
 
@@ -19,7 +22,6 @@ namespace Binance.Account.Tests
 
             canTrade = false;
             canWithdraw = true;
-            canDeposit = false;
 
             status = new AccountStatus(canTrade, canWithdraw, canDeposit);
 
@@ -27,7 +29,6 @@ namespace Binance.Account.Tests
             Assert.Equal(canWithdraw, status.CanWithdraw);
             Assert.Equal(canDeposit, status.CanDeposit);
 
-            canTrade = false;
             canWithdraw = false;
             canDeposit = true;
 

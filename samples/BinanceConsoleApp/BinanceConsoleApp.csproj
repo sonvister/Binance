@@ -29,6 +29,10 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Binance\Binance.csproj" />
+  </ItemGroup>
   
   <ItemGroup>
     <None Update="appsettings.json">

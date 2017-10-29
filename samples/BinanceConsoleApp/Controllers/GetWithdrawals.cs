@@ -3,10 +3,11 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class GetWithdrawals : IHandleCommand
+    internal class GetWithdrawals : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -14,7 +15,7 @@ namespace BinanceConsoleApp.Controllers
                 && !command.Equals("withdrawals", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            if (Program._user == null)
+            if (Program.User == null)
             {
                 Program.PrintApiNotice();
                 return true;
@@ -28,9 +29,9 @@ namespace BinanceConsoleApp.Controllers
                 asset = args[1];
             }
 
-            var withdrawals = await Program._api.GetWithdrawalsAsync(Program._user, asset, token: token);
+            var withdrawals = await Program.Api.GetWithdrawalsAsync(Program.User, asset, token: token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 if (!withdrawals.Any())

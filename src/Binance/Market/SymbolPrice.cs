@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Binance.Api
+namespace Binance.Market
 {
     /// <summary>
     /// A symbol/price value object.
@@ -12,12 +12,12 @@ namespace Binance.Api
         /// <summary>
         /// Get the symbol.
         /// </summary>
-        public string Symbol { get; private set; }
+        public string Symbol { get; }
 
         /// <summary>
         /// Get the price value.
         /// </summary>
-        public decimal Value { get; private set; }
+        public decimal Value { get; }
 
         #endregion Public Properties
 

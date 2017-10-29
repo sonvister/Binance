@@ -5,6 +5,7 @@ using Binance.Market;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,7 +24,7 @@ namespace Binance.Api
 
         #region Public Properties
 
-        public IBinanceJsonApi JsonApi { get; private set; }
+        public IBinanceJsonApi JsonApi { get; }
 
         #endregion Public Properties
 
@@ -89,17 +90,8 @@ namespace Binance.Api
 
                 var lastUpdateId = jObject["lastUpdateId"].Value<long>();
 
-                var bids = new List<(decimal, decimal)>();
-                foreach (var entry in jObject["bids"])
-                {
-                    bids.Add((entry[0].Value<decimal>(), entry[1].Value<decimal>()));
-                }
-
-                var asks = new List<(decimal, decimal)>();
-                foreach (var entry in jObject["asks"])
-                {
-                    asks.Add((entry[0].Value<decimal>(), entry[1].Value<decimal>()));
-                }
+                var bids = jObject["bids"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
+                var asks = jObject["asks"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
 
                 return new OrderBook(symbol.FormatSymbol(), lastUpdateId, bids, asks);
             }
@@ -162,27 +154,21 @@ namespace Binance.Api
             {
                 var jArray = JArray.Parse(json);
 
-                var candlesticks = new List<Candlestick>();
-                foreach (var item in jArray)
-                {
-                    var candlestick = new Candlestick(
-                        symbol.FormatSymbol(),     // symbol
-                        interval,                  // interval
-                        item[0].Value<long>(),     // open time
-                        item[1].Value<decimal>(),  // open
-                        item[2].Value<decimal>(),  // high
-                        item[3].Value<decimal>(),  // low
-                        item[4].Value<decimal>(),  // close
-                        item[5].Value<decimal>(),  // volume
-                        item[6].Value<long>(),     // close time
-                        item[7].Value<decimal>(),  // quote asset volume
-                        item[8].Value<long>(),     // number of trades
-                        item[9].Value<decimal>(),  // taker buy base asset volume
-                        item[10].Value<decimal>()  // taker buy quote asset volume
-                    );
-                    candlesticks.Add(candlestick);
-                }
-                return candlesticks;
+                return jArray.Select(item => new Candlestick(
+                        symbol.FormatSymbol(),      // symbol
+                        interval,                   // interval
+                        item[0].Value<long>(),      // open time
+                        item[1].Value<decimal>(),   // open
+                        item[2].Value<decimal>(),   // high
+                        item[3].Value<decimal>(),   // low
+                        item[4].Value<decimal>(),   // close
+                        item[5].Value<decimal>(),   // volume
+                        item[6].Value<long>(),      // close time
+                        item[7].Value<decimal>(),   // quote asset volume
+                        item[8].Value<long>(),      // number of trades
+                        item[9].Value<decimal>(),   // taker buy base asset volume
+                        item[10].Value<decimal>()   // taker buy quote asset volume
+                    )).ToList();
             }
             catch (Exception e)
             {
@@ -190,16 +176,16 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<Symbol24hrStats> Get24hrStatsAsync(string symbol, CancellationToken token = default)
+        public virtual async Task<Symbol24HourStatistics> Get24HourStatisticsAsync(string symbol, CancellationToken token = default)
         {
-            var json = await JsonApi.Get24hStatsAsync(symbol, token)
+            var json = await JsonApi.Get24HourStatisticsAsync(symbol, token)
                 .ConfigureAwait(false);
 
             try
             {
                 var jObject = JObject.Parse(json);
 
-                return new Symbol24hrStats(
+                return new Symbol24HourStatistics(
                     symbol.FormatSymbol(),
                     jObject["priceChange"].Value<decimal>(),
                     jObject["priceChangePercent"].Value<decimal>(),
@@ -220,7 +206,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(Get24hrStatsAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(Get24HourStatisticsAsync)} failed to parse JSON api response: \"{json}\"", e);
             }
         }
 
@@ -231,14 +217,7 @@ namespace Binance.Api
 
             try
             {
-                var jArray = JArray.Parse(json);
-
-                var prices = new List<SymbolPrice>();
-                foreach (var item in jArray)
-                {
-                    prices.Add(new SymbolPrice(item["symbol"].Value<string>(), item["price"].Value<decimal>()));
-                }
-                return prices;
+                return JArray.Parse(json).Select(item => new SymbolPrice(item["symbol"].Value<string>(), item["price"].Value<decimal>())).ToList();
             }
             catch (Exception e)
             {
@@ -255,19 +234,12 @@ namespace Binance.Api
             {
                 var jArray = JArray.Parse(json);
 
-                var tops = new List<OrderBookTop>();
-                foreach (var item in jArray)
-                {
-                    var top = new OrderBookTop(
+                return jArray.Select(item => new OrderBookTop(
                         item["symbol"].Value<string>(),
                         item["bidPrice"].Value<decimal>(),
                         item["bidQty"].Value<decimal>(),
                         item["askPrice"].Value<decimal>(),
-                        item["askQty"].Value<decimal>());
-
-                    tops.Add(top);
-                }
-                return tops;
+                        item["askQty"].Value<decimal>())).ToList();
             }
             catch (Exception e)
             {
@@ -490,14 +462,7 @@ namespace Binance.Api
                     jObject["canWithdraw"].Value<bool>(),
                     jObject["canDeposit"].Value<bool>());
 
-                var balances = new List<AccountBalance>();
-                foreach (var entry in jObject["balances"])
-                {
-                    balances.Add(new AccountBalance(
-                        entry["asset"].Value<string>(),
-                        entry["free"].Value<decimal>(),
-                        entry["locked"].Value<decimal>()));
-                }
+                var balances = jObject["balances"].Select(entry => new AccountBalance(entry["asset"].Value<string>(), entry["free"].Value<decimal>(), entry["locked"].Value<decimal>())).ToList();
 
                 return new AccountInfo(user, commissions, status, balances);
             }
@@ -516,10 +481,7 @@ namespace Binance.Api
             {
                 var jArray = JArray.Parse(json);
 
-                var trades = new List<AccountTrade>();
-                foreach (var jToken in jArray)
-                {
-                    trades.Add(new AccountTrade(
+                return jArray.Select(jToken => new AccountTrade(
                         symbol.FormatSymbol(),
                         jToken["id"].Value<long>(),
                         jToken["price"].Value<decimal>(),
@@ -529,9 +491,7 @@ namespace Binance.Api
                         jToken["time"].Value<long>(),
                         jToken["isBuyer"].Value<bool>(),
                         jToken["isMaker"].Value<bool>(),
-                        jToken["isBestMatch"].Value<bool>()));
-                }
-                return trades;
+                        jToken["isBestMatch"].Value<bool>())).ToList();
             }
             catch (Exception e)
             {
@@ -544,8 +504,8 @@ namespace Binance.Api
             var json = await JsonApi.WithdrawAsync(user, asset, address, amount, name, recvWindow, token)
                 .ConfigureAwait(false);
 
-            bool success = false;
-            string message = null;
+            bool success;
+            string message;
 
             try
             {
@@ -568,7 +528,7 @@ namespace Binance.Api
             var json = await JsonApi.GetDepositsAsync(user, asset, status, startTime, endTime, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var success = false;
+            bool success;
             var deposits = new List<Deposit>();
 
             try
@@ -583,14 +543,12 @@ namespace Binance.Api
 
                     if (depositList != null)
                     {
-                        foreach (var jToken in depositList)
-                        {
-                            deposits.Add(new Deposit(
+                        deposits.AddRange(
+                            depositList.Select(jToken => new Deposit(
                                 jToken["asset"].Value<string>(),
                                 jToken["amount"].Value<decimal>(),
                                 jToken["insertTime"].Value<long>(),
-                                (DepositStatus)jToken["status"].Value<int>()));
-                        }
+                                (DepositStatus)jToken["status"].Value<int>())));
                     }
                 }
             }
@@ -610,7 +568,7 @@ namespace Binance.Api
             var json = await JsonApi.GetWithdrawalsAsync(user, asset, status, startTime, endTime, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var success = false;
+            bool success;
             var withdrawals = new List<Withdrawal>();
 
             try
@@ -625,16 +583,14 @@ namespace Binance.Api
 
                     if (withdrawList != null)
                     {
-                        foreach (var jToken in withdrawList)
-                        {
-                            withdrawals.Add(new Withdrawal(
+                        withdrawals.AddRange(
+                            withdrawList.Select(jToken => new Withdrawal(
                                 jToken["asset"].Value<string>(),
                                 jToken["amount"].Value<decimal>(),
                                 jToken["applyTime"].Value<long>(),
                                 (WithdrawalStatus)jToken["status"].Value<int>(),
                                 jToken["address"].Value<string>(),
-                                jToken["txId"]?.Value<string>()));
-                        }
+                                jToken["txId"]?.Value<string>())));
                     }
                 }
             }
@@ -693,14 +649,11 @@ namespace Binance.Api
         /// <param name="symbol"></param>
         /// <param name="json"></param>
         /// <returns></returns>
-        private IEnumerable<AggregateTrade> DeserializeAggregateTrades(string symbol, string json)
+        private static IEnumerable<AggregateTrade> DeserializeAggregateTrades(string symbol, string json)
         {
             var jArray = JArray.Parse(json);
 
-            var trades = new List<AggregateTrade>();
-            foreach (var item in jArray)
-            {
-                var trade = new AggregateTrade(
+            return jArray.Select(item => new AggregateTrade(
                     symbol.FormatSymbol(),
                     item["a"].Value<long>(),    // ID
                     item["p"].Value<decimal>(), // price
@@ -709,11 +662,8 @@ namespace Binance.Api
                     item["l"].Value<long>(),    // last trade ID
                     item["T"].Value<long>(),    // timestamp
                     item["m"].Value<bool>(),    // is buyer maker
-                    item["M"].Value<bool>());   // is best price
-
-                trades.Add(trade);
-            }
-            return trades;
+                    item["M"].Value<bool>()))   // is best price match
+                .ToList();
         }
 
         /// <summary>
@@ -721,7 +671,7 @@ namespace Binance.Api
         /// </summary>
         /// <param name="order"></param>
         /// <param name="jToken"></param>
-        private void FillOrder(Order order, JToken jToken)
+        private static void FillOrder(Order order, JToken jToken)
         {
             order.Symbol = jToken["symbol"].Value<string>();
             order.Id = jToken["orderId"].Value<long>();
@@ -744,7 +694,7 @@ namespace Binance.Api
 
         #region IDisposable
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         protected virtual void Dispose(bool disposing)
         {

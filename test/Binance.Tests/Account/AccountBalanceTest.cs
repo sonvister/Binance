@@ -1,18 +1,17 @@
 ﻿using System;
+using Binance.Account;
 using Xunit;
 
-namespace Binance.Account.Tests
+namespace Binance.Tests.Account
 {
     public class AccountBalanceTest
     {
         [Fact]
         public void Throws()
         {
-            string asset = Asset.BTC;
-            decimal free = 0.123m;
-            decimal locked = 0.456m;
-
-            var balance = new AccountBalance(asset, 0, 0);
+            var asset = Asset.BTC;
+            const decimal free = 0.123m;
+            const decimal locked = 0.456m;
 
             Assert.Throws<ArgumentNullException>("asset", () => new AccountBalance(null, free, locked));
             Assert.Throws<ArgumentException>("free", () => new AccountBalance(asset, -1, locked));
@@ -22,9 +21,9 @@ namespace Binance.Account.Tests
         [Fact]
         public void Properties()
         {
-            string asset = Asset.BTC;
-            decimal free = 0.123m;
-            decimal locked = 0.456m;
+            var asset = Asset.BTC;
+            const decimal free = 0.123m;
+            const decimal locked = 0.456m;
 
             var balance = new AccountBalance(asset, free, locked);
 

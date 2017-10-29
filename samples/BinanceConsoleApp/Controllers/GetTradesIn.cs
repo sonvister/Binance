@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    public class GetTradesIn : IHandleCommand
+    internal class GetTradesIn : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -15,7 +15,7 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string symbol = Symbol.BTC_USDT;
+            var symbol = Symbol.BTC_USDT;
             if (args.Length > 1)
             {
                 symbol = args[1];
@@ -33,9 +33,9 @@ namespace BinanceConsoleApp.Controllers
                 long.TryParse(args[3], out endTime);
             }
 
-            var trades = await Program._api.GetAggregateTradesInAsync(symbol, startTime, endTime, token: token);
+            var trades = await Program.Api.GetAggregateTradesInAsync(symbol, startTime, endTime, token: token);
 
-            lock (Program._consoleSync)
+            lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 foreach (var trade in trades)

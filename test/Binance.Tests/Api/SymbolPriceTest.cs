@@ -1,16 +1,16 @@
-﻿using Binance.Api;
-using System;
+﻿using System;
+using Binance.Market;
 using Xunit;
 
-namespace Binance.Api.Tests
+namespace Binance.Tests.Api
 {
     public class SymbolPriceTest
     {
         [Fact]
         public void Throws()
         {
-            string symbol = Symbol.BTC_USDT;
-            decimal value = 1.2345m;
+            var symbol = Symbol.BTC_USDT;
+            const decimal value = 1.2345m;
 
             Assert.Throws<ArgumentNullException>("symbol", () => new SymbolPrice(null, value));
             Assert.Throws<ArgumentException>("value", () => new SymbolPrice(symbol, -1));
@@ -19,8 +19,8 @@ namespace Binance.Api.Tests
         [Fact]
         public void Properties()
         {
-            string symbol = Symbol.BTC_USDT;
-            decimal value = 1.2345m;
+            var symbol = Symbol.BTC_USDT;
+            const decimal value = 1.2345m;
 
             var price = new SymbolPrice(symbol, value);
 
