@@ -64,6 +64,14 @@ namespace Binance.Cache
         /// <returns><see cref="Task"/></returns>
         Task SubscribeAsync(string symbol, Action<OrderBookCacheEventArgs> callback, int limit = default, CancellationToken token = default);
 
+        /// <summary>
+        /// Link to a subscribed <see cref="IDepthWebSocketClient"/>.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="callback"></param>
+        /// <param name="leaveClientOpen"></param>
+        void LinkTo(IDepthWebSocketClient client, Action<OrderBookCacheEventArgs> callback = null, bool leaveClientOpen = true);
+
         #endregion Public Methods
     }
 }

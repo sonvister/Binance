@@ -66,7 +66,8 @@ namespace BinanceConsoleApp
 
                 // Configure services.
                ServiceProvider = new ServiceCollection()
-                    .AddBinance().AddLogging().AddOptions()
+                    .AddBinance().AddOptions()
+                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .Configure<BinanceJsonApiOptions>(Configuration.GetSection("Api"))
                     .Configure<UserDataWebSocketClientOptions>(Configuration.GetSection("UserClient"))
                     .BuildServiceProvider();
@@ -74,7 +75,8 @@ namespace BinanceConsoleApp
                 // Configure logging.
                 ServiceProvider
                     .GetService<ILoggerFactory>()
-                        .AddConsole(Configuration.GetSection("Logging.Console"));
+                        .AddConsole(Configuration.GetSection("Logging").GetSection("Console"))
+                        .AddFile(Configuration.GetSection("Logging").GetSection("File"));
 
                 var key = Configuration["BinanceApiKey"] // user secrets configuration.
                     ?? Configuration.GetSection("User")["ApiKey"]; // appsettings.json configuration.
@@ -160,7 +162,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  prices                                               display current price for all symbols.");
                 Console.WriteLine("  tops                                                 display order book top price and quantity for all symbols.");
                 Console.WriteLine("  live depth|book <symbol>                             enable order book live feed for a symbol.");
-                Console.WriteLine("  live kline|candle <symbol> <interval>                enable kline live feed for a symbol and interval.");
+                Console.WriteLine("  live klines|candles <symbol> <interval>              enable kline live feed for a symbol and interval.");
                 Console.WriteLine("  live trades <symbol>                                 enable trades live feed for a symbol.");
                 Console.WriteLine("  live account|user                                    enable user data live feed (api key required).");
                 Console.WriteLine("  live off                                             disable the websocket live feed (there can be only one).");

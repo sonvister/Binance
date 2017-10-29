@@ -34,7 +34,7 @@ namespace Binance.Cache
 
         private readonly ILogger<OrderBookCache> _logger;
 
-        private bool _leaveWebSocketClientOpen;
+        private bool _leaveClientOpen;
 
         private BufferBlock<DepthUpdateEventArgs> _bufferBlock;
         private ActionBlock<DepthUpdateEventArgs> _actionBlock;
@@ -44,11 +44,15 @@ namespace Binance.Cache
         private OrderBook _orderBook;
         private OrderBook _orderBookClone;
 
+        private string _symbol;
+        private int _limit;
+        private CancellationToken _token;
+
         #endregion Private Fields
 
         #region Constructors
 
-        public OrderBookCache(IBinanceApi api, IDepthWebSocketClient client, bool leaveWebSocketClientOpen = false, ILogger<OrderBookCache> logger = null)
+        public OrderBookCache(IBinanceApi api, IDepthWebSocketClient client, bool leaveClientOpen = false, ILogger<OrderBookCache> logger = null)
         {
             Throw.IfNull(api, nameof(api));
             Throw.IfNull(client, nameof(client));
@@ -57,8 +61,7 @@ namespace Binance.Cache
             _logger = logger;
 
             Client = client;
-            Client.DepthUpdate += OnDepthUpdate;
-            _leaveWebSocketClientOpen = leaveWebSocketClientOpen;
+            _leaveClientOpen = leaveClientOpen;
         }
 
         #endregion Constructors
@@ -72,12 +75,34 @@ namespace Binance.Cache
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
+            _symbol = symbol;
+            _limit = limit;
+            _token = token;
+
+            LinkTo(Client, callback, _leaveClientOpen);
+
+            return Client.SubscribeAsync(symbol, token);
+        }
+
+        public void LinkTo(IDepthWebSocketClient client, Action<OrderBookCacheEventArgs> callback = null, bool leaveClientOpen = true)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            if (_bufferBlock != null)
+            {
+                if (client == Client)
+                    throw new InvalidOperationException($"{nameof(OrderBookCache)} is already linked to this {nameof(IDepthWebSocketClient)}.");
+
+                throw new InvalidOperationException($"{nameof(OrderBookCache)} is linked to another {nameof(IDepthWebSocketClient)}.");
+            }
+
             _callback = callback;
+            _leaveClientOpen = leaveClientOpen;
 
             _bufferBlock = new BufferBlock<DepthUpdateEventArgs>(new DataflowBlockOptions()
             {
                 EnsureOrdered = true,
-                CancellationToken = token,
+                CancellationToken = _token,
                 BoundedCapacity = DataflowBlockOptions.Unbounded,
                 MaxMessagesPerTask = DataflowBlockOptions.Unbounded,
             });
@@ -89,7 +114,7 @@ namespace Binance.Cache
                     // If order book has not been initialized.
                     if (_orderBook == null)
                     {
-                        _orderBook = await _api.GetOrderBookAsync(symbol, token: token)
+                        _orderBook = await _api.GetOrderBookAsync(_symbol, token: _token)
                             .ConfigureAwait(false);
                     }
 
@@ -98,11 +123,11 @@ namespace Binance.Cache
                     {
                         _logger?.LogError($"{nameof(OrderBookCache)}: Synchronization failure (first update ID > last update ID + 1).");
 
-                        await Task.Delay(1000, token)
+                        await Task.Delay(1000, _token)
                             .ConfigureAwait(false); // wait a bit.
 
                         // Re-synchronize.
-                        _orderBook = await _api.GetOrderBookAsync(symbol, token: token)
+                        _orderBook = await _api.GetOrderBookAsync(_symbol, token: _token)
                             .ConfigureAwait(false);
 
                         // If still out-of-sync.
@@ -116,7 +141,7 @@ namespace Binance.Cache
                         }
                     }
 
-                    Modify(@event.LastUpdateId, @event.Bids, @event.Asks, limit);
+                    Modify(@event.LastUpdateId, @event.Bids, @event.Asks, _limit);
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
@@ -128,13 +153,13 @@ namespace Binance.Cache
                 BoundedCapacity = 1,
                 EnsureOrdered = true,
                 MaxDegreeOfParallelism = 1,
-                CancellationToken = token,
+                CancellationToken = _token,
                 SingleProducerConstrained = true,
             });
 
             _bufferBlock.LinkTo(_actionBlock);
 
-            return Client.SubscribeAsync(symbol, token: token);
+            Client.DepthUpdate += OnDepthUpdate;
         }
 
         #endregion Public Methods
@@ -171,7 +196,7 @@ namespace Binance.Cache
 
             _orderBook.Modify(lastUpdateId, bids, asks);
 
-            _orderBookClone = _orderBook.Clone(limit);
+            _orderBookClone = limit > 0 ? _orderBook.Clone(limit) : _orderBook.Clone();
 
             var eventArgs = new OrderBookCacheEventArgs(_orderBookClone);
 
@@ -201,11 +226,9 @@ namespace Binance.Cache
         /// <param name="source"></param>
         private void LogException(Exception e, string source)
         {
-            if (!e.IsLogged())
-            {
-                _logger?.LogError(e, $"{source}: \"{e.Message}\"");
-                e.Logged();
-            }
+            if (e.IsLogged()) return;
+            _logger?.LogError(e, $"{source}: \"{e.Message}\"");
+            e.Logged();
         }
 
         #endregion Private Methods
@@ -223,7 +246,7 @@ namespace Binance.Cache
             {
                 Client.DepthUpdate -= OnDepthUpdate;
 
-                if (!_leaveWebSocketClientOpen)
+                if (!_leaveClientOpen)
                 {
                     Client.Dispose();
                 }

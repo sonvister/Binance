@@ -39,7 +39,7 @@ namespace Binance.Cache
 
         private readonly ILogger<AggregateTradesCache> _logger;
 
-        private bool _leaveWebSocketClientOpen;
+        private bool _leaveClientOpen;
 
         private BufferBlock<AggregateTradeEventArgs> _bufferBlock;
         private ActionBlock<AggregateTradeEventArgs> _actionBlock;
@@ -50,11 +50,15 @@ namespace Binance.Cache
 
         private readonly object _sync = new object();
 
+        private string _symbol;
+        private int _limit;
+        private CancellationToken _token;
+
         #endregion Private Fields
 
         #region Constructors
 
-        public AggregateTradesCache(IBinanceApi api, ITradesWebSocketClient client, bool leaveWebSocketClientOpen = false, ILogger<AggregateTradesCache> logger = null)
+        public AggregateTradesCache(IBinanceApi api, ITradesWebSocketClient client, bool leaveClientOpen = false, ILogger<AggregateTradesCache> logger = null)
         {
             Throw.IfNull(api, nameof(api));
             Throw.IfNull(client, nameof(client));
@@ -63,8 +67,7 @@ namespace Binance.Cache
             _logger = logger;
 
             Client = client;
-            Client.AggregateTrade += OnAggregateTrade;
-            _leaveWebSocketClientOpen = leaveWebSocketClientOpen;
+            _leaveClientOpen = leaveClientOpen;
 
             _trades = new Queue<AggregateTrade>();
         }
@@ -80,12 +83,34 @@ namespace Binance.Cache
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
+            _symbol = symbol;
+            _limit = limit;
+            _token = token;
+
+            LinkTo(Client, callback, _leaveClientOpen);
+
+            return Client.SubscribeAsync(symbol, token);
+        }
+
+        public void LinkTo(ITradesWebSocketClient client, Action<AggregateTradesCacheEventArgs> callback = null, bool leaveClientOpen = true)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            if (_bufferBlock != null)
+            {
+                if (client == Client)
+                    throw new InvalidOperationException($"{nameof(AggregateTradesCache)} is already linked to this {nameof(ITradesWebSocketClient)}.");
+
+                throw new InvalidOperationException($"{nameof(AggregateTradesCache)} is linked to another {nameof(ITradesWebSocketClient)}.");
+            }
+
             _callback = callback;
+            _leaveClientOpen = leaveClientOpen;
 
             _bufferBlock = new BufferBlock<AggregateTradeEventArgs>(new DataflowBlockOptions()
             {
                 EnsureOrdered = true,
-                CancellationToken = token,
+                CancellationToken = _token,
                 BoundedCapacity = DataflowBlockOptions.Unbounded,
                 MaxMessagesPerTask = DataflowBlockOptions.Unbounded,
             });
@@ -96,7 +121,7 @@ namespace Binance.Cache
                 {
                     if (_trades.Count == 0)
                     {
-                        await SynchronizeTradesAsync(symbol, limit, token)
+                        await SynchronizeTradesAsync(_symbol, _limit, _token)
                             .ConfigureAwait(false);
                     }
 
@@ -105,11 +130,11 @@ namespace Binance.Cache
                     {
                         _logger?.LogError($"{nameof(AggregateTradesCache)}: Synchronization failure (trade ID > last trade ID + 1).");
 
-                        await Task.Delay(1000, token)
+                        await Task.Delay(1000, _token)
                             .ConfigureAwait(false); // wait a bit.
 
                         // Re-synchronize.
-                        await SynchronizeTradesAsync(symbol, limit, token)
+                        await SynchronizeTradesAsync(_symbol, _limit, _token)
                             .ConfigureAwait(false);
 
                         // If still out-of-sync.
@@ -148,13 +173,13 @@ namespace Binance.Cache
                 BoundedCapacity = 1,
                 EnsureOrdered = true,
                 MaxDegreeOfParallelism = 1,
-                CancellationToken = token,
+                CancellationToken = _token,
                 SingleProducerConstrained = true,
             });
 
             _bufferBlock.LinkTo(_actionBlock);
 
-            return Client.SubscribeAsync(symbol, token);
+            Client.AggregateTrade += OnAggregateTrade;
         }
 
         #endregion Public Methods
@@ -243,7 +268,7 @@ namespace Binance.Cache
             {
                 Client.AggregateTrade -= OnAggregateTrade;
 
-                if (!_leaveWebSocketClientOpen)
+                if (!_leaveClientOpen)
                 {
                     Client.Dispose();
                 }

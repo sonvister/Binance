@@ -85,8 +85,6 @@ namespace Binance.Api.WebSocket
 
             try
             {
-                Logger?.LogTrace($"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJson)}: \"{json}\"");
-
                 var jObject = JObject.Parse(json);
 
                 var eventType = jObject["e"].Value<string>();

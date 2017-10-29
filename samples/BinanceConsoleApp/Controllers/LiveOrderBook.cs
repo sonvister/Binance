@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    internal class OrderBookCache : IHandleCommand
+    internal class LiveOrderBook : IHandleCommand
     {
         public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -67,6 +67,8 @@ namespace BinanceConsoleApp.Controllers
             // NOTE: object 'sender' is IOrderBookCache (live order book)...
             //       e.OrderBook is a clone/snapshot of the live order book.
             var top = e.OrderBook.Top;
+            if (top == null)
+                return;
 
             lock (Program.ConsoleSync)
             {

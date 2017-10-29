@@ -39,7 +39,7 @@ namespace Binance.Cache
 
         private readonly ILogger<CandlesticksCache> _logger;
 
-        private bool _leaveWebSocketClientOpen;
+        private bool _leaveClientOpen;
 
         private BufferBlock<KlineEventArgs> _bufferBlock;
         private ActionBlock<KlineEventArgs> _actionBlock;
@@ -50,11 +50,16 @@ namespace Binance.Cache
 
         private readonly object _sync = new object();
 
+        private string _symbol;
+        private KlineInterval _interval;
+        private int _limit;
+        private CancellationToken _token;
+
         #endregion Private Fields
 
         #region Constructors
 
-        public CandlesticksCache(IBinanceApi api, IKlineWebSocketClient client, bool leaveWebSocketClientOpen = false, ILogger<CandlesticksCache> logger = null)
+        public CandlesticksCache(IBinanceApi api, IKlineWebSocketClient client, bool leaveClientOpen = false, ILogger<CandlesticksCache> logger = null)
         {
             Throw.IfNull(api, nameof(api));
             Throw.IfNull(client, nameof(client));
@@ -63,8 +68,7 @@ namespace Binance.Cache
             _logger = logger;
 
             Client = client;
-            Client.Kline += OnKline;
-            _leaveWebSocketClientOpen = leaveWebSocketClientOpen;
+            _leaveClientOpen = leaveClientOpen;
 
             _candlesticks = new List<Candlestick>();
         }
@@ -80,12 +84,35 @@ namespace Binance.Cache
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
+            _symbol = symbol;
+            _interval = interval;
+            _limit = limit;
+            _token = token;
+
+            LinkTo(Client, callback, _leaveClientOpen);
+
+            return Client.SubscribeAsync(symbol, interval, token);
+        }
+
+        public void LinkTo(IKlineWebSocketClient client, Action<CandlesticksCacheEventArgs> callback = null, bool leaveClientOpen = true)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            if (_bufferBlock != null)
+            {
+                if (client == Client)
+                    throw new InvalidOperationException($"{nameof(CandlesticksCache)} is already linked to this {nameof(IKlineWebSocketClient)}.");
+
+                throw new InvalidOperationException($"{nameof(CandlesticksCache)} is linked to another {nameof(IKlineWebSocketClient)}.");
+            }
+
             _callback = callback;
+            _leaveClientOpen = leaveClientOpen;
 
             _bufferBlock = new BufferBlock<KlineEventArgs>(new DataflowBlockOptions()
             {
                 EnsureOrdered = true,
-                CancellationToken = token,
+                CancellationToken = _token,
                 BoundedCapacity = DataflowBlockOptions.Unbounded,
                 MaxMessagesPerTask = DataflowBlockOptions.Unbounded,
             });
@@ -96,7 +123,7 @@ namespace Binance.Cache
                 {
                     if (_candlesticks.Count == 0)
                     {
-                        await SynchronizeCandlesticksAsync(symbol, interval, limit, token)
+                        await SynchronizeCandlesticksAsync(_symbol, _interval, _limit, _token)
                             .ConfigureAwait(false);
                     }
 
@@ -123,13 +150,13 @@ namespace Binance.Cache
                 BoundedCapacity = 1,
                 EnsureOrdered = true,
                 MaxDegreeOfParallelism = 1,
-                CancellationToken = token,
+                CancellationToken = _token,
                 SingleProducerConstrained = true,
             });
 
             _bufferBlock.LinkTo(_actionBlock);
 
-            return Client.SubscribeAsync(symbol, interval, token);
+            Client.Kline += OnKline;
         }
 
         #endregion Public Methods
@@ -219,7 +246,7 @@ namespace Binance.Cache
             {
                 Client.Kline -= OnKline;
 
-                if (!_leaveWebSocketClientOpen)
+                if (!_leaveClientOpen)
                 {
                     Client.Dispose();
                 }

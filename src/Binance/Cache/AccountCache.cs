@@ -38,6 +38,8 @@ namespace Binance.Cache
 
         private Action<AccountCacheEventArgs> _callback;
 
+        private CancellationToken _token;
+
         #endregion Private Fields
 
         #region Constructors
@@ -62,6 +64,8 @@ namespace Binance.Cache
         {
             Throw.IfNull(user, nameof(user));
 
+            _token = token;
+
             LinkTo(Client, callback, _leaveClientOpen);
 
             return Client.SubscribeAsync(user, token: token);
@@ -85,6 +89,7 @@ namespace Binance.Cache
             _bufferBlock = new BufferBlock<AccountUpdateEventArgs>(new DataflowBlockOptions()
             {
                 EnsureOrdered = true,
+                CancellationToken = _token,
                 BoundedCapacity = DataflowBlockOptions.Unbounded,
                 MaxMessagesPerTask = DataflowBlockOptions.Unbounded,
             });
@@ -102,6 +107,7 @@ namespace Binance.Cache
                 BoundedCapacity = 1,
                 EnsureOrdered = true,
                 MaxDegreeOfParallelism = 1,
+                CancellationToken = _token,
                 SingleProducerConstrained = true,
             });
 

@@ -106,16 +106,8 @@ namespace Binance.Market
         /// <returns>The quantity at price (0 if no entry at price).</returns>
         public decimal Quantity(decimal price)
         {
-            if (_bids.ContainsKey(price))
-            {
-                return _bids[price];
-            }
-            else if (_asks.ContainsKey(price))
-            {
-                return _asks[price];
-            }
-            else
-                return 0;
+            return _bids.ContainsKey(price) ? _bids[price]
+                : _asks.ContainsKey(price) ? _asks[price] : 0;
         }
 
         /// <summary>
@@ -126,25 +118,8 @@ namespace Binance.Market
         /// <returns>The order book depth up to price.</returns>
         public decimal Depth(decimal price)
         {
-            var quantity = 0.0m;
-
-            foreach (var level in _bids)
-            {
-                if (level.Key < price)
-                    break;
-
-                quantity += level.Value;
-            }
-
-            foreach (var level in _asks)
-            {
-                if (level.Key > price)
-                    break;
-
-                quantity += level.Value;
-            }
-
-            return quantity;
+            return _bids.TakeWhile(level => level.Key >= price).Sum(level => level.Value)
+                + _asks.TakeWhile(level => level.Key <= price).Sum(level => level.Value);
         }
 
         /// <summary>
@@ -155,25 +130,8 @@ namespace Binance.Market
         /// <returns>The order book volume up to price.</returns>
         public decimal Volume(decimal price)
         {
-            var volume = 0.0m;
-
-            foreach (var level in _bids)
-            {
-                if (level.Key < price)
-                    break;
-
-                volume += level.Key * level.Value;
-            }
-
-            foreach (var level in _asks)
-            {
-                if (level.Key > price)
-                    break;
-
-                volume += level.Key * level.Value;
-            }
-
-            return volume;
+            return _bids.TakeWhile(level => level.Key >= price).Sum(level => level.Key * level.Value)
+                + _asks.TakeWhile(level => level.Key <= price).Sum(level => level.Key * level.Value);
         }
 
         #endregion Public Methods
@@ -226,6 +184,8 @@ namespace Binance.Market
         /// <returns></returns>
         public OrderBook Clone(int limit)
         {
+            if (limit <= 0) throw new ArgumentOutOfRangeException(nameof(limit));
+
             return new OrderBook(Symbol, LastUpdateId, _bids.Take(limit).Select(_ => (_.Key, _.Value)), _asks.Take(limit).Select(_ => (_.Key, _.Value)));
         }
 

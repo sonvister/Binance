@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    internal class AggregateTradesCache : IHandleCommand
+    internal class LiveAggregateTrades : IHandleCommand
     {
         public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {

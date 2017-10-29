@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
-    internal class CandlestickCache : IHandleCommand
+    internal class LiveCandlesticks : IHandleCommand
     {
         public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -31,8 +31,8 @@ namespace BinanceConsoleApp.Controllers
                 symbol = args[2];
             }
 
-            if (!endpoint.Equals("kline", StringComparison.OrdinalIgnoreCase)
-                && !endpoint.Equals("candle", StringComparison.OrdinalIgnoreCase))
+            if (!endpoint.Equals("klines", StringComparison.OrdinalIgnoreCase)
+                && !endpoint.Equals("candles", StringComparison.OrdinalIgnoreCase))
                 return Task.FromResult(false);
 
             if (Program.LiveTask != null)
@@ -69,7 +69,7 @@ namespace BinanceConsoleApp.Controllers
             return Task.FromResult(true);
         }
 
-        private void OnKlineEvent(object sender, KlineEventArgs e)
+        private static void OnKlineEvent(object sender, KlineEventArgs e)
         {
             lock (Program.ConsoleSync)
             {

@@ -43,13 +43,13 @@ namespace Binance.Api.WebSocket
 
         #region Private Fields
 
-        private IBinanceApi _api;
+        private readonly IBinanceApi _api;
 
         private string _listenKey;
 
         private Timer _keepAliveTimer;
 
-        private UserDataWebSocketClientOptions _options;
+        private readonly UserDataWebSocketClientOptions _options;
 
         #endregion Private Fields
 

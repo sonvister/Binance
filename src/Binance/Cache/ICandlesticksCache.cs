@@ -56,6 +56,14 @@ namespace Binance.Cache
         /// <returns></returns>
         Task SubscribeAsync(string symbol, KlineInterval interval, Action<CandlesticksCacheEventArgs> callback, int limit = default, CancellationToken token = default);
 
+        /// <summary>
+        /// Link to a subscribed <see cref="IKlineWebSocketClient"/>.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="callback"></param>
+        /// <param name="leaveClientOpen"></param>
+        void LinkTo(IKlineWebSocketClient client, Action<CandlesticksCacheEventArgs> callback = null, bool leaveClientOpen = true);
+
         #endregion Public Methods
     }
 }
