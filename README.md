@@ -93,7 +93,7 @@ If using the `BinanceConsoleApp` sample you may see this message when accessing 
 > You can either modify the '**ApiKey**' and '**ApiSecret**' configuration values in **appsettings.json**.
 > Or use the following commands to configure the .NET user secrets for the project:
 > \
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`dotnet user-secrets set BinanceApiKey <your api key>`
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`dotnet user-secrets set BinanceApiKey <your api key>`\
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`dotnet user-secrets set BinanceApiSecret <your api secret>`
 > \
 > For more information: <https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets>
