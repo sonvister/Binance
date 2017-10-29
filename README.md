@@ -37,6 +37,18 @@ PM> Install-Package Binance
 - [Minimal](samples/BinanceConsoleApp/Examples/MinimalWithDependencyInjection.cs) with dependency injection (*recommended*).
 - [Minimal](samples/BinanceConsoleApp/Examples/MinimalWithoutDependencyInjection.cs) without dependency injection.
 
+#### Sample Application Configuration
+When using the `BinanceConsoleApp` sample you may see this message when accessing non-public API methods:
+
+> To access some Binance endpoint features, your **API Key and Secret** may be required.
+> You can either modify the '**ApiKey**' and '**ApiSecret**' configuration values in **appsettings.json**.
+> Or use the following commands to configure the .NET user secrets for the project:
+> \
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`dotnet user-secrets set BinanceApiKey <your api key>`
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`dotnet user-secrets set BinanceApiSecret <your api secret>`
+> \
+> For more information: <https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets>
+
 #### Exception Handling
 This code demonstrates how to handle exceptions from Binance API methods.
 
@@ -86,17 +98,6 @@ catch (Exception)
     // Other exceptions...
 }
 ```
-#### Sample Application Configuration
-If using the `BinanceConsoleApp` sample you may see this message when accessing non-public API methods:
-
-> To access some Binance endpoint features, your **API Key and Secret** may be required.
-> You can either modify the '**ApiKey**' and '**ApiSecret**' configuration values in **appsettings.json**.
-> Or use the following commands to configure the .NET user secrets for the project:
-> \
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`dotnet user-secrets set BinanceApiKey <your api key>`\
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`dotnet user-secrets set BinanceApiSecret <your api secret>`
-> \
-> For more information: <https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets>
 
 ## API Method Reference
 ### Connectivity
