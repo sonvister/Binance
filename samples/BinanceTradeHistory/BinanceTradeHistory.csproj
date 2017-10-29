@@ -14,13 +14,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Binance" Version="0.1.7-alpha" />
+    <PackageReference Include="Binance" Version="0.1.8-beta" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Binance\Binance.csproj" />
   </ItemGroup>
 
   <ItemGroup>
