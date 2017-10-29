@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Binance.Cache
 {
-    public interface IAccountCache : IDisposable
+    public interface IAccountInfoCache : IDisposable
     {
         #region Public Events
 

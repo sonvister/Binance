@@ -9,19 +9,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 // ReSharper disable InconsistentlySynchronizedField
 
 namespace Binance.Cache
 {
-    public class AggregateTradesCache : IAggregateTradesCache
+    public class AggregateTradesCache : WebSocketClientCache<ITradesWebSocketClient, AggregateTradeEventArgs, AggregateTradesCacheEventArgs>, IAggregateTradesCache
     {
-        #region Public Events
-
-        public event EventHandler<AggregateTradesCacheEventArgs> Update;
-
-        #endregion Public Events
-
         #region Public Properties
 
         public IEnumerable<AggregateTrade> Trades
@@ -29,22 +22,9 @@ namespace Binance.Cache
             get { lock (_sync) { return _trades?.ToArray() ?? new AggregateTrade[] { }; } }
         }
 
-        public ITradesWebSocketClient Client { get; }
-
         #endregion Public Properties
 
         #region Private Fields
-
-        private readonly IBinanceApi _api;
-
-        private readonly ILogger<AggregateTradesCache> _logger;
-
-        private bool _leaveClientOpen;
-
-        private BufferBlock<AggregateTradeEventArgs> _bufferBlock;
-        private ActionBlock<AggregateTradeEventArgs> _actionBlock;
-
-        private Action<AggregateTradesCacheEventArgs> _callback;
 
         private readonly Queue<AggregateTrade> _trades;
 
@@ -52,23 +32,14 @@ namespace Binance.Cache
 
         private string _symbol;
         private int _limit;
-        private CancellationToken _token;
 
         #endregion Private Fields
 
         #region Constructors
 
         public AggregateTradesCache(IBinanceApi api, ITradesWebSocketClient client, bool leaveClientOpen = false, ILogger<AggregateTradesCache> logger = null)
+            : base(api, client, leaveClientOpen, logger)
         {
-            Throw.IfNull(api, nameof(api));
-            Throw.IfNull(client, nameof(client));
-
-            _api = api;
-            _logger = logger;
-
-            Client = client;
-            _leaveClientOpen = leaveClientOpen;
-
             _trades = new Queue<AggregateTrade>();
         }
 
@@ -85,121 +56,64 @@ namespace Binance.Cache
 
             _symbol = symbol;
             _limit = limit;
-            _token = token;
+            Token = token;
 
-            LinkTo(Client, callback, _leaveClientOpen);
+            LinkTo(Client, callback, LeaveClientOpen);
 
             return Client.SubscribeAsync(symbol, token);
-        }
-
-        public void LinkTo(ITradesWebSocketClient client, Action<AggregateTradesCacheEventArgs> callback = null, bool leaveClientOpen = true)
-        {
-            Throw.IfNull(client, nameof(client));
-
-            if (_bufferBlock != null)
-            {
-                if (client == Client)
-                    throw new InvalidOperationException($"{nameof(AggregateTradesCache)} is already linked to this {nameof(ITradesWebSocketClient)}.");
-
-                throw new InvalidOperationException($"{nameof(AggregateTradesCache)} is linked to another {nameof(ITradesWebSocketClient)}.");
-            }
-
-            _callback = callback;
-            _leaveClientOpen = leaveClientOpen;
-
-            _bufferBlock = new BufferBlock<AggregateTradeEventArgs>(new DataflowBlockOptions()
-            {
-                EnsureOrdered = true,
-                CancellationToken = _token,
-                BoundedCapacity = DataflowBlockOptions.Unbounded,
-                MaxMessagesPerTask = DataflowBlockOptions.Unbounded,
-            });
-
-            _actionBlock = new ActionBlock<AggregateTradeEventArgs>(async @event =>
-            {
-                try
-                {
-                    if (_trades.Count == 0)
-                    {
-                        await SynchronizeTradesAsync(_symbol, _limit, _token)
-                            .ConfigureAwait(false);
-                    }
-
-                    // If there is a gap in the trades received (out-of-sync).
-                    if (@event.Trade.Id > _trades.Last().Id + 1)
-                    {
-                        _logger?.LogError($"{nameof(AggregateTradesCache)}: Synchronization failure (trade ID > last trade ID + 1).");
-
-                        await Task.Delay(1000, _token)
-                            .ConfigureAwait(false); // wait a bit.
-
-                        // Re-synchronize.
-                        await SynchronizeTradesAsync(_symbol, _limit, _token)
-                            .ConfigureAwait(false);
-
-                        // If still out-of-sync.
-                        if (@event.Trade.Id > _trades.Last().Id + 1)
-                        {
-                            _logger?.LogError($"{nameof(AggregateTradesCache)}: Re-Synchronization failure (trade ID > last trade ID + 1).");
-
-                            // Reset and wait for next event.
-                            lock (_sync) _trades.Clear();
-                            return;
-                        }
-                    }
-
-                    // If the trade exists in the queue already (occurs after synchronization).
-                    if (_trades.Any(t => t.Id == @event.Trade.Id))
-                        return;
-
-                    lock (_sync)
-                    {
-                        _trades.Dequeue();
-                        _trades.Enqueue(@event.Trade);
-                    }
-
-                    var eventArgs = new AggregateTradesCacheEventArgs(_trades.ToArray());
-
-                    _callback?.Invoke(eventArgs);
-                    RaiseUpdateEvent(eventArgs);
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception e)
-                {
-                    _logger?.LogError(e, $"{nameof(AggregateTradesCache)}: \"{e.Message}\"");
-                }
-            }, new ExecutionDataflowBlockOptions()
-            {
-                BoundedCapacity = 1,
-                EnsureOrdered = true,
-                MaxDegreeOfParallelism = 1,
-                CancellationToken = _token,
-                SingleProducerConstrained = true,
-            });
-
-            _bufferBlock.LinkTo(_actionBlock);
-
-            Client.AggregateTrade += OnAggregateTrade;
         }
 
         #endregion Public Methods
 
         #region Protected Methods
 
-        /// <summary>
-        /// Raise aggregate trades cache update event.
-        /// </summary>
-        /// <param name="args"></param>
-        protected virtual void RaiseUpdateEvent(AggregateTradesCacheEventArgs args)
+        protected override void OnLinkTo()
         {
-            Throw.IfNull(args, nameof(args));
+            Client.AggregateTrade += OnClientEvent;
+        }
 
-            try { Update?.Invoke(this, args); }
-            catch (Exception e)
+        protected override async Task<AggregateTradesCacheEventArgs> OnAction(AggregateTradeEventArgs @event)
+        {
+            if (_trades.Count == 0)
             {
-                LogException(e, $"{nameof(AggregateTradesCache)}.{nameof(RaiseUpdateEvent)}");
-                throw;
+                await SynchronizeTradesAsync(_symbol, _limit, Token)
+                    .ConfigureAwait(false);
             }
+
+            // If there is a gap in the trades received (out-of-sync).
+            if (@event.Trade.Id > _trades.Last().Id + 1)
+            {
+                Logger?.LogError($"{nameof(AggregateTradesCache)}: Synchronization failure (trade ID > last trade ID + 1).");
+
+                await Task.Delay(1000, Token)
+                    .ConfigureAwait(false); // wait a bit.
+
+                // Re-synchronize.
+                await SynchronizeTradesAsync(_symbol, _limit, Token)
+                    .ConfigureAwait(false);
+
+                // If still out-of-sync.
+                if (@event.Trade.Id > _trades.Last().Id + 1)
+                {
+                    Logger?.LogError($"{nameof(AggregateTradesCache)}: Re-Synchronization failure (trade ID > last trade ID + 1).");
+
+                    // Reset and wait for next event.
+                    lock (_sync) _trades.Clear();
+                    return null;
+                }
+            }
+
+            // If the trade exists in the queue already (occurs after synchronization).
+            if (_trades.Any(t => t.Id == @event.Trade.Id))
+                return null;
+
+            lock (_sync)
+            {
+                _trades.Dequeue();
+                _trades.Enqueue(@event.Trade);
+            }
+
+            return new AggregateTradesCacheEventArgs(_trades.ToArray());
         }
 
         #endregion Protected Methods
@@ -215,7 +129,7 @@ namespace Binance.Cache
         /// <returns></returns>
         private async Task SynchronizeTradesAsync(string symbol, int limit, CancellationToken token)
         {
-            var trades = await _api.GetAggregateTradesAsync(symbol, limit: limit, token: token)
+            var trades = await Api.GetAggregateTradesAsync(symbol, limit, token)
                 .ConfigureAwait(false);
 
             lock (_sync)
@@ -228,61 +142,25 @@ namespace Binance.Cache
             }
         }
 
-        /// <summary>
-        /// <see cref="ITradesWebSocketClient"/> event handler.
-        /// </summary>
-        /// <param name="sender">The <see cref="ITradesWebSocketClient"/>.</param>
-        /// <param name="event">The event arguments.</param>
-        private void OnAggregateTrade(object sender, AggregateTradeEventArgs @event)
-        {
-            // Post event to buffer block (queue).
-            _bufferBlock.Post(@event);
-        }
-
-        /// <summary>
-        /// Log an exception if not already logged within this library.
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="source"></param>
-        private void LogException(Exception e, string source)
-        {
-            if (!e.IsLogged())
-            {
-                _logger?.LogError(e, $"{source}: \"{e.Message}\"");
-                e.Logged();
-            }
-        }
-
         #endregion Private Methods
 
         #region IDisposable
 
         private bool _disposed;
 
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (_disposed)
                 return;
 
             if (disposing)
             {
-                Client.AggregateTrade -= OnAggregateTrade;
-
-                if (!_leaveClientOpen)
-                {
-                    Client.Dispose();
-                }
-
-                _bufferBlock?.Complete();
-                _actionBlock?.Complete();
+                Client.AggregateTrade -= OnClientEvent;
             }
 
             _disposed = true;
-        }
 
-        public void Dispose()
-        {
-            Dispose(true);
+            base.Dispose(disposing);
         }
 
         #endregion IDisposable

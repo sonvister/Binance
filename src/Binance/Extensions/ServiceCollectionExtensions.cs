@@ -12,7 +12,7 @@ namespace Binance
         public static IServiceCollection AddBinance(this IServiceCollection services)
         {
             // Accounts
-            services.AddTransient<IAccountCache, AccountCache>();
+            services.AddTransient<IAccountInfoCache, AccountInfoCache>();
 
             // API
             services.AddSingleton<IBinanceJsonApi, BinanceJsonApi>();

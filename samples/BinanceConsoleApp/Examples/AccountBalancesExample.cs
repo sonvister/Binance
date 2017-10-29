@@ -46,7 +46,7 @@ namespace BinanceConsoleApp
 
                 using (var user = new BinanceApiUser(key, secret))
                 using (var api = services.GetService<IBinanceApi>())
-                using (var cache = services.GetService<IAccountCache>())
+                using (var cache = services.GetService<IAccountInfoCache>())
                 using (var cts = new CancellationTokenSource())
                 {
                     // Query and display current account balance.
