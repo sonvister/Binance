@@ -1,4 +1,4 @@
-//#define LIVE
+#define LIVE
 
 using Binance.Account.Orders;
 using Binance.Market;
