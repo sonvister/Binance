@@ -91,14 +91,14 @@ Get compressed/aggregate trades for a symbol with optional limit [1-500].
 ```c#
     var trades = await api.GetTradesAsync(Symbol.BTC_USDT);
 ```
-Sample console application [example with limit](samples/BinanceConsoleApp/Controllers/GetTrades.cs), [example from trade ID](samples/BinanceConsoleApp/Controllers/GetTradesFrom.cs), [example with time interval](samples/BinanceConsoleApp/Controllers/GetTradesIn.cs).
+Sample console application [example with limit](samples/BinanceConsoleApp/Controllers/GetAggregateTrades.cs), [example from trade ID](samples/BinanceConsoleApp/Controllers/GetAggregateTradesFrom.cs), [example with time range](samples/BinanceConsoleApp/Controllers/GetAggregateTradesIn.cs).
 
 #### Candlesticks
 Get candlesticks for a symbol with optional limit [1-500].
 ```c#
     var candles = await api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour);
 ```
-Sample console application [example with limit](samples/BinanceConsoleApp/Controllers/GetCandlesticks.cs), [example with time interval](samples/BinanceConsoleApp/Controllers/GetOrderBook.cs).
+Sample console application [example with limit](samples/BinanceConsoleApp/Controllers/GetCandlesticks.cs), [example with time range](samples/BinanceConsoleApp/Controllers/GetCandlesticksIn.cs).
 
 #### 24-hour Statistics
 Get the 24-hour statistics for a symbol.
@@ -410,7 +410,7 @@ Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOr
 #### Account Information
 Get current account information.
 ```c#
-    var account = await api.GetAccountAsync(user);
+    var account = await api.GetAccountInfoAsync(user);
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetAccountInfo.cs).
 
@@ -419,7 +419,7 @@ Get trades for a specific account and symbol with optional limit [1-500].
 ```c#
     var account = await api.GetTradesAsync(user, Symbol.BTC_USDT);
 ```
-Sample console application [example with limit](samples/BinanceConsoleApp/Controllers/GetTrades.cs), [example from trade ID](samples/BinanceConsoleApp/Controllers/GetTrades.cs).
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetTrades.cs).
 
 #### Withdraw
 Submit a withdraw request... *optionally donate to me* :)
