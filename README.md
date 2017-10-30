@@ -29,6 +29,32 @@ PM> Install-Package Binance
 - All timestamp related fields are in milliseconds (Unix time).
 - All `IEnumerable<>` data is returned in **ascending** chronological order (oldest first, newest last).
 
+### How To
+  - [Verify connection to the Binance server](#connectivity).
+    ##### Market Data (*public*)
+- [Get the market depth (order book) for a symbol](#order-book).
+- [Maintain a real-time order book cache for a symbol](#order-book-cache).
+- [Get the aggregate trades for a symbol](#trades).
+- [Maintain a real-time trade history cache for a symbol](#aggregate-trades-cache).
+- [Get the candlesticks for a symbol](#candlesticks).
+- [Maintain a real-time price chart cache for a symbol](#candlesticks-cache).
+- [Get the 24-hour statistics for a symbol](#24-hour-statistics).
+- [Get current prices for all symobls for price ticker](#prices).
+- [Get best price and quantity on the order book for all symobls](#order-book-tops).
+    ##### Account (*private - API Key and Secret required*)
+- [Place a LIMIT order](#limit-order).
+- [Place a MARKET order](#market-order).
+- [Place a TEST order to verify client order properties](#test-order).
+- [Look-up an existing order to check status](#query-an-order).
+- [Cancel an open order](#cancel-an-order).
+- [Get all open orders for a symbol](#open-orders).
+- [Get all orders for a symbol](#orders).
+- [Get current account information](#account-information).
+- [Get account trades for a symbol](#account-trades).
+- [Submit a withdraw request](#withdraw).
+- [Get deposit history](#deposit-history).
+- [Get withdraw history](#withdraw-history).
+- [Donate BTC to the creator of this library](#withdraw).
 
 ### Example/Sample Applications
 #### *Minimal* Examples
@@ -142,20 +168,22 @@ Get current prices for all symbols.
     var prices = await api.GetPricesAsync();
 ```
 
-#### Order Book Ticker
+#### Order Book Tops
 Get best (top) price and quantity on the order book for all symbols.
 ```c#
     var tops = await api.GetOrderBookTopsAsync();
 ```
 
-#### Order Book Cache
+#### Real-time Caching
+##### Order Book Cache
 Utilize an `IDepthWebSocketClient` (internal to `IOrderBookCache`) to create a real-time, synchronized order book for a symbol.
+Refer to the BinanceMarketDepth sample for an [additional example](samples/BinanceMarketDepth/Program.cs).
 ```c#
     using (var cache = serviceProvider.GetService<IOrderBookCache>())
     {
-        cache.Update += OnOrderBookUpdate; // optionally, subscribe to update events.
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
         
-        var task = Task.Run(() => book.SubscribeAsync(Symbol.BTC_USDT, (e) =>
+        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
         {
             // optionally, use an inline event handler.
         }, cts.Token)); // starts synchronization.
@@ -167,15 +195,107 @@ Utilize an `IDepthWebSocketClient` (internal to `IOrderBookCache`) to create a r
         
         // ...
         
-        cts.Cancel(); // end the order book task.
+        cts.Cancel(); // end the task.
         await task; // wait for task to complete.
     }
 ```
 ```
-void OnOrderBookUpdate(object sender, OrderBookCacheEventArgs e)
+void OnUpdateEvent(object sender, OrderBookCacheEventArgs e)
 {
     // Event has an immutable copy of the order book.
     var price = e.OrderBook.Top.Bid.Price;
+}
+```
+##### Aggregate Trades Cache
+Utilize an `ITradesWebSocketClient` (internal to `IAggregateTradesCache`) to create a real-time, synchronized trade history for a symbol.
+Refer to the BinanceTradeHistory sample for an [additional example](samples/BinanceTradeHistory/Program.cs).
+```c#
+    using (var cache = serviceProvider.GetService<IAggregateTradeCache>())
+    {
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+        
+        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
+        {
+            // optionally, use an inline event handler.
+        }, cts.Token)); // starts synchronization.
+        
+        // ...
+        
+        var trades = cache.Trades; // access latest aggregate trades (thread-safe).
+
+        // ...
+        
+        cts.Cancel(); // end the task.
+        await task; // wait for task to complete.
+    }
+```
+```
+void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
+{
+    // Event has an immutable copy of aggregate trades.
+    var trades = e.Trades.
+}
+```
+##### Candlesticks Cache
+Utilize an `IKlineWebSocketClient` (internal to `ICandlesticksCache`) to create a real-time, synchronized price chart for a symbol.
+Refer to the BinancePriceChart sample for an [additional example](samples/BinancePriceChart/Program.cs).
+
+```c#
+    using (var cache = serviceProvider.GetService<ICandlesticksCache>())
+    {
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+        
+        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, KlineInterval.Hour, (e) =>
+        {
+            // optionally, use an inline event handler.
+        }, cts.Token)); // starts synchronization.
+        
+        // ...
+        
+        var candlesticks = cache.Candlestics; // access latest candlesticks (thread-safe).
+
+        // ...
+        
+        cts.Cancel(); // end the task.
+        await task; // wait for task to complete.
+    }
+```
+```
+void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
+{
+    // Event has an immutable copy of candlesticks.
+    var candlesticks = e.Candlesticks.
+}
+```
+##### Account Info Cache
+Utilize an `IUserDataWebSocketClient` (internal to `IAccountInfoCache`) to create a real-time, synchronized account profile for a user.
+Refer to the following for an [additional example](samples/BinanceConsoleApp/Examples/AccountBalancesExample.cs).
+
+```c#
+    using (var cache = serviceProvider.GetService<IAccountInfoCache>())
+    {
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+        
+        var task = Task.Run(() => cache.SubscribeAsync(user, (e) =>
+        {
+            // optionally, use an inline event handler.
+        }, cts.Token)); // starts synchronization.
+        
+        // ...
+        
+        var accountInfo = cache.AccountInfo; // access latest candlesticks (thread-safe).
+
+        // ...
+        
+        cts.Cancel(); // end the task.
+        await task; // wait for task to complete.
+    }
+```
+```
+void OnUpdateEvent(object sender, AccountInfoCacheEventArgs e)
+{
+    // Event has an immutable copy of account info.
+    var accountInfo = e.AccountInfo.
 }
 ```
 
@@ -186,6 +306,9 @@ Create a user authentication instance `IBinanceApiUser` with your Binance accoun
     var user = new BinanceApiUser("<Your API Key>", <your API Secret>);
 ```
 NOTE: User authentication is method injected -- only where required -- so a single Binance API instance (with a single `HttpClient`) can support multiple Binance users.
+
+#### Order Placement Process and recvWindow
+![](https://github.com/sonvister/Binance/blob/master/images/order-placement.png?raw=true)
 
 #### Limit Order
 Create and place a new *LIMIT* order. \
@@ -301,26 +424,7 @@ Get withdraw history.
     var withdrawals = await api.GetWithdrawalsAsync(user);
 ```
 
-### User Stream
-#### Start User Stream
-Start a new user data stream.
-```c#
-    var listenKey = await api.UserStreamStartAsync(user);
-```
-
-#### Keepalive User Stream
-Ping a user data stream to prevent a timeout.
-```c#
-    await api.UserStreamKeepAliveAsync(user, listenKey);
-```
-
-#### Close User Stream
-Close a user data stream.
-```c#
-    await api.UserStreamCloseAsync(user, listenKey);
-```
-
-### WebSocket
+### WebSocket Clients
 #### Depth Endpoint
 Get real-time depth update events.
 ```c#
@@ -430,4 +534,22 @@ void OnTradeUpdateEvent(object sender, TradeUpdateEventArgs e)
 {
     // ...
 }
+```
+#### User Stream Control
+##### Start User Stream
+Start a new user data stream.
+```c#
+    var listenKey = await api.UserStreamStartAsync(user);
+```
+
+##### Keepalive User Stream
+Ping a user data stream to prevent a timeout.
+```c#
+    await api.UserStreamKeepAliveAsync(user, listenKey);
+```
+
+##### Close User Stream
+Close a user data stream.
+```c#
+    await api.UserStreamCloseAsync(user, listenKey);
 ```

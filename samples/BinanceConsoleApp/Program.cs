@@ -60,7 +60,7 @@ namespace BinanceConsoleApp
                 // Load configuration.
                 Configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile("appsettings.json", true, false)
                     .AddUserSecrets<Program>()
                     .Build();
 

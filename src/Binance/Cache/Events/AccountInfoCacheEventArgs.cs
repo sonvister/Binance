@@ -3,7 +3,7 @@ using System;
 
 namespace Binance.Cache.Events
 {
-    public sealed class AccountCacheEventArgs : EventArgs
+    public sealed class AccountInfoCacheEventArgs : EventArgs
     {
         #region Public Properties
 
@@ -20,7 +20,7 @@ namespace Binance.Cache.Events
         /// Constructor.
         /// </summary>
         /// <param name="account">The account.</param>
-        public AccountCacheEventArgs(AccountInfo account)
+        public AccountInfoCacheEventArgs(AccountInfo account)
         {
             Throw.IfNull(account, nameof(account));
 

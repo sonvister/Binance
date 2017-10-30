@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Binance.Cache
 {
-    public class AccountInfoCache : WebSocketClientCache<IUserDataWebSocketClient, AccountUpdateEventArgs, AccountCacheEventArgs>, IAccountInfoCache
+    public class AccountInfoCache : WebSocketClientCache<IUserDataWebSocketClient, AccountUpdateEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
     {
         #region Public Properties
 
@@ -31,7 +31,7 @@ namespace Binance.Cache
         public Task SubscribeAsync(IBinanceApiUser user, CancellationToken token = default)
             => SubscribeAsync(user, null, token);
 
-        public Task SubscribeAsync(IBinanceApiUser user, Action<AccountCacheEventArgs> callback, CancellationToken token = default)
+        public Task SubscribeAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
@@ -51,11 +51,11 @@ namespace Binance.Cache
             Client.AccountUpdate += OnClientEvent;
         }
 
-        protected override Task<AccountCacheEventArgs> OnAction(AccountUpdateEventArgs @event)
+        protected override Task<AccountInfoCacheEventArgs> OnAction(AccountUpdateEventArgs @event)
         {
             Account = @event.Account;
 
-            return Task.FromResult(new AccountCacheEventArgs(Account));
+            return Task.FromResult(new AccountInfoCacheEventArgs(Account));
         }
 
         #endregion Protected Methods

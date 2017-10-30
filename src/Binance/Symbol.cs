@@ -64,6 +64,7 @@ namespace Binance
         public static readonly string BTG_BTC = "BTGBTC";
         public static readonly string EVX_BTC = "EVXBTC";
         public static readonly string REQ_BTC = "REQBTC";
+        public static readonly string VIB_BTC = "VIBBTC";
 
         // ETH
         public static readonly string QTUM_ETH  = "QTUMETH";
@@ -105,6 +106,7 @@ namespace Binance
         public static readonly string BTG_ETH = "BTGETH";
         public static readonly string EVX_ETH = "EVXETH";
         public static readonly string REQ_ETH = "REQETH";
+        public static readonly string VIB_ETH = "VIBETH";
 
         #endregion Public Constants
     }
