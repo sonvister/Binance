@@ -18,10 +18,10 @@ PM> Install-Package Binance
 * Customizable **dual-layer API** with access to JSON responses (*low-level*) or deserialized domain/value objects.
 * API exceptions provide the Binance server response **ERROR code and message** for easier troubleshooting.
 * Unique implementation supports **multiple users** and requires user authentication only where necessary.
-* Web API interface includes automatic **rate limiting** and system-to-server **time synchronization** for stability.
+* Web API interface includes automatic **rate limiting** and system-to-server **time synchronization** for reliability.
 * Easy-to-use **WebSocket endpoint clients** and various ready-to-use **caching** implementations (*w/ events*).
-* Low-level API methods share an HttpClient for performance (*implemented as singleton w/in DI framework*).
-* **Limited dependencies** and use of Microsoft extensions for: **dependency injection**, **logging**, and **options**
+* Low-level API utilizes a single, cached HttpClient for performance (*when used as singleton as in DI framework*).
+* **Limited dependencies** and use of Microsoft extensions for **dependency injection**, **logging**, and **options**.
 * .NET Core **sample applications** including live displays of market depth, trades, and candlesticks for a symbol.
 
 ## Getting Started
@@ -30,7 +30,7 @@ PM> Install-Package Binance
 - All `IEnumerable<>` data is returned in **ascending** chronological order (oldest first, newest last).
 
 ### How To
-  - [Verify connection to the Binance server](#connectivity).
+  - [Verify connection to the Binance server](#connectivity). (*minimal examples*)
     ##### Market Data (*public*)
 - [Get the market depth (order book) for a symbol](#order-book).
 - [Maintain a real-time order book cache for a symbol](#order-book-cache).
@@ -56,14 +56,205 @@ PM> Install-Package Binance
 - [Get withdraw history](#withdraw-history).
 - [Donate BTC to the creator of this library](#withdraw).
 
-### Example/Sample Applications
-#### *Minimal* Examples
+## API Method Reference
+### Connectivity
+##### *Minimal* Examples
 **NOTE**: C# 7.1 is required for async Main (*set language version in project advanced build properties*).
 
 - [Minimal](samples/BinanceConsoleApp/Examples/MinimalWithDependencyInjection.cs) with dependency injection (*recommended*).
 - [Minimal](samples/BinanceConsoleApp/Examples/MinimalWithoutDependencyInjection.cs) without dependency injection.
 
-#### Sample Application Configuration
+#### Ping
+```c#
+    var successful = await api.PingAsync();
+```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/Ping.cs).
+
+#### Server Time
+```c#
+    var time = await api.GetTimeAsync(); // UTC date/time.
+    var timestamp = await api.GetTimestampAsync(); // Unix time milliseconds.
+```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetTime.cs).
+
+### Market Data
+There are pre-defined constant symbols in the static `Symbol` class.
+#### Order Book
+Get the order book (depth of market) for a symbol with optional limit [5, 10, 20, 50, 100, 200, 500].
+```c#
+    var book = await api.GetOrderBookAsync(Symbol.BTC_USDT);
+```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrderBook.cs).
+
+#### Trades
+Get compressed/aggregate trades for a symbol with optional limit [1-500].
+```c#
+    var trades = await api.GetTradesAsync(Symbol.BTC_USDT);
+```
+Sample console application [example with limit](samples/BinanceConsoleApp/Controllers/GetTrades.cs), [example from trade ID](samples/BinanceConsoleApp/Controllers/GetTradesFrom.cs), [example with time interval](samples/BinanceConsoleApp/Controllers/GetTradesIn.cs).
+
+#### Candlesticks
+Get candlesticks for a symbol with optional limit [1-500].
+```c#
+    var candles = await api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour);
+```
+Sample console application [example with limit](samples/BinanceConsoleApp/Controllers/GetCandlesticks.cs), [example with time interval](samples/BinanceConsoleApp/Controllers/GetOrderBook.cs).
+
+#### 24-hour Statistics
+Get the 24-hour statistics for a symbol.
+```c#
+    var stats = await api.Get24hrStatsAsync(Symbol.BTC_USDT);
+```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/Get24HourStatistics.cs).
+
+#### Prices
+Get current prices for all symbols.
+```c#
+    var prices = await api.GetPricesAsync();
+```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetPrices.cs).
+
+#### Order Book Tops
+Get best (top) price and quantity on the order book for all symbols.
+```c#
+    var tops = await api.GetOrderBookTopsAsync();
+```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrderBookTops.cs).
+
+#### Real-time Caching
+##### Order Book Cache
+Utilize an `IDepthWebSocketClient` (internal to `IOrderBookCache`) to create a real-time, synchronized order book for a symbol. \
+Refer to the BinanceMarketDepth sample for an [additional example](samples/BinanceMarketDepth/Program.cs).
+```c#
+    using (var cache = serviceProvider.GetService<IOrderBookCache>())
+    {
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+        
+        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
+        {
+            // optionally, use an inline event handler.
+        }, cts.Token)); // starts synchronization.
+        
+        // ...
+        
+        var price = cache.OrderBook.Top.Bid.Price; // access latest order book (thread-safe).
+        var book = cache.OrderBook; // keep a static (snapshot) reference of order book.
+        
+        // ...
+        
+        cts.Cancel(); // end the task.
+        await task; // wait for task to complete.
+    }
+```
+```
+void OnUpdateEvent(object sender, OrderBookCacheEventArgs e)
+{
+    // Event has an immutable copy of the order book.
+    var price = e.OrderBook.Top.Bid.Price;
+}
+```
+##### Aggregate Trades Cache
+Utilize an `ITradesWebSocketClient` (internal to `IAggregateTradesCache`) to create a real-time, synchronized trade history for a symbol. \
+Refer to the BinanceTradeHistory sample for an [additional example](samples/BinanceTradeHistory/Program.cs).
+```c#
+    using (var cache = serviceProvider.GetService<IAggregateTradeCache>())
+    {
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+        
+        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
+        {
+            // optionally, use an inline event handler.
+        }, cts.Token)); // starts synchronization.
+        
+        // ...
+        
+        var trades = cache.Trades; // access latest aggregate trades (thread-safe).
+
+        // ...
+        
+        cts.Cancel(); // end the task.
+        await task; // wait for task to complete.
+    }
+```
+```
+void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
+{
+    // Event has an immutable copy of aggregate trades.
+    var trades = e.Trades.
+}
+```
+##### Candlesticks Cache
+Utilize an `IKlineWebSocketClient` (internal to `ICandlesticksCache`) to create a real-time, synchronized price chart for a symbol. \
+Refer to the BinancePriceChart sample for an [additional example](samples/BinancePriceChart/Program.cs).
+
+```c#
+    using (var cache = serviceProvider.GetService<ICandlesticksCache>())
+    {
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+        
+        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, KlineInterval.Hour, (e) =>
+        {
+            // optionally, use an inline event handler.
+        }, cts.Token)); // starts synchronization.
+        
+        // ...
+        
+        var candlesticks = cache.Candlestics; // access latest candlesticks (thread-safe).
+
+        // ...
+        
+        cts.Cancel(); // end the task.
+        await task; // wait for task to complete.
+    }
+```
+```
+void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
+{
+    // Event has an immutable copy of candlesticks.
+    var candlesticks = e.Candlesticks.
+}
+```
+##### Account Info Cache
+Utilize an `IUserDataWebSocketClient` (internal to `IAccountInfoCache`) to create a real-time, synchronized account profile for a user. \
+Refer to the following for an [additional example](samples/BinanceConsoleApp/Examples/AccountBalancesExample.cs).
+
+```c#
+    using (var cache = serviceProvider.GetService<IAccountInfoCache>())
+    {
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+        
+        var task = Task.Run(() => cache.SubscribeAsync(user, (e) =>
+        {
+            // optionally, use an inline event handler.
+        }, cts.Token)); // starts synchronization.
+        
+        // ...
+        
+        var accountInfo = cache.AccountInfo; // access latest candlesticks (thread-safe).
+
+        // ...
+        
+        cts.Cancel(); // end the task.
+        await task; // wait for task to complete.
+    }
+```
+```
+void OnUpdateEvent(object sender, AccountInfoCacheEventArgs e)
+{
+    // Event has an immutable copy of account info.
+    var accountInfo = e.AccountInfo.
+}
+```
+
+### Account
+#### Authentication
+Create a user authentication instance `IBinanceApiUser` with your Binance account API **Key** and **Secret** (optional).
+```c#
+    var user = new BinanceApiUser("<Your API Key>", <your API Secret>);
+```
+NOTE: User authentication is method injected -- only where required -- so a single Binance API instance (with a single `HttpClient`) can support multiple Binance users.
+
+##### Console Application Prerequisites
 When using the `BinanceConsoleApp` sample you may see this message when accessing non-public API methods:
 
 > To access some Binance endpoint features, your **API Key and Secret** may be required.
@@ -74,6 +265,9 @@ When using the `BinanceConsoleApp` sample you may see this message when accessin
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`dotnet user-secrets set BinanceApiSecret <your api secret>`
 > \
 > For more information: <https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets>
+
+#### Order Placement Process and recvWindow
+![](https://github.com/sonvister/Binance/blob/master/images/order-placement.png?raw=true)
 
 #### Exception Handling
 This code demonstrates how to handle exceptions from Binance API methods.
@@ -125,191 +319,6 @@ catch (Exception)
 }
 ```
 
-## API Method Reference
-### Connectivity
-#### Ping
-```c#
-    var successful = await api.PingAsync();
-```
-
-#### Server Time
-```c#
-    var time = await api.GetTimeAsync();
-```
-
-### Market Data
-#### Order Book
-Get the order book (depth of market) for a symbol with optional limit [5, 10, 20, 50, 100, 200, 500].
-```c#
-    var book = await api.GetOrderBookAsync(Symbol.BTC_USDT);
-```
-
-#### Trades
-Get compressed/aggregate trades for a symbol with optional limit [1-500].
-```c#
-    var trades = await api.GetTradesAsync(Symbol.BTC_USDT);
-```
-
-#### Candlesticks
-Get candlesticks for a symbol with optional limit [1-500].
-```c#
-    var candles = await api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour);
-```
-
-#### 24-hour Statistics
-Get the 24-hour statistics for a symbol.
-```c#
-    var stats = await api.Get24hrStatsAsync(Symbol.BTC_USDT);
-```
-
-#### Prices
-Get current prices for all symbols.
-```c#
-    var prices = await api.GetPricesAsync();
-```
-
-#### Order Book Tops
-Get best (top) price and quantity on the order book for all symbols.
-```c#
-    var tops = await api.GetOrderBookTopsAsync();
-```
-
-#### Real-time Caching
-##### Order Book Cache
-Utilize an `IDepthWebSocketClient` (internal to `IOrderBookCache`) to create a real-time, synchronized order book for a symbol.
-Refer to the BinanceMarketDepth sample for an [additional example](samples/BinanceMarketDepth/Program.cs).
-```c#
-    using (var cache = serviceProvider.GetService<IOrderBookCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var price = cache.OrderBook.Top.Bid.Price; // access latest order book (thread-safe).
-        var book = cache.OrderBook; // keep a static (snapshot) reference of order book.
-        
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
-```
-```
-void OnUpdateEvent(object sender, OrderBookCacheEventArgs e)
-{
-    // Event has an immutable copy of the order book.
-    var price = e.OrderBook.Top.Bid.Price;
-}
-```
-##### Aggregate Trades Cache
-Utilize an `ITradesWebSocketClient` (internal to `IAggregateTradesCache`) to create a real-time, synchronized trade history for a symbol.
-Refer to the BinanceTradeHistory sample for an [additional example](samples/BinanceTradeHistory/Program.cs).
-```c#
-    using (var cache = serviceProvider.GetService<IAggregateTradeCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var trades = cache.Trades; // access latest aggregate trades (thread-safe).
-
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
-```
-```
-void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
-{
-    // Event has an immutable copy of aggregate trades.
-    var trades = e.Trades.
-}
-```
-##### Candlesticks Cache
-Utilize an `IKlineWebSocketClient` (internal to `ICandlesticksCache`) to create a real-time, synchronized price chart for a symbol.
-Refer to the BinancePriceChart sample for an [additional example](samples/BinancePriceChart/Program.cs).
-
-```c#
-    using (var cache = serviceProvider.GetService<ICandlesticksCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, KlineInterval.Hour, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var candlesticks = cache.Candlestics; // access latest candlesticks (thread-safe).
-
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
-```
-```
-void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
-{
-    // Event has an immutable copy of candlesticks.
-    var candlesticks = e.Candlesticks.
-}
-```
-##### Account Info Cache
-Utilize an `IUserDataWebSocketClient` (internal to `IAccountInfoCache`) to create a real-time, synchronized account profile for a user.
-Refer to the following for an [additional example](samples/BinanceConsoleApp/Examples/AccountBalancesExample.cs).
-
-```c#
-    using (var cache = serviceProvider.GetService<IAccountInfoCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(user, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var accountInfo = cache.AccountInfo; // access latest candlesticks (thread-safe).
-
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
-```
-```
-void OnUpdateEvent(object sender, AccountInfoCacheEventArgs e)
-{
-    // Event has an immutable copy of account info.
-    var accountInfo = e.AccountInfo.
-}
-```
-
-### Account
-#### Authentication
-Create a user authentication instance `IBinanceApiUser` with your Binance account API **Key** and **Secret** (optional).
-```c#
-    var user = new BinanceApiUser("<Your API Key>", <your API Secret>);
-```
-NOTE: User authentication is method injected -- only where required -- so a single Binance API instance (with a single `HttpClient`) can support multiple Binance users.
-
-#### Order Placement Process and recvWindow
-![](https://github.com/sonvister/Binance/blob/master/images/order-placement.png?raw=true)
-
 #### Limit Order
 Create and place a new *LIMIT* order. \
 NOTE: Client orders are created to serve as a mutable order placeholder, only after that client order is placed does an immutable Order exist.
@@ -325,6 +334,7 @@ NOTE: Client orders are created to serve as a mutable order placeholder, only af
         });
     }
 ```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/PlaceLimitOrder.cs).
 
 #### Market Order
 Create and place a new *MARKET* order. You do not set a price for Market orders. \
@@ -340,10 +350,10 @@ NOTE: Client orders are created to serve as a mutable order placeholder, only af
         });
     }
 ```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/PlaceMarketOrder.cs).
 
 #### Test Order
-Create and place a new *TEST* order. \
-An exception will be thrown if the order placement test fails.
+Create and place a new *TEST* order. An exception will be thrown if the order placement test fails.
 ```c#
     using (var user = new BinanceApiUser("api-key", "api-secret"))
     {
@@ -359,10 +369,10 @@ An exception will be thrown if the order placement test fails.
         catch (BinanceApiException) { }
     }
 ```
+Sample console application [example LIMIT order](samples/BinanceConsoleApp/Controllers/PlaceLimitOrder.cs), [example MARKET order](samples/BinanceConsoleApp/Controllers/PlaceMarketOrder.cs).
 
 #### Query an Order
-Get an order to determine current status. \
-Order lookup requires an order instance or the combination of a symbol and the order ID or original client order ID. If an order instance is provided, it will be updated in place in addition to being returned.
+Get an order to determine current status. Order lookup requires an order instance or the combination of a symbol and the order ID or original client order ID. If an order instance is provided, it will be updated in place in addition to being returned.
 ```c#
     var order = await api.GetAsync(order); // use to update status in place.
     // or...
@@ -370,10 +380,10 @@ Order lookup requires an order instance or the combination of a symbol and the o
     // or...
     var order = await api.GetOrderAsync(user, Symbol.BTC_USDT, clientOrderId);
 ```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrCancelOrder.cs).
 
 #### Cancel an Order
-Cancel an order. \
-Order lookup requires an order instance or the combination of a symbol and the order ID or original client order ID.
+Cancel an order. Order lookup requires an order instance or the combination of a symbol and the order ID or original client order ID.
 ```c#
     await api.CancelAsync(order);
     // or...
@@ -381,48 +391,56 @@ Order lookup requires an order instance or the combination of a symbol and the o
     // or...
     await api.CancelOrderAsync(user, Symbol.BTC_USDT, clientOrderId);
 ```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrCancelOrder.cs).
 
 #### Open Orders
 Get all open orders for a symbol with optional limit [1-500].
 ```c#
     var orders = await api.GetOpenOrdersAsync(user, Symbol.BTC_USDT);
 ```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrders.cs).
 
 #### Orders
 Get all orders; active, canceled, or filled with optional limit [1-500].
 ```c#
     var orders = await api.GetOrdersAsync(user, Symbol.BTC_USDT);
 ```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrders.cs).
 
 #### Account Information
 Get current account information.
 ```c#
     var account = await api.GetAccountAsync(user);
 ```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetAccountInfo.cs).
 
 #### Account Trades
 Get trades for a specific account and symbol with optional limit [1-500].
 ```c#
     var account = await api.GetTradesAsync(user, Symbol.BTC_USDT);
 ```
+Sample console application [example with limit](samples/BinanceConsoleApp/Controllers/GetTrades.cs), [example from trade ID](samples/BinanceConsoleApp/Controllers/GetTrades.cs).
 
 #### Withdraw
 Submit a withdraw request... *optionally donate to me* :)
 ```c#
     await api.WithdrawAsync(user, Asset.BTC, "3JjG3tRR1dx98UJyNdpzpkrxRjXmPfQHk9", 0.01m);
 ```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/Withdraw.cs).
 
 #### Deposit History
 Get deposit history.
 ```c#
     var deposits = await api.GetDepositsAsync(user);
 ```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetDeposits.cs).
 
 #### Withdraw History
 Get withdraw history.
 ```c#
     var withdrawals = await api.GetWithdrawalsAsync(user);
 ```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/GetWithdrawals.cs).
 
 ### WebSocket Clients
 #### Depth Endpoint
