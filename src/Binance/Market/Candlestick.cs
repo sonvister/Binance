@@ -3,7 +3,8 @@
 namespace Binance.Market
 {
     /// <summary>
-    /// Candlestick.
+    /// Candlestick/K-Line which is uniquely identified by the symbol,
+    /// interval, and open time.
     /// </summary>
     public sealed class Candlestick
     {

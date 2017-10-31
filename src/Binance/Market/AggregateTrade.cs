@@ -2,6 +2,10 @@
 
 namespace Binance.Market
 {
+    /// <summary>
+    /// Trades that fill at the same time, from the same order, with the same
+    /// price will have an aggregate quantity.
+    /// </summary>
     public sealed class AggregateTrade : Trade
     {
         #region Public Properties
@@ -26,12 +30,12 @@ namespace Binance.Market
         #region Constructors
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
         /// <param name="id">The ID.</param>
         /// <param name="price">The price.</param>
-        /// <param name="quantity">The quantity.</param>
+        /// <param name="quantity">The aggregate quantity.</param>
         /// <param name="firstTradeId">The first trade ID.</param>
         /// <param name="lastTradeId">The last trade ID.</param>
         /// <param name="timestamp">The timestamp.</param>
@@ -50,9 +54,9 @@ namespace Binance.Market
             : base(symbol, id, price, quantity, timestamp, isBestPriceMatch)
         {
             if (firstTradeId < 0)
-                throw new ArgumentException($"{nameof(AggregateTrade)} trade ID must not be less than 0.", nameof(firstTradeId));
+                throw new ArgumentException($"{nameof(AggregateTrade)} ID must not be less than 0.", nameof(firstTradeId));
             if (lastTradeId < 0)
-                throw new ArgumentException($"{nameof(AggregateTrade)} trade ID must not be less than 0.", nameof(lastTradeId));
+                throw new ArgumentException($"{nameof(AggregateTrade)} ID must not be less than 0.", nameof(lastTradeId));
             if (lastTradeId < firstTradeId)
                 throw new ArgumentException($"{nameof(AggregateTrade)} last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
 

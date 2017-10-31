@@ -220,7 +220,7 @@ namespace Binance.Api.Json
 
             var query = $"{totalParams}&signature={signature}";
 
-            return await PostAsync($"/api/v3/order{(isTestOnly ? "/test" : string.Empty)}?{query}", string.Empty, token, user)
+            return await PostAsync($"/api/v3/order{(isTestOnly ? "/test" : string.Empty)}?{query}", string.Empty, token, user, true)
                 .ConfigureAwait(false);
         }
 
@@ -287,7 +287,7 @@ namespace Binance.Api.Json
 
             var signature = user.Sign(totalParams);
 
-            return await DeleteAsync($"/api/v3/order?{totalParams}&signature={signature}", token, user)
+            return await DeleteAsync($"/api/v3/order?{totalParams}&signature={signature}", token, user, true)
                 .ConfigureAwait(false);
         }
 

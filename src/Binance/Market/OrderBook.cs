@@ -5,7 +5,8 @@ using System.Linq;
 namespace Binance.Market
 {
     /// <summary>
-    /// An snapshot of the depth of market (DOM) for a specific symbol with aggregate price level quantities.
+    /// An snapshot of the depth of market (DOM) for a specific symbol with
+    /// price levels and aggregate quantities.
     /// </summary>
     public sealed class OrderBook : ICloneable
     {
@@ -112,9 +113,9 @@ namespace Binance.Market
 
         /// <summary>
         /// Get the sum quantity of bids at and above the price or
-        /// sum quantity of asks at and below the price.
+        /// the sum quantity of asks at and below the price.
         /// </summary>
-        /// <param name="price"></param>
+        /// <param name="price">The price level (inclusive).</param>
         /// <returns>The order book depth up to price.</returns>
         public decimal Depth(decimal price)
         {
@@ -124,9 +125,9 @@ namespace Binance.Market
 
         /// <summary>
         /// Get the sum volume (price * quantity) of bids at and above the
-        /// price or sum volume of asks at and below the price.
+        /// price or the sum volume of asks at and below the price.
         /// </summary>
-        /// <param name="price"></param>
+        /// <param name="price">The price level (inclusive).</param>
         /// <returns>The order book volume up to price.</returns>
         public decimal Volume(decimal price)
         {

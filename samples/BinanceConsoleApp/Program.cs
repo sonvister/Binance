@@ -228,8 +228,9 @@ namespace BinanceConsoleApp
                     {
                         break;
                     }
+
                     // Test-Only Orders (enable/disable)
-                    else if (stdin.StartsWith("test ", StringComparison.OrdinalIgnoreCase))
+                    if (stdin.StartsWith("test ", StringComparison.OrdinalIgnoreCase))
                     {
                         var args = stdin.Split(' ');
 

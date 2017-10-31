@@ -10,7 +10,7 @@
     <Product>Binance</Product>
     <AssemblyVersion>0.1.8.1</AssemblyVersion>
     <Description>A full-featured .NET Standard 2.0 Binance API facade designed for ease of use.</Description>
-    <Copyright>Copyright © sonvister 2017</Copyright>
+    <Copyright></Copyright>
     <PackageTags>binance binance-api cryptocurrency exchange api api-client api-wrapper</PackageTags>
     <PackageReleaseNotes>[beta] Pre-release for Binance.com .NET API competition.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/sonvister/Binance</RepositoryUrl>
