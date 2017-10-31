@@ -1,4 +1,6 @@
-﻿namespace Binance.Account.Orders
+﻿using Binance.Api;
+
+namespace Binance.Account.Orders
 {
     public class LimitOrder : ClientOrder
     {
@@ -20,5 +22,13 @@
         public TimeInForce TimeInForce { get; set; }
 
         #endregion Public Properties
+
+        #region Constructors
+
+        public LimitOrder(IBinanceApiUser user)
+            : base(user)
+        { }
+
+        #endregion Constructors
     }
 }

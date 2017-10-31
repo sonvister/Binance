@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Account;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -31,7 +32,12 @@ namespace BinanceConsoleApp.Controllers
                 return true;
             }
 
-            await Program.Api.WithdrawAsync(Program.User, asset, address, amount, token: token);
+            await Program.Api.WithdrawAsync(new WithdrawRequest(Program.User)
+            {
+                Asset = asset,
+                Address = address,
+                Amount = amount
+            }, token: token);
 
             lock (Program.ConsoleSync)
             {

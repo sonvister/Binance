@@ -17,7 +17,7 @@ namespace Binance.Api
 
         #region Private Fields
 
-        private HMAC _hmac;
+        private readonly HMAC _hmac;
 
         #endregion Private Fields
 

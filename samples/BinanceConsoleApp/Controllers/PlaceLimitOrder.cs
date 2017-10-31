@@ -55,7 +55,7 @@ namespace BinanceConsoleApp.Controllers
                 }
             }
 
-            var clientOrder = new LimitOrder
+            var clientOrder = new LimitOrder(Program.User)
             {
                 Symbol = symbol,
                 Side = (OrderSide)side,
@@ -66,7 +66,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (Program.IsOrdersTestOnly)
             {
-                await Program.Api.TestPlaceAsync(Program.User, clientOrder, token: token);
+                await Program.Api.TestPlaceAsync(clientOrder, token: token);
 
                 lock (Program.ConsoleSync)
                 {
@@ -75,7 +75,7 @@ namespace BinanceConsoleApp.Controllers
             }
             else
             {
-                var order = await Program.Api.PlaceAsync(Program.User, clientOrder, token: token);
+                var order = await Program.Api.PlaceAsync(clientOrder, token: token);
 
                 if (order != null)
                 {

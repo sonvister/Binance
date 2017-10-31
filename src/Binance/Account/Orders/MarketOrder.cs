@@ -1,4 +1,6 @@
-﻿namespace Binance.Account.Orders
+﻿using Binance.Api;
+
+namespace Binance.Account.Orders
 {
     public class MarketOrder : ClientOrder
     {
@@ -10,5 +12,13 @@
         public override OrderType Type => OrderType.Market;
 
         #endregion Public Properties
+
+        #region Constructors
+
+        public MarketOrder(IBinanceApiUser user)
+            : base(user)
+        { }
+
+        #endregion Constructors
     }
 }

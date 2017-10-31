@@ -122,23 +122,21 @@ namespace Binance.Api
         /// <summary>
         /// Place an order. The client order properties determine order side, type, etc.
         /// </summary>
-        /// <param name="user"></param>
         /// <param name="clientOrder"></param>
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<Order> PlaceAsync(IBinanceApiUser user, ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default);
+        Task<Order> PlaceAsync(ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Place a TEST order. The client order properties determine order side, type, etc.
         /// Throws a <see cref="BinanceApiException"/> if the order placement test fails.
         /// </summary>
-        /// <param name="user"></param>
         /// <param name="clientOrder"></param>
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task TestPlaceAsync(IBinanceApiUser user, ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default);
+        Task TestPlaceAsync(ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get order by ID.
@@ -252,15 +250,11 @@ namespace Binance.Api
         /// <summary>
         /// Submit a withdraw request.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="asset"></param>
-        /// <param name="address"></param>
-        /// <param name="amount"></param>
-        /// <param name="name">A description of the address (optional).</param>
+        /// <param name="withdrawRequest"></param>
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task WithdrawAsync(IBinanceApiUser user, string asset, string address, decimal amount, string name = null, long recvWindow = default, CancellationToken token = default);
+        Task WithdrawAsync(WithdrawRequest withdrawRequest, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get the deposit history.

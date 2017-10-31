@@ -7,6 +7,7 @@ using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api.Json;
 using Binance.Market;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace Binance.Api
@@ -28,6 +29,12 @@ namespace Binance.Api
 
         #endregion Public Properties
 
+        #region Private Fields
+
+        private readonly ILogger<BinanceApi> _logger;
+
+        #endregion Private Fields
+
         #region Constructors
 
         /// <summary>
@@ -36,17 +43,20 @@ namespace Binance.Api
         /// </summary>
         public BinanceApi()
             : this(new BinanceJsonApi())
-        { }
+        {
+        }
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="jsonApi"></param>
-        public BinanceApi(IBinanceJsonApi jsonApi)
+        /// <param name="logger"></param>
+        public BinanceApi(IBinanceJsonApi jsonApi, ILogger<BinanceApi> logger = null)
         {
             Throw.IfNull(jsonApi, nameof(jsonApi));
 
             JsonApi = jsonApi;
+            _logger = logger;
         }
 
         #endregion Constructors
@@ -56,8 +66,8 @@ namespace Binance.Api
         public virtual async Task<bool> PingAsync(CancellationToken token = default)
         {
             return await JsonApi
-                .PingAsync(token).ConfigureAwait(false)
-                == BinanceJsonApi.SuccessfulTestResponse;
+                       .PingAsync(token).ConfigureAwait(false)
+                   == BinanceJsonApi.SuccessfulTestResponse;
         }
 
         public virtual async Task<long> GetTimestampAsync(CancellationToken token = default)
@@ -71,7 +81,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetTimestampAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetTimestampAsync), json, e);
             }
         }
 
@@ -90,14 +100,16 @@ namespace Binance.Api
 
                 var lastUpdateId = jObject["lastUpdateId"].Value<long>();
 
-                var bids = jObject["bids"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
-                var asks = jObject["asks"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
+                var bids = jObject["bids"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>()))
+                    .ToList();
+                var asks = jObject["asks"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>()))
+                    .ToList();
 
                 return new OrderBook(symbol.FormatSymbol(), lastUpdateId, bids, asks);
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrderBookAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetOrderBookAsync), json, e);
             }
         }
 
@@ -109,7 +121,7 @@ namespace Binance.Api
             try { return DeserializeAggregateTrades(symbol, json); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetAggregateTradesAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetAggregateTradesAsync), json, e);
             }
         }
 
@@ -124,7 +136,7 @@ namespace Binance.Api
             try { return DeserializeAggregateTrades(symbol, json); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetAggregateTradesFromAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetAggregateTradesFromAsync), json, e);
             }
         }
 
@@ -141,7 +153,7 @@ namespace Binance.Api
             try { return DeserializeAggregateTrades(symbol, json); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetAggregateTradesInAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetAggregateTradesInAsync), json, e);
             }
         }
 
@@ -155,24 +167,24 @@ namespace Binance.Api
                 var jArray = JArray.Parse(json);
 
                 return jArray.Select(item => new Candlestick(
-                        symbol.FormatSymbol(),      // symbol
-                        interval,                   // interval
-                        item[0].Value<long>(),      // open time
-                        item[1].Value<decimal>(),   // open
-                        item[2].Value<decimal>(),   // high
-                        item[3].Value<decimal>(),   // low
-                        item[4].Value<decimal>(),   // close
-                        item[5].Value<decimal>(),   // volume
-                        item[6].Value<long>(),      // close time
-                        item[7].Value<decimal>(),   // quote asset volume
-                        item[8].Value<long>(),      // number of trades
-                        item[9].Value<decimal>(),   // taker buy base asset volume
-                        item[10].Value<decimal>()   // taker buy quote asset volume
-                    )).ToList();
+                    symbol.FormatSymbol(), // symbol
+                    interval, // interval
+                    item[0].Value<long>(), // open time
+                    item[1].Value<decimal>(), // open
+                    item[2].Value<decimal>(), // high
+                    item[3].Value<decimal>(), // low
+                    item[4].Value<decimal>(), // close
+                    item[5].Value<decimal>(), // volume
+                    item[6].Value<long>(), // close time
+                    item[7].Value<decimal>(), // quote asset volume
+                    item[8].Value<long>(), // number of trades
+                    item[9].Value<decimal>(), // taker buy base asset volume
+                    item[10].Value<decimal>() // taker buy quote asset volume
+                )).ToList();
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetCandlesticksAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetCandlesticksAsync), json, e);
             }
         }
 
@@ -206,7 +218,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(Get24HourStatisticsAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(Get24HourStatisticsAsync), json, e);
             }
         }
 
@@ -217,11 +229,12 @@ namespace Binance.Api
 
             try
             {
-                return JArray.Parse(json).Select(item => new SymbolPrice(item["symbol"].Value<string>(), item["price"].Value<decimal>())).ToList();
+                return JArray.Parse(json).Select(item =>
+                    new SymbolPrice(item["symbol"].Value<string>(), item["price"].Value<decimal>())).ToList();
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetPricesAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetPricesAsync), json, e);
             }
         }
 
@@ -235,15 +248,15 @@ namespace Binance.Api
                 var jArray = JArray.Parse(json);
 
                 return jArray.Select(item => new OrderBookTop(
-                        item["symbol"].Value<string>(),
-                        item["bidPrice"].Value<decimal>(),
-                        item["bidQty"].Value<decimal>(),
-                        item["askPrice"].Value<decimal>(),
-                        item["askQty"].Value<decimal>())).ToList();
+                    item["symbol"].Value<string>(),
+                    item["bidPrice"].Value<decimal>(),
+                    item["bidQty"].Value<decimal>(),
+                    item["askPrice"].Value<decimal>(),
+                    item["askQty"].Value<decimal>())).ToList();
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrderBookTopsAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetOrderBookTopsAsync), json, e);
             }
         }
 
@@ -251,13 +264,13 @@ namespace Binance.Api
 
         #region Account
 
-        public virtual async Task<Order> PlaceAsync(IBinanceApiUser user, ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default)
+        public virtual async Task<Order> PlaceAsync(ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(clientOrder, nameof(clientOrder));
 
             var limitOrder = clientOrder as LimitOrder;
 
-            var order = new Order(user)
+            var order = new Order(clientOrder.User)
             {
                 Symbol = clientOrder.Symbol.FormatSymbol(),
                 OriginalQuantity = clientOrder.Quantity,
@@ -269,7 +282,9 @@ namespace Binance.Api
             };
 
             // Place the order.
-            var json = await JsonApi.PlaceOrderAsync(user, clientOrder.Symbol, clientOrder.Side, clientOrder.Type, clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce, clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, false, token);
+            var json = await JsonApi.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
+                clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce,
+                clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, false, token);
 
             try
             {
@@ -281,23 +296,29 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(PlaceAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(PlaceAsync), json, e);
             }
 
             return order;
         }
 
-        public virtual async Task TestPlaceAsync(IBinanceApiUser user, ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default)
+        public virtual async Task TestPlaceAsync(ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(clientOrder, nameof(clientOrder));
 
             var limitOrder = clientOrder as LimitOrder;
 
             // Place the order.
-            var json = await JsonApi.PlaceOrderAsync(user, clientOrder.Symbol, clientOrder.Side, clientOrder.Type, clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce, clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, true, token);
+            var json = await JsonApi.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
+                clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce,
+                clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, true, token);
 
             if (json != BinanceJsonApi.SuccessfulTestResponse)
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(TestPlaceAsync)} failed order placement test.");
+            {
+                var message = $"{nameof(BinanceApi)}.{nameof(TestPlaceAsync)} failed order placement test.";
+                _logger?.LogError(message);
+                throw new BinanceApiException(message);
+            }
         }
 
         public virtual async Task<Order> GetOrderAsync(IBinanceApiUser user, string symbol, long orderId, long recvWindow = default, CancellationToken token = default)
@@ -311,7 +332,7 @@ namespace Binance.Api
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrderAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetOrderAsync), json, e);
             }
 
             return order;
@@ -328,7 +349,7 @@ namespace Binance.Api
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrderAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetOrderAsync), json, e);
             }
 
             return order;
@@ -345,7 +366,7 @@ namespace Binance.Api
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrderAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetAsync), json, e);
             }
 
             return order;
@@ -363,7 +384,7 @@ namespace Binance.Api
             try { return JObject.Parse(json)["clientOrderId"].Value<string>(); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(CancelOrderAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(CancelOrderAsync), json, e);
             }
         }
 
@@ -372,13 +393,14 @@ namespace Binance.Api
             Throw.IfNullOrWhiteSpace(origClientOrderId, nameof(origClientOrderId));
 
             // Cancel order using original client order ID.
-            var json = await JsonApi.CancelOrderAsync(user, symbol, NullId, origClientOrderId, newClientOrderId, recvWindow, token)
+            var json = await JsonApi
+                .CancelOrderAsync(user, symbol, NullId, origClientOrderId, newClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
 
             try { return JObject.Parse(json)["clientOrderId"].Value<string>(); }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(CancelOrderAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(CancelOrderAsync), json, e);
             }
         }
 
@@ -412,7 +434,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOpenOrdersAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetOpenOrdersAsync), json, e);
             }
         }
 
@@ -438,7 +460,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetOrdersAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetOrdersAsync), json, e);
             }
         }
 
@@ -462,13 +484,14 @@ namespace Binance.Api
                     jObject["canWithdraw"].Value<bool>(),
                     jObject["canDeposit"].Value<bool>());
 
-                var balances = jObject["balances"].Select(entry => new AccountBalance(entry["asset"].Value<string>(), entry["free"].Value<decimal>(), entry["locked"].Value<decimal>())).ToList();
+                var balances = jObject["balances"].Select(entry => new AccountBalance(entry["asset"].Value<string>(),
+                    entry["free"].Value<decimal>(), entry["locked"].Value<decimal>())).ToList();
 
                 return new AccountInfo(user, commissions, status, balances);
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetAccountInfoAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetAccountInfoAsync), json, e);
             }
         }
 
@@ -482,45 +505,52 @@ namespace Binance.Api
                 var jArray = JArray.Parse(json);
 
                 return jArray.Select(jToken => new AccountTrade(
-                        symbol.FormatSymbol(),
-                        jToken["id"].Value<long>(),
-                        jToken["price"].Value<decimal>(),
-                        jToken["qty"].Value<decimal>(),
-                        jToken["commission"].Value<decimal>(),
-                        jToken["commissionAsset"].Value<string>(),
-                        jToken["time"].Value<long>(),
-                        jToken["isBuyer"].Value<bool>(),
-                        jToken["isMaker"].Value<bool>(),
-                        jToken["isBestMatch"].Value<bool>())).ToList();
+                    symbol.FormatSymbol(),
+                    jToken["id"].Value<long>(),
+                    jToken["price"].Value<decimal>(),
+                    jToken["qty"].Value<decimal>(),
+                    jToken["commission"].Value<decimal>(),
+                    jToken["commissionAsset"].Value<string>(),
+                    jToken["time"].Value<long>(),
+                    jToken["isBuyer"].Value<bool>(),
+                    jToken["isMaker"].Value<bool>(),
+                    jToken["isBestMatch"].Value<bool>())).ToList();
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetTradesAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetTradesAsync), json, e);
             }
         }
 
-        public virtual async Task WithdrawAsync(IBinanceApiUser user, string asset, string address, decimal amount, string name = null, long recvWindow = default, CancellationToken token = default)
+        public virtual async Task WithdrawAsync(WithdrawRequest withdrawRequest, long recvWindow = default, CancellationToken token = default)
         {
-            var json = await JsonApi.WithdrawAsync(user, asset, address, amount, name, recvWindow, token)
+            Throw.IfNull(withdrawRequest, nameof(withdrawRequest));
+
+            var json = await JsonApi.WithdrawAsync(withdrawRequest.User, withdrawRequest.Asset, withdrawRequest.Address, withdrawRequest.Amount, withdrawRequest.Name, recvWindow, token)
                 .ConfigureAwait(false);
 
             bool success;
-            string message;
+            string msg;
 
             try
             {
                 var jObject = JObject.Parse(json);
 
                 success = jObject["success"].Value<bool>();
-                message = jObject["msg"]?.Value<string>();
+                msg = jObject["msg"]?.Value<string>();
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(WithdrawAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(WithdrawAsync), json, e);
             }
 
+            // ReSharper disable once InvertIf
             if (!success)
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(WithdrawAsync)} failed: \"{message ?? "[No Message]"}\"");
+            {
+                var message = $"{nameof(BinanceApi)}.{nameof(WithdrawAsync)} failed: \"{msg ?? "[No Message]"}\"";
+                _logger?.LogError(message);
+                throw new BinanceApiException(message);
+            }
         }
 
         public virtual async Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceApiUser user, string asset, DepositStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default)
@@ -548,17 +578,22 @@ namespace Binance.Api
                                 jToken["asset"].Value<string>(),
                                 jToken["amount"].Value<decimal>(),
                                 jToken["insertTime"].Value<long>(),
-                                (DepositStatus)jToken["status"].Value<int>())));
+                                (DepositStatus) jToken["status"].Value<int>())));
                     }
                 }
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetDepositsAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetDepositsAsync), json, e);
             }
 
+            // ReSharper disable once InvertIf
             if (!success)
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetDepositsAsync)} failed.");
+            {
+                var message = $"{nameof(BinanceApi)}.{nameof(GetDepositsAsync)} failed.";
+                _logger?.LogError(message);
+                throw new BinanceApiException(message);
+            }
 
             return deposits;
         }
@@ -588,7 +623,7 @@ namespace Binance.Api
                                 jToken["asset"].Value<string>(),
                                 jToken["amount"].Value<decimal>(),
                                 jToken["applyTime"].Value<long>(),
-                                (WithdrawalStatus)jToken["status"].Value<int>(),
+                                (WithdrawalStatus) jToken["status"].Value<int>(),
                                 jToken["address"].Value<string>(),
                                 jToken["txId"]?.Value<string>())));
                     }
@@ -596,11 +631,16 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetWithdrawalsAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(GetWithdrawalsAsync), json, e);
             }
 
+            // ReSharper disable once InvertIf
             if (!success)
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(GetWithdrawalsAsync)} failed.");
+            {
+                var message = $"{nameof(BinanceApi)}.{nameof(GetWithdrawalsAsync)} failed.";
+                _logger?.LogError(message);
+                throw new BinanceApiException(message);
+            }
 
             return withdrawals;
         }
@@ -614,10 +654,13 @@ namespace Binance.Api
             var json = await JsonApi.UserStreamStartAsync(user, token)
                 .ConfigureAwait(false);
 
-            try { return JObject.Parse(json)["listenKey"].Value<string>(); }
+            try
+            {
+                return JObject.Parse(json)["listenKey"].Value<string>();
+            }
             catch (Exception e)
             {
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(UserStreamStartAsync)} failed to parse JSON api response: \"{json}\"", e);
+                throw NewFailedToParseJsonException(nameof(UserStreamStartAsync), json, e);
             }
         }
 
@@ -627,7 +670,11 @@ namespace Binance.Api
                 .ConfigureAwait(false);
 
             if (json != BinanceJsonApi.SuccessfulTestResponse)
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(UserStreamKeepAliveAsync)} failed.");
+            {
+                var message = $"{nameof(BinanceApi)}.{nameof(UserStreamKeepAliveAsync)} failed.";
+                _logger?.LogError(message);
+                throw new BinanceApiException(message);
+            }
         }
 
         public async Task UserStreamCloseAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default)
@@ -636,7 +683,10 @@ namespace Binance.Api
                 .ConfigureAwait(false);
 
             if (json != BinanceJsonApi.SuccessfulTestResponse)
-                throw new BinanceApiException($"{nameof(BinanceApi)}.{nameof(UserStreamCloseAsync)} failed.");
+            {
+                var message = $"{nameof(BinanceApi)}.{nameof(UserStreamCloseAsync)} failed.";
+                throw new BinanceApiException(message);
+            }
         }
 
         #endregion User Data Stream
@@ -655,14 +705,14 @@ namespace Binance.Api
 
             return jArray.Select(item => new AggregateTrade(
                     symbol.FormatSymbol(),
-                    item["a"].Value<long>(),    // ID
+                    item["a"].Value<long>(), // ID
                     item["p"].Value<decimal>(), // price
                     item["q"].Value<decimal>(), // quantity
-                    item["f"].Value<long>(),    // first trade ID
-                    item["l"].Value<long>(),    // last trade ID
-                    item["T"].Value<long>(),    // timestamp
-                    item["m"].Value<bool>(),    // is buyer maker
-                    item["M"].Value<bool>()))   // is best price match
+                    item["f"].Value<long>(), // first trade ID
+                    item["l"].Value<long>(), // last trade ID
+                    item["T"].Value<long>(), // timestamp
+                    item["m"].Value<bool>(), // is buyer maker
+                    item["M"].Value<bool>())) // is best price match
                 .ToList();
         }
 
@@ -688,6 +738,20 @@ namespace Binance.Api
             order.Side = jToken["side"].Value<string>().ConvertOrderSide();
             order.StopPrice = jToken["stopPrice"]?.Value<decimal>() ?? 0;
             order.IcebergQuantity = jToken["icebergQty"]?.Value<decimal>() ?? 0;
+        }
+
+        /// <summary>
+        /// Throw exception when JSON parsing fails.
+        /// </summary>
+        /// <param name="methodName"></param>
+        /// <param name="json"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        private BinanceApiException NewFailedToParseJsonException(string methodName, string json, Exception e)
+        {
+            var message = $"{nameof(BinanceApi)}.{methodName} failed to parse JSON api response: \"{json}\"";
+            _logger?.LogError(e, message);
+            return new BinanceApiException(message, e);
         }
 
         #endregion Private Methods

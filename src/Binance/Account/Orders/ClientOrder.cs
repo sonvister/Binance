@@ -1,8 +1,15 @@
-﻿namespace Binance.Account.Orders
+﻿using Binance.Api;
+
+namespace Binance.Account.Orders
 {
     public abstract class ClientOrder : IChronological
     {
         #region Public Properties
+
+        /// <summary>
+        /// Get the user.
+        /// </summary>
+        public IBinanceApiUser User { get; }
 
         /// <summary>
         /// Get the order type.
@@ -45,5 +52,20 @@
         public long Timestamp { get; internal set; }
 
         #endregion Public Properties
+
+        #region Constructors
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="user"></param>
+        protected ClientOrder(IBinanceApiUser user)
+        {
+            Throw.IfNull(user, nameof(user));
+
+            User = user;
+        }
+
+        #endregion Constructors
     }
 }

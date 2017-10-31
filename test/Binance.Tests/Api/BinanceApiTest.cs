@@ -1,19 +1,18 @@
 #define LIVE
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
 using Binance.Account.Orders;
 using Binance.Api;
 using Binance.Market;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
+// ReSharper disable ReturnValueOfPureMethodIsNotUsed
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace Binance.Tests.Api
 {
-    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-    [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
     public class BinanceApiTest
     {
         private readonly IBinanceApi _api;
@@ -207,8 +206,8 @@ namespace Binance.Tests.Api
         {
             var user = new BinanceApiUser("api-key");
 
-            await Assert.ThrowsAsync<ArgumentNullException>("clientOrder", () => _api.PlaceAsync(user, null));
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _api.PlaceAsync(user, new LimitOrder { Symbol = Symbol.BTC_USDT, Quantity = 0.01m }));
+            await Assert.ThrowsAsync<ArgumentNullException>("clientOrder", () => _api.PlaceAsync(null));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _api.PlaceAsync(new LimitOrder(user) { Symbol = Symbol.BTC_USDT, Quantity = 0.01m }));
         }
 
         [Fact]
@@ -216,8 +215,8 @@ namespace Binance.Tests.Api
         {
             var user = new BinanceApiUser("api-key");
 
-            await Assert.ThrowsAsync<ArgumentNullException>("clientOrder", () => _api.TestPlaceAsync(user, null));
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _api.TestPlaceAsync(user, new LimitOrder { Symbol = Symbol.BTC_USDT, Quantity = 0.01m }));
+            await Assert.ThrowsAsync<ArgumentNullException>("clientOrder", () => _api.TestPlaceAsync(null));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _api.TestPlaceAsync(new LimitOrder(user) { Symbol = Symbol.BTC_USDT, Quantity = 0.01m }));
         }
 
         [Fact]

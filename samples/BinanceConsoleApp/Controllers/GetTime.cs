@@ -13,10 +13,11 @@ namespace BinanceConsoleApp.Controllers
                 return false;
 
             var time = await Program.Api.GetTimeAsync(token);
+            var timestamp = await Program.Api.GetTimestampAsync(token);
 
             lock (Program.ConsoleSync)
             {
-                Console.WriteLine($"  {time.Kind.ToString().ToUpper()} Time: {time}  [Local: {time.ToLocalTime()}]");
+                Console.WriteLine($"  {time.Kind.ToString().ToUpper()} Time: {time}  [Local: {time.ToLocalTime()}]  Timestamp: {timestamp}");
                 Console.WriteLine();
             }
 

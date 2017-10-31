@@ -9,9 +9,9 @@ namespace Binance
         #region Public Constants
 
         /// <summary>
-        /// Timestamp of when these symbols were last updated.
+        /// Timestamp when these symbols were updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1509075974600;
+        public static readonly long LastUpdateAt = 1509429741100;
 
         // USDT
         public static readonly string BTC_USDT = "BTCUSDT";
@@ -65,6 +65,7 @@ namespace Binance
         public static readonly string EVX_BTC = "EVXBTC";
         public static readonly string REQ_BTC = "REQBTC";
         public static readonly string VIB_BTC = "VIBBTC";
+        public static readonly string TRX_BTC = "TRXBTC";
 
         // ETH
         public static readonly string QTUM_ETH  = "QTUMETH";
@@ -107,6 +108,8 @@ namespace Binance
         public static readonly string EVX_ETH = "EVXETH";
         public static readonly string REQ_ETH = "REQETH";
         public static readonly string VIB_ETH = "VIBETH";
+        public static readonly string HSR_ETH = "HSRETH";
+        public static readonly string TRX_ETH = "TRXETH";
 
         #endregion Public Constants
     }

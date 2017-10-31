@@ -604,7 +604,7 @@ namespace Binance.Api.Json
             }
             catch (Exception e)
             {
-                _logger?.LogWarning(e, $"{nameof(GetTimestampAsync)} failed to update timestamp offset.");
+                _logger?.LogWarning(e, $"{nameof(BinanceJsonApi)}.{nameof(GetTimestampAsync)} failed to update timestamp offset.");
             }
             finally
             {
@@ -685,7 +685,7 @@ namespace Binance.Api.Json
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError(e, $"Failed to parse server error response: \"{error}\"");
+                        _logger?.LogError(e, $"{nameof(BinanceJsonApi)}.{nameof(RequestAsync)} failed to parse server error response: \"{error}\"");
                     }
                 }
 

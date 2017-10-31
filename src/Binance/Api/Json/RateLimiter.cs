@@ -29,7 +29,7 @@ namespace Binance.Api.Json
 
         #region Private Fields
 
-        private Queue<long> _timestamps = new Queue<long>();
+        private readonly Queue<long> _timestamps = new Queue<long>();
 
         private readonly object _sync = new object();
 
