@@ -1,9 +1,9 @@
-﻿using Binance.Api.WebSocket;
-using Binance.Cache.Events;
-using Binance.Market;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Api.WebSocket;
+using Binance.Cache.Events;
+using Binance.Market;
 
 namespace Binance.Cache
 {

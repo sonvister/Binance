@@ -1,12 +1,12 @@
-﻿using Binance.Account;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance.Account;
 using Binance.Api;
 using Binance.Api.WebSocket;
 using Binance.Api.WebSocket.Events;
 using Binance.Cache.Events;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Binance.Cache
 {

@@ -1,7 +1,7 @@
-﻿using Binance.Account.Orders;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Account.Orders;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -48,7 +48,7 @@ namespace BinanceConsoleApp.Controllers
                 }
             }
 
-            var clientOrder = new MarketOrder()
+            var clientOrder = new MarketOrder
             {
                 Symbol = symbol,
                 Side = (OrderSide)side,

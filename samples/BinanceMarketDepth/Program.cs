@@ -1,13 +1,14 @@
-﻿using Binance;
+﻿using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance;
 using Binance.Api;
 using Binance.Cache;
 using Binance.Market;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+
 // ReSharper disable AccessToDisposedClosure
 
 namespace BinanceMarketDepth
@@ -49,7 +50,7 @@ namespace BinanceMarketDepth
                     // Monitor order book and display updates in real-time.
                     // ReSharper disable once MethodSupportsCancellation
                     var task = Task.Run(() =>
-                        cache.SubscribeAsync(symbol, (e) => Display(e.OrderBook), limit, cts.Token));
+                        cache.SubscribeAsync(symbol, e => Display(e.OrderBook), limit, cts.Token));
 
                     Console.ReadKey(true); // ...press any key to exit.
 

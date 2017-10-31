@@ -1,10 +1,10 @@
-﻿using Binance.Api.WebSocket.Events;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance.Api.WebSocket.Events;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Binance.Api.WebSocket
 {
@@ -85,8 +85,6 @@ namespace Binance.Api.WebSocket
 
             try
             {
-                Logger?.LogTrace($"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJson)}: \"{json}\"");
-
                 var jObject = JObject.Parse(json);
 
                 var eventType = jObject["e"].Value<string>();
@@ -120,10 +118,8 @@ namespace Binance.Api.WebSocket
 
                     return new KlineEventArgs(eventTime, candlestick, firstTradeId, lastTradeId, isFinal);
                 }
-                else
-                {
-                    Logger?.LogWarning($"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
-                }
+
+                Logger?.LogWarning($"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
             }
             catch (OperationCanceledException) { }
             catch (Exception e)

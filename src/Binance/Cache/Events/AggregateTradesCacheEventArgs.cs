@@ -1,6 +1,6 @@
-﻿using Binance.Market;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Binance.Market;
 
 namespace Binance.Cache.Events
 {

@@ -1,7 +1,7 @@
-﻿using Binance.Account.Orders;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Account.Orders;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -55,7 +55,7 @@ namespace BinanceConsoleApp.Controllers
                 }
             }
 
-            var clientOrder = new LimitOrder()
+            var clientOrder = new LimitOrder
             {
                 Symbol = symbol,
                 Side = (OrderSide)side,

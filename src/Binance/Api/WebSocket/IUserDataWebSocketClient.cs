@@ -1,7 +1,7 @@
-﻿using Binance.Api.WebSocket.Events;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Api.WebSocket.Events;
 
 namespace Binance.Api.WebSocket
 {

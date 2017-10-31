@@ -1,8 +1,8 @@
-﻿using Binance;
+﻿using System;
+using System.Threading.Tasks;
+using Binance;
 using Binance.Api;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 
 // ReSharper disable once CheckNamespace
 namespace BinanceConsoleApp

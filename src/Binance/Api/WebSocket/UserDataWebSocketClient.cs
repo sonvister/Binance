@@ -1,13 +1,13 @@
-﻿using Binance.Account;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Binance.Api.WebSocket
 {
@@ -119,8 +119,6 @@ namespace Binance.Api.WebSocket
 
             try
             {
-                Logger?.LogTrace($"{nameof(UserDataWebSocketClient)}: \"{json}\"");
-
                 var jObject = JObject.Parse(json);
 
                 var eventType = jObject["e"].Value<string>();

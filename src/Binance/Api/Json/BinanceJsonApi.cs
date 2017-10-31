@@ -1,15 +1,15 @@
-﻿using Binance.Account;
-using Binance.Account.Orders;
-using Binance.Market;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Account;
+using Binance.Account.Orders;
+using Binance.Market;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 
 namespace Binance.Api.Json
 {
@@ -68,14 +68,16 @@ namespace Binance.Api.Json
                 options?.Value.RateLimiterCountDefault ?? Json.RateLimiter.CountDefault,
                 TimeSpan.FromSeconds(options?.Value.RateLimiterDurationSecondsDefault ?? Json.RateLimiter.DurationSecondsDefault));
 
-            _httpClient = new HttpClient()
+            _httpClient = new HttpClient
             {
                 BaseAddress = new Uri(EndpointUrl)
             };
 
             var version = GetType().Assembly.GetName().Version;
 
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", $"Binance/{version.Major}.{version.Minor}.{version.Build} (.NET; +https://github.com/sonvister/Binance)");
+            var versionString = $"{version.Major}.{version.Minor}.{version.Build}{(version.Revision > 0 ? $".{version.Revision}" : string.Empty)}";
+
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", $"Binance/{versionString} (.NET; +https://github.com/sonvister/Binance)");
         }
 
         #endregion Constructors

@@ -1,4 +1,11 @@
-﻿using Binance;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance;
 using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api;
@@ -9,13 +16,6 @@ using BinanceConsoleApp.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace BinanceConsoleApp
 {

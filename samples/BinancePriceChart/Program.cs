@@ -10,6 +10,7 @@ using Binance.Cache;
 using Binance.Market;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 // ReSharper disable AccessToDisposedClosure
 
 namespace BinancePriceChart
@@ -52,7 +53,7 @@ namespace BinancePriceChart
                     // Monitor latest aggregate trades and display updates in real-time.
                     // ReSharper disable once MethodSupportsCancellation
                     var task = Task.Run(() =>
-                        cache.SubscribeAsync(symbol, interval, (e) => Display(e.Candlesticks), limit, cts.Token));
+                        cache.SubscribeAsync(symbol, interval, e => Display(e.Candlesticks), limit, cts.Token));
 
                     Console.ReadKey(true); // ...press any key to exit.
 

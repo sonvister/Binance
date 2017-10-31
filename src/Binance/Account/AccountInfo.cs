@@ -1,5 +1,5 @@
-﻿using Binance.Api;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Binance.Api;
 
 namespace Binance.Account
 {

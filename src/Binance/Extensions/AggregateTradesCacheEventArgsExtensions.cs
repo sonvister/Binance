@@ -1,6 +1,6 @@
-﻿using Binance.Cache.Events;
+﻿using System.Linq;
+using Binance.Cache.Events;
 using Binance.Market;
-using System.Linq;
 
 // ReSharper disable once CheckNamespace
 namespace Binance

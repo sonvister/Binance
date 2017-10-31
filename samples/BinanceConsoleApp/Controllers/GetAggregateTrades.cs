@@ -1,10 +1,10 @@
-﻿using Binance;
-using Binance.Market;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance;
+using Binance.Market;
 
 namespace BinanceConsoleApp.Controllers
 {

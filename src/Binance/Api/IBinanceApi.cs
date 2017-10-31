@@ -1,11 +1,11 @@
-﻿using Binance.Account;
-using Binance.Account.Orders;
-using Binance.Market;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Account;
+using Binance.Account.Orders;
 using Binance.Api.Json;
+using Binance.Market;
 
 namespace Binance.Api
 {

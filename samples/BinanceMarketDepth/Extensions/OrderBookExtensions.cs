@@ -1,9 +1,9 @@
-﻿using Binance;
-using Binance.Market;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Binance;
+using Binance.Market;
 
 // ReSharper disable once CheckNamespace
 namespace BinanceMarketDepth

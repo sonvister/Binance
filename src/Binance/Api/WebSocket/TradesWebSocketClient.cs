@@ -1,10 +1,10 @@
-﻿using Binance.Api.WebSocket.Events;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance.Api.WebSocket.Events;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Binance.Api.WebSocket
 {
@@ -85,8 +85,6 @@ namespace Binance.Api.WebSocket
 
             try
             {
-                Logger?.LogTrace($"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJson)}: \"{json}\"");
-
                 var jObject = JObject.Parse(json);
 
                 var eventType = jObject["e"].Value<string>();
@@ -108,10 +106,8 @@ namespace Binance.Api.WebSocket
 
                     return new AggregateTradeEventArgs(eventTime, trade);
                 }
-                else
-                {
-                    Logger?.LogWarning($"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
-                }
+
+                Logger?.LogWarning($"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
             }
             catch (OperationCanceledException) { }
             catch (Exception e)

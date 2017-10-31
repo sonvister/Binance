@@ -1,5 +1,5 @@
-﻿using Binance.Market;
-using System;
+﻿using System;
+using Binance.Market;
 
 // ReSharper disable once CheckNamespace
 namespace Binance

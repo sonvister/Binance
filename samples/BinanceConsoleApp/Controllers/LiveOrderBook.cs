@@ -1,10 +1,10 @@
-﻿using Binance;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance;
 using Binance.Cache;
 using Binance.Cache.Events;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {

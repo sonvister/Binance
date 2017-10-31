@@ -1,13 +1,13 @@
-﻿using Binance.Account;
-using Binance.Account.Orders;
-using Binance.Api.Json;
-using Binance.Market;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Account;
+using Binance.Account.Orders;
+using Binance.Api.Json;
+using Binance.Market;
+using Newtonsoft.Json.Linq;
 
 namespace Binance.Api
 {

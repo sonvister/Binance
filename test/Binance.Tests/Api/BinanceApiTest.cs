@@ -114,7 +114,7 @@ namespace Binance.Tests.Api
             Assert.NotNull(trades);
             Assert.NotEmpty(trades);
             Assert.True(trades.Count() >= limit);
-            Assert.All(limitTrades, (t1) => trades.Single(t2 => t2.Id == t1.Id));
+            Assert.All(limitTrades, t1 => trades.Single(t2 => t2.Id == t1.Id));
         }
 
         [Fact]
@@ -145,7 +145,7 @@ namespace Binance.Tests.Api
             Assert.NotNull(candlesticks);
             Assert.NotEmpty(candlesticks);
             Assert.True(candlesticks.Count() == newLimit);
-            Assert.All(candlesticks, (c1) => limitCandlesticks.Single(c2 => c2.OpenTime == c1.OpenTime));
+            Assert.All(candlesticks, c1 => limitCandlesticks.Single(c2 => c2.OpenTime == c1.OpenTime));
         }
 
         [Fact]
@@ -208,7 +208,7 @@ namespace Binance.Tests.Api
             var user = new BinanceApiUser("api-key");
 
             await Assert.ThrowsAsync<ArgumentNullException>("clientOrder", () => _api.PlaceAsync(user, null));
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _api.PlaceAsync(user, new LimitOrder() { Symbol = Symbol.BTC_USDT, Quantity = 0.01m }));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _api.PlaceAsync(user, new LimitOrder { Symbol = Symbol.BTC_USDT, Quantity = 0.01m }));
         }
 
         [Fact]
@@ -217,7 +217,7 @@ namespace Binance.Tests.Api
             var user = new BinanceApiUser("api-key");
 
             await Assert.ThrowsAsync<ArgumentNullException>("clientOrder", () => _api.TestPlaceAsync(user, null));
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _api.TestPlaceAsync(user, new LimitOrder() { Symbol = Symbol.BTC_USDT, Quantity = 0.01m }));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _api.TestPlaceAsync(user, new LimitOrder { Symbol = Symbol.BTC_USDT, Quantity = 0.01m }));
         }
 
         [Fact]

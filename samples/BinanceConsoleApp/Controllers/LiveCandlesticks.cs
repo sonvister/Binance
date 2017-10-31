@@ -1,12 +1,12 @@
-﻿using Binance;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance;
 using Binance.Api.WebSocket.Events;
 using Binance.Cache;
 using Binance.Market;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -57,7 +57,7 @@ namespace BinanceConsoleApp.Controllers
 
             Program.LiveTask = Task.Run(() =>
             {
-                Program.KlineCache.SubscribeAsync(symbol, interval, (e) => { Program.Display(e.Candlesticks.Last()); }, token: Program.LiveTokenSource.Token);
+                Program.KlineCache.SubscribeAsync(symbol, interval, e => { Program.Display(e.Candlesticks.Last()); }, token: Program.LiveTokenSource.Token);
             }, token);
 
             lock (Program.ConsoleSync)

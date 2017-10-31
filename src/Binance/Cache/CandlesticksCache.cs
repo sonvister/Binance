@@ -1,14 +1,15 @@
-﻿using Binance.Api;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance.Api;
 using Binance.Api.WebSocket;
 using Binance.Api.WebSocket.Events;
 using Binance.Cache.Events;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 // ReSharper disable InconsistentlySynchronizedField
 
 namespace Binance.Cache

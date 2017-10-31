@@ -1,15 +1,16 @@
-﻿using Binance;
-using Binance.Api;
-using Binance.Cache;
-using Binance.Market;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance;
+using Binance.Api;
+using Binance.Cache;
+using Binance.Market;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
 // ReSharper disable AccessToDisposedClosure
 
 namespace BinanceTradeHistory
@@ -50,7 +51,7 @@ namespace BinanceTradeHistory
                     // Monitor latest aggregate trades and display updates in real-time.
                     // ReSharper disable once MethodSupportsCancellation
                     var task = Task.Run(() =>
-                        cache.SubscribeAsync(symbol, (e) => Display(e.Trades), limit, cts.Token));
+                        cache.SubscribeAsync(symbol, e => Display(e.Trades), limit, cts.Token));
 
                     Console.ReadKey(true); // ...press any key to exit.
 

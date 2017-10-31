@@ -1,9 +1,9 @@
-﻿using Binance.Api;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Binance.Api;
+using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
@@ -78,12 +78,12 @@ namespace Binance.Cache
 
             LeaveClientOpen = leaveClientOpen;
 
-            _bufferBlock = new BufferBlock<TEventArgs>(new DataflowBlockOptions()
+            _bufferBlock = new BufferBlock<TEventArgs>(new DataflowBlockOptions
             {
                 EnsureOrdered = true,
                 CancellationToken = Token,
                 BoundedCapacity = DataflowBlockOptions.Unbounded,
-                MaxMessagesPerTask = DataflowBlockOptions.Unbounded,
+                MaxMessagesPerTask = DataflowBlockOptions.Unbounded
             });
 
             _actionBlock = new ActionBlock<TEventArgs>(async @event =>
@@ -103,13 +103,13 @@ namespace Binance.Cache
                 {
                     Logger?.LogError(e, $"{GetType().Name}: \"{e.Message}\"");
                 }
-            }, new ExecutionDataflowBlockOptions()
+            }, new ExecutionDataflowBlockOptions
             {
                 BoundedCapacity = 1,
                 EnsureOrdered = true,
                 MaxDegreeOfParallelism = 1,
                 CancellationToken = Token,
-                SingleProducerConstrained = true,
+                SingleProducerConstrained = true
             });
 
             _bufferBlock.LinkTo(_actionBlock);

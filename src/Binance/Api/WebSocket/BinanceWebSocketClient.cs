@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Microsoft.Extensions.Logging;
 
 namespace Binance.Api.WebSocket
 {
@@ -62,22 +62,22 @@ namespace Binance.Api.WebSocket
 
             try
             {
-                BufferBlock = new BufferBlock<string>(new DataflowBlockOptions()
+                BufferBlock = new BufferBlock<string>(new DataflowBlockOptions
                 {
                     EnsureOrdered = true,
                     CancellationToken = token,
                     BoundedCapacity = DataflowBlockOptions.Unbounded,
-                    MaxMessagesPerTask = DataflowBlockOptions.Unbounded,
+                    MaxMessagesPerTask = DataflowBlockOptions.Unbounded
                 });
 
                 ActionBlock = new ActionBlock<string>(action,
-                    new ExecutionDataflowBlockOptions()
+                    new ExecutionDataflowBlockOptions
                     {
                         BoundedCapacity = 1,
                         EnsureOrdered = true,
                         MaxDegreeOfParallelism = 1,
                         CancellationToken = token,
-                        SingleProducerConstrained = true,
+                        SingleProducerConstrained = true
                     });
 
                 BufferBlock.LinkTo(ActionBlock);

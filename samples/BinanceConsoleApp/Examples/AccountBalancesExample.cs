@@ -1,13 +1,14 @@
-﻿using Binance;
+﻿using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance;
 using Binance.Account;
 using Binance.Api;
 using Binance.Cache;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+
 // ReSharper disable AccessToDisposedClosure
 
 // ReSharper disable once CheckNamespace
@@ -58,7 +59,7 @@ namespace BinanceConsoleApp
 
                     // Display updated account balance.
                     var task = Task.Run(() =>
-                        cache.SubscribeAsync(user, (e) => Display(e.Account.GetBalance(asset)), cts.Token), cts.Token);
+                        cache.SubscribeAsync(user, e => Display(e.Account.GetBalance(asset)), cts.Token), cts.Token);
 
                     Console.WriteLine("...press any key to continue.");
                     Console.ReadKey(true);

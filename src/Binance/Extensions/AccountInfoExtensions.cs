@@ -1,6 +1,6 @@
-﻿using Binance.Account;
-using System;
+﻿using System;
 using System.Linq;
+using Binance.Account;
 
 // ReSharper disable once CheckNamespace
 namespace Binance

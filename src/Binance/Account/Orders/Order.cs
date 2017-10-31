@@ -1,5 +1,5 @@
-﻿using Binance.Api;
-using System;
+﻿using System;
+using Binance.Api;
 
 namespace Binance.Account.Orders
 {
