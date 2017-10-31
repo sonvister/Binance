@@ -53,15 +53,15 @@ PM> Install-Package Binance
 - [Donate BTC to the creator of this library](#withdraw).
 
 ## API Method Reference
-This library provides a complete implementation of the [Binance REST API](https://www.binance.com/restapipub.html) in the `IBinanceApi` interface. This high-level facade provides a simple abstraction to interact with the remote Binance REST API returning immutable domain objects and HTTP response status through the use of exceptions.
+This library provides a complete implementation of the [Binance REST API](https://www.binance.com/restapipub.html) in the [`IBinanceApi`](src/Binance/Api/IBinanceApi.cs) interface. This high-level facade provides a simple abstraction to interact with the remote Binance REST API returning immutable domain objects and HTTP response status through the use of exceptions.
 
-*NOTE*: The `IBinanceApi` interface is `IDisposable` and does not require an API Key or Secret for instantiation. [Authentication](#authentication) information is only required where necessary.
+*NOTE*: The [`IBinanceApi`](src/Binance/Api/IBinanceApi.cs) interface is `IDisposable` and does not require an API Key or Secret for instantiation. [Authentication](#authentication) information is only required where necessary.
 ```c#
     var api = serviceProvider.GetService<IBinanceApi>();
     // ...or
     var api = new BinanceApi();
 ```
-Alternatively, the low-level `IBinanceJsonApi` interface can be used with all the same capabilities, but returns JSON instead.
+Alternatively, the low-level [`IBinanceJsonApi`](src/Binance/Api/Json/IBinanceJsonApi.cs) interface can be used with all the same capabilities, but returns JSON instead.
 ```c#
     var jsonApi = serviceProvider.GetService<IBinanceJsonApi>();
     // ...or
@@ -75,7 +75,7 @@ For consistency with the Binance REST API:
 - All `IEnumerable<>` data is returned in **ascending** chronological order (oldest first, newest last).
 
 ### Rate Limiting
-Built into the `IBinanceJsonApi` implementation is an `IRateLimiter` that ensures the API call rate doesn't exceed a programmable threshold. By default this threshold is set to 3 calls per second. This helps provide *fair* use of the Binance API and to prevent *potentially* being disconnected or blocked.
+Built into the [`IBinanceJsonApi`](src/Binance/Api/Json/IBinanceJsonApi.cs) implementation is an [`IRateLimiter`](src/Binance/Api/Json/IRateLimiter.cs) that ensures the API call rate doesn't exceed a programmable threshold. By default this threshold is set to 3 calls per second. This helps provide *fair* use of the Binance API and to prevent *potentially* being disconnected or blocked.
 
 *NOTE*: Currently, the`PlaceOrderAsync` and `CancelOrderAsync` calls are not affected by the rate limiter.
 
@@ -100,7 +100,7 @@ Sample console application [example](samples/BinanceConsoleApp/Controllers/Ping.
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetTime.cs).
 
 ### Market Data
-There are pre-defined constant symbols in the static `Symbol` class.
+There are pre-defined constant symbols in the static [`Symbol`](src/Binance/Symbol.cs) class.
 #### Order Book
 Get the [order book](src/Binance/Market/OrderBook.cs) (depth of market) for a symbol with optional limit [5, 10, 20, 50, 100, 200, 500].
 ```c#
@@ -356,7 +356,7 @@ NOTE: [Client orders](src/Binance/Account/Orders/ClientOrder.cs) are created to 
 ```c#
     using (var user = new BinanceApiUser("api-key", "api-secret"))
     {
-        var order = await api.PlaceAsync(user, new LimitOrder()
+        var order = await api.PlaceAsync(new LimitOrder(user)
         {
             Symbol = Symbol.BTC_USDT,
             Side = OrderSide.Buy,
@@ -373,7 +373,7 @@ NOTE: Client orders are created to serve as a mutable order placeholder, only af
 ```c#
     using (var user = new BinanceApiUser("api-key", "api-secret"))
     {
-        var order = await api.PlaceAsync(user, new MarketOrder()
+        var order = await api.PlaceAsync(new MarketOrder(user)
         {
             Symbol = Symbol.BTC_USDT,
             Side = OrderSide.Sell,
@@ -390,7 +390,7 @@ Create and *TEST* place a new order. An exception will be thrown if the order pl
     {
         try
         {
-            await api.TestPlaceAsync(user, new MarketOrder()
+            await api.TestPlaceAsync(new MarketOrder(user)
             {
                 Symbol = Symbol.BTC_USDT,
                 Side = OrderSide.Sell,
@@ -455,7 +455,12 @@ Sample console application [example](samples/BinanceConsoleApp/Controllers/GetTr
 #### Withdraw
 Submit a [withdraw request](src/Binance/Account/WithdrawRequest.cs)... *optionally donate to me* :)
 ```c#
-    await api.WithdrawAsync(user, Asset.BTC, "3JjG3tRR1dx98UJyNdpzpkrxRjXmPfQHk9", 0.01m);
+    await api.WithdrawAsync(new WithdrawRequest(user)
+    {
+        Asset = Asset.BTC,
+        Address = "3JjG3tRR1dx98UJyNdpzpkrxRjXmPfQHk9",
+        Amount = 0.01m
+    });
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/Withdraw.cs).
 
