@@ -55,6 +55,8 @@ namespace Binance.Cache
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
+            token.ThrowIfCancellationRequested();
+
             _symbol = symbol;
             _interval = interval;
             _limit = limit;

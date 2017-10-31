@@ -35,6 +35,8 @@ namespace Binance.Cache
         {
             Throw.IfNull(user, nameof(user));
 
+            token.ThrowIfCancellationRequested();
+
             Token = token;
 
             LinkTo(Client, callback, LeaveClientOpen);

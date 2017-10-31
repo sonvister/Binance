@@ -47,11 +47,12 @@ namespace BinancePriceChart
                     const KlineInterval interval = KlineInterval.Minute;
 
                     // Query and display the latest aggregate trades for the symbol.
-                    Display(await api.GetCandlesticksAsync(symbol, interval, limit: limit, token: cts.Token));
+                    Display(await api.GetCandlesticksAsync(symbol, interval, limit, token: cts.Token));
 
                     // Monitor latest aggregate trades and display updates in real-time.
+                    // ReSharper disable once MethodSupportsCancellation
                     var task = Task.Run(() =>
-                        cache.SubscribeAsync(symbol, interval, (e) => Display(e.Candlesticks), limit, cts.Token), cts.Token);
+                        cache.SubscribeAsync(symbol, interval, (e) => Display(e.Candlesticks), limit, cts.Token));
 
                     Console.ReadKey(true); // ...press any key to exit.
 

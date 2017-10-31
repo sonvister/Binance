@@ -84,11 +84,15 @@ namespace Binance.Api.Json
 
         public virtual Task<string> PingAsync(CancellationToken token = default)
         {
+            token.ThrowIfCancellationRequested();
+
             return GetAsync("/api/v1/ping", token);
         }
 
         public virtual Task<string> GetServerTimeAsync(CancellationToken token = default)
         {
+            token.ThrowIfCancellationRequested();
+
             return GetAsync("/api/v1/time", token);
         }
 
@@ -99,6 +103,8 @@ namespace Binance.Api.Json
         public virtual Task<string> GetOrderBookAsync(string symbol, int limit = default, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            token.ThrowIfCancellationRequested();
 
             var totalParams = $"symbol={symbol.FormatSymbol()}";
 
@@ -113,6 +119,8 @@ namespace Binance.Api.Json
         public virtual Task<string> GetAggregateTradesAsync(string symbol, long fromId = BinanceApi.NullId, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            token.ThrowIfCancellationRequested();
 
             var totalParams = $"symbol={symbol.FormatSymbol()}";
 
@@ -146,6 +154,8 @@ namespace Binance.Api.Json
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
+            token.ThrowIfCancellationRequested();
+
             var totalParams = $"symbol={symbol.FormatSymbol()}&interval={interval.AsString()}";
 
             if (limit > 0)
@@ -164,16 +174,22 @@ namespace Binance.Api.Json
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
+            token.ThrowIfCancellationRequested();
+
             return GetAsync($"/api/v1/ticker/24hr?symbol={symbol.FormatSymbol()}", token);
         }
 
         public virtual Task<string> GetPricesAsync(CancellationToken token = default)
         {
+            token.ThrowIfCancellationRequested();
+
             return GetAsync("/api/v1/ticker/allPrices", token);
         }
 
         public virtual Task<string> GetOrderBookTopsAsync(CancellationToken token = default)
         {
+            token.ThrowIfCancellationRequested();
+
             return GetAsync("/api/v1/ticker/allBookTickers", token);
         }
 
@@ -185,6 +201,8 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            token.ThrowIfCancellationRequested();
 
             if (quantity <= 0)
                 throw new ArgumentException("Order quantity must be greater than 0.", nameof(quantity));
@@ -212,7 +230,8 @@ namespace Binance.Api.Json
             if (recvWindow > 0)
                 totalParams += $"&recvWindow={recvWindow}";
 
-            var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
+            var timestamp = await GetTimestampAsync(token)
+                .ConfigureAwait(false);
 
             totalParams += $"&timestamp={timestamp}";
 
@@ -232,6 +251,8 @@ namespace Binance.Api.Json
             if (orderId < 0 && string.IsNullOrWhiteSpace(origClientOrderId))
                 throw new ArgumentException($"Either '{nameof(orderId)}' or '{nameof(origClientOrderId)}' must be provided, but both were invalid.");
 
+            token.ThrowIfCancellationRequested();
+
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
@@ -246,7 +267,8 @@ namespace Binance.Api.Json
             if (recvWindow > 0)
                 totalParams += $"&recvWindow={recvWindow}";
 
-            var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
+            var timestamp = await GetTimestampAsync(token)
+                .ConfigureAwait(false);
 
             totalParams += $"&timestamp={timestamp}";
 
@@ -263,6 +285,8 @@ namespace Binance.Api.Json
 
             if (orderId < 0 && string.IsNullOrWhiteSpace(origClientOrderId))
                 throw new ArgumentException($"Either '{nameof(orderId)}' or '{nameof(origClientOrderId)}' must be provided, but both were invalid.");
+
+            token.ThrowIfCancellationRequested();
 
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
@@ -281,7 +305,8 @@ namespace Binance.Api.Json
             if (recvWindow > 0)
                 totalParams += $"&recvWindow={recvWindow}";
 
-            var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
+            var timestamp = await GetTimestampAsync(token)
+                .ConfigureAwait(false);
 
             totalParams += $"&timestamp={timestamp}";
 
@@ -295,6 +320,8 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            token.ThrowIfCancellationRequested();
 
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
@@ -318,6 +345,8 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            token.ThrowIfCancellationRequested();
 
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
@@ -347,6 +376,8 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
 
+            token.ThrowIfCancellationRequested();
+
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
@@ -366,6 +397,8 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            token.ThrowIfCancellationRequested();
 
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
@@ -400,6 +433,8 @@ namespace Binance.Api.Json
             if (amount <= 0)
                 throw new ArgumentException("Withdraw amount must be greater than 0.", nameof(amount));
 
+            token.ThrowIfCancellationRequested();
+
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
@@ -411,7 +446,8 @@ namespace Binance.Api.Json
             if (recvWindow > 0)
                 totalParams += $"&recvWindow={recvWindow}";
 
-            var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
+            var timestamp = await GetTimestampAsync(token)
+                .ConfigureAwait(false);
 
             totalParams += $"&timestamp={timestamp}";
 
@@ -425,10 +461,13 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
 
+            token.ThrowIfCancellationRequested();
+
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
-            var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
+            var timestamp = await GetTimestampAsync(token)
+                .ConfigureAwait(false);
 
             var totalParams = $"timestamp={timestamp}";
 
@@ -462,10 +501,13 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
 
+            token.ThrowIfCancellationRequested();
+
             if (recvWindow <= 0)
                 recvWindow = _options?.RecvWindowDefault ?? 0;
 
-            var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
+            var timestamp = await GetTimestampAsync(token)
+                .ConfigureAwait(false);
 
             var totalParams = $"timestamp={timestamp}";
 
@@ -503,6 +545,8 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
 
+            token.ThrowIfCancellationRequested();
+
             return PostAsync("/api/v1/userDataStream", string.Empty, token, user);
         }
 
@@ -511,6 +555,8 @@ namespace Binance.Api.Json
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
 
+            token.ThrowIfCancellationRequested();
+
             return PutAsync($"/api/v1/userDataStream?listenKey={listenKey}", string.Empty, token, user);
         }
 
@@ -518,6 +564,8 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
+
+            token.ThrowIfCancellationRequested();
 
             return DeleteAsync($"/api/v1/userDataStream?listenKey={listenKey}", token, user);
         }
@@ -533,7 +581,8 @@ namespace Binance.Api.Json
         /// <returns></returns>
         private async Task<long> GetTimestampAsync(CancellationToken token = default)
         {
-            await _timestampOffsetSync.WaitAsync(token);
+            await _timestampOffsetSync.WaitAsync(token)
+                .ConfigureAwait(false);
 
             try
             {

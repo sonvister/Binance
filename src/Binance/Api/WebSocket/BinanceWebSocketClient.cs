@@ -58,6 +58,8 @@ namespace Binance.Api.WebSocket
         /// <returns></returns>
         protected async Task SubscribeAsync(string uriPath, Action<string> action, CancellationToken token = default)
         {
+            token.ThrowIfCancellationRequested();
+
             try
             {
                 BufferBlock = new BufferBlock<string>(new DataflowBlockOptions()

@@ -47,8 +47,9 @@ namespace BinanceMarketDepth
                     Display(await api.GetOrderBookAsync(symbol, limit, cts.Token));
 
                     // Monitor order book and display updates in real-time.
+                    // ReSharper disable once MethodSupportsCancellation
                     var task = Task.Run(() =>
-                        cache.SubscribeAsync(symbol, (e) => Display(e.OrderBook), limit, cts.Token), cts.Token);
+                        cache.SubscribeAsync(symbol, (e) => Display(e.OrderBook), limit, cts.Token));
 
                     Console.ReadKey(true); // ...press any key to exit.
 
