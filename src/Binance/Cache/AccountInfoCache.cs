@@ -14,7 +14,7 @@ namespace Binance.Cache
     {
         #region Public Properties
 
-        public AccountInfo Account { get; private set; }
+        public AccountInfo AccountInfo { get; private set; }
 
         #endregion Public Properties
 
@@ -55,9 +55,9 @@ namespace Binance.Cache
 
         protected override Task<AccountInfoCacheEventArgs> OnAction(AccountUpdateEventArgs @event)
         {
-            Account = @event.Account;
+            AccountInfo = @event.Account;
 
-            return Task.FromResult(new AccountInfoCacheEventArgs(Account));
+            return Task.FromResult(new AccountInfoCacheEventArgs(AccountInfo));
         }
 
         #endregion Protected Methods

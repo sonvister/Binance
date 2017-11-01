@@ -13,7 +13,7 @@ namespace Binance.Cache
         #region Public Events
 
         /// <summary>
-        /// Account cache update event.
+        /// AccountInfo cache update event.
         /// </summary>
         event EventHandler<AccountInfoCacheEventArgs> Update;
 
@@ -22,9 +22,9 @@ namespace Binance.Cache
         #region Public Properties
 
         /// <summary>
-        /// The account. Can be null if not yet synchronized or out-of-sync.
+        /// The account information. Can be null if not yet synchronized or out-of-sync.
         /// </summary>
-        AccountInfo Account { get; }
+        AccountInfo AccountInfo { get; }
 
         /// <summary>
         /// The client that provides account synchronization.
