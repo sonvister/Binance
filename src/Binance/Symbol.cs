@@ -11,7 +11,7 @@ namespace Binance
         /// <summary>
         /// Timestamp when these symbols were updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1509508196840;
+        public static readonly long LastUpdateAt = 1509554028400;
 
         // USDT
         public static readonly string BTC_USDT = "BTCUSDT";
@@ -67,6 +67,7 @@ namespace Binance
         public static readonly string VIB_BTC = "VIBBTC";
         public static readonly string TRX_BTC = "TRXBTC";
         public static readonly string POWR_BTC = "POWRBTC";
+        public static readonly string ARK_BTC = "ARKBTC";
 
         // ETH
         public static readonly string QTUM_ETH  = "QTUMETH";
@@ -112,6 +113,7 @@ namespace Binance
         public static readonly string HSR_ETH = "HSRETH";
         public static readonly string TRX_ETH = "TRXETH";
         public static readonly string POWR_ETH = "POWRETH";
+        public static readonly string ARK_ETH = "ARKETH";
 
         #endregion Public Constants
     }

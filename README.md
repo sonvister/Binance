@@ -19,7 +19,7 @@ A full-featured .NET Standard 2.0 **[Binance API](https://www.binance.com/restap
 ## Getting Started
 ### Binance Sign-up
 To use the (*non-public*) account related features of the API you must have a Binance account and create an API Key. \
-Please use my Referral ID: **10899093** when you [Sign Up](https://www.binance.com/register.html?ref=10899093).
+Please use my Referral ID: **10899093** when you [Register](https://www.binance.com/register.html?ref=10899093).
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![](https://github.com/sonvister/Binance/blob/master/images/register.png?raw=true)](https://www.binance.com/register.html?ref=10899093)
 
@@ -171,7 +171,7 @@ To use the following features of the API you must have a Binance account and cre
 #### Authentication
 Create a user authentication instance ([`IBinanceApiUser`](src/Binance/Api/IBinanceApiUser.cs)) with your Binance account **API Key** and **Secret** (optional). The interface and implementation is `IDisposable` due to an internal `HMAC` used for signing requests (subsequently, the API Secret is *not stored* as a property in the [`BinanceApiUser`](src/Binance/Api/BinanceApiUser.cs) class privately or otherwise).
 ```c#
-    var user = new BinanceApiUser("<Your API Key>", <your API Secret>);
+    var user = new BinanceApiUser("<Your API Key>", "<your API Secret>");
 ```
 *NOTE*: User authentication is method injected -- only where required -- so a single Binance API instance (with a single `HttpClient`) is capable of supporting multiple Binance users.
 
@@ -197,7 +197,7 @@ The following timing diagram illustrates the meaning and application of the `rec
 #### Exception Handling
 This code demonstrates how to handle exceptions from the [`IBinanceApi`](src/Binance/Api/IBinanceApi.cs) methods.
 
-NOTE: Handling exceptions with this level of precision is only applicable to processes that an application may retry should the first attempt fail (*e.g. order placement*).
+NOTE: Handling exceptions with this level of precision is only applicable to processes that an application may retry should the first attempt fail (*e.g. order placement or withdraw requests*).
 
 ```c#
 try
