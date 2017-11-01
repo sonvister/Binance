@@ -17,6 +17,14 @@ A full-featured .NET Standard 2.0 **[Binance API](https://www.binance.com/restap
 * .NET Core **sample applications** including live displays of market depth, trades, and candlesticks for a symbol.
 
 ## Getting Started
+### Binance Sign-up
+To use the (*non-public*) account related features of the API you must have a Binance account and create an API Key. \
+Please use my Referral ID: **10899093** when you [Sign Up](https://www.binance.com/register.html?ref=10899093).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![](https://github.com/sonvister/Binance/blob/master/images/register.png?raw=true)](https://www.binance.com/register.html?ref=10899093)
+
+*NOTE*: An account is not required to access the public market data.
+
 ### Installation
 Using [Nuget](https://www.nuget.org/packages/Binance/) Package Manager:
 ```
@@ -155,132 +163,11 @@ Get a list of all *current* symbols.
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/Symbols.cs).
 
-#### Real-time Caching
-The caching classes are high-level implementations that utilize the corresponding WebSocket client to provide a local copy of the order book, trade history, price chart, etc. for a symbol that is also updated in real-time. Applications are notified of updates via an event handler, callback, or both.
 
-*NOTE*: Multiple event listener classes can be linked to the `...Cache` implementations though the `Update` event.
-
-##### Order Book Cache
-Use an [`IOrderBookCache`](src/Binance/Cache/IOrderBookCache.cs) (with an [`IDepthWebSocketClient`](src/Binance/Api/WebSocket/IDepthWebSocketClient.cs)) to create a real-time, synchronized order book for a symbol. Refer to the BinanceMarketDepth sample for an [additional example](samples/BinanceMarketDepth/Program.cs).
-```c#
-    using (var cache = serviceProvider.GetService<IOrderBookCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var price = cache.OrderBook.Top.Bid.Price; // access latest order book (thread-safe).
-        var book = cache.OrderBook; // keep a static (snapshot) reference of order book.
-        
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
-```
-```c#
-void OnUpdateEvent(object sender, OrderBookCacheEventArgs e)
-{
-    // Event has an immutable copy of the order book.
-    var price = e.OrderBook.Top.Bid.Price;
-}
-```
-##### Aggregate Trades Cache
-Use an [`IAggregateTradesCache`](src/Binance/Cache/IAggregateTradesCache.cs) (with an [`ITradesWebSocketClient`](src/Binance/Api/WebSocket/ITradesWebSocketClient.cs)) to create a real-time, synchronized trade history for a symbol. Refer to the BinanceTradeHistory sample for an [additional example](samples/BinanceTradeHistory/Program.cs).
-```c#
-    using (var cache = serviceProvider.GetService<IAggregateTradeCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var trades = cache.Trades; // access latest aggregate trades (thread-safe).
-
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
-```
-```c#
-void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
-{
-    // Event has an immutable copy of aggregate trades.
-    var trades = e.Trades.
-}
-```
-##### Candlesticks Cache
-Use an [`ICandlesticksCache`](src/Binance/Cache/ICandlesticksCache.cs) (with an [`IKlineWebSocketClient`](src/Binance/Api/WebSocket/IKlineWebSocketClient.cs)) to create a real-time, synchronized price chart for a symbol. Refer to the BinancePriceChart sample for an [additional example](samples/BinancePriceChart/Program.cs).
-
-```c#
-    using (var cache = serviceProvider.GetService<ICandlesticksCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, KlineInterval.Hour, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var candlesticks = cache.Candlestics; // access latest candlesticks (thread-safe).
-
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
-```
-```c#
-void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
-{
-    // Event has an immutable copy of candlesticks.
-    var candlesticks = e.Candlesticks.
-}
-```
-##### Account Info Cache
-Use an [`IAccountInfoCache`](src/Binance/Cache/IAccountInfoCache.cs) (with an [`IUserDataWebSocketClient`](src/Binance/Api/WebSocket/IUserDataWebSocketClient.cs)) to create a real-time, synchronized account profile for a user. Refer to the following for an [additional example](samples/BinanceConsoleApp/Examples/AccountBalancesExample.cs).
-
-```c#
-    using (var cache = serviceProvider.GetService<IAccountInfoCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(user, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var accountInfo = cache.AccountInfo; // access latest candlesticks (thread-safe).
-
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
-```
-```c#
-void OnUpdateEvent(object sender, AccountInfoCacheEventArgs e)
-{
-    // Event has an immutable copy of account info.
-    var accountInfo = e.AccountInfo.
-}
-```
 
 ### Account
+To use the following features of the API you must have a Binance account and create an API Key. If you haven't already created an account, please use my Referral ID: **10899093** when you [Sign Up](https://www.binance.com/register.html?ref=10899093).
+
 #### Authentication
 Create a user authentication instance ([`IBinanceApiUser`](src/Binance/Api/IBinanceApiUser.cs)) with your Binance account **API Key** and **Secret** (optional). The interface and implementation is `IDisposable` due to an internal `HMAC` used for signing requests (subsequently, the API Secret is *not stored* as a property in the [`BinanceApiUser`](src/Binance/Api/BinanceApiUser.cs) class privately or otherwise).
 ```c#
@@ -617,4 +504,129 @@ Ping a user data stream to prevent a timeout.
 Close a user data stream.
 ```c#
     await api.UserStreamCloseAsync(user, listenKey);
+```
+
+#### Real-time Caching
+The caching classes are high-level implementations that utilize the corresponding WebSocket client to provide a local copy of the order book, trade history, price chart, etc. for a symbol that is also updated in real-time. Applications are notified of updates via an event handler, callback, or both.
+
+*NOTE*: Multiple event listener classes can be linked to the `...Cache` implementations though the `Update` event.
+
+##### Order Book Cache
+Use an [`IOrderBookCache`](src/Binance/Cache/IOrderBookCache.cs) (with an [`IDepthWebSocketClient`](src/Binance/Api/WebSocket/IDepthWebSocketClient.cs)) to create a real-time, synchronized order book for a symbol. Refer to the BinanceMarketDepth sample for an [additional example](samples/BinanceMarketDepth/Program.cs).
+```c#
+    using (var cache = serviceProvider.GetService<IOrderBookCache>())
+    {
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+        
+        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
+        {
+            // optionally, use an inline event handler.
+        }, cts.Token)); // starts synchronization.
+        
+        // ...
+        
+        var price = cache.OrderBook.Top.Bid.Price; // access latest order book (thread-safe).
+        var book = cache.OrderBook; // keep a static (snapshot) reference of order book.
+        
+        // ...
+        
+        cts.Cancel(); // end the task.
+        await task; // wait for task to complete.
+    }
+```
+```c#
+void OnUpdateEvent(object sender, OrderBookCacheEventArgs e)
+{
+    // Event has an immutable copy of the order book.
+    var price = e.OrderBook.Top.Bid.Price;
+}
+```
+##### Aggregate Trades Cache
+Use an [`IAggregateTradesCache`](src/Binance/Cache/IAggregateTradesCache.cs) (with an [`ITradesWebSocketClient`](src/Binance/Api/WebSocket/ITradesWebSocketClient.cs)) to create a real-time, synchronized trade history for a symbol. Refer to the BinanceTradeHistory sample for an [additional example](samples/BinanceTradeHistory/Program.cs).
+```c#
+    using (var cache = serviceProvider.GetService<IAggregateTradeCache>())
+    {
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+        
+        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
+        {
+            // optionally, use an inline event handler.
+        }, cts.Token)); // starts synchronization.
+        
+        // ...
+        
+        var trades = cache.Trades; // access latest aggregate trades (thread-safe).
+
+        // ...
+        
+        cts.Cancel(); // end the task.
+        await task; // wait for task to complete.
+    }
+```
+```c#
+void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
+{
+    // Event has an immutable copy of aggregate trades.
+    var trades = e.Trades.
+}
+```
+##### Candlesticks Cache
+Use an [`ICandlesticksCache`](src/Binance/Cache/ICandlesticksCache.cs) (with an [`IKlineWebSocketClient`](src/Binance/Api/WebSocket/IKlineWebSocketClient.cs)) to create a real-time, synchronized price chart for a symbol. Refer to the BinancePriceChart sample for an [additional example](samples/BinancePriceChart/Program.cs).
+
+```c#
+    using (var cache = serviceProvider.GetService<ICandlesticksCache>())
+    {
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+        
+        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, KlineInterval.Hour, (e) =>
+        {
+            // optionally, use an inline event handler.
+        }, cts.Token)); // starts synchronization.
+        
+        // ...
+        
+        var candlesticks = cache.Candlestics; // access latest candlesticks (thread-safe).
+
+        // ...
+        
+        cts.Cancel(); // end the task.
+        await task; // wait for task to complete.
+    }
+```
+```c#
+void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
+{
+    // Event has an immutable copy of candlesticks.
+    var candlesticks = e.Candlesticks.
+}
+```
+##### Account Info Cache
+Use an [`IAccountInfoCache`](src/Binance/Cache/IAccountInfoCache.cs) (with an [`IUserDataWebSocketClient`](src/Binance/Api/WebSocket/IUserDataWebSocketClient.cs)) to create a real-time, synchronized account profile for a user. Refer to the following for an [additional example](samples/BinanceConsoleApp/Examples/AccountBalancesExample.cs).
+
+```c#
+    using (var cache = serviceProvider.GetService<IAccountInfoCache>())
+    {
+        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+        
+        var task = Task.Run(() => cache.SubscribeAsync(user, (e) =>
+        {
+            // optionally, use an inline event handler.
+        }, cts.Token)); // starts synchronization.
+        
+        // ...
+        
+        var accountInfo = cache.AccountInfo; // access latest candlesticks (thread-safe).
+
+        // ...
+        
+        cts.Cancel(); // end the task.
+        await task; // wait for task to complete.
+    }
+```
+```c#
+void OnUpdateEvent(object sender, AccountInfoCacheEventArgs e)
+{
+    // Event has an immutable copy of account info.
+    var accountInfo = e.AccountInfo.
+}
 ```
