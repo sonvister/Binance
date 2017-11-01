@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
+using Binance.Application;
 using Binance.Market;
 
 namespace BinanceConsoleApp.Controllers
@@ -18,8 +19,8 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string symbol = Symbol.BTC_USDT;
-            int limit = 10;
+            var symbol = Symbol.BTC_USDT;
+            var limit = 10;
 
             if (args.Length > 1)
             {

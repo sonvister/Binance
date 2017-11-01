@@ -46,13 +46,13 @@ namespace Binance
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="symbol"></param>
-        /// <param name="id"></param>
-        /// <param name="price"></param>
-        /// <param name="quantity"></param>
-        /// <param name="timestamp"></param>
-        /// <param name="isBestPriceMatch"></param>
-        public Trade(
+        /// <param name="symbol">The symbol.</param>
+        /// <param name="id">The trade ID.</param>
+        /// <param name="price">The price.</param>
+        /// <param name="quantity">The quantity.</param>
+        /// <param name="timestamp">The timestamp.</param>
+        /// <param name="isBestPriceMatch">Flag indicating if the trade was the best price match.</param>
+        protected Trade(
             string symbol,
             long id,
             decimal price,

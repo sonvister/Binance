@@ -147,22 +147,27 @@ namespace Binance.Market
         /// <param name="asks"></param>
         internal void Modify(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
         {
+            // Update order book bids.
             foreach (var bid in bids)
             {
+                // If quantity is > 0, then set the quantity.
                 if (bid.Item2 > 0)
                     _bids[bid.Item1] = bid.Item2;
-                else
+                else // otherwise, remove the price level.
                     _bids.Remove(bid.Item1);
             }
 
+            // Update order book asks.
             foreach (var ask in asks)
             {
+                // If quantity is > 0, then set the quantity.
                 if (ask.Item2 > 0)
                     _asks[ask.Item1] = ask.Item2;
-                else
+                else // otherwise, remove the price level.
                     _asks.Remove(ask.Item1);
             }
 
+            // Set the order book last update ID.
             LastUpdateId = lastUpdateId;
         }
 

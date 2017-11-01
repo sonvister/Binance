@@ -1,10 +1,10 @@
 ﻿using System;
-using BinanceConsoleApp.Logging;
+using Binance.Application.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace
-namespace BinanceConsoleApp
+namespace Binance.Application
 {
     public static class LoggerFactoryExtensions
     {
@@ -41,6 +41,9 @@ namespace BinanceConsoleApp
 
         public static ILoggerFactory AddFile(this ILoggerFactory factory, string filePath, LogLevel level = LogLevel.Information)
         {
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory), $"{nameof(ILoggerFactory)} is null (add Microsoft.Extensions.Logging NuGet package).");
+
             if (filePath == null)
                 throw new ArgumentNullException(nameof(filePath));
 

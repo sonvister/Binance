@@ -22,7 +22,7 @@ namespace Binance.Api.WebSocket.Events
         /// Constructor.
         /// </summary>
         /// <param name="timestamp">The event time.</param>
-        public UserDataEventArgs(long timestamp)
+        protected UserDataEventArgs(long timestamp)
         {
             if (timestamp <= 0)
                 throw new ArgumentException($"{nameof(UserDataEventArgs)} timestamp must be greater than 0.", nameof(timestamp));

@@ -132,6 +132,8 @@ namespace Binance.Cache
         /// <returns></returns>
         private async Task SynchronizeTradesAsync(string symbol, int limit, CancellationToken token)
         {
+            Logger?.LogInformation($"{nameof(AggregateTradesCache)}: Synchronizing aggregate trades...");
+
             var trades = await Api.GetAggregateTradesAsync(symbol, limit, token)
                 .ConfigureAwait(false);
 

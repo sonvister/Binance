@@ -2,7 +2,7 @@
 
 namespace Binance.Account.Orders
 {
-    public class LimitOrder : ClientOrder
+    public sealed class LimitOrder : ClientOrder
     {
         #region Public Properties
 

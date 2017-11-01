@@ -117,6 +117,8 @@ namespace Binance.Api.WebSocket
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
+            Logger?.LogDebug($"{nameof(UserDataWebSocketClient)}: \"{json}\"");
+
             try
             {
                 var jObject = JObject.Parse(json);

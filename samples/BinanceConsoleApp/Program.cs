@@ -10,6 +10,7 @@ using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api;
 using Binance.Api.WebSocket;
+using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
 using BinanceConsoleApp.Controllers;
@@ -66,7 +67,8 @@ namespace BinanceConsoleApp
 
                 // Configure services.
                ServiceProvider = new ServiceCollection()
-                    .AddBinance().AddOptions()
+                    .AddBinance()
+                    .AddOptions()
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .Configure<BinanceJsonApiOptions>(Configuration.GetSection("Api"))
                     .Configure<UserDataWebSocketClientOptions>(Configuration.GetSection("UserClient"))

@@ -648,6 +648,8 @@ namespace Binance.Api.Json
                 request.Headers.Add(RequestHeaderKeyName, user.ApiKey);
             }
 
+            _logger?.LogDebug($"{nameof(BinanceJsonApi)}.{nameof(RequestAsync)}: [{method.Method}] \"{requestPath}\"");
+
             if (!bypassDelay)
             {
                 await RateLimiter.DelayAsync(token)
@@ -658,8 +660,12 @@ namespace Binance.Api.Json
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadAsStringAsync()
+                    var json = await response.Content.ReadAsStringAsync()
                         .ConfigureAwait(false);
+
+                    _logger?.LogDebug($"{nameof(BinanceJsonApi)}: \"{json}\"");
+
+                    return json;
                 }
 
                 if (response.StatusCode == HttpStatusCode.GatewayTimeout)

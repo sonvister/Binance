@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace BinanceConsoleApp.Logging
+namespace Binance.Application.Logging
 {
-    internal sealed class FileLoggerProvider : ILoggerProvider
+    public sealed class FileLoggerProvider : ILoggerProvider
     {
         private readonly ILogger _fileLogger;
 

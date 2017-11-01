@@ -78,6 +78,7 @@ namespace Binance.Cache
             // If order book has not been initialized.
             if (_orderBook == null)
             {
+                Logger?.LogInformation($"{nameof(OrderBookCache)}: Synchronizing order book...");
                 _orderBook = await Api.GetOrderBookAsync(_symbol, token: Token)
                     .ConfigureAwait(false);
             }
@@ -92,6 +93,7 @@ namespace Binance.Cache
                     .ConfigureAwait(false); // wait a bit.
 
                 // Re-synchronize.
+                Logger?.LogInformation($"{nameof(OrderBookCache)}: Synchronizing order book...");
                 _orderBook = await Api.GetOrderBookAsync(_symbol, token: Token)
                     .ConfigureAwait(false);
 
@@ -119,9 +121,10 @@ namespace Binance.Cache
         /// <param name="limit"></param>
         protected virtual OrderBookCacheEventArgs Modify(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks, int limit)
         {
-            if (lastUpdateId < _orderBook.LastUpdateId)
+            if (lastUpdateId <= _orderBook.LastUpdateId)
                 return null;
 
+            Logger?.LogDebug($"{nameof(OrderBookCache)}: Updating order book [last update ID: {lastUpdateId}].");
             _orderBook.Modify(lastUpdateId, bids, asks);
 
             OrderBook = limit > 0 ? _orderBook.Clone(limit) : _orderBook.Clone();

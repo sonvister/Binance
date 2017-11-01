@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{8871736C-4CDB-47C5-B73A-BED3CA46164A}"
 EndProject
@@ -20,9 +20,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinanceMarketDepth", "samples\BinanceMarketDepth\BinanceMarketDepth.csproj", "{DBD08B7C-969D-4B55-84A4-9E869878DC66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinanceTradeHistory", "samples\BinanceTradeHistory\BinanceTradeHistory.csproj", "{2AF6EC27-BFBF-4949-8F38-46FEFEE2B512}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinanceTradeHistory", "samples\BinanceTradeHistory\BinanceTradeHistory.csproj", "{2AF6EC27-BFBF-4949-8F38-46FEFEE2B512}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinancePriceChart", "samples\BinancePriceChart\BinancePriceChart.csproj", "{535586E1-7303-4C9C-9139-6B36EF1D22AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinancePriceChart", "samples\BinancePriceChart\BinancePriceChart.csproj", "{535586E1-7303-4C9C-9139-6B36EF1D22AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Binance.Application", "samples\Binance.Application\Binance.Application.csproj", "{6B373EAC-2ADD-49BB-B2FC-01A873DF752B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +56,10 @@ Global
 		{535586E1-7303-4C9C-9139-6B36EF1D22AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{535586E1-7303-4C9C-9139-6B36EF1D22AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{535586E1-7303-4C9C-9139-6B36EF1D22AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B373EAC-2ADD-49BB-B2FC-01A873DF752B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B373EAC-2ADD-49BB-B2FC-01A873DF752B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B373EAC-2ADD-49BB-B2FC-01A873DF752B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B373EAC-2ADD-49BB-B2FC-01A873DF752B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +70,7 @@ Global
 		{DBD08B7C-969D-4B55-84A4-9E869878DC66} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
 		{2AF6EC27-BFBF-4949-8F38-46FEFEE2B512} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
 		{535586E1-7303-4C9C-9139-6B36EF1D22AE} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
+		{6B373EAC-2ADD-49BB-B2FC-01A873DF752B} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1D98031F-42D5-47D4-8F4E-D2B81629EEA4}

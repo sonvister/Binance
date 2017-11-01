@@ -81,6 +81,9 @@ namespace Binance.Cache
                     .ConfigureAwait(false);
             }
 
+            Logger?.LogDebug($"{nameof(CandlesticksCache)}: Updating candlestick [open time: {@event.Candlestick.OpenTime}].");
+
+            // Get the candlestick with matching open time.
             var candlestick = _candlesticks.FirstOrDefault(c => c.OpenTime == @event.Candlestick.OpenTime);
 
             lock (_sync)
@@ -106,6 +109,8 @@ namespace Binance.Cache
         /// <returns></returns>
         private async Task SynchronizeCandlesticksAsync(string symbol, KlineInterval interval, int limit, CancellationToken token)
         {
+            Logger?.LogInformation($"{nameof(CandlesticksCache)}: Synchronizing candlesticks...");
+
             var candlesticks = await Api.GetCandlesticksAsync(symbol, interval, limit, token: token)
                 .ConfigureAwait(false);
 

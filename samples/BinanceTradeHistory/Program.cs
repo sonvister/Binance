@@ -6,10 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Api;
+using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable AccessToDisposedClosure
 
@@ -33,7 +35,13 @@ namespace BinanceTradeHistory
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance().BuildServiceProvider();
+                    .AddBinance()
+                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+                    .BuildServiceProvider();
+
+                // Configure logging.
+                services.GetService<ILoggerFactory>()
+                    .AddFile(configuration.GetSection("Logging").GetSection("File"));
 
                 // Get configuration settings.
                 var limit = 25;
@@ -42,7 +50,6 @@ namespace BinanceTradeHistory
                 catch { /* ignored */ }
 
                 using (var api = services.GetService<IBinanceApi>())
-                using (var cache = services.GetService<IAggregateTradesCache>())
                 using (var cts = new CancellationTokenSource())
                 {
                     // Query and display the latest aggregate trades for the symbol.
@@ -50,8 +57,25 @@ namespace BinanceTradeHistory
 
                     // Monitor latest aggregate trades and display updates in real-time.
                     // ReSharper disable once MethodSupportsCancellation
-                    var task = Task.Run(() =>
-                        cache.SubscribeAsync(symbol, e => Display(e.Trades), limit, cts.Token));
+                    var task = Task.Run(async () =>
+                    {
+                        while (!cts.IsCancellationRequested)
+                        {
+                            using (var cache = services.GetService<IAggregateTradesCache>())
+                            {
+                                try
+                                {
+                                    await cache.SubscribeAsync(symbol, e => Display(e.Trades), limit, cts.Token);
+                                }
+                                catch (OperationCanceledException) { }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine(e.Message);
+                                    await Task.Delay(5000, cts.Token); // ...wait a bit.
+                                }
+                            }
+                        }
+                    });
 
                     Console.ReadKey(true); // ...press any key to exit.
 
@@ -59,7 +83,13 @@ namespace BinanceTradeHistory
                     await task;
                 }
             }
-            catch (Exception e) { Console.WriteLine(e.Message); }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine();
+                Console.WriteLine("  ...press any key to close window.");
+                Console.ReadKey(true);
+            }
         }
 
         private static void Display(IEnumerable<AggregateTrade> trades)

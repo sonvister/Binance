@@ -2,9 +2,9 @@
 using System.IO;
 using Microsoft.Extensions.Logging;
 
-namespace BinanceConsoleApp.Logging
+namespace Binance.Application.Logging
 {
-    internal sealed class FileLogger : ILogger
+    public sealed class FileLogger : ILogger
     {
         #region Private Constants
 
@@ -73,7 +73,7 @@ namespace BinanceConsoleApp.Logging
 
                         streamWriter.WriteLine($"[{ConvertLogLevelToString(logLevel)}] {now}");
 
-                        foreach (var line in message.Split(Environment.NewLine))
+                        foreach (var line in message.Split(new[] { Environment.NewLine }, StringSplitOptions.None))
                         {
                             streamWriter.WriteLine($"{Spaces}{line}");
                         }
