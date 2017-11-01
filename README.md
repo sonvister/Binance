@@ -59,13 +59,13 @@ This library provides a complete implementation of the [Binance REST API](https:
 *NOTE*: The [`IBinanceApi`](src/Binance/Api/IBinanceApi.cs) interface is `IDisposable` and does not require an API Key or Secret for instantiation. [Authentication](#authentication) information is only required where necessary.
 ```c#
     var api = serviceProvider.GetService<IBinanceApi>();
-    // ...or
+    // or...
     var api = new BinanceApi();
 ```
 Alternatively, the low-level [`IBinanceJsonApi`](src/Binance/Api/Json/IBinanceJsonApi.cs) interface can be used with all the same capabilities, but returns JSON instead.
 ```c#
     var jsonApi = serviceProvider.GetService<IBinanceJsonApi>();
-    // ...or
+    // or...
     var jsonApi = api.JsonApi; // ...property of IBinanceApi.
 ```
 All API methods are asynchronous with an optional `CancellationToken` parameter.
@@ -183,7 +183,7 @@ Use an [`IOrderBookCache`](src/Binance/Cache/IOrderBookCache.cs) (with an [`IDep
         await task; // wait for task to complete.
     }
 ```
-```
+```c#
 void OnUpdateEvent(object sender, OrderBookCacheEventArgs e)
 {
     // Event has an immutable copy of the order book.
@@ -212,7 +212,7 @@ Use an [`IAggregateTradesCache`](src/Binance/Cache/IAggregateTradesCache.cs) (wi
         await task; // wait for task to complete.
     }
 ```
-```
+```c#
 void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
 {
     // Event has an immutable copy of aggregate trades.
@@ -242,7 +242,7 @@ Use an [`ICandlesticksCache`](src/Binance/Cache/ICandlesticksCache.cs) (with an 
         await task; // wait for task to complete.
     }
 ```
-```
+```c#
 void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
 {
     // Event has an immutable copy of candlesticks.
@@ -272,7 +272,7 @@ Use an [`IAccountInfoCache`](src/Binance/Cache/IAccountInfoCache.cs) (with an [`
         await task; // wait for task to complete.
     }
 ```
-```
+```c#
 void OnUpdateEvent(object sender, AccountInfoCacheEventArgs e)
 {
     // Event has an immutable copy of account info.
@@ -488,6 +488,8 @@ Get [withdrawal](src/Binance/Account/Withdrawal.cs) history.
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetWithdrawals.cs).
 
 ### WebSocket Clients
+This library provides a complete implementation of the [Binance WebSocket API](https://www.binance.com/restapipub.html) in the following interfaces:
+
 #### Depth Endpoint
 Get real-time depth update events using [`IDepthWebSocketClient`](src/Binance/Api/WebSocket/IDepthWebSocketClient.cs).
 ```c#
@@ -506,7 +508,7 @@ Get real-time depth update events using [`IDepthWebSocketClient`](src/Binance/Ap
         await task;
     }
 ```
-```
+```c#
 void OnDepthUpdateEvent(object sender, DepthUpdateEventArgs e)
 {
     // ...
@@ -531,7 +533,7 @@ Get real-time kline/candlestick events using [`IKlineWebSocketClient`](src/Binan
         await task;
     }
 ```
-```
+```c#
 void OnKlineEvent(object sender, KlineEventArgs e)
 {
     // ...
@@ -556,7 +558,7 @@ Get real-time aggregate trade events using [`ITradesWebSocketClient`](src/Binanc
         await task;
     }
 ```
-```
+```c#
 void OnAggregateTradeEvent(object sender, AggregateTradeEventArgs e)
 {
     // ...
@@ -584,7 +586,7 @@ Get real-time account update events using [`IUserDataWebSocketClient`](src/Binan
         await task;
     }
 ```
-```
+```c#
 void OnAccountUpdateEvent(object sender, AccountUpdateEventArgs e)
 {
     // ...
