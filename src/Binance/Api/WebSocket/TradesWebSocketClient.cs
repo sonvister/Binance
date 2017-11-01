@@ -11,7 +11,7 @@ namespace Binance.Api.WebSocket
     /// <summary>
     /// A <see cref="ITradesWebSocketClient"/> implementation.
     /// </summary>
-    public class TradesWebSocketClient : BinanceWebSocketClient, ITradesWebSocketClient
+    public class TradesWebSocketClient : BinanceWebSocketClient<AggregateTradeEventArgs>, ITradesWebSocketClient
     {
         #region Public Events
 
@@ -51,23 +51,7 @@ namespace Binance.Api.WebSocket
             if (IsSubscribed)
                 throw new InvalidOperationException($"{nameof(TradesWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");
 
-            return SubscribeAsync($"{Symbol.ToLower()}@aggTrade", json =>
-            {
-                try
-                {
-                    var eventArgs = DeserializeJson(json);
-                    if (eventArgs != null)
-                    {
-                        callback?.Invoke(eventArgs);
-                        RaiseUpdateEvent(eventArgs);
-                    }
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception e)
-                {
-                    LogException(e, $"{nameof(TradesWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
-                }
-            }, token);
+            return SubscribeToAsync($"{Symbol.ToLower()}@aggTrade", callback, token);
         }
 
         #endregion Public Methods
@@ -75,11 +59,11 @@ namespace Binance.Api.WebSocket
         #region Protected Methods
 
         /// <summary>
-        /// Deserialize event JSON.
+        /// Deserialize JSON and raise <see cref="AggregateTradeEventArgs"/> event.
         /// </summary>
         /// <param name="json"></param>
-        /// <returns></returns>
-        protected virtual AggregateTradeEventArgs DeserializeJson(string json)
+        /// <param name="callback"></param>
+        protected override void DeserializeJsonAndRaiseEvent(string json, Action<AggregateTradeEventArgs> callback = null)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -106,19 +90,22 @@ namespace Binance.Api.WebSocket
                         jObject["m"].Value<bool>(),    // is buyer maker
                         jObject["M"].Value<bool>());   // is best price
 
-                    return new AggregateTradeEventArgs(eventTime, trade);
-                }
+                    var eventArgs = new AggregateTradeEventArgs(eventTime, trade);
 
-                Logger?.LogWarning($"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
+                    callback?.Invoke(eventArgs);
+                    RaiseUpdateEvent(eventArgs);
+                }
+                else
+                {
+                    Logger?.LogWarning($"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                }
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJson)}");
+                LogException(e, $"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
                 throw;
             }
-
-            return null;
         }
 
         /// <summary>

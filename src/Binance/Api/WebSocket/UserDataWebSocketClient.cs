@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
@@ -14,7 +14,7 @@ namespace Binance.Api.WebSocket
     /// <summary>
     /// A <see cref="IUserDataWebSocketClient"/> implementation.
     /// </summary>
-    public class UserDataWebSocketClient : BinanceWebSocketClient, IUserDataWebSocketClient
+    public class UserDataWebSocketClient : BinanceWebSocketClient<UserDataEventArgs>, IUserDataWebSocketClient
     {
         #region Public Constants
 
@@ -92,15 +92,7 @@ namespace Binance.Api.WebSocket
 
             _keepAliveTimer = new Timer(OnKeepAliveTimer, token, period, period);
 
-            await SubscribeAsync(_listenKey, json =>
-            {
-                try { DeserializeJsonAndRaiseEvent(json, callback); }
-                catch (OperationCanceledException) { }
-                catch (Exception e)
-                {
-                    LogException(e, $"{nameof(UserDataWebSocketClient)}");
-                }
-            }, token);
+            await SubscribeToAsync(_listenKey, callback, token);
         }
 
         #endregion Public Methods
@@ -108,12 +100,12 @@ namespace Binance.Api.WebSocket
         #region Protected Methods
 
         /// <summary>
-        /// Deserialize event JSON.
+        /// Deserialize JSON and raise <see cref="UserDataEventArgs"/> event.
         /// </summary>
         /// <param name="json"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        protected virtual void DeserializeJsonAndRaiseEvent(string json, Action<UserDataEventArgs> callback = null)
+        protected override void DeserializeJsonAndRaiseEvent(string json, Action<UserDataEventArgs> callback = null)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -139,14 +131,12 @@ namespace Binance.Api.WebSocket
                         jObject["W"].Value<bool>(),  // can withdraw
                         jObject["D"].Value<bool>()); // can deposit
 
-                    var balances = new List<AccountBalance>();
-                    foreach (var entry in jObject["B"])
-                    {
-                        balances.Add(new AccountBalance(
-                            entry["a"].Value<string>(),    // asset
-                            entry["f"].Value<decimal>(),   // free amount
-                            entry["l"].Value<decimal>())); // locked amount
-                    }
+                    var balances = jObject["B"]
+                        .Select(entry => new AccountBalance(
+                            entry["a"].Value<string>(),   // asset
+                            entry["f"].Value<decimal>(),  // free amount
+                            entry["l"].Value<decimal>())) // locked amount
+                        .ToList();
 
                     var eventArgs = new AccountUpdateEventArgs(eventTime, new AccountInfo(User, commissions, status, balances));
 

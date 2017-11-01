@@ -11,7 +11,7 @@ namespace Binance.Api.WebSocket
     /// <summary>
     /// A <see cref="IDepthWebSocketClient"/> implementation.
     /// </summary>
-    public class DepthWebSocketClient : BinanceWebSocketClient, IDepthWebSocketClient
+    public class DepthWebSocketClient : BinanceWebSocketClient<DepthUpdateEventArgs>, IDepthWebSocketClient
     {
         #region Public Events
 
@@ -51,23 +51,7 @@ namespace Binance.Api.WebSocket
             if (IsSubscribed)
                 throw new InvalidOperationException($"{nameof(DepthWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");
 
-            return SubscribeAsync($"{Symbol.ToLower()}@depth", json =>
-            {
-                try
-                {
-                    var eventArgs = DeserializeJson(json);
-                    if (eventArgs == null)
-                        return;
-
-                    callback?.Invoke(eventArgs);
-                    RaiseUpdateEvent(eventArgs);
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception e)
-                {
-                    LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
-                }
-            }, token);
+            return SubscribeToAsync($"{Symbol.ToLower()}@depth", callback, token);
         }
 
         #endregion Public Methods
@@ -75,11 +59,11 @@ namespace Binance.Api.WebSocket
         #region Protected Methods
 
         /// <summary>
-        /// Deserialize event JSON.
+        /// Deserialize JSON and raise <see cref="DepthUpdateEventArgs"/> event.
         /// </summary>
         /// <param name="json"></param>
-        /// <returns></returns>
-        protected virtual DepthUpdateEventArgs DeserializeJson(string json)
+        /// <param name="callback"></param>
+        protected override void DeserializeJsonAndRaiseEvent(string json, Action<DepthUpdateEventArgs> callback = null)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -102,19 +86,22 @@ namespace Binance.Api.WebSocket
                     var bids = jObject["b"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
                     var asks = jObject["a"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
 
-                    return new DepthUpdateEventArgs(eventTime, symbol, firstUpdateId, lastUpdateId, bids, asks);
-                }
+                    var eventArgs = new DepthUpdateEventArgs(eventTime, symbol, firstUpdateId, lastUpdateId, bids, asks);
 
-                Logger?.LogWarning($"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
+                    callback?.Invoke(eventArgs);
+                    RaiseUpdateEvent(eventArgs);
+                }
+                else
+                {
+                    Logger?.LogWarning($"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                }
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJson)}");
+                LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
                 throw;
             }
-
-            return null;
         }
 
         /// <summary>

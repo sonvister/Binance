@@ -11,7 +11,7 @@ namespace Binance.Api.WebSocket
     /// <summary>
     /// A <see cref="IKlineWebSocketClient"/> implementation.
     /// </summary>
-    public class KlineWebSocketClient : BinanceWebSocketClient, IKlineWebSocketClient
+    public class KlineWebSocketClient : BinanceWebSocketClient<KlineEventArgs>, IKlineWebSocketClient
     {
         #region Public Events
 
@@ -51,23 +51,7 @@ namespace Binance.Api.WebSocket
             if (IsSubscribed)
                 throw new InvalidOperationException($"{nameof(KlineWebSocketClient)} is already subscribed to symbol: \"{symbol}\"");
 
-            return SubscribeAsync($"{Symbol.ToLower()}@kline_{interval.AsString()}", json =>
-            {
-                try
-                {
-                    var eventArgs = DeserializeJson(json);
-                    if (eventArgs != null)
-                    {
-                        callback?.Invoke(eventArgs);
-                        RaiseUpdateEvent(eventArgs);
-                    }
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception e)
-                {
-                    LogException(e, $"{nameof(KlineWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
-                }
-            }, token);
+            return SubscribeToAsync($"{Symbol.ToLower()}@kline_{interval.AsString()}", callback, token);
         }
 
         #endregion Public Methods
@@ -75,11 +59,11 @@ namespace Binance.Api.WebSocket
         #region Protected Methods
 
         /// <summary>
-        /// Deserialize event JSON.
+        /// Deserialize JSON and raise <see cref="KlineEventArgs"/> event.
         /// </summary>
         /// <param name="json"></param>
-        /// <returns></returns>
-        protected virtual KlineEventArgs DeserializeJson(string json)
+        /// <param name="callback"></param>
+        protected override void DeserializeJsonAndRaiseEvent(string json, Action<KlineEventArgs> callback = null)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -118,19 +102,22 @@ namespace Binance.Api.WebSocket
                         jObject["k"]["Q"].Value<decimal>()  // taker buy quote asset volume (quote volume of active buy)
                     );
 
-                    return new KlineEventArgs(eventTime, candlestick, firstTradeId, lastTradeId, isFinal);
-                }
+                    var eventArgs = new KlineEventArgs(eventTime, candlestick, firstTradeId, lastTradeId, isFinal);
 
-                Logger?.LogWarning($"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJson)}: Unexpected event type ({eventType}).");
+                    callback?.Invoke(eventArgs);
+                    RaiseUpdateEvent(eventArgs);
+                }
+                else
+                {
+                    Logger?.LogWarning($"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                }
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJson)}");
+                LogException(e, $"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
                 throw;
             }
-
-            return null;
         }
 
         /// <summary>
