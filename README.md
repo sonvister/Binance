@@ -35,8 +35,9 @@ PM> Install-Package Binance
 - [Get the candlesticks for a symbol](#candlesticks).
 - [Maintain a real-time price chart cache for a symbol](#candlesticks-cache).
 - [Get the 24-hour statistics for a symbol](#24-hour-statistics).
-- [Get current prices for all symobls for price ticker](#prices).
-- [Get best price and quantity on the order book for all symobls](#order-book-tops).
+- [Get current prices for all symbols for a price ticker](#prices).
+- [Get best price and quantity on the order book for all symbols](#order-book-tops).
+- [Get a list of all *current* symbols](#symbols).
     ##### Account (*private - API Key and Secret required*)
 - [Place a LIMIT order](#limit-order).
 - [Place a MARKET order](#market-order).
@@ -78,6 +79,9 @@ For consistency with the Binance REST API:
 Built into the [`IBinanceJsonApi`](src/Binance/Api/Json/IBinanceJsonApi.cs) implementation is an [`IRateLimiter`](src/Binance/Api/Json/IRateLimiter.cs) that ensures the API call rate doesn't exceed a configurable threshold. By default this threshold is set to 3 calls per second. This helps provide *fair* use of the Binance API and to prevent *potentially* being disconnected or blocked.
 
 *NOTE*: Currently, the`PlaceOrderAsync` and `CancelOrderAsync` calls are not affected by the rate limiter.
+
+### Configuration Options
+The following classes are used to provide configurable options: [`BinanceJsonApiOptions`](src/Binance/Options/BinanceJsonApiOptions.cs) and [`UserDataWebSocketClientOptions`](src/Binance/Options/UserDataWebSocketClientOptions.cs). The `BinanceConsoleApp` demonstrates how these options can be configured using a JSON file.
 
 ### Connectivity
 ##### *Minimal* Examples
@@ -143,6 +147,13 @@ Get best, [top price and quantity](src/Binance/Market/OrderBookTop.cs) on the or
     var tops = await api.GetOrderBookTopsAsync();
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrderBookTops.cs).
+
+#### Symbols
+Get a list of all *current* symbols.
+```c#
+    var symbols = await api.SymbolsAsync();
+```
+Sample console application [example](samples/BinanceConsoleApp/Controllers/Symbols.cs).
 
 #### Real-time Caching
 The caching classes are high-level implementations that utilize the corresponding WebSocket client to provide a local copy of the order book, trade history, price chart, etc. for a symbol that is also updated in real-time. Applications are notified of updates via an event handler, callback, or both.
