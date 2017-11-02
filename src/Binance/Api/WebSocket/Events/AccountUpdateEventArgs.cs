@@ -12,7 +12,7 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// Get the account.
         /// </summary>
-        public AccountInfo Account { get; }
+        public AccountInfo AccountInfo { get; }
 
         #endregion Public Properties
 
@@ -22,13 +22,13 @@ namespace Binance.Api.WebSocket.Events
         /// Constructor.
         /// </summary>
         /// <param name="timestamp">The event time.</param>
-        /// <param name="account">The account.</param>
-        public AccountUpdateEventArgs(long timestamp, AccountInfo account)
+        /// <param name="accountInfo">The account information.</param>
+        public AccountUpdateEventArgs(long timestamp, AccountInfo accountInfo)
             : base(timestamp)
         {
-            Throw.IfNull(account, nameof(account));
+            Throw.IfNull(accountInfo, nameof(accountInfo));
 
-            Account = account;
+            AccountInfo = accountInfo;
         }
 
         #endregion Constructors

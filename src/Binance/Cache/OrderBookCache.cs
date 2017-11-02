@@ -15,13 +15,14 @@ namespace Binance.Cache
     {
         #region Public Properties
 
-        public OrderBook OrderBook { get; private set; }
+        public OrderBook OrderBook => _orderBookClone;
 
         #endregion Public Properties
 
         #region Private Fields
 
         private OrderBook _orderBook;
+        private volatile OrderBook _orderBookClone;
 
         private string _symbol;
         private int _limit;
@@ -125,11 +126,12 @@ namespace Binance.Cache
                 return null;
 
             Logger?.LogDebug($"{nameof(OrderBookCache)}: Updating order book [last update ID: {lastUpdateId}].");
+
             _orderBook.Modify(lastUpdateId, bids, asks);
 
-            OrderBook = limit > 0 ? _orderBook.Clone(limit) : _orderBook.Clone();
+            _orderBookClone = limit > 0 ? _orderBook.Clone(limit) : _orderBook.Clone();
 
-            return new OrderBookCacheEventArgs(OrderBook);
+            return new OrderBookCacheEventArgs(_orderBookClone);
         }
 
         #endregion Protected Methods

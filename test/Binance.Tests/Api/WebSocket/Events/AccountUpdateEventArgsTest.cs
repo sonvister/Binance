@@ -22,7 +22,7 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             Assert.Throws<ArgumentException>("timestamp", () => new AccountUpdateEventArgs(-1, account));
             Assert.Throws<ArgumentException>("timestamp", () => new AccountUpdateEventArgs(0, account));
-            Assert.Throws<ArgumentNullException>("account", () => new AccountUpdateEventArgs(timestamp, null));
+            Assert.Throws<ArgumentNullException>("accountInfo", () => new AccountUpdateEventArgs(timestamp, null));
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             var args = new AccountUpdateEventArgs(timestamp, account);
 
             Assert.Equal(timestamp, args.Timestamp);
-            Assert.Equal(account, args.Account);
+            Assert.Equal(account, args.AccountInfo);
         }
     }
 }

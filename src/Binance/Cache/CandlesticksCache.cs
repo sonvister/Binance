@@ -68,6 +68,10 @@ namespace Binance.Cache
             return Client.SubscribeAsync(symbol, interval, token);
         }
 
+        #endregion Public Methods
+
+        #region Protected Methods
+
         protected override void OnLinkTo()
         {
             Client.Kline += OnClientEvent;
@@ -95,7 +99,7 @@ namespace Binance.Cache
             return new CandlesticksCacheEventArgs(_candlesticks.ToArray());
         }
 
-        #endregion Public Methods
+        #endregion Protected Methods
 
         #region Private Methods
 

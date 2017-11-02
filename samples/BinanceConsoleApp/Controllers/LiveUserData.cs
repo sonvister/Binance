@@ -64,7 +64,7 @@ namespace BinanceConsoleApp.Controllers
 
         private static void OnAccountUpdateEvent(object sender, AccountUpdateEventArgs e)
         {
-            Program.Display(e.Account);
+            Program.Display(e.AccountInfo);
         }
 
         private static void OnOrderUpdateEvent(object sender, OrderUpdateEventArgs e)

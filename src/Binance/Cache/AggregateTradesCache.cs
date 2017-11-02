@@ -110,11 +110,14 @@ namespace Binance.Cache
             if (_trades.Any(t => t.Id == @event.Trade.Id))
                 return null;
 
+            AggregateTrade removed;
             lock (_sync)
             {
-                _trades.Dequeue();
+                removed = _trades.Dequeue();
                 _trades.Enqueue(@event.Trade);
             }
+
+            Logger?.LogDebug($"{nameof(AggregateTradesCache)}: Added aggregate trade [ID: {@event.Trade.Id}] and removed [ID: {removed.Id}].");
 
             return new AggregateTradesCacheEventArgs(_trades.ToArray());
         }
