@@ -594,7 +594,7 @@ Use an [`ICandlesticksCache`](src/Binance/Cache/ICandlesticksCache.cs) (with an 
     }
 ```
 ```c#
-void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
+void OnUpdateEvent(object sender, CandlesticksCacheEventArgs e)
 {
     // Event has an immutable copy of candlesticks.
     var candlesticks = e.Candlesticks.
