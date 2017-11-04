@@ -1,4 +1,5 @@
-﻿using Binance.Api.Json;
+﻿using Binance.Api;
+using Binance.Api.Json;
 
 // ReSharper disable once CheckNamespace
 namespace Binance

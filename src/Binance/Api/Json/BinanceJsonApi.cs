@@ -65,8 +65,8 @@ namespace Binance.Api.Json
             _timestampOffsetSync = new SemaphoreSlim(1, 1);
 
             RateLimiter.Configure(
-                options?.Value.RateLimiterCountDefault ?? Json.RateLimiter.CountDefault,
-                TimeSpan.FromSeconds(options?.Value.RateLimiterDurationSecondsDefault ?? Json.RateLimiter.DurationSecondsDefault));
+                options?.Value.RateLimiterCountDefault ?? Api.RateLimiter.CountDefault,
+                TimeSpan.FromSeconds(options?.Value.RateLimiterDurationSecondsDefault ?? Api.RateLimiter.DurationSecondsDefault));
 
             _httpClient = new HttpClient
             {
@@ -652,7 +652,7 @@ namespace Binance.Api.Json
 
             if (!bypassDelay)
             {
-                await RateLimiter.DelayAsync(token)
+                await (user?.RateLimiter ?? RateLimiter).DelayAsync(token)
                     .ConfigureAwait(false);
             }
 

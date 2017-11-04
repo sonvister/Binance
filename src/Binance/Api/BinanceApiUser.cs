@@ -13,6 +13,8 @@ namespace Binance.Api
 
         public string ApiKey { get; }
 
+        public IRateLimiter RateLimiter { get; set; }
+
         #endregion Public Properties
 
         #region Private Fields
@@ -30,7 +32,8 @@ namespace Binance.Api
         /// </summary>
         /// <param name="key">The user's API key.</param>
         /// <param name="secret">The user's API secret (optional).</param>
-        public BinanceApiUser(string key, string secret = null)
+        /// <param name="rateLimiter">The rate limiter.</param>
+        public BinanceApiUser(string key, string secret = null, IRateLimiter rateLimiter = null)
         {
             Throw.IfNullOrWhiteSpace(key, nameof(key));
 
@@ -40,6 +43,8 @@ namespace Binance.Api
             {
                 _hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
             }
+
+            RateLimiter = rateLimiter;
         }
 
         #endregion Constructors

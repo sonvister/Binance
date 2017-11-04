@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Binance.Api.Json
+namespace Binance.Api
 {
     public interface IRateLimiter
     {

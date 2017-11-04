@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinanceTradeHistory", "samp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinancePriceChart", "samples\BinancePriceChart\BinancePriceChart.csproj", "{535586E1-7303-4C9C-9139-6B36EF1D22AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Binance.Application", "samples\Binance.Application\Binance.Application.csproj", "{6B373EAC-2ADD-49BB-B2FC-01A873DF752B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Binance.Application", "samples\Binance.Application\Binance.Application.csproj", "{6B373EAC-2ADD-49BB-B2FC-01A873DF752B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
