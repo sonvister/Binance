@@ -11,7 +11,7 @@ namespace Binance
         /// <summary>
         /// Timestamp when these symbols were updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1509642615600;
+        public static readonly long LastUpdateAt = 1509821401200;
 
         // USDT
         public static readonly string BTC_USDT = "BTCUSDT";
@@ -69,6 +69,9 @@ namespace Binance
         public static readonly string POWR_BTC = "POWRBTC";
         public static readonly string ARK_BTC = "ARKBTC";
         public static readonly string XRP_BTC = "XRPBTC";
+        public static readonly string MOD_BTC = "MODBTC";
+        public static readonly string ENJ_BTC = "ENJBTC";
+        public static readonly string STORJ_BTC = "STORJBTC";
 
         // ETH
         public static readonly string QTUM_ETH  = "QTUMETH";
@@ -117,6 +120,9 @@ namespace Binance
         public static readonly string ARK_ETH = "ARKETH";
         public static readonly string YOYO_ETH = "YOYOETH";
         public static readonly string XRP_ETH = "XRPETH";
+        public static readonly string MOD_ETH = "MODETH";
+        public static readonly string ENJ_ETH = "ENJETH";
+        public static readonly string STORJ_ETH = "STORJETH";
 
         #endregion Public Constants
     }
