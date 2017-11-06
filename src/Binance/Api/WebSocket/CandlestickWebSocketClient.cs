@@ -9,13 +9,13 @@ using Newtonsoft.Json.Linq;
 namespace Binance.Api.WebSocket
 {
     /// <summary>
-    /// A <see cref="IKlineWebSocketClient"/> implementation.
+    /// A <see cref="ICandlestickWebSocketClient"/> implementation.
     /// </summary>
-    public class KlineWebSocketClient : BinanceWebSocketClient<KlineEventArgs>, IKlineWebSocketClient
+    public class CandlestickWebSocketClient : BinanceWebSocketClient<CandlestickEventArgs>, ICandlestickWebSocketClient
     {
         #region Public Events
 
-        public event EventHandler<KlineEventArgs> Kline;
+        public event EventHandler<CandlestickEventArgs> Candlestick;
 
         #endregion Public Events
 
@@ -31,7 +31,7 @@ namespace Binance.Api.WebSocket
         /// Constructor.
         /// </summary>
         /// <param name="logger"></param>
-        public KlineWebSocketClient(ILogger<KlineWebSocketClient> logger = null)
+        public CandlestickWebSocketClient(ILogger<CandlestickWebSocketClient> logger = null)
             : base(logger)
         { }
 
@@ -39,17 +39,17 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(string symbol, KlineInterval interval, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, CandlestickInterval interval, CancellationToken token = default)
             => SubscribeAsync(symbol, interval, null, token);
 
-        public virtual Task SubscribeAsync(string symbol, KlineInterval interval, Action<KlineEventArgs> callback, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             Symbol = symbol.FormatSymbol();
 
             if (IsSubscribed)
-                throw new InvalidOperationException($"{nameof(KlineWebSocketClient)} is already subscribed to symbol: \"{symbol}\"");
+                throw new InvalidOperationException($"{nameof(CandlestickWebSocketClient)} is already subscribed to symbol: \"{symbol}\"");
 
             return SubscribeToAsync($"{Symbol.ToLower()}@kline_{interval.AsString()}", callback, token);
         }
@@ -59,15 +59,15 @@ namespace Binance.Api.WebSocket
         #region Protected Methods
 
         /// <summary>
-        /// Deserialize JSON and raise <see cref="KlineEventArgs"/> event.
+        /// Deserialize JSON and raise <see cref="CandlestickEventArgs"/> event.
         /// </summary>
         /// <param name="json"></param>
         /// <param name="callback"></param>
-        protected override void DeserializeJsonAndRaiseEvent(string json, Action<KlineEventArgs> callback = null)
+        protected override void DeserializeJsonAndRaiseEvent(string json, Action<CandlestickEventArgs> callback = null)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
-            Logger?.LogDebug($"{nameof(KlineWebSocketClient)}: \"{json}\"");
+            Logger?.LogDebug($"{nameof(CandlestickWebSocketClient)}: \"{json}\"");
 
             try
             {
@@ -88,7 +88,7 @@ namespace Binance.Api.WebSocket
                     var candlestick = new Candlestick(
                         jObject["k"]["s"].Value<string>(),  // symbol
                         jObject["k"]["i"].Value<string>()
-                            .ToKlineInterval(),             // interval
+                            .ToCandlestickInterval(),             // interval
                         jObject["k"]["t"].Value<long>(),    // open time
                         jObject["k"]["o"].Value<decimal>(), // open
                         jObject["k"]["h"].Value<decimal>(), // high
@@ -102,36 +102,36 @@ namespace Binance.Api.WebSocket
                         jObject["k"]["Q"].Value<decimal>()  // taker buy quote asset volume (quote volume of active buy)
                     );
 
-                    var eventArgs = new KlineEventArgs(eventTime, candlestick, firstTradeId, lastTradeId, isFinal);
+                    var eventArgs = new CandlestickEventArgs(eventTime, candlestick, firstTradeId, lastTradeId, isFinal);
 
                     callback?.Invoke(eventArgs);
                     RaiseUpdateEvent(eventArgs);
                 }
                 else
                 {
-                    Logger?.LogWarning($"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                    Logger?.LogWarning($"{nameof(CandlestickWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
                 }
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(KlineWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
+                LogException(e, $"{nameof(CandlestickWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
                 throw;
             }
         }
 
         /// <summary>
-        /// Raise kline event.
+        /// Raise update event.
         /// </summary>
         /// <param name="args"></param>
-        protected virtual void RaiseUpdateEvent(KlineEventArgs args)
+        protected virtual void RaiseUpdateEvent(CandlestickEventArgs args)
         {
             Throw.IfNull(args, nameof(args));
 
-            try { Kline?.Invoke(this, args); }
+            try { Candlestick?.Invoke(this, args); }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(KlineWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
+                LogException(e, $"{nameof(CandlestickWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 throw;
             }
         }

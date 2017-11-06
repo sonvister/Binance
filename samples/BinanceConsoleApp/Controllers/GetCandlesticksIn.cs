@@ -24,10 +24,10 @@ namespace BinanceConsoleApp.Controllers
                 symbol = args[1];
             }
 
-            var interval = KlineInterval.Hour;
+            var interval = CandlestickInterval.Hour;
             if (args.Length > 2)
             {
-                interval = args[2].ToKlineInterval();
+                interval = args[2].ToCandlestickInterval();
             }
 
             long startTime = 0;

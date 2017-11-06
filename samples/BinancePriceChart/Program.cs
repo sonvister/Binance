@@ -52,7 +52,7 @@ namespace BinancePriceChart
                 using (var api = services.GetService<IBinanceApi>())
                 using (var cts = new CancellationTokenSource())
                 {
-                    const KlineInterval interval = KlineInterval.Minute;
+                    const CandlestickInterval interval = CandlestickInterval.Minute;
 
                     // Query and display the latest aggregate trades for the symbol.
                     Display(await api.GetCandlesticksAsync(symbol, interval, limit, token: cts.Token));

@@ -61,8 +61,8 @@ namespace Binance.Api.Json
         Task<string> GetAggregateTradesAsync(string symbol, long fromId = BinanceApi.NullId, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default);
 
         /// <summary>
-        /// Get Kline/candlestick bars for a symbol. Klines are uniquely identified by their open time.
-        /// If startTime and endTime are not sent, the most recent klines are returned.
+        /// Get candlesticks for a symbol. Candlesticks/K-Lines are uniquely identified by their open time.
+        /// If startTime and endTime are not sent, the most recent candlesticks are returned.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="interval"></param>
@@ -71,7 +71,7 @@ namespace Binance.Api.Json
         /// <param name="endTime"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetCandlesticksAsync(string symbol, KlineInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default);
+        Task<string> GetCandlesticksAsync(string symbol, CandlestickInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default);
 
         /// <summary>
         /// Get 24 hour price change statistics for a symbol.

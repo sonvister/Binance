@@ -33,7 +33,7 @@ namespace BinanceConsoleApp
         public static IBinanceApiUser User;
 
         public static IOrderBookCache OrderBookCache;
-        public static ICandlesticksCache KlineCache;
+        public static ICandlesticksCache CandlestickCache;
         public static IAggregateTradesCache TradesCache;
         public static IUserDataWebSocketClient UserDataClient;
 
@@ -158,13 +158,13 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  trades <symbol> [limit]                              display latest trades, where limit: [1-500].");
                 Console.WriteLine("  tradesIn <symbol> <start> <end>                      display trades within a time range (inclusive).");
                 Console.WriteLine("  tradesFrom <symbol> <tradeId> [limit]                display trades beginning with trade ID.");
-                Console.WriteLine("  candles|klines <symbol> <interval> [limit]           display candlestick bars for a symbol.");
-                Console.WriteLine("  candlesIn|klinesIn <symbol> <interval> <start> <end> display candlestick bars for a symbol in time range.");
+                Console.WriteLine("  candles|klines <symbol> <interval> [limit]           display candlesticks for a symbol.");
+                Console.WriteLine("  candlesIn|klinesIn <symbol> <interval> <start> <end> display candlesticks for a symbol in time range.");
                 Console.WriteLine("  symbols                                              display all symbols.");
                 Console.WriteLine("  prices                                               display current price for all symbols.");
                 Console.WriteLine("  tops                                                 display order book top price and quantity for all symbols.");
                 Console.WriteLine("  live depth|book <symbol>                             enable order book live feed for a symbol.");
-                Console.WriteLine("  live klines|candles <symbol> <interval>              enable kline live feed for a symbol and interval.");
+                Console.WriteLine("  live candles|klines <symbol> <interval>              enable candlestick live feed for a symbol and interval.");
                 Console.WriteLine("  live trades <symbol>                                 enable trades live feed for a symbol.");
                 Console.WriteLine("  live account|user                                    enable user data live feed (api key required).");
                 Console.WriteLine("  live off                                             disable the websocket live feed (there can be only one).");
@@ -301,7 +301,7 @@ namespace BinanceConsoleApp
 
             OrderBookCache?.Dispose();
             TradesCache?.Dispose();
-            KlineCache?.Dispose();
+            CandlestickCache?.Dispose();
             UserDataClient?.Dispose();
 
             LiveTokenSource?.Dispose();
@@ -316,7 +316,7 @@ namespace BinanceConsoleApp
             }
             OrderBookCache = null;
 
-            if (KlineCache != null)
+            if (CandlestickCache != null)
             {
                 lock (ConsoleSync)
                 {
@@ -324,7 +324,7 @@ namespace BinanceConsoleApp
                     Console.WriteLine("  ...live kline feed disabled.");
                 }
             }
-            KlineCache = null;
+            CandlestickCache = null;
 
             if (TradesCache != null)
             {

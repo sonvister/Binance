@@ -18,7 +18,7 @@ namespace Binance.Market
         /// <summary>
         /// Get the interval.
         /// </summary>
-        public KlineInterval Interval { get; }
+        public CandlestickInterval Interval { get; }
 
         /// <summary>
         /// Get the open time.
@@ -97,7 +97,7 @@ namespace Binance.Market
         /// <param name="takerBuyQuoteAssetVolume">The taker buy quote asset volume.</param>
         public Candlestick(
             string symbol,
-            KlineInterval interval,
+            CandlestickInterval interval,
             long openTime,
             decimal open,
             decimal high,

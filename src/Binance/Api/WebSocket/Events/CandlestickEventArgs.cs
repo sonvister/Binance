@@ -4,16 +4,11 @@ using Binance.Market;
 namespace Binance.Api.WebSocket.Events
 {
     /// <summary>
-    /// Kline web socket client event.
+    /// Candlestick/K-Line web socket client event.
     /// </summary>
-    public sealed class KlineEventArgs : EventArgs, IChronological
+    public sealed class CandlestickEventArgs : WebSocketClientEventArgs
     {
         #region Public Properties
-
-        /// <summary>
-        /// Get the event time.
-        /// </summary>
-        public long Timestamp { get; }
 
         /// <summary>
         /// Get the candlestick.
@@ -47,21 +42,18 @@ namespace Binance.Api.WebSocket.Events
         /// <param name="firstTradeId">The first trade ID.</param>
         /// <param name="lastTradeId">The last trade ID.</param>
         /// <param name="isFinal">Is candlestick final.</param>
-        public KlineEventArgs(long timestamp, Candlestick candlestick, long firstTradeId, long lastTradeId, bool isFinal)
+        public CandlestickEventArgs(long timestamp, Candlestick candlestick, long firstTradeId, long lastTradeId, bool isFinal)
+            : base(timestamp)
         {
-            if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(KlineEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
-
             Throw.IfNull(candlestick, nameof(candlestick));
 
             if (firstTradeId < 0)
-                throw new ArgumentException($"{nameof(KlineEventArgs)}: Trade ID must be greater than 0.", nameof(firstTradeId));
+                throw new ArgumentException($"{nameof(CandlestickEventArgs)}: Trade ID must be greater than 0.", nameof(firstTradeId));
             if (lastTradeId < 0)
-                throw new ArgumentException($"{nameof(KlineEventArgs)}: Trade ID must be greater than 0.", nameof(lastTradeId));
+                throw new ArgumentException($"{nameof(CandlestickEventArgs)}: Trade ID must be greater than 0.", nameof(lastTradeId));
             if (lastTradeId < firstTradeId)
-                throw new ArgumentException($"{nameof(KlineEventArgs)}: Last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
+                throw new ArgumentException($"{nameof(CandlestickEventArgs)}: Last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
 
-            Timestamp = timestamp;
             Candlestick = candlestick;
             FirstTradeId = firstTradeId;
             LastTradeId = lastTradeId;

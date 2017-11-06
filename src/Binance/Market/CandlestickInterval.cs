@@ -2,9 +2,9 @@
 namespace Binance.Market
 {
     /// <summary>
-    /// K-Line/Candlestick interval.
+    /// Candlestick/K-Line interval.
     /// </summary>
-    public enum KlineInterval
+    public enum CandlestickInterval
     {
         /// <summary>
         /// 1 minute.

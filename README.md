@@ -131,7 +131,7 @@ Sample console application [example with limit](samples/BinanceConsoleApp/Contro
 #### Candlesticks
 Get [candlesticks](src/Binance/Market/Candlestick.cs) for a symbol with optional limit [1-500].
 ```c#
-    var candles = await api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour);
+    var candles = await api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Hour);
 ```
 Sample console application [example with limit](samples/BinanceConsoleApp/Controllers/GetCandlesticks.cs), [example with time range](samples/BinanceConsoleApp/Controllers/GetCandlesticksIn.cs).
 
@@ -402,14 +402,14 @@ void OnDepthUpdateEvent(object sender, DepthUpdateEventArgs e)
 }
 ```
 
-#### Kline Endpoint
-Get real-time kline/candlestick events using [`IKlineWebSocketClient`](src/Binance/Api/WebSocket/IKlineWebSocketClient.cs).
+#### Candlestick Endpoint
+Get real-time candlestick events using [`ICandlestickWebSocketClient`](src/Binance/Api/WebSocket/ICandlestickWebSocketClient.cs).
 ```c#
-    using (var client = serviceProvider.GetService<IKlineWebSocketClient>())
+    using (var client = serviceProvider.GetService<ICandlestickWebSocketClient>())
     {
-        client.Kline += OnKlineEvent; // optional event subscribing.
+        client.Candlestick += OnCandlestickEvent; // optional event subscribing.
         
-        var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, KlineInterval.Hour, (e) =>
+        var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, (e) =>
         {
             // optional inline event handler.
         }, cts.Token));
@@ -421,7 +421,7 @@ Get real-time kline/candlestick events using [`IKlineWebSocketClient`](src/Binan
     }
 ```
 ```c#
-void OnKlineEvent(object sender, KlineEventArgs e)
+void OnCandlestickEvent(object sender, CandlestickEventArgs e)
 {
     // ...
 }
@@ -571,14 +571,14 @@ void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
 }
 ```
 ##### Candlesticks Cache
-Use an [`ICandlesticksCache`](src/Binance/Cache/ICandlesticksCache.cs) (with an [`IKlineWebSocketClient`](src/Binance/Api/WebSocket/IKlineWebSocketClient.cs)) to create a real-time, synchronized price chart for a symbol. Refer to the BinancePriceChart sample for an [additional example](samples/BinancePriceChart/Program.cs).
+Use an [`ICandlesticksCache`](src/Binance/Cache/ICandlesticksCache.cs) (with an [`ICandlestickWebSocketClient`](src/Binance/Api/WebSocket/ICandlestickWebSocketClient.cs)) to create a real-time, synchronized price chart for a symbol. Refer to the BinancePriceChart sample for an [additional example](samples/BinancePriceChart/Program.cs).
 
 ```c#
     using (var cache = serviceProvider.GetService<ICandlesticksCache>())
     {
         cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
         
-        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, KlineInterval.Hour, (e) =>
+        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, (e) =>
         {
             // optionally, use an inline event handler.
         }, cts.Token)); // starts synchronization.

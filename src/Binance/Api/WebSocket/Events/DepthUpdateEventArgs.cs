@@ -6,7 +6,7 @@ namespace Binance.Api.WebSocket.Events
     /// <summary>
     /// Depth web socket client event.
     /// </summary>
-    public sealed class DepthUpdateEventArgs : EventArgs, IChronological
+    public sealed class DepthUpdateEventArgs : WebSocketClientEventArgs
     {
         #region Public Properties
 
@@ -14,11 +14,6 @@ namespace Binance.Api.WebSocket.Events
         /// The symbol.
         /// </summary>
         public string Symbol { get; }
-
-        /// <summary>
-        /// The event time.
-        /// </summary>
-        public long Timestamp { get; }
 
         /// <summary>
         /// The first update ID (inclusive).
@@ -54,10 +49,8 @@ namespace Binance.Api.WebSocket.Events
         /// <param name="bids">The bids.</param>
         /// <param name="asks">The asks.</param>
         public DepthUpdateEventArgs(long timestamp, string symbol, long firstUpdateId, long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
+            : base(timestamp)
         {
-            if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(DepthUpdateEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
-
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (firstUpdateId < 0)
@@ -70,7 +63,6 @@ namespace Binance.Api.WebSocket.Events
             Throw.IfNull(bids, nameof(bids));
             Throw.IfNull(asks, nameof(asks));
 
-            Timestamp = timestamp;
             Symbol = symbol;
 
             FirstUpdateId = firstUpdateId;

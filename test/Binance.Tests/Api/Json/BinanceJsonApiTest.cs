@@ -74,11 +74,11 @@ namespace Binance.Tests.Api.Json
         {
             var now = DateTimeOffset.UtcNow;
 
-            var json = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Hour, 1);
+            var json = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, 1);
 
             Assert.True(IsJsonArray(json));
 
-            json = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, KlineInterval.Minute, startTime: now.AddMinutes(-1).ToUnixTimeMilliseconds(), endTime: now.ToUnixTimeMilliseconds());
+            json = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Minute, startTime: now.AddMinutes(-1).ToUnixTimeMilliseconds(), endTime: now.ToUnixTimeMilliseconds());
 
             Assert.True(IsJsonArray(json));
         }
@@ -170,7 +170,7 @@ namespace Binance.Tests.Api.Json
         [Fact]
         public async Task GetCandlesticksThrows()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetCandlesticksAsync(null, KlineInterval.Day));
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetCandlesticksAsync(null, CandlestickInterval.Day));
         }
 
         [Fact]

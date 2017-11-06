@@ -30,7 +30,7 @@ namespace Binance
 
             // WebSockets
             services.AddTransient<IDepthWebSocketClient, DepthWebSocketClient>();
-            services.AddTransient<IKlineWebSocketClient, KlineWebSocketClient>();
+            services.AddTransient<ICandlestickWebSocketClient, CandlestickWebSocketClient>();
             services.AddTransient<ITradesWebSocketClient, TradesWebSocketClient>();
             services.AddTransient<IUserDataWebSocketClient, UserDataWebSocketClient>();
 
