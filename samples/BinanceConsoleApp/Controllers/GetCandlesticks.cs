@@ -20,19 +20,19 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string symbol = Symbol.BTC_USDT;
+            var symbol = Symbol.BTC_USDT;
             if (args.Length > 1)
             {
                 symbol = args[1];
             }
 
-            var interval = KlineInterval.Hour;
+            var interval = CandlestickInterval.Hour;
             if (args.Length > 2)
             {
-                interval = args[2].ToKlineInterval();
+                interval = args[2].ToCandlestickInterval();
             }
 
-            int limit = 10;
+            var limit = 10;
             if (args.Length > 3)
             {
                 int.TryParse(args[3], out limit);
@@ -41,8 +41,8 @@ namespace BinanceConsoleApp.Controllers
             IEnumerable<Candlestick> candlesticks = null;
 
             // If live order book is active (for symbol), get cached data.
-            if (Program.KlineCache != null && Program.KlineCache.Candlesticks.FirstOrDefault()?.Symbol == symbol)
-                candlesticks = Program.KlineCache.Candlesticks.Reverse().Take(limit); // get local cache.
+            if (Program.CandlestickCache != null && Program.CandlestickCache.Candlesticks.FirstOrDefault()?.Symbol == symbol)
+                candlesticks = Program.CandlestickCache.Candlesticks.Reverse().Take(limit); // get local cache.
 
             if (candlesticks == null)
                 candlesticks = await Program.Api.GetCandlesticksAsync(symbol, interval, limit, token: token);

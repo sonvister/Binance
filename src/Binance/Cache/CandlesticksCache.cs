@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public class CandlesticksCache : WebSocketClientCache<IKlineWebSocketClient, KlineEventArgs, CandlesticksCacheEventArgs>, ICandlesticksCache
+    public class CandlesticksCache : WebSocketClientCache<ICandlestickWebSocketClient, CandlestickEventArgs, CandlesticksCacheEventArgs>, ICandlesticksCache
     {
         #region Public Properties
 
@@ -32,14 +32,14 @@ namespace Binance.Cache
         private readonly object _sync = new object();
 
         private string _symbol;
-        private KlineInterval _interval;
+        private CandlestickInterval _interval;
         private int _limit;
 
         #endregion Private Fields
 
         #region Constructors
 
-        public CandlesticksCache(IBinanceApi api, IKlineWebSocketClient client, bool leaveClientOpen = false, ILogger<CandlesticksCache> logger = null)
+        public CandlesticksCache(IBinanceApi api, ICandlestickWebSocketClient client, bool leaveClientOpen = false, ILogger<CandlesticksCache> logger = null)
             : base(api, client, leaveClientOpen, logger)
         {
             _candlesticks = new List<Candlestick>();
@@ -49,10 +49,10 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public Task SubscribeAsync(string symbol, KlineInterval interval, int limit = default, CancellationToken token = default)
+        public Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit = default, CancellationToken token = default)
             => SubscribeAsync(symbol, interval, null, limit, token);
 
-        public Task SubscribeAsync(string symbol, KlineInterval interval, Action<CandlesticksCacheEventArgs> callback, int limit = default, CancellationToken token = default)
+        public Task SubscribeAsync(string symbol, CandlestickInterval interval, Action<CandlesticksCacheEventArgs> callback, int limit = default, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -74,10 +74,10 @@ namespace Binance.Cache
 
         protected override void OnLinkTo()
         {
-            Client.Kline += OnClientEvent;
+            Client.Candlestick += OnClientEvent;
         }
 
-        protected override async Task<CandlesticksCacheEventArgs> OnAction(KlineEventArgs @event)
+        protected override async Task<CandlesticksCacheEventArgs> OnAction(CandlestickEventArgs @event)
         {
             if (_candlesticks.Count == 0)
             {
@@ -111,7 +111,7 @@ namespace Binance.Cache
         /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        private async Task SynchronizeCandlesticksAsync(string symbol, KlineInterval interval, int limit, CancellationToken token)
+        private async Task SynchronizeCandlesticksAsync(string symbol, CandlestickInterval interval, int limit, CancellationToken token)
         {
             Logger?.LogInformation($"{nameof(CandlesticksCache)}: Synchronizing candlesticks...");
 
@@ -141,7 +141,7 @@ namespace Binance.Cache
 
             if (disposing)
             {
-                Client.Kline -= OnClientEvent;
+                Client.Candlestick -= OnClientEvent;
             }
 
             _disposed = true;

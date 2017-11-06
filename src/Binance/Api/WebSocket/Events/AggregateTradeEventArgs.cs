@@ -1,19 +1,13 @@
-﻿using System;
-using Binance.Market;
+﻿using Binance.Market;
 
 namespace Binance.Api.WebSocket.Events
 {
     /// <summary>
     /// Depth web socket client event.
     /// </summary>
-    public sealed class AggregateTradeEventArgs : EventArgs, IChronological
+    public sealed class AggregateTradeEventArgs : WebSocketClientEventArgs
     {
         #region Public Properties
-
-        /// <summary>
-        /// Get the event time.
-        /// </summary>
-        public long Timestamp { get; }
 
         /// <summary>
         /// Get the aggregate trade.
@@ -30,13 +24,10 @@ namespace Binance.Api.WebSocket.Events
         /// <param name="timestamp">The event time.</param>
         /// <param name="trade">The aggregate trade.</param>
         public AggregateTradeEventArgs(long timestamp, AggregateTrade trade)
+            : base(timestamp)
         {
-            if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(AggregateTradeEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
-
             Throw.IfNull(trade, nameof(trade));
 
-            Timestamp = timestamp;
             Trade = trade;
         }
 

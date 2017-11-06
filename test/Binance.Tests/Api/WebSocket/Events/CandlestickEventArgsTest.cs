@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Binance.Tests.Api.WebSocket.Events
 {
-    public class KlineEventArgsTest
+    public class CandlestickEventArgsTest
     {
         [Fact]
         public void Throws()
@@ -16,7 +16,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             const bool isFinal = true;
 
             var symbol = Symbol.BTC_USDT;
-            const KlineInterval interval = KlineInterval.Hour;
+            const CandlestickInterval interval = CandlestickInterval.Hour;
             const long openTime = 1234567890;
             const decimal open = 4950;
             const decimal high = 5100;
@@ -31,12 +31,12 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
 
-            Assert.Throws<ArgumentException>("timestamp", () => new KlineEventArgs(-1, candlestick, firstTradeId, lastTradeId, isFinal));
-            Assert.Throws<ArgumentException>("timestamp", () => new KlineEventArgs(0, null, firstTradeId, lastTradeId, isFinal));
-            Assert.Throws<ArgumentNullException>("candlestick", () => new KlineEventArgs(timestamp, null, firstTradeId, lastTradeId, isFinal));
-            Assert.Throws<ArgumentException>("firstTradeId", () => new KlineEventArgs(timestamp, candlestick, -1, lastTradeId, isFinal));
-            Assert.Throws<ArgumentException>("lastTradeId", () => new KlineEventArgs(timestamp, candlestick, firstTradeId, -1, isFinal));
-            Assert.Throws<ArgumentException>("lastTradeId", () => new KlineEventArgs(timestamp, candlestick, firstTradeId, firstTradeId - 1, isFinal));
+            Assert.Throws<ArgumentException>("timestamp", () => new CandlestickEventArgs(-1, candlestick, firstTradeId, lastTradeId, isFinal));
+            Assert.Throws<ArgumentException>("timestamp", () => new CandlestickEventArgs(0, null, firstTradeId, lastTradeId, isFinal));
+            Assert.Throws<ArgumentNullException>("candlestick", () => new CandlestickEventArgs(timestamp, null, firstTradeId, lastTradeId, isFinal));
+            Assert.Throws<ArgumentException>("firstTradeId", () => new CandlestickEventArgs(timestamp, candlestick, -1, lastTradeId, isFinal));
+            Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(timestamp, candlestick, firstTradeId, -1, isFinal));
+            Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(timestamp, candlestick, firstTradeId, firstTradeId - 1, isFinal));
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             const bool isFinal = true;
 
             var symbol = Symbol.BTC_USDT;
-            const KlineInterval interval = KlineInterval.Hour;
+            const CandlestickInterval interval = CandlestickInterval.Hour;
             const long openTime = 1234567890;
             const decimal open = 4950;
             const decimal high = 5100;
@@ -63,7 +63,7 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
 
-            var args = new KlineEventArgs(timestamp, candlestick, firstTradeId, lastTradeId, isFinal);
+            var args = new CandlestickEventArgs(timestamp, candlestick, firstTradeId, lastTradeId, isFinal);
 
             Assert.Equal(timestamp, args.Timestamp);
             Assert.Equal(candlestick, args.Candlestick);

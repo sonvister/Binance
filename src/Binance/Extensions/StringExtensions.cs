@@ -8,34 +8,34 @@ namespace Binance
     public static class StringExtensions
     {
         /// <summary>
-        /// Convert string to <see cref="KlineInterval"/>.
+        /// Convert string to <see cref="CandlestickInterval"/>.
         /// </summary>
         /// <param name="s">The string.</param>
         /// <returns></returns>
-        public static KlineInterval ToKlineInterval(this string s)
+        public static CandlestickInterval ToCandlestickInterval(this string s)
         {
             Throw.IfNullOrWhiteSpace(s, nameof(s));
 
             switch (s.Trim().ToLower())
             {
-                case "1m": return KlineInterval.Minute;
-                case "3m": return KlineInterval.Minutes_3;
-                case "5m": return KlineInterval.Minutes_5;
-                case "15m": return KlineInterval.Minutes_15;
-                case "30m": return KlineInterval.Minutes_30;
+                case "1m": return CandlestickInterval.Minute;
+                case "3m": return CandlestickInterval.Minutes_3;
+                case "5m": return CandlestickInterval.Minutes_5;
+                case "15m": return CandlestickInterval.Minutes_15;
+                case "30m": return CandlestickInterval.Minutes_30;
                 case "60m":
-                case "1h": return KlineInterval.Hour;
-                case "2h": return KlineInterval.Hours_2;
-                case "4h": return KlineInterval.Hours_4;
-                case "8h": return KlineInterval.Hours_8;
-                case "12h": return KlineInterval.Hours_12;
+                case "1h": return CandlestickInterval.Hour;
+                case "2h": return CandlestickInterval.Hours_2;
+                case "4h": return CandlestickInterval.Hours_4;
+                case "8h": return CandlestickInterval.Hours_8;
+                case "12h": return CandlestickInterval.Hours_12;
                 case "24h":
-                case "1d": return KlineInterval.Day;
-                case "3d": return KlineInterval.Days_3;
-                case "1w": return KlineInterval.Week;
-                case "1M": return KlineInterval.Month;
+                case "1d": return CandlestickInterval.Day;
+                case "3d": return CandlestickInterval.Days_3;
+                case "1w": return CandlestickInterval.Week;
+                case "1M": return CandlestickInterval.Month;
                 default:
-                    throw new ArgumentException($"{nameof(ToKlineInterval)}: interval not supported: {s}");
+                    throw new ArgumentException($"{nameof(ToCandlestickInterval)}: interval not supported: {s}");
             }
         }
 

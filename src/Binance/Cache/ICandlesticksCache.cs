@@ -29,7 +29,7 @@ namespace Binance.Cache
         /// <summary>
         /// The client that provides candlestick information.
         /// </summary>
-        IKlineWebSocketClient Client { get; }
+        ICandlestickWebSocketClient Client { get; }
 
         #endregion Public Properties
 
@@ -43,7 +43,7 @@ namespace Binance.Cache
         /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SubscribeAsync(string symbol, KlineInterval interval, int limit = default, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit = default, CancellationToken token = default);
 
         /// <summary>
         /// 
@@ -54,15 +54,15 @@ namespace Binance.Cache
         /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SubscribeAsync(string symbol, KlineInterval interval, Action<CandlesticksCacheEventArgs> callback, int limit = default, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, CandlestickInterval interval, Action<CandlesticksCacheEventArgs> callback, int limit = default, CancellationToken token = default);
 
         /// <summary>
-        /// Link to a subscribed <see cref="IKlineWebSocketClient"/>.
+        /// Link to a subscribed <see cref="ICandlestickWebSocketClient"/>.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="callback"></param>
         /// <param name="leaveClientOpen"></param>
-        void LinkTo(IKlineWebSocketClient client, Action<CandlesticksCacheEventArgs> callback = null, bool leaveClientOpen = true);
+        void LinkTo(ICandlestickWebSocketClient client, Action<CandlesticksCacheEventArgs> callback = null, bool leaveClientOpen = true);
 
         #endregion Public Methods
     }

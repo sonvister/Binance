@@ -44,32 +44,32 @@ namespace BinanceConsoleApp.Controllers
                 return Task.FromResult(true);
             }
 
-            var interval = KlineInterval.Hour;
+            var interval = CandlestickInterval.Hour;
             if (args.Length > 3)
             {
-                interval = args[3].ToKlineInterval();
+                interval = args[3].ToCandlestickInterval();
             }
 
             Program.LiveTokenSource = new CancellationTokenSource();
 
-            Program.KlineCache = Program.ServiceProvider.GetService<ICandlesticksCache>();
-            Program.KlineCache.Client.Kline += OnKlineEvent;
+            Program.CandlestickCache = Program.ServiceProvider.GetService<ICandlesticksCache>();
+            Program.CandlestickCache.Client.Candlestick += OnCandlestickEvent;
 
             Program.LiveTask = Task.Run(() =>
             {
-                Program.KlineCache.SubscribeAsync(symbol, interval, e => { Program.Display(e.Candlesticks.Last()); }, token: Program.LiveTokenSource.Token);
+                Program.CandlestickCache.SubscribeAsync(symbol, interval, e => { Program.Display(e.Candlesticks.Last()); }, token: Program.LiveTokenSource.Token);
             }, token);
 
             lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
-                Console.WriteLine($"  ...live kline feed enabled for symbol: {symbol}, interval: {interval} ...use 'live off' to disable.");
+                Console.WriteLine($"  ...live candlestick feed enabled for symbol: {symbol}, interval: {interval} ...use 'live off' to disable.");
             }
 
             return Task.FromResult(true);
         }
 
-        private static void OnKlineEvent(object sender, KlineEventArgs e)
+        private static void OnCandlestickEvent(object sender, CandlestickEventArgs e)
         {
             lock (Program.ConsoleSync)
             {

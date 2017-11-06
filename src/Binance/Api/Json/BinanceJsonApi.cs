@@ -152,7 +152,7 @@ namespace Binance.Api.Json
             return GetAsync($"/api/v1/aggTrades?{totalParams}", token);
         }
 
-        public virtual Task<string> GetCandlesticksAsync(string symbol, KlineInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
+        public virtual Task<string> GetCandlesticksAsync(string symbol, CandlestickInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 

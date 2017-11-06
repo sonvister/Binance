@@ -81,8 +81,8 @@ namespace Binance.Api
         Task<IEnumerable<AggregateTrade>> GetAggregateTradesInAsync(string symbol, long startTime, long endTime, CancellationToken token = default);
 
         /// <summary>
-        /// Get Kline/candlestick bars for a symbol. Klines are uniquely identified by their open time.
-        /// If startTime and endTime are not sent, the most recent klines are returned.
+        /// Get candlesticks for a symbol. Candlesticks/K-Lines are uniquely identified by their open time.
+        /// If startTime and endTime are not sent, the most recent candlesticks are returned.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="interval"></param>
@@ -91,7 +91,7 @@ namespace Binance.Api
         /// <param name="endTime"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<Candlestick>> GetCandlesticksAsync(string symbol, KlineInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default);
+        Task<IEnumerable<Candlestick>> GetCandlesticksAsync(string symbol, CandlestickInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default);
 
         /// <summary>
         /// Get 24 hour price change statistics for a symbol.

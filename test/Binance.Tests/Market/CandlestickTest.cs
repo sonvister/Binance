@@ -10,7 +10,7 @@ namespace Binance.Tests.Market
         public void Throws()
         {
             var symbol = Symbol.BTC_USDT;
-            const KlineInterval interval = KlineInterval.Hour;
+            const CandlestickInterval interval = CandlestickInterval.Hour;
             var openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             const decimal open = 4950;
             const decimal high = 5100;
@@ -48,7 +48,7 @@ namespace Binance.Tests.Market
         public void Properties()
         {
             var symbol = Symbol.BTC_USDT;
-            const KlineInterval interval = KlineInterval.Hour;
+            const CandlestickInterval interval = CandlestickInterval.Hour;
             var openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             const decimal open = 4950;
             const decimal high = 5100;
