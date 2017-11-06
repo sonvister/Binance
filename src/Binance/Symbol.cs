@@ -11,11 +11,12 @@ namespace Binance
         /// <summary>
         /// Timestamp when these symbols were updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1509821401200;
+        public static readonly long LastUpdateAt = 1509997727100;
 
         // USDT
         public static readonly string BTC_USDT = "BTCUSDT";
         public static readonly string ETH_USDT = "ETHUSDT";
+        public static readonly string BNB_USDT = "BNBUSDT";
 
         // BTC
         public static readonly string ETH_BTC = "ETHBTC";
@@ -123,6 +124,10 @@ namespace Binance
         public static readonly string MOD_ETH = "MODETH";
         public static readonly string ENJ_ETH = "ENJETH";
         public static readonly string STORJ_ETH = "STORJETH";
+
+        // BNB
+        public static readonly string VEN_BNB = "VENBNB";
+        public static readonly string YOYO_BNB = "YOYOBNB";
 
         #endregion Public Constants
     }
