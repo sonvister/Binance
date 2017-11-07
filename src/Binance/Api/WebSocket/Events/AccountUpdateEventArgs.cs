@@ -10,7 +10,7 @@ namespace Binance.Api.WebSocket.Events
         #region Public Properties
 
         /// <summary>
-        /// Get the account.
+        /// Get the account information.
         /// </summary>
         public AccountInfo AccountInfo { get; }
 

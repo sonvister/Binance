@@ -59,7 +59,7 @@ namespace BinanceConsoleApp
 
                     // Display updated account balance.
                     var task = Task.Run(() =>
-                        cache.SubscribeAsync(user, e => Display(e.Account.GetBalance(asset)), cts.Token), cts.Token);
+                        cache.SubscribeAsync(user, e => Display(e.AccountInfo.GetBalance(asset)), cts.Token), cts.Token);
 
                     Console.WriteLine("...press any key to continue.");
                     Console.ReadKey(true);

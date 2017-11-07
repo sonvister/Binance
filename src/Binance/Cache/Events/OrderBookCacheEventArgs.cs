@@ -25,7 +25,7 @@ namespace Binance.Cache.Events
         /// <param name="orderBook"></param>
         public OrderBookCacheEventArgs(OrderBook orderBook)
         {
-            Throw.IfNull(orderBook);
+            Throw.IfNull(orderBook, nameof(orderBook));
 
             OrderBook = orderBook;
         }

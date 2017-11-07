@@ -8,9 +8,9 @@ namespace Binance.Cache.Events
         #region Public Properties
 
         /// <summary>
-        /// Get the account.
+        /// Get the account information.
         /// </summary>
-        public AccountInfo Account { get; }
+        public AccountInfo AccountInfo { get; }
 
         #endregion Public Properties
 
@@ -19,12 +19,12 @@ namespace Binance.Cache.Events
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="account">The account.</param>
-        public AccountInfoCacheEventArgs(AccountInfo account)
+        /// <param name="accountInfo">The account information.</param>
+        public AccountInfoCacheEventArgs(AccountInfo accountInfo)
         {
-            Throw.IfNull(account, nameof(account));
+            Throw.IfNull(accountInfo, nameof(accountInfo));
 
-            Account = account;
+            AccountInfo = accountInfo;
         }
 
         #endregion Constructors
