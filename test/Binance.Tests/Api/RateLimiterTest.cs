@@ -55,8 +55,8 @@ namespace Binance.Tests.Api
 
             stopwatch.Stop();
 
-            Assert.True(stopwatch.ElapsedMilliseconds > rateLimiter.Duration.TotalMilliseconds * intervals);
-            Assert.True(stopwatch.ElapsedMilliseconds < rateLimiter.Duration.TotalMilliseconds * (intervals + 0.5));
+            Assert.True(stopwatch.ElapsedMilliseconds > rateLimiter.Duration.TotalMilliseconds * (intervals - 0.1));
+            Assert.False(stopwatch.ElapsedMilliseconds > rateLimiter.Duration.TotalMilliseconds * (intervals + 0.1));
         }
     }
 }
