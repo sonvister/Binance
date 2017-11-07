@@ -1,4 +1,4 @@
-#define LIVE
+#define LIVE // comment to disable integration tests
 
 using Binance.Account.Orders;
 using Binance.Api;
@@ -182,9 +182,9 @@ namespace Binance.Tests.Api
         #region Market Data
 
         [Fact]
-        public async Task GetAggregateTradeFromThrows()
+        public Task GetAggregateTradeFromThrows()
         {
-            await Assert.ThrowsAsync<ArgumentException>("fromId", () => _api.GetAggregateTradesFromAsync(Symbol.BTC_USDT, -1));
+            return Assert.ThrowsAsync<ArgumentException>("fromId", () => _api.GetAggregateTradesFromAsync(Symbol.BTC_USDT, -1));
         }
 
         [Fact]
@@ -220,9 +220,9 @@ namespace Binance.Tests.Api
         }
 
         [Fact]
-        public async Task GetOrderThrows()
+        public Task GetOrderThrows()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>("order", () => _api.GetAsync(null));
+            return Assert.ThrowsAsync<ArgumentNullException>("order", () => _api.GetAsync(null));
         }
 
         [Fact]

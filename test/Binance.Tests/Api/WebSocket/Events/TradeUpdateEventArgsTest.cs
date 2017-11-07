@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api;
@@ -45,9 +46,12 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             decimal quantityOfLastFilledTrade = 1;
 
-            Assert.Throws<ArgumentException>("timestamp", () => new TradeUpdateEventArgs(-1, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
-            Assert.Throws<ArgumentException>("timestamp", () => new TradeUpdateEventArgs(0, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
-            Assert.Throws<ArgumentNullException>("order", () => new TradeUpdateEventArgs(timestamp, null, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+            using (var cts = new CancellationTokenSource())
+            {
+                Assert.Throws<ArgumentException>("timestamp", () => new TradeUpdateEventArgs(-1, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+                Assert.Throws<ArgumentException>("timestamp", () => new TradeUpdateEventArgs(0, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+                Assert.Throws<ArgumentNullException>("order", () => new TradeUpdateEventArgs(timestamp, cts.Token, null, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+            }
         }
 
         [Fact]
@@ -86,15 +90,18 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             const decimal quantityOfLastFilledTrade = 1;
 
-            var args = new TradeUpdateEventArgs(timestamp, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
+            using (var cts = new CancellationTokenSource())
+            {
+                var args = new TradeUpdateEventArgs(timestamp, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
 
-            Assert.Equal(timestamp, args.Timestamp);
-            Assert.Equal(order, args.Order);
-            Assert.Equal(OrderExecutionType.Trade, args.OrderExecutionType);
-            Assert.Equal(orderRejectedReason, args.OrderRejectedReason);
-            Assert.Equal(newClientOrderId, args.NewClientOrderId);
-            Assert.Equal(trade, args.Trade);
-            Assert.Equal(quantityOfLastFilledTrade, args.QuantityOfLastFilledTrade);
+                Assert.Equal(timestamp, args.Timestamp);
+                Assert.Equal(order, args.Order);
+                Assert.Equal(OrderExecutionType.Trade, args.OrderExecutionType);
+                Assert.Equal(orderRejectedReason, args.OrderRejectedReason);
+                Assert.Equal(newClientOrderId, args.NewClientOrderId);
+                Assert.Equal(trade, args.Trade);
+                Assert.Equal(quantityOfLastFilledTrade, args.QuantityOfLastFilledTrade);
+            }
         }
     }
 }

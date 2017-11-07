@@ -50,7 +50,7 @@ namespace Binance.Api.WebSocket
 
         #region Protected Methods
 
-        protected abstract void DeserializeJsonAndRaiseEvent(string json, Action<TEventArgs> callback = null);
+        protected abstract void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<TEventArgs> callback = null);
 
         /// <summary>
         /// Subscribe.
@@ -59,11 +59,13 @@ namespace Binance.Api.WebSocket
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        protected async Task SubscribeToAsync(string uriPath, Action<TEventArgs> callback, CancellationToken token = default)
+        protected async Task SubscribeToAsync(string uriPath, Action<TEventArgs> callback, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
 
             Logger?.LogInformation($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(SubscribeToAsync)}: \"{BaseUri}{uriPath}\"");
+
+            IsSubscribed = true;
 
             try
             {
@@ -77,7 +79,7 @@ namespace Binance.Api.WebSocket
 
                 ActionBlock = new ActionBlock<string>(json =>
                     {
-                        try { DeserializeJsonAndRaiseEvent(json, callback); }
+                        try { DeserializeJsonAndRaiseEvent(json, token, callback); }
                         catch (OperationCanceledException) { }
                         catch (Exception e)
                         {
@@ -111,8 +113,6 @@ namespace Binance.Api.WebSocket
                     return;
                 }
 
-                IsSubscribed = true;
-
                 await ReceiveEventData(WebSocket, token)
                     .ConfigureAwait(false);
             }
@@ -120,7 +120,9 @@ namespace Binance.Api.WebSocket
             catch (Exception e)
             {
                 LogException(e, $"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(SubscribeToAsync)}");
-                throw;
+                
+                if (!token.IsCancellationRequested)
+                    throw;
             }
         }
 
@@ -195,7 +197,9 @@ namespace Binance.Api.WebSocket
             catch (Exception e)
             {
                 LogException(e, $"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(ReceiveEventData)}");
-                throw;
+
+                if (!token.IsCancellationRequested)
+                    throw;
             }
         }
 

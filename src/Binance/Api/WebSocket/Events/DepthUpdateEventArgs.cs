@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Binance.Api.WebSocket.Events
 {
@@ -43,13 +44,14 @@ namespace Binance.Api.WebSocket.Events
         /// Constructor.
         /// </summary>
         /// <param name="timestamp">The event time.</param>
+        /// <param name="token">The cancellation token.</param>
         /// <param name="symbol">The symbol.</param>
         /// <param name="firstUpdateId"></param>
         /// <param name="lastUpdateId"></param>
         /// <param name="bids">The bids.</param>
         /// <param name="asks">The asks.</param>
-        public DepthUpdateEventArgs(long timestamp, string symbol, long firstUpdateId, long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
-            : base(timestamp)
+        public DepthUpdateEventArgs(long timestamp, CancellationToken token, string symbol, long firstUpdateId, long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
+            : base(timestamp, token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 

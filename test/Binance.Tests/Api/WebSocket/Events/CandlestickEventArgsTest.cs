@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Binance.Api.WebSocket.Events;
 using Binance.Market;
 using Xunit;
@@ -31,12 +32,15 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
 
-            Assert.Throws<ArgumentException>("timestamp", () => new CandlestickEventArgs(-1, candlestick, firstTradeId, lastTradeId, isFinal));
-            Assert.Throws<ArgumentException>("timestamp", () => new CandlestickEventArgs(0, null, firstTradeId, lastTradeId, isFinal));
-            Assert.Throws<ArgumentNullException>("candlestick", () => new CandlestickEventArgs(timestamp, null, firstTradeId, lastTradeId, isFinal));
-            Assert.Throws<ArgumentException>("firstTradeId", () => new CandlestickEventArgs(timestamp, candlestick, -1, lastTradeId, isFinal));
-            Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(timestamp, candlestick, firstTradeId, -1, isFinal));
-            Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(timestamp, candlestick, firstTradeId, firstTradeId - 1, isFinal));
+            using (var cts = new CancellationTokenSource())
+            {
+                Assert.Throws<ArgumentException>("timestamp", () => new CandlestickEventArgs(-1, cts.Token, candlestick, firstTradeId, lastTradeId, isFinal));
+                Assert.Throws<ArgumentException>("timestamp", () => new CandlestickEventArgs(0, cts.Token, null, firstTradeId, lastTradeId, isFinal));
+                Assert.Throws<ArgumentNullException>("candlestick", () => new CandlestickEventArgs(timestamp, cts.Token, null, firstTradeId, lastTradeId, isFinal));
+                Assert.Throws<ArgumentException>("firstTradeId", () => new CandlestickEventArgs(timestamp, cts.Token, candlestick, -1, lastTradeId, isFinal));
+                Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(timestamp, cts.Token, candlestick, firstTradeId, -1, isFinal));
+                Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(timestamp, cts.Token, candlestick, firstTradeId, firstTradeId - 1, isFinal));
+            }
         }
 
         [Fact]
@@ -63,13 +67,16 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
 
-            var args = new CandlestickEventArgs(timestamp, candlestick, firstTradeId, lastTradeId, isFinal);
+            using (var cts = new CancellationTokenSource())
+            {
+                var args = new CandlestickEventArgs(timestamp, cts.Token, candlestick, firstTradeId, lastTradeId, isFinal);
 
-            Assert.Equal(timestamp, args.Timestamp);
-            Assert.Equal(candlestick, args.Candlestick);
-            Assert.Equal(firstTradeId, args.FirstTradeId);
-            Assert.Equal(lastTradeId, args.LastTradeId);
-            Assert.Equal(isFinal, args.IsFinal);
+                Assert.Equal(timestamp, args.Timestamp);
+                Assert.Equal(candlestick, args.Candlestick);
+                Assert.Equal(firstTradeId, args.FirstTradeId);
+                Assert.Equal(lastTradeId, args.LastTradeId);
+                Assert.Equal(isFinal, args.IsFinal);
+            }
         }
     }
 }

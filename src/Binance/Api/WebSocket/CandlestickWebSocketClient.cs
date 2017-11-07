@@ -39,10 +39,10 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(string symbol, CandlestickInterval interval, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, CandlestickInterval interval, CancellationToken token)
             => SubscribeAsync(symbol, interval, null, token);
 
-        public virtual Task SubscribeAsync(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback, CancellationToken token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -62,8 +62,9 @@ namespace Binance.Api.WebSocket
         /// Deserialize JSON and raise <see cref="CandlestickEventArgs"/> event.
         /// </summary>
         /// <param name="json"></param>
+        /// <param name="token"></param>
         /// <param name="callback"></param>
-        protected override void DeserializeJsonAndRaiseEvent(string json, Action<CandlestickEventArgs> callback = null)
+        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<CandlestickEventArgs> callback = null)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -102,7 +103,7 @@ namespace Binance.Api.WebSocket
                         jObject["k"]["Q"].Value<decimal>()  // taker buy quote asset volume (quote volume of active buy)
                     );
 
-                    var eventArgs = new CandlestickEventArgs(eventTime, candlestick, firstTradeId, lastTradeId, isFinal);
+                    var eventArgs = new CandlestickEventArgs(eventTime, token, candlestick, firstTradeId, lastTradeId, isFinal);
 
                     callback?.Invoke(eventArgs);
                     RaiseUpdateEvent(eventArgs);

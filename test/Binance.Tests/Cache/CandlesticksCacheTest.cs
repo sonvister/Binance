@@ -5,20 +5,21 @@ using Binance.Market;
 using Moq;
 using System;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace Binance.Tests.Cache
 {
     public class CandlesticksCacheTest
     {
         [Fact]
-        public void SubscribeThrows()
+        public Task SubscribeThrows()
         {
             var api = new Mock<IBinanceApi>().Object;
             var client = new Mock<ICandlestickWebSocketClient>().Object;
 
             var cache = new CandlesticksCache(api, client);
 
-            Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.SubscribeAsync(null, CandlestickInterval.Day));
+            return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.SubscribeAsync(null, CandlestickInterval.Day));
         }
     }
 }

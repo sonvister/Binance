@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Binance.Api.WebSocket.Events;
 using Binance.Market;
 using Xunit;
@@ -23,8 +24,11 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch);
 
-            Assert.Throws<ArgumentException>("timestamp", () => new AggregateTradeEventArgs(-1, trade));
-            Assert.Throws<ArgumentNullException>("trade", () => new AggregateTradeEventArgs(timestamp, null));
+            using (var cts = new CancellationTokenSource())
+            {
+                Assert.Throws<ArgumentException>("timestamp", () => new AggregateTradeEventArgs(-1, cts.Token, trade));
+                Assert.Throws<ArgumentNullException>("trade", () => new AggregateTradeEventArgs(timestamp, cts.Token, null));
+            }
         }
 
         [Fact]
@@ -43,10 +47,13 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch);
 
-            var args = new AggregateTradeEventArgs(timestamp, trade);
+            using (var cts = new CancellationTokenSource())
+            {
+                var args = new AggregateTradeEventArgs(timestamp, cts.Token, trade);
 
-            Assert.Equal(timestamp, args.Timestamp);
-            Assert.Equal(trade, args.Trade);
+                Assert.Equal(timestamp, args.Timestamp);
+                Assert.Equal(trade, args.Trade);
+            }
         }
     }
 }

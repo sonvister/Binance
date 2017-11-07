@@ -1,4 +1,4 @@
-#define LIVE
+#define LIVE // comment to disable integration tests
 
 using System;
 using System.Threading.Tasks;
@@ -128,9 +128,9 @@ namespace Binance.Tests.Api.Json
         #region Market Data
 
         [Fact]
-        public async Task GetOrderBookThrows()
+        public Task GetOrderBookThrows()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetOrderBookAsync(null));
+            return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetOrderBookAsync(null));
         }
 
         [Fact]
@@ -146,15 +146,15 @@ namespace Binance.Tests.Api.Json
         }
 
         [Fact]
-        public async Task GetCandlesticksThrows()
+        public Task GetCandlesticksThrows()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetCandlesticksAsync(null, CandlestickInterval.Day));
+            return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetCandlesticksAsync(null, CandlestickInterval.Day));
         }
 
         [Fact]
-        public async Task Get24HourStatisticsThrows()
+        public Task Get24HourStatisticsThrows()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.Get24HourStatisticsAsync(null));
+            return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.Get24HourStatisticsAsync(null));
         }
 
         #endregion Market Data
@@ -219,17 +219,17 @@ namespace Binance.Tests.Api.Json
         }
 
         [Fact]
-        public async Task GetAccountThrows()
+        public Task GetAccountThrows()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetAccountInfoAsync(null));
+            return Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetAccountInfoAsync(null));
         }
 
         [Fact]
-        public async Task GetTradesThrows()
+        public Task GetTradesThrows()
         {
             var symbol = Symbol.BTC_USDT;
 
-            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetTradesAsync(null, symbol));
+            return Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetTradesAsync(null, symbol));
         }
 
         [Fact]
@@ -249,15 +249,15 @@ namespace Binance.Tests.Api.Json
         }
 
         [Fact]
-        public async Task GetDepositsThrows()
+        public Task GetDepositsThrows()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetDepositsAsync(null));
+            return Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetDepositsAsync(null));
         }
 
         [Fact]
-        public async Task GetWithdrawalsThrows()
+        public Task GetWithdrawalsThrows()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetWithdrawalsAsync(null));
+            return Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.GetWithdrawalsAsync(null));
         }
 
         #endregion Account
@@ -265,9 +265,9 @@ namespace Binance.Tests.Api.Json
         #region User Stream
 
         [Fact]
-        public async Task UserStreamStartThrows()
+        public Task UserStreamStartThrows()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.UserStreamStartAsync(null));
+            return Assert.ThrowsAsync<ArgumentNullException>("user", () => _api.UserStreamStartAsync(null));
         }
 
         [Fact]

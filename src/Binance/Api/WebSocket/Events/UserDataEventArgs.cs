@@ -1,4 +1,6 @@
-﻿namespace Binance.Api.WebSocket.Events
+﻿using System.Threading;
+
+namespace Binance.Api.WebSocket.Events
 {
     /// <summary>
     /// User data web socket client event.
@@ -11,8 +13,9 @@
         /// Constructor.
         /// </summary>
         /// <param name="timestamp">The event time.</param>
-        protected UserDataEventArgs(long timestamp)
-            : base(timestamp)
+        /// <param name="token">The cancellation token.</param>
+        protected UserDataEventArgs(long timestamp, CancellationToken token)
+            : base(timestamp, token)
         { }
 
         #endregion Constructors

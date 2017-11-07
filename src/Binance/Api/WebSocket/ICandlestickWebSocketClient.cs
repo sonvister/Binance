@@ -29,7 +29,7 @@ namespace Binance.Api.WebSocket
         /// <param name="interval">The interval.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(string symbol, CandlestickInterval interval, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, CandlestickInterval interval, CancellationToken token);
 
         /// <summary>
         /// Subscribe to the specified symbol and begin receiving candlestick
@@ -42,7 +42,7 @@ namespace Binance.Api.WebSocket
         /// <param name="callback">An event callback.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback, CancellationToken token);
 
         #endregion Public Methods
     }

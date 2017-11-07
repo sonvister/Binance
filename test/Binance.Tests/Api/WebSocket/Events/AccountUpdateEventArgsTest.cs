@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Binance.Account;
 using Binance.Api;
 using Binance.Api.WebSocket.Events;
@@ -20,9 +21,12 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             var account = new AccountInfo(user, commissions, status, balances);
 
-            Assert.Throws<ArgumentException>("timestamp", () => new AccountUpdateEventArgs(-1, account));
-            Assert.Throws<ArgumentException>("timestamp", () => new AccountUpdateEventArgs(0, account));
-            Assert.Throws<ArgumentNullException>("accountInfo", () => new AccountUpdateEventArgs(timestamp, null));
+            using (var cts = new CancellationTokenSource())
+            {
+                Assert.Throws<ArgumentException>("timestamp", () => new AccountUpdateEventArgs(-1, cts.Token, account));
+                Assert.Throws<ArgumentException>("timestamp", () => new AccountUpdateEventArgs(0, cts.Token, account));
+                Assert.Throws<ArgumentNullException>("accountInfo", () => new AccountUpdateEventArgs(timestamp, cts.Token, null));
+            }
         }
 
         [Fact]
@@ -37,10 +41,13 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             var account = new AccountInfo(user, commissions, status, balances);
 
-            var args = new AccountUpdateEventArgs(timestamp, account);
+            using (var cts = new CancellationTokenSource())
+            {
+                var args = new AccountUpdateEventArgs(timestamp, cts.Token, account);
 
-            Assert.Equal(timestamp, args.Timestamp);
-            Assert.Equal(account, args.AccountInfo);
+                Assert.Equal(timestamp, args.Timestamp);
+                Assert.Equal(account, args.AccountInfo);
+            }
         }
     }
 }

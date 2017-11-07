@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Binance.Market;
 
 namespace Binance.Api.WebSocket.Events
@@ -38,12 +39,13 @@ namespace Binance.Api.WebSocket.Events
         /// Constructor.
         /// </summary>
         /// <param name="timestamp">The event time.</param>
+        /// <param name="token">The cancellation token.</param>
         /// <param name="candlestick">The candlestick.</param>
         /// <param name="firstTradeId">The first trade ID.</param>
         /// <param name="lastTradeId">The last trade ID.</param>
         /// <param name="isFinal">Is candlestick final.</param>
-        public CandlestickEventArgs(long timestamp, Candlestick candlestick, long firstTradeId, long lastTradeId, bool isFinal)
-            : base(timestamp)
+        public CandlestickEventArgs(long timestamp, CancellationToken token, Candlestick candlestick, long firstTradeId, long lastTradeId, bool isFinal)
+            : base(timestamp, token)
         {
             Throw.IfNull(candlestick, nameof(candlestick));
 

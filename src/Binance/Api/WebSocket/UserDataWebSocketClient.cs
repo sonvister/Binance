@@ -105,7 +105,7 @@ namespace Binance.Api.WebSocket
         /// <param name="json"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        protected override void DeserializeJsonAndRaiseEvent(string json, Action<UserDataEventArgs> callback = null)
+        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<UserDataEventArgs> callback = null)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -138,7 +138,7 @@ namespace Binance.Api.WebSocket
                             entry["l"].Value<decimal>())) // locked amount
                         .ToList();
 
-                    var eventArgs = new AccountUpdateEventArgs(eventTime, new AccountInfo(User, commissions, status, balances));
+                    var eventArgs = new AccountUpdateEventArgs(eventTime, token, new AccountInfo(User, commissions, status, balances));
 
                     callback?.Invoke(eventArgs);
                     RaiseAccountUpdateEvent(eventArgs);
@@ -169,14 +169,14 @@ namespace Binance.Api.WebSocket
                         
                         var quantityOfLastFilledTrade = jObject["l"].Value<decimal>();
 
-                        var eventArgs = new TradeUpdateEventArgs(eventTime, order, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
+                        var eventArgs = new TradeUpdateEventArgs(eventTime, token, order, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
 
                         callback?.Invoke(eventArgs);
                         RaiseTradeUpdateEvent(eventArgs);
                     }
                     else // order update event.
                     {
-                        var eventArgs = new OrderUpdateEventArgs(eventTime, order, executionType, rejectedReason, newClientOrderId);
+                        var eventArgs = new OrderUpdateEventArgs(eventTime, token, order, executionType, rejectedReason, newClientOrderId);
 
                         callback?.Invoke(eventArgs);
                         RaiseOrderUpdateEvent(eventArgs);

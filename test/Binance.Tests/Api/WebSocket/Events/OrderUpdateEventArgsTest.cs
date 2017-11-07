@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Binance.Account.Orders;
 using Binance.Api;
 using Binance.Api.WebSocket.Events;
@@ -33,9 +34,12 @@ namespace Binance.Tests.Api.WebSocket.Events
             const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
             const string newClientOrderId = "new-test-order";
 
-            Assert.Throws<ArgumentException>("timestamp", () => new OrderUpdateEventArgs(-1, order, orderExecutionType, orderRejectedReason, newClientOrderId));
-            Assert.Throws<ArgumentException>("timestamp", () => new OrderUpdateEventArgs(0, order, orderExecutionType, orderRejectedReason, newClientOrderId));
-            Assert.Throws<ArgumentNullException>("order", () => new OrderUpdateEventArgs(timestamp, null, orderExecutionType, orderRejectedReason, newClientOrderId));
+            using (var cts = new CancellationTokenSource())
+            {
+                Assert.Throws<ArgumentException>("timestamp", () => new OrderUpdateEventArgs(-1, cts.Token, order, orderExecutionType, orderRejectedReason, newClientOrderId));
+                Assert.Throws<ArgumentException>("timestamp", () => new OrderUpdateEventArgs(0, cts.Token, order, orderExecutionType, orderRejectedReason, newClientOrderId));
+                Assert.Throws<ArgumentNullException>("order", () => new OrderUpdateEventArgs(timestamp, cts.Token, null, orderExecutionType, orderRejectedReason, newClientOrderId));
+            }
         }
 
         [Fact]
@@ -63,13 +67,16 @@ namespace Binance.Tests.Api.WebSocket.Events
             const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
             const string newClientOrderId = "new-test-order";
 
-            var args = new OrderUpdateEventArgs(timestamp, order, orderExecutionType, orderRejectedReason, newClientOrderId);
+            using (var cts = new CancellationTokenSource())
+            {
+                var args = new OrderUpdateEventArgs(timestamp, cts.Token, order, orderExecutionType, orderRejectedReason, newClientOrderId);
 
-            Assert.Equal(timestamp, args.Timestamp);
-            Assert.Equal(order, args.Order);
-            Assert.Equal(orderExecutionType, args.OrderExecutionType);
-            Assert.Equal(orderRejectedReason, args.OrderRejectedReason);
-            Assert.Equal(newClientOrderId, args.NewClientOrderId);
+                Assert.Equal(timestamp, args.Timestamp);
+                Assert.Equal(order, args.Order);
+                Assert.Equal(orderExecutionType, args.OrderExecutionType);
+                Assert.Equal(orderRejectedReason, args.OrderRejectedReason);
+                Assert.Equal(newClientOrderId, args.NewClientOrderId);
+            }
         }
     }
 }

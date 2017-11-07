@@ -39,10 +39,10 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(string symbol, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, CancellationToken token)
             => SubscribeAsync(symbol, null, token);
 
-        public virtual Task SubscribeAsync(string symbol, Action<AggregateTradeEventArgs> callback, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, Action<AggregateTradeEventArgs> callback, CancellationToken token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -62,8 +62,9 @@ namespace Binance.Api.WebSocket
         /// Deserialize JSON and raise <see cref="AggregateTradeEventArgs"/> event.
         /// </summary>
         /// <param name="json"></param>
+        /// <param name="token"></param>
         /// <param name="callback"></param>
-        protected override void DeserializeJsonAndRaiseEvent(string json, Action<AggregateTradeEventArgs> callback = null)
+        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<AggregateTradeEventArgs> callback = null)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -90,7 +91,7 @@ namespace Binance.Api.WebSocket
                         jObject["m"].Value<bool>(),    // is buyer maker
                         jObject["M"].Value<bool>());   // is best price
 
-                    var eventArgs = new AggregateTradeEventArgs(eventTime, trade);
+                    var eventArgs = new AggregateTradeEventArgs(eventTime, token, trade);
 
                     callback?.Invoke(eventArgs);
                     RaiseUpdateEvent(eventArgs);

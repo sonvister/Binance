@@ -1,4 +1,5 @@
-﻿using Binance.Account.Orders;
+﻿using System.Threading;
+using Binance.Account.Orders;
 
 namespace Binance.Api.WebSocket.Events
 {
@@ -34,12 +35,13 @@ namespace Binance.Api.WebSocket.Events
         /// Constructor.
         /// </summary>
         /// <param name="timestamp">The event time.</param>
+        /// <param name="token">The cancellation token.</param>
         /// <param name="order">The order.</param>
         /// <param name="orderExecutionType">The order execution type.</param>
         /// <param name="orderRejectedReason">The order rejected reason.</param>
         /// <param name="newClientOrderId">The new client order ID.</param>
-        protected OrderExecutionEventArgs(long timestamp, Order order, OrderExecutionType orderExecutionType, OrderRejectedReason orderRejectedReason, string newClientOrderId)
-            : base(timestamp)
+        protected OrderExecutionEventArgs(long timestamp, CancellationToken token, Order order, OrderExecutionType orderExecutionType, OrderRejectedReason orderRejectedReason, string newClientOrderId)
+            : base(timestamp, token)
         {
             Throw.IfNull(order, nameof(order));
 

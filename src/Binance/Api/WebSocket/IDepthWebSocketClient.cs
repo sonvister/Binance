@@ -30,7 +30,7 @@ namespace Binance.Api.WebSocket
         /// <param name="symbol">The symbol.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(string symbol, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, CancellationToken token);
 
         /// <summary>
         /// Subscribe to the specified symbol and begin receiving depth update
@@ -42,7 +42,7 @@ namespace Binance.Api.WebSocket
         /// <param name="callback">An event callback.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(string symbol, Action<DepthUpdateEventArgs> callback, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, Action<DepthUpdateEventArgs> callback, CancellationToken token);
 
         #endregion Public Methods
     }

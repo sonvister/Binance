@@ -39,10 +39,10 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(string symbol, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, CancellationToken token)
             => SubscribeAsync(symbol, null, token);
 
-        public virtual Task SubscribeAsync(string symbol, Action<DepthUpdateEventArgs> callback, CancellationToken token = default)
+        public virtual Task SubscribeAsync(string symbol, Action<DepthUpdateEventArgs> callback, CancellationToken token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -63,7 +63,7 @@ namespace Binance.Api.WebSocket
         /// </summary>
         /// <param name="json"></param>
         /// <param name="callback"></param>
-        protected override void DeserializeJsonAndRaiseEvent(string json, Action<DepthUpdateEventArgs> callback = null)
+        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<DepthUpdateEventArgs> callback = null)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -86,7 +86,7 @@ namespace Binance.Api.WebSocket
                     var bids = jObject["b"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
                     var asks = jObject["a"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
 
-                    var eventArgs = new DepthUpdateEventArgs(eventTime, symbol, firstUpdateId, lastUpdateId, bids, asks);
+                    var eventArgs = new DepthUpdateEventArgs(eventTime, token, symbol, firstUpdateId, lastUpdateId, bids, asks);
 
                     callback?.Invoke(eventArgs);
                     RaiseUpdateEvent(eventArgs);
