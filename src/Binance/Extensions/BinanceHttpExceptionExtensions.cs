@@ -1,7 +1,5 @@
-﻿using Binance.Api;
-
-// ReSharper disable once CheckNamespace
-namespace Binance
+﻿// ReSharper disable once CheckNamespace
+namespace Binance.Api
 {
     /// <summary>
     /// HTTP exception extensions to help interpret status codes.

@@ -50,7 +50,6 @@ namespace Binance.Api
 
         /// <summary>
         /// Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
-        /// If fromdId, startTime, and endTime are not sent, the most recent aggregate trades will be returned.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="limit">Default 500; max 500.</param>
@@ -60,7 +59,6 @@ namespace Binance.Api
 
         /// <summary>
         /// Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
-        /// If fromdId, startTime, and endTime are not sent, the most recent aggregate trades will be returned.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="fromId">ID to get aggregate trades from INCLUSIVE.</param>
@@ -71,7 +69,6 @@ namespace Binance.Api
 
         /// <summary>
         /// Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
-        /// If fromdId, startTime, and endTime are not sent, the most recent aggregate trades will be returned.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="startTime">Timestamp in ms to get aggregate trades from INCLUSIVE.</param>
@@ -192,16 +189,6 @@ namespace Binance.Api
         /// <param name="token"></param>
         /// <returns></returns>
         Task<string> CancelOrderAsync(IBinanceApiUser user, string symbol, string origClientOrderId, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default);
-
-        /// <summary>
-        /// Cancel an order.
-        /// </summary>
-        /// <param name="order"></param>
-        /// <param name="newClientOrderId"></param>
-        /// <param name="recvWindow"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task<string> CancelAsync(Order order, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get all open orders on a symbol.

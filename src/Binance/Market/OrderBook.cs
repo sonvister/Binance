@@ -68,8 +68,8 @@ namespace Binance.Market
         /// </summary>
         /// <param name="symbol">The symbol.</param>
         /// <param name="lastUpdateId">The last updated ID.</param>
-        /// <param name="bids">The bids (price and quantity) in any sequence.</param>
-        /// <param name="asks">The asks (price and quantity) in any sequence.</param>
+        /// <param name="bids">The bids (price and aggregate quantity) in any sequence.</param>
+        /// <param name="asks">The asks (price and aggregate quantity) in any sequence.</param>
         public OrderBook(string symbol, long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));

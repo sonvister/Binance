@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
+using System.Linq;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -33,14 +34,21 @@ namespace BinanceConsoleApp.Controllers
                 long.TryParse(args[3], out endTime);
             }
 
-            var trades = await Program.Api.GetAggregateTradesInAsync(symbol, startTime, endTime, token);
+            var trades = (await Program.Api.GetAggregateTradesInAsync(symbol, startTime, endTime, token)).Reverse();
 
             lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
-                foreach (var trade in trades)
+                if (!trades.Any())
                 {
-                    Program.Display(trade);
+                    Console.WriteLine("  [None]");
+                }
+                else
+                {
+                    foreach (var trade in trades)
+                    {
+                        Program.Display(trade);
+                    }
                 }
                 Console.WriteLine();
             }

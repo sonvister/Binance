@@ -2,9 +2,9 @@
 using Binance.Market;
 
 // ReSharper disable once CheckNamespace
-namespace Binance
+namespace Binance.Market
 {
-    internal static class CandlestickIntervalExtensions
+    public static class CandlestickIntervalExtensions
     {
         /// <summary>
         /// Convert <see cref="CandlestickInterval"/> to string.

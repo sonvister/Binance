@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
+using System.Linq;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -16,12 +17,17 @@ namespace BinanceConsoleApp.Controllers
             var args = command.Split(' ');
 
             var symbol = Symbol.BTC_USDT;
+            long fromId = 0;
+
             if (args.Length > 1)
             {
-                symbol = args[1];
+                if (!long.TryParse(args[1], out fromId))
+                {
+                    symbol = args[1];
+                    fromId = 0;
+                }
             }
 
-            long fromId = 0;
             if (args.Length > 2)
             {
                 long.TryParse(args[2], out fromId);
@@ -33,14 +39,21 @@ namespace BinanceConsoleApp.Controllers
                 int.TryParse(args[3], out limit);
             }
 
-            var trades = await Program.Api.GetAggregateTradesFromAsync(symbol, fromId, limit, token: token);
+            var trades = (await Program.Api.GetAggregateTradesFromAsync(symbol, fromId, limit, token: token)).Reverse();
 
             lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
-                foreach (var trade in trades)
+                if (!trades.Any())
                 {
-                    Program.Display(trade);
+                    Console.WriteLine("  [None]");
+                }
+                else
+                {
+                    foreach (var trade in trades)
+                    {
+                        Program.Display(trade);
+                    }
                 }
                 Console.WriteLine();
             }

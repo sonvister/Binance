@@ -48,9 +48,9 @@ namespace Binance.Api.WebSocket.Events
             Throw.IfNull(candlestick, nameof(candlestick));
 
             if (firstTradeId < 0)
-                throw new ArgumentException($"{nameof(CandlestickEventArgs)}: Trade ID must be greater than 0.", nameof(firstTradeId));
+                throw new ArgumentException($"{nameof(CandlestickEventArgs)}: ID must not be less than 0.", nameof(firstTradeId));
             if (lastTradeId < 0)
-                throw new ArgumentException($"{nameof(CandlestickEventArgs)}: Trade ID must be greater than 0.", nameof(lastTradeId));
+                throw new ArgumentException($"{nameof(CandlestickEventArgs)}: ID must not be less than 0.", nameof(lastTradeId));
             if (lastTradeId < firstTradeId)
                 throw new ArgumentException($"{nameof(CandlestickEventArgs)}: Last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
 

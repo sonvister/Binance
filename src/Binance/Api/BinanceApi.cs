@@ -147,7 +147,7 @@ namespace Binance.Api
             if (endTime < startTime)
                 throw new ArgumentException($"Timestamp must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
 
-            var json = await JsonApi.GetAggregateTradesAsync(symbol, NullId, 0, startTime, endTime, token)
+            var json = await JsonApi.GetAggregateTradesAsync(symbol, NullId, default, startTime, endTime, token)
                 .ConfigureAwait(false);
 
             try { return DeserializeAggregateTrades(symbol, json); }
@@ -363,10 +363,11 @@ namespace Binance.Api
             var json = await JsonApi.GetOrderAsync(order.User, order.Symbol, order.Id, null, recvWindow, token)
                 .ConfigureAwait(false);
 
+            // Update existing order properties.
             try { FillOrder(order, JObject.Parse(json)); }
             catch (Exception e)
             {
-                throw NewFailedToParseJsonException(nameof(GetAsync), json, e);
+                throw NewFailedToParseJsonException($"{nameof(GetAsync)}({nameof(Order)})", json, e);
             }
 
             return order;
@@ -402,14 +403,6 @@ namespace Binance.Api
             {
                 throw NewFailedToParseJsonException(nameof(CancelOrderAsync), json, e);
             }
-        }
-
-        public virtual Task<string> CancelAsync(Order order, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default)
-        {
-            Throw.IfNull(order, nameof(order));
-
-            // Cancel order using order ID.
-            return CancelOrderAsync(order.User, order.Symbol, order.Id, newClientOrderId, recvWindow, token);
         }
 
         public virtual async Task<IEnumerable<Order>> GetOpenOrdersAsync(IBinanceApiUser user, string symbol, long recvWindow = default, CancellationToken token = default)

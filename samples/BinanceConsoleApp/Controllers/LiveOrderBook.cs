@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Binance;
 using Binance.Cache;
 using Binance.Cache.Events;
+using Binance.Market;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers
