@@ -26,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinancePriceChart", "sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Binance.Application", "samples\Binance.Application\Binance.Application.csproj", "{6B373EAC-2ADD-49BB-B2FC-01A873DF752B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinanceSymbolTool", "samples\BinanceSymbolTool\BinanceSymbolTool.csproj", "{5F939E55-1EB2-462B-9A75-7C04F15E15BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinanceCodeGenerator", "samples\BinanceCodeGenerator\BinanceCodeGenerator.csproj", "{D4767C0E-FDF3-43E0-8E3C-D29D6FC0A667}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,10 +62,10 @@ Global
 		{6B373EAC-2ADD-49BB-B2FC-01A873DF752B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B373EAC-2ADD-49BB-B2FC-01A873DF752B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B373EAC-2ADD-49BB-B2FC-01A873DF752B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5F939E55-1EB2-462B-9A75-7C04F15E15BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F939E55-1EB2-462B-9A75-7C04F15E15BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F939E55-1EB2-462B-9A75-7C04F15E15BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F939E55-1EB2-462B-9A75-7C04F15E15BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4767C0E-FDF3-43E0-8E3C-D29D6FC0A667}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4767C0E-FDF3-43E0-8E3C-D29D6FC0A667}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4767C0E-FDF3-43E0-8E3C-D29D6FC0A667}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4767C0E-FDF3-43E0-8E3C-D29D6FC0A667}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,7 +77,7 @@ Global
 		{2AF6EC27-BFBF-4949-8F38-46FEFEE2B512} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
 		{535586E1-7303-4C9C-9139-6B36EF1D22AE} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
 		{6B373EAC-2ADD-49BB-B2FC-01A873DF752B} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
-		{5F939E55-1EB2-462B-9A75-7C04F15E15BD} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
+		{D4767C0E-FDF3-43E0-8E3C-D29D6FC0A667} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1D98031F-42D5-47D4-8F4E-D2B81629EEA4}

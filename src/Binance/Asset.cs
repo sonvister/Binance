@@ -1,4 +1,4 @@
-﻿// ReSharper disable InconsistentNaming
+// ReSharper disable InconsistentNaming
 namespace Binance
 {
     /// <summary>
@@ -6,52 +6,69 @@ namespace Binance
     /// </summary>
     public static class Asset
     {
-        public static readonly string BTC = nameof(BTC);
-        public static readonly string ETH = nameof(ETH);
-        public static readonly string LTC = nameof(LTC);
-        public static readonly string BNB = nameof(BNB);
-        public static readonly string NEO = nameof(NEO);
-        public static readonly string BCC = nameof(BCC);
-        public static readonly string GAS = nameof(GAS);
-        public static readonly string HCC = nameof(HCC);
-        public static readonly string HSR = nameof(HSR);
-        public static readonly string ELC = nameof(ELC);
-        public static readonly string MCO = nameof(MCO);
-        public static readonly string WTC = nameof(WTC);
-        public static readonly string LLT = nameof(LLT);
-        public static readonly string LRC = nameof(LRC);
-        public static readonly string QTUM = nameof(QTUM);
-        public static readonly string YOYO = nameof(YOYO);
-        public static readonly string OMG = nameof(OMG);
-        public static readonly string ZRX = nameof(ZRX);
-        public static readonly string STRAT = nameof(STRAT);
-        public static readonly string SNGLS = nameof(SNGLS);
-        public static readonly string BQX = nameof(BQX);
-        public static readonly string KNC = nameof(KNC);
-        public static readonly string FUN = nameof(FUN);
-        public static readonly string SNM = nameof(SNM);
-        public static readonly string IOTA = nameof(IOTA);
-        public static readonly string LINK = nameof(LINK);
-        public static readonly string XVG = nameof(XVG);
-        public static readonly string CTR = nameof(CTR);
-        public static readonly string SALT = nameof(SALT);
-        public static readonly string MDA = nameof(MDA);
-        public static readonly string MTL = nameof(MTL);
-        public static readonly string SUB = nameof(SUB);
-        public static readonly string EOS = nameof(EOS);
-        public static readonly string SNT = nameof(SNT);
-        public static readonly string ETC = nameof(ETC);
-        public static readonly string MTH = nameof(MTH);
-        public static readonly string ENG = nameof(ENG);
-        public static readonly string DNT = nameof(DNT);
-        public static readonly string ZEC = nameof(ZEC);
-        public static readonly string BNT = nameof(BNT);
-        public static readonly string AST = nameof(AST);
-        public static readonly string DASH = nameof(DASH);
-        public static readonly string OAX = nameof(OAX);
-        public static readonly string ICN = nameof(ICN);
-        public static readonly string BTG = nameof(BTG);
-        public static readonly string EVX = nameof(EVX);
-        public static readonly string REQ = nameof(REQ);
+        #region Public Constants
+
+        public static readonly string ARK = "ARK";
+        public static readonly string AST = "AST";
+        public static readonly string BCC = "BCC";
+        public static readonly string BNB = "BNB";
+        public static readonly string BNT = "BNT";
+        public static readonly string BQX = "BQX";
+        public static readonly string BTC = "BTC";
+        public static readonly string BTG = "BTG";
+        public static readonly string BTM = "BTM";
+        public static readonly string CTR = "CTR";
+        public static readonly string DASH = "DASH";
+        public static readonly string DNT = "DNT";
+        public static readonly string ELC = "ELC";
+        public static readonly string ENG = "ENG";
+        public static readonly string ENJ = "ENJ";
+        public static readonly string EOS = "EOS";
+        public static readonly string ETC = "ETC";
+        public static readonly string ETH = "ETH";
+        public static readonly string EVX = "EVX";
+        public static readonly string FUN = "FUN";
+        public static readonly string GAS = "GAS";
+        public static readonly string HCC = "HCC";
+        public static readonly string HSR = "HSR";
+        public static readonly string ICN = "ICN";
+        public static readonly string IOTA = "IOTA";
+        public static readonly string KNC = "KNC";
+        public static readonly string LINK = "LINK";
+        public static readonly string LLT = "LLT";
+        public static readonly string LRC = "LRC";
+        public static readonly string LTC = "LTC";
+        public static readonly string MCO = "MCO";
+        public static readonly string MDA = "MDA";
+        public static readonly string MOD = "MOD";
+        public static readonly string MTH = "MTH";
+        public static readonly string MTL = "MTL";
+        public static readonly string NEO = "NEO";
+        public static readonly string OAX = "OAX";
+        public static readonly string OMG = "OMG";
+        public static readonly string POWR = "POWR";
+        public static readonly string QTUM = "QTUM";
+        public static readonly string REQ = "REQ";
+        public static readonly string SALT = "SALT";
+        public static readonly string SNGLS = "SNGLS";
+        public static readonly string SNM = "SNM";
+        public static readonly string SNT = "SNT";
+        public static readonly string STORJ = "STORJ";
+        public static readonly string STRAT = "STRAT";
+        public static readonly string SUB = "SUB";
+        public static readonly string TRX = "TRX";
+        public static readonly string USDT = "USDT";
+        public static readonly string VEN = "VEN";
+        public static readonly string VIB = "VIB";
+        public static readonly string WTC = "WTC";
+        public static readonly string XRP = "XRP";
+        public static readonly string XVG = "XVG";
+        public static readonly string YOYO = "YOYO";
+        public static readonly string ZEC = "ZEC";
+        public static readonly string ZRX = "ZRX";
+
+        #endregion Public Constants
+
+        // File generated by BinanceCodeGenerator sample application.
     }
 }

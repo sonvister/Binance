@@ -77,7 +77,7 @@ namespace BinanceTradeHistory
                         }
                     });
 
-                    Console.ReadKey(true); // ...press any key to exit.
+                    Console.ReadKey(true);
 
                     cts.Cancel();
                     await task;
