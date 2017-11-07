@@ -63,21 +63,22 @@ namespace Binance.Api
 
             lock (_sync)
             {
-                try
-                {
-                    // Create the current timestamp.
-                    var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                // Create the current timestamp.
+                var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
+                // If the maximum count has not been reached.
+                if (_timestamps.Count < Count)
+                {
                     // Queue the current timestammp.
                     _timestamps.Enqueue(now);
+                    return;
+                }
 
-                    // If the maximum count has not been exceeded.
-                    if (_timestamps.Count <= Count)
-                        return;
+                // Remove the oldest timestamp.
+                var then = _timestamps.Dequeue();
 
-                    // Get the oldest timestamp.
-                    var then = _timestamps.Dequeue();
-
+                try
+                {
                     // How long has it been?
                     var time = Convert.ToInt32(now - then);
 
@@ -89,6 +90,9 @@ namespace Binance.Api
                     }
                 }
                 catch (OverflowException) { }
+
+                // Add the current/future timestammp.
+                _timestamps.Enqueue(now + millisecondsDelay);
             }
 
             // Delay if required.

@@ -109,28 +109,6 @@ namespace Binance.Tests.Api.Json
 
         #endregion Market Data
 
-        /*
-        [Fact]
-        public async Task RateLimit()
-        {
-            const int count = 3;
-            const int intervals = 2;
-
-            _api.RateLimiter.IsEnabled = true;
-            _api.RateLimiter.Configure(count, TimeSpan.FromSeconds(1));
-
-            var stopwatch = Stopwatch.StartNew();
-
-            for (var i = 0; i < count * intervals; i++)
-                await _api.PingAsync();
-
-            stopwatch.Stop();
-
-            Assert.True(stopwatch.ElapsedMilliseconds > _api.RateLimiter.Duration.TotalMilliseconds * intervals);
-            Assert.False(count <= 3 && stopwatch.ElapsedMilliseconds > _api.RateLimiter.Duration.TotalMilliseconds * (intervals + 1));
-        }
-        //*/
-
         private static bool IsJsonObject(string json)
         {
             return !string.IsNullOrWhiteSpace(json)
