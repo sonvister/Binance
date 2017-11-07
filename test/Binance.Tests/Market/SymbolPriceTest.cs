@@ -2,7 +2,7 @@
 using Binance.Market;
 using Xunit;
 
-namespace Binance.Tests.Api
+namespace Binance.Tests.Market
 {
     public class SymbolPriceTest
     {

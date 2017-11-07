@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BinanceSymbolTool
+namespace BinanceCodeGenerator
 {
     class Program
     {
@@ -24,12 +24,15 @@ namespace BinanceSymbolTool
                 .GetSection("QuoteCurrencies").GetChildren()
                 .Select(c => c.Value).ToArray();
             
-            // Initailize currency pair lists.
+            // Initailize base currency lists.
             var currencyPairs = new Dictionary<string, List<string>>();
             foreach (var currency in quoteCurrencies)
             {
                 currencyPairs[currency] = new List<string>();
             }
+
+            // Initialize assets list.
+            var assets = new List<string>(quoteCurrencies);
 
             long timestamp;
 
@@ -50,7 +53,13 @@ namespace BinanceSymbolTool
                     {
                         if (symbol.EndsWith(currency))
                         {
-                            currencyPairs[currency].Add(symbol.Substring(0, symbol.IndexOf(currency)));
+                            var asset = symbol.Substring(0, symbol.IndexOf(currency));
+
+                            if (!assets.Contains(asset))
+                                assets.Add(asset);
+
+                            currencyPairs[currency].Add(asset);
+
                             match = true;
                         }
                     }
@@ -63,7 +72,7 @@ namespace BinanceSymbolTool
                 }
             }
 
-            // Read the template file.
+            // Read the symbol template file.
             var lines = (await File.ReadAllLinesAsync("Symbol.template.cs")).ToList();
 
             // Replace timestamp.
@@ -73,11 +82,14 @@ namespace BinanceSymbolTool
             index = lines.FindIndex(l => l.Contains($"<<insert symbols>>"));
             lines.RemoveAt(index);
 
-            // Insert symbol definitions for each currency pair.
+            // Insert definition for each currency pair.
             foreach (var quoteCurrency in quoteCurrencies)
             {
                 lines.Insert(index, $"        // {quoteCurrency}");
                 index++;
+
+                // Sort base currencies.
+                currencyPairs[quoteCurrency].Sort();
 
                 foreach (var baseCurrency in currencyPairs[quoteCurrency])
                 {
@@ -94,6 +106,25 @@ namespace BinanceSymbolTool
 
             // Save the generated source code (replacing original).
             await File.WriteAllLinesAsync("../../src/Binance/Symbol.cs", lines);
+
+            // Read the asset template file.
+            lines = (await File.ReadAllLinesAsync("Asset.template.cs")).ToList();
+
+            index = lines.FindIndex(l => l.Contains($"<<insert assets>>"));
+            lines.RemoveAt(index);
+
+            // Sort assets.
+            assets.Sort();
+
+            // Insert definition for each asset.
+            foreach (var asset in assets)
+            {
+                lines.Insert(index, $"        public static readonly string {asset} = \"{asset}\";");
+                index++;
+            }
+
+            // Save the generated source code (replacing original).
+            await File.WriteAllLinesAsync("../../src/Binance/Asset.cs", lines);
 
             Console.WriteLine();
             Console.WriteLine("  ...press any key to close window.");
