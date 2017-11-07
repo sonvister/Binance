@@ -1,11 +1,10 @@
-﻿using Binance;
-using Binance.Api;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Binance.Api;
+using Microsoft.Extensions.Configuration;
 
 namespace BinanceCodeGenerator
 {
@@ -109,6 +108,10 @@ namespace BinanceCodeGenerator
 
             // Read the asset template file.
             lines = (await File.ReadAllLinesAsync("Asset.template.cs")).ToList();
+
+            // Replace timestamp.
+            index = lines.FindIndex(l => l.Contains("<<insert timestamp>>"));
+            lines[index] = $"        public static readonly long LastUpdateAt = {timestamp};";
 
             index = lines.FindIndex(l => l.Contains($"<<insert assets>>"));
             lines.RemoveAt(index);

@@ -8,6 +8,11 @@ namespace Binance
     {
         #region Public Constants
 
+        /// <summary>
+        /// Timestamp when the assets were last updated.
+        /// </summary>
+        // <<insert timestamp>>
+
         // <<insert assets>>
 
         #endregion Public Constants
