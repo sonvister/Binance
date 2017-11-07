@@ -11,7 +11,7 @@ namespace Binance
         /// <summary>
         /// Timestamp when the symbols were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1510033554284;
+        public static readonly long LastUpdateAt = 1510088475837;
 
         // USDT
         public static readonly string BNB_USDT = "BNBUSDT";
@@ -42,6 +42,7 @@ namespace Binance
         public static readonly string HSR_BTC = "HSRBTC";
         public static readonly string ICN_BTC = "ICNBTC";
         public static readonly string IOTA_BTC = "IOTABTC";
+        public static readonly string KMD_BTC = "KMDBTC";
         public static readonly string KNC_BTC = "KNCBTC";
         public static readonly string LINK_BTC = "LINKBTC";
         public static readonly string LLT_BTC = "LLTBTC";
@@ -95,6 +96,7 @@ namespace Binance
         public static readonly string HSR_ETH = "HSRETH";
         public static readonly string ICN_ETH = "ICNETH";
         public static readonly string IOTA_ETH = "IOTAETH";
+        public static readonly string KMD_ETH = "KMDETH";
         public static readonly string KNC_ETH = "KNCETH";
         public static readonly string LINK_ETH = "LINKETH";
         public static readonly string LRC_ETH = "LRCETH";

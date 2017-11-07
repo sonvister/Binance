@@ -8,6 +8,11 @@ namespace Binance
     {
         #region Public Constants
 
+        /// <summary>
+        /// Timestamp when the assets were last updated.
+        /// </summary>
+        public static readonly long LastUpdateAt = 1510088475837;
+
         public static readonly string ARK = "ARK";
         public static readonly string AST = "AST";
         public static readonly string BCC = "BCC";
@@ -33,6 +38,7 @@ namespace Binance
         public static readonly string HSR = "HSR";
         public static readonly string ICN = "ICN";
         public static readonly string IOTA = "IOTA";
+        public static readonly string KMD = "KMD";
         public static readonly string KNC = "KNC";
         public static readonly string LINK = "LINK";
         public static readonly string LLT = "LLT";
