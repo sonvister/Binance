@@ -30,9 +30,10 @@ namespace Binance.Api.WebSocket
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="client"></param>
         /// <param name="logger"></param>
-        public CandlestickWebSocketClient(ILogger<CandlestickWebSocketClient> logger = null)
-            : base(logger)
+        public CandlestickWebSocketClient(IWebSocketClient client, ILogger<CandlestickWebSocketClient> logger = null)
+            : base(client, logger)
         { }
 
         #endregion Construtors

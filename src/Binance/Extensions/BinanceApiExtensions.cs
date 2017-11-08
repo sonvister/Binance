@@ -108,6 +108,8 @@ namespace Binance.Api
         /// <returns></returns>
         public static Task<IEnumerable<Candlestick>> GetCandlesticksAsync(this IBinanceApi api, string symbol, CandlestickInterval interval, DateTime startTime, DateTime endTime, int limit = default, CancellationToken token = default)
         {
+            Throw.IfNull(api, nameof(api));
+
             return api.GetCandlesticksAsync(symbol, interval, limit, new DateTimeOffset(startTime).ToUnixTimeMilliseconds(), new DateTimeOffset(endTime).ToUnixTimeMilliseconds(), token);
         }
 
@@ -122,10 +124,47 @@ namespace Binance.Api
         /// <returns></returns>
         public static Task<string> CancelAsync(this IBinanceApi api, Order order, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default)
         {
+            Throw.IfNull(api, nameof(api));
             Throw.IfNull(order, nameof(order));
 
             // Cancel order using order ID.
             return api.CancelOrderAsync(order.User, order.Symbol, order.Id, newClientOrderId, recvWindow, token);
+        }
+
+        /// <summary>
+        /// Cancel all open orders for a symbol or all symbols.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="user"></param>
+        /// <param name="symbol"></param>
+        /// <param name="recvWindow"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task<IEnumerable<string>> CancelAllOrdersAsync(this IBinanceApi api, IBinanceApiUser user, string symbol = null, long recvWindow = default, CancellationToken token = default)
+        {
+            Throw.IfNull(api, nameof(api));
+
+            var symbols = string.IsNullOrWhiteSpace(symbol)
+                ? await api.SymbolsAsync().ConfigureAwait(false)
+                : new [] { symbol };
+
+            var cancelOrderIds = new List<string>();
+
+            foreach (var s in symbols)
+            {
+                var orders = await api.GetOpenOrdersAsync(user, s, recvWindow, token)
+                    .ConfigureAwait(false);
+
+                foreach (var order in orders)
+                {
+                    var cancelOrderId = await api.CancelAsync(order, recvWindow: recvWindow, token: token)
+                        .ConfigureAwait(false);
+
+                    cancelOrderIds.Add(cancelOrderId);
+                }
+            }
+
+            return cancelOrderIds;
         }
     }
 }

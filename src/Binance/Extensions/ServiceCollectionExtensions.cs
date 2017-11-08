@@ -19,6 +19,9 @@ namespace Binance
             services.AddTransient<IRateLimiter, RateLimiter>();
             services.AddSingleton<IBinanceApi, BinanceApi>();
 
+            // WebSocket
+            services.AddTransient<IWebSocketClient, WebSocketClient>();
+
             // Candlesticks
             services.AddTransient<ICandlesticksCache, CandlesticksCache>();
 

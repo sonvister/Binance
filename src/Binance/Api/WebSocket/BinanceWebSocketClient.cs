@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -16,8 +14,6 @@ namespace Binance.Api.WebSocket
     {
         #region Protected Fields
 
-        protected ClientWebSocket WebSocket;
-
         protected BufferBlock<string> BufferBlock;
         protected ActionBlock<string> ActionBlock;
 
@@ -31,18 +27,25 @@ namespace Binance.Api.WebSocket
 
         private const string BaseUri = "wss://stream.binance.com:9443/ws/";
 
-        private const int ReceiveBufferSize = 16 * 1024;
-
         #endregion Private Constants
 
+        #region Private Fields
+
+        private IWebSocketClient _client;
+
+        #endregion Private Fields
+
         #region Constructors
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="logger"></param>
-        protected BinanceWebSocketClient(ILogger logger = null)
+        protected BinanceWebSocketClient(IWebSocketClient client, ILogger logger = null)
         {
+            Throw.IfNull(client, nameof(client));
+
+            _client = client;
             Logger = logger;
         }
 
@@ -97,23 +100,12 @@ namespace Binance.Api.WebSocket
 
                 BufferBlock.LinkTo(ActionBlock);
 
-                WebSocket = new ClientWebSocket();
-                WebSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
-
                 var uri = new Uri($"{BaseUri}{uriPath}");
 
-                await WebSocket
-                    .ConnectAsync(uri, token)
+                await _client.ConnectAsync(uri, token)
                     .ConfigureAwait(false);
 
-                if (WebSocket.State != WebSocketState.Open)
-                {
-                    Logger?.LogError($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(SubscribeToAsync)}: WebSocket connect failed (state: {WebSocket.State}).");
-                    WebSocket.Dispose();
-                    return;
-                }
-
-                await ReceiveEventData(WebSocket, token)
+                await _client.ReceiveAsync(json => BufferBlock.Post(json), token)
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException) { }
@@ -121,83 +113,6 @@ namespace Binance.Api.WebSocket
             {
                 LogException(e, $"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(SubscribeToAsync)}");
                 
-                if (!token.IsCancellationRequested)
-                    throw;
-            }
-        }
-
-        /// <summary>
-        /// Receive event data from web socket.
-        /// </summary>
-        /// <param name="webSocket"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        protected virtual async Task ReceiveEventData(ClientWebSocket webSocket, CancellationToken token = default)
-        {
-            Throw.IfNull(webSocket, nameof(webSocket));
-            Throw.IfNull(token, nameof(token));
-
-            try
-            {
-                var bytes = new byte[ReceiveBufferSize];
-                var buffer = new ArraySegment<byte>(bytes);
-
-                var stringBuilder = new StringBuilder();
-
-                while (webSocket.State == WebSocketState.Open)
-                {
-                    WebSocketReceiveResult result;
-                    do
-                    {
-                        result = await webSocket
-                            .ReceiveAsync(buffer, token)
-                            .ConfigureAwait(false);
-
-                        switch (result.MessageType)
-                        {
-                            case WebSocketMessageType.Close:
-                                if (result.CloseStatus.HasValue)
-                                {
-                                    Logger?.LogWarning($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(ReceiveEventData)}: WebSocket closed ({result.CloseStatus.Value}): \"{result.CloseStatusDescription ?? "[no reason provided]"}\"");
-                                }
-                                await webSocket
-                                    .CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
-                                    .ConfigureAwait(false);
-                                break;
-
-                            case WebSocketMessageType.Text when result.Count > 0:
-                                stringBuilder.Append(Encoding.UTF8.GetString(bytes, 0, result.Count));
-                                break;
-
-                            case WebSocketMessageType.Binary:
-                                Logger?.LogWarning($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(ReceiveEventData)}: Received binary message type.");
-                                break;
-
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(result.MessageType), "Unknown result message type.");
-                        }
-                    }
-                    while (!result.EndOfMessage);
-
-                    var json = stringBuilder.ToString();
-
-                    stringBuilder.Clear();
-
-                    if (!string.IsNullOrWhiteSpace(json))
-                    {
-                        BufferBlock.Post(json);
-                    }
-                    else
-                    {
-                        Logger?.LogWarning($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(ReceiveEventData)}: Received empty JSON message.");
-                    }
-                }
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception e)
-            {
-                LogException(e, $"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(ReceiveEventData)}");
-
                 if (!token.IsCancellationRequested)
                     throw;
             }
@@ -230,7 +145,7 @@ namespace Binance.Api.WebSocket
             {
                 try
                 {
-                    WebSocket?.Dispose();
+                    _client?.Dispose();
 
                     BufferBlock?.Complete();
                     ActionBlock?.Complete();

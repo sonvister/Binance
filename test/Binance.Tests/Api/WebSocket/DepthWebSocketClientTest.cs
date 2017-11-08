@@ -4,6 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api.WebSocket;
+using Moq;
 using Xunit;
 
 namespace Binance.Tests.Cache
@@ -14,7 +15,7 @@ namespace Binance.Tests.Cache
         public Task SubscribeThrows()
         {
             using (var cts = new CancellationTokenSource())
-            using (var client = new DepthWebSocketClient())
+            using (var client = new DepthWebSocketClient(new Mock<IWebSocketClient>().Object))
                 return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.SubscribeAsync(null, cts.Token));
         }
 
@@ -26,7 +27,7 @@ namespace Binance.Tests.Cache
             var symbol = Symbol.BTC_USDT;
 
             using (var cts = new CancellationTokenSource())
-            using (var client = new DepthWebSocketClient())
+            using (var client = new DepthWebSocketClient(new WebSocketClient()))
             {
                 var task = client.SubscribeAsync(symbol, cts.Token);
 
@@ -44,7 +45,7 @@ namespace Binance.Tests.Cache
             var symbol = Symbol.BTC_USDT;
 
             using (var cts = new CancellationTokenSource())
-            using (var client = new DepthWebSocketClient())
+            using (var client = new DepthWebSocketClient(new WebSocketClient()))
             {
                 var task = client.SubscribeAsync(symbol, cts.Token);
 
@@ -58,7 +59,7 @@ namespace Binance.Tests.Cache
             var symbol = Symbol.BTC_USDT;
 
             using (var cts = new CancellationTokenSource())
-            using (var client = new DepthWebSocketClient())
+            using (var client = new DepthWebSocketClient(new WebSocketClient()))
             {
                 var task = client.SubscribeAsync(symbol, args =>
                 {

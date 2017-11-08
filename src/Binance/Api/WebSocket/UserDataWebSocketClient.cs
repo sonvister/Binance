@@ -59,10 +59,11 @@ namespace Binance.Api.WebSocket
         /// Constructor.
         /// </summary>
         /// <param name="api">The Binance API.</param>
+        /// <param name="client">The WebSocket client.</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public UserDataWebSocketClient(IBinanceApi api, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)
-            : base(logger)
+        public UserDataWebSocketClient(IBinanceApi api, IWebSocketClient client, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)
+            : base(client, logger)
         {
             _api = api;
             _options = options?.Value;

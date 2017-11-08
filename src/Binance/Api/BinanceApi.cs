@@ -197,6 +197,9 @@ namespace Binance.Api
             {
                 var jObject = JObject.Parse(json);
 
+                var firstId = jObject["firstId"].Value<long>();
+                var lastId = jObject["lastId"].Value<long>();
+
                 return new Symbol24HourStatistics(
                     symbol.FormatSymbol(),
                     jObject["priceChange"].Value<decimal>(),
@@ -212,9 +215,7 @@ namespace Binance.Api
                     jObject["volume"].Value<decimal>(),
                     jObject["openTime"].Value<long>(),
                     jObject["closeTime"].Value<long>(),
-                    jObject["firstId"].Value<long>(),
-                    jObject["lastId"].Value<long>(),
-                    jObject["count"].Value<long>());
+                    firstId, lastId, lastId - firstId + 1); // TODO
             }
             catch (Exception e)
             {
