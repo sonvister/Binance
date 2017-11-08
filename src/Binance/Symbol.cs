@@ -11,7 +11,7 @@ namespace Binance
         /// <summary>
         /// Timestamp when the symbols were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1510088475837;
+        public static readonly long LastUpdateAt = 1510109073385;
 
         // USDT
         public static readonly string BNB_USDT = "BNBUSDT";
