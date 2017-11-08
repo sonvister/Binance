@@ -96,7 +96,7 @@ namespace Binance.Api
         /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<Symbol24HourStatistics> Get24HourStatisticsAsync(string symbol, CancellationToken token = default);
+        Task<SymbolStatistics> Get24HourStatisticsAsync(string symbol, CancellationToken token = default);
 
         /// <summary>
         /// Get latest price for all symbols.

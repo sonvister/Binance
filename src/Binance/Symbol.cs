@@ -11,7 +11,7 @@ namespace Binance
         /// <summary>
         /// Timestamp when the symbols were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1510109073385;
+        public static readonly long LastUpdateAt = 1510122608846;
 
         // USDT
         public static readonly string BNB_USDT = "BNBUSDT";
@@ -58,6 +58,7 @@ namespace Binance
         public static readonly string OMG_BTC = "OMGBTC";
         public static readonly string POWR_BTC = "POWRBTC";
         public static readonly string QTUM_BTC = "QTUMBTC";
+        public static readonly string RCN_BTC = "RCNBTC";
         public static readonly string REQ_BTC = "REQBTC";
         public static readonly string SALT_BTC = "SALTBTC";
         public static readonly string SNGLS_BTC = "SNGLSBTC";
@@ -110,6 +111,7 @@ namespace Binance
         public static readonly string OMG_ETH = "OMGETH";
         public static readonly string POWR_ETH = "POWRETH";
         public static readonly string QTUM_ETH = "QTUMETH";
+        public static readonly string RCN_ETH = "RCNETH";
         public static readonly string REQ_ETH = "REQETH";
         public static readonly string SALT_ETH = "SALTETH";
         public static readonly string SNGLS_ETH = "SNGLSETH";
@@ -129,7 +131,9 @@ namespace Binance
         public static readonly string ZRX_ETH = "ZRXETH";
 
         // BNB
+        public static readonly string NULS_BNB = "NULSBNB";
         public static readonly string POWR_BNB = "POWRBNB";
+        public static readonly string RCN_BNB = "RCNBNB";
         public static readonly string VEN_BNB = "VENBNB";
         public static readonly string YOYO_BNB = "YOYOBNB";
 

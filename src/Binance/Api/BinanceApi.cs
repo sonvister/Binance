@@ -188,7 +188,7 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<Symbol24HourStatistics> Get24HourStatisticsAsync(string symbol, CancellationToken token = default)
+        public virtual async Task<SymbolStatistics> Get24HourStatisticsAsync(string symbol, CancellationToken token = default)
         {
             var json = await JsonApi.Get24HourStatisticsAsync(symbol, token)
                 .ConfigureAwait(false);
@@ -200,8 +200,9 @@ namespace Binance.Api
                 var firstId = jObject["firstId"].Value<long>();
                 var lastId = jObject["lastId"].Value<long>();
 
-                return new Symbol24HourStatistics(
+                return new SymbolStatistics(
                     symbol.FormatSymbol(),
+                    TimeSpan.FromHours(24),
                     jObject["priceChange"].Value<decimal>(),
                     jObject["priceChangePercent"].Value<decimal>(),
                     jObject["weightedAvgPrice"].Value<decimal>(),
