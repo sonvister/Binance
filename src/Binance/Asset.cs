@@ -11,7 +11,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1510160923817;
+        public static readonly long LastUpdateAt = 1510194785382;
 
         public static readonly string ARK = "ARK";
         public static readonly string AST = "AST";
