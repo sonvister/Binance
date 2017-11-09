@@ -7,6 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Integration\BinanceApiTest.cs" />
+    <Compile Remove="Integration\BinanceJsonApiTest.cs" />
+    <Compile Remove="Integration\DepthWebSocketClientTest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Integration\BinanceApiTest.cs" />
+    <None Include="Integration\BinanceJsonApiTest.cs" />
+    <None Include="Integration\DepthWebSocketClientTest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="Moq" Version="4.7.142" />
     <PackageReference Include="xunit" Version="2.3.0" />

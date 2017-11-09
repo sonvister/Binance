@@ -66,7 +66,7 @@ namespace Binance.Api.WebSocket
         {
             token.ThrowIfCancellationRequested();
 
-            Logger?.LogInformation($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(SubscribeToAsync)}: \"{BaseUri}{uriPath}\"");
+            Logger?.LogInformation($"{GetType().Name}.{nameof(SubscribeToAsync)}: \"{BaseUri}{uriPath}\"");
 
             IsSubscribed = true;
 
@@ -86,7 +86,7 @@ namespace Binance.Api.WebSocket
                         catch (OperationCanceledException) { }
                         catch (Exception e)
                         {
-                            LogException(e, $"{nameof(UserDataWebSocketClient)}");
+                            LogException(e, $"{GetType().Name}");
                         }
                     },
                     new ExecutionDataflowBlockOptions

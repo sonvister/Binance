@@ -141,8 +141,15 @@ namespace Binance.Api.WebSocket
 
                     var eventArgs = new AccountUpdateEventArgs(eventTime, token, new AccountInfo(User, commissions, status, balances));
 
-                    callback?.Invoke(eventArgs);
-                    RaiseAccountUpdateEvent(eventArgs);
+                    try
+                    {
+                        callback?.Invoke(eventArgs);
+                        AccountUpdate?.Invoke(this, eventArgs);
+                    }
+                    catch (Exception e)
+                    {
+                        LogException(e, $"{nameof(UserDataWebSocketClient)} event handler");
+                    }
                 }
                 else if (eventType == "executionReport")
                 {
@@ -172,15 +179,29 @@ namespace Binance.Api.WebSocket
 
                         var eventArgs = new TradeUpdateEventArgs(eventTime, token, order, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
 
-                        callback?.Invoke(eventArgs);
-                        RaiseTradeUpdateEvent(eventArgs);
+                        try
+                        {
+                            callback?.Invoke(eventArgs);
+                            TradeUpdate?.Invoke(this, eventArgs);
+                        }
+                        catch (Exception e)
+                        {
+                            LogException(e, $"{nameof(UserDataWebSocketClient)} event handler");
+                        }
                     }
                     else // order update event.
                     {
                         var eventArgs = new OrderUpdateEventArgs(eventTime, token, order, executionType, rejectedReason, newClientOrderId);
 
-                        callback?.Invoke(eventArgs);
-                        RaiseOrderUpdateEvent(eventArgs);
+                        try
+                        {
+                            callback?.Invoke(eventArgs);
+                            OrderUpdate?.Invoke(this, eventArgs);
+                        }
+                        catch (Exception e)
+                        {
+                            LogException(e, $"{nameof(UserDataWebSocketClient)} event handler");
+                        }
                     }
                 }
                 else
@@ -192,54 +213,6 @@ namespace Binance.Api.WebSocket
             catch (Exception e)
             {
                 LogException(e, $"{nameof(UserDataWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Raise account update event.
-        /// </summary>
-        /// <param name="args"></param>
-        protected virtual void RaiseAccountUpdateEvent(AccountUpdateEventArgs args)
-        {
-            Throw.IfNull(args, nameof(args));
-
-            try { AccountUpdate?.Invoke(this, args); }
-            catch (Exception e)
-            {
-                LogException(e, $"{nameof(UserDataWebSocketClient)}.{nameof(RaiseAccountUpdateEvent)}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Raise order update event.
-        /// </summary>
-        /// <param name="args"></param>
-        protected virtual void RaiseOrderUpdateEvent(OrderUpdateEventArgs args)
-        {
-            Throw.IfNull(args, nameof(args));
-
-            try { OrderUpdate?.Invoke(this, args); }
-            catch (Exception e)
-            {
-                LogException(e, $"{nameof(UserDataWebSocketClient)}.{nameof(RaiseOrderUpdateEvent)}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Raise trade update event.
-        /// </summary>
-        /// <param name="args"></param>
-        protected virtual void RaiseTradeUpdateEvent(TradeUpdateEventArgs args)
-        {
-            Throw.IfNull(args, nameof(args));
-
-            try { TradeUpdate?.Invoke(this, args); }
-            catch (Exception e)
-            {
-                LogException(e, $"{nameof(UserDataWebSocketClient)}.{nameof(RaiseTradeUpdateEvent)}");
                 throw;
             }
         }
@@ -270,7 +243,7 @@ namespace Binance.Api.WebSocket
         /// </summary>
         /// <param name="order"></param>
         /// <param name="jToken"></param>
-        private void FillOrder(Order order, JToken jToken)
+        private static void FillOrder(Order order, JToken jToken)
         {
             order.Symbol = jToken["s"].Value<string>();
             order.Id = jToken["i"].Value<long>();
@@ -297,7 +270,7 @@ namespace Binance.Api.WebSocket
         /// </summary>
         /// <param name="executionType"></param>
         /// <returns></returns>
-        private OrderExecutionType ConvertOrderExecutionType(string executionType)
+        private static OrderExecutionType ConvertOrderExecutionType(string executionType)
         {
             switch (executionType)
             {

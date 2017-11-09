@@ -94,8 +94,15 @@ namespace Binance.Api.WebSocket
 
                     var eventArgs = new AggregateTradeEventArgs(eventTime, token, trade);
 
-                    callback?.Invoke(eventArgs);
-                    RaiseUpdateEvent(eventArgs);
+                    try
+                    {
+                        callback?.Invoke(eventArgs);
+                        AggregateTrade?.Invoke(this, eventArgs);
+                    }
+                    catch (Exception e)
+                    {
+                        LogException(e, $"{nameof(TradesWebSocketClient)} event handler");
+                    }
                 }
                 else
                 {
@@ -106,22 +113,6 @@ namespace Binance.Api.WebSocket
             catch (Exception e)
             {
                 LogException(e, $"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Raise aggregate trade event.
-        /// </summary>
-        /// <param name="args"></param>
-        protected virtual void RaiseUpdateEvent(AggregateTradeEventArgs args)
-        {
-            Throw.IfNull(args, nameof(args));
-
-            try { AggregateTrade?.Invoke(this, args); }
-            catch (Exception e)
-            {
-                LogException(e, $"{nameof(TradesWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 throw;
             }
         }

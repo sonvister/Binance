@@ -106,8 +106,15 @@ namespace Binance.Api.WebSocket
 
                     var eventArgs = new CandlestickEventArgs(eventTime, token, candlestick, firstTradeId, lastTradeId, isFinal);
 
-                    callback?.Invoke(eventArgs);
-                    RaiseUpdateEvent(eventArgs);
+                    try
+                    {
+                        callback?.Invoke(eventArgs);
+                        Candlestick?.Invoke(this, eventArgs);
+                    }
+                    catch (Exception e)
+                    {
+                        LogException(e, $"{nameof(CandlestickWebSocketClient)} event handler");
+                    }
                 }
                 else
                 {
@@ -118,22 +125,6 @@ namespace Binance.Api.WebSocket
             catch (Exception e)
             {
                 LogException(e, $"{nameof(CandlestickWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Raise update event.
-        /// </summary>
-        /// <param name="args"></param>
-        protected virtual void RaiseUpdateEvent(CandlestickEventArgs args)
-        {
-            Throw.IfNull(args, nameof(args));
-
-            try { Candlestick?.Invoke(this, args); }
-            catch (Exception e)
-            {
-                LogException(e, $"{nameof(CandlestickWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 throw;
             }
         }

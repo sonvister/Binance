@@ -89,8 +89,15 @@ namespace Binance.Api.WebSocket
 
                     var eventArgs = new DepthUpdateEventArgs(eventTime, token, symbol, firstUpdateId, lastUpdateId, bids, asks);
 
-                    callback?.Invoke(eventArgs);
-                    RaiseUpdateEvent(eventArgs);
+                    try
+                    {
+                        callback?.Invoke(eventArgs);
+                        DepthUpdate?.Invoke(this, eventArgs);
+                    }
+                    catch (Exception e)
+                    {
+                        LogException(e, $"{nameof(DepthWebSocketClient)} event handler");
+                    }
                 }
                 else
                 {
@@ -101,22 +108,6 @@ namespace Binance.Api.WebSocket
             catch (Exception e)
             {
                 LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Raise depth of market update event.
-        /// </summary>
-        /// <param name="args"></param>
-        protected virtual void RaiseUpdateEvent(DepthUpdateEventArgs args)
-        {
-            Throw.IfNull(args, nameof(args));
-
-            try { DepthUpdate?.Invoke(this, args); }
-            catch (Exception e)
-            {
-                LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(RaiseUpdateEvent)}");
                 throw;
             }
         }

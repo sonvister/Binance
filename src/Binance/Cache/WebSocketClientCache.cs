@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using Binance.Api;
 using Microsoft.Extensions.Logging;
 
@@ -40,8 +39,7 @@ namespace Binance.Cache
 
         private Action<TCacheEventArgs> _callback;
 
-        private BufferBlock<TEventArgs> _bufferBlock;
-        private ActionBlock<TEventArgs> _actionBlock;
+        private bool _isLinked;
 
         #endregion Private Fields
 
@@ -66,53 +64,19 @@ namespace Binance.Cache
         {
             Throw.IfNull(client, nameof(client));
 
-            if (_bufferBlock != null)
+            if (_isLinked)
             {
                 if (client == Client)
-                    throw new InvalidOperationException($"{GetType().Name} is already linked to this {nameof(TClient)}.");
+                    throw new InvalidOperationException($"{GetType().Name} is already linked to this {Client.GetType().Name}.");
 
-                throw new InvalidOperationException($"{GetType().Name} is linked to another {nameof(TClient)}.");
+                throw new InvalidOperationException($"{GetType().Name} is linked to another {Client.GetType().Name}.");
             }
+
+            _isLinked = true;
 
             _callback = callback;
 
             LeaveClientOpen = leaveClientOpen;
-
-            _bufferBlock = new BufferBlock<TEventArgs>(new DataflowBlockOptions
-            {
-                EnsureOrdered = true,
-                CancellationToken = Token,
-                BoundedCapacity = DataflowBlockOptions.Unbounded,
-                MaxMessagesPerTask = DataflowBlockOptions.Unbounded
-            });
-
-            _actionBlock = new ActionBlock<TEventArgs>(async @event =>
-            {
-                try
-                {
-                    var eventArgs = await OnAction(@event);
-
-                    if (eventArgs != null)
-                    {
-                        _callback?.Invoke(eventArgs);
-                        RaiseUpdateEvent(eventArgs);
-                    }
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception e)
-                {
-                    Logger?.LogError(e, $"{GetType().Name}: \"{e.Message}\"");
-                }
-            }, new ExecutionDataflowBlockOptions
-            {
-                BoundedCapacity = 1,
-                EnsureOrdered = true,
-                MaxDegreeOfParallelism = 1,
-                CancellationToken = Token,
-                SingleProducerConstrained = true
-            });
-
-            _bufferBlock.LinkTo(_actionBlock);
 
             OnLinkTo();
         }
@@ -134,30 +98,31 @@ namespace Binance.Cache
         protected abstract void OnLinkTo();
 
         /// <summary>
-        /// Raise cache update event.
-        /// </summary>
-        /// <param name="args"></param>
-        protected virtual void RaiseUpdateEvent(TCacheEventArgs args)
-        {
-            Throw.IfNull(args, nameof(args));
-
-            try { Update?.Invoke(this, args); }
-            catch (Exception e)
-            {
-                LogException(e, $"{GetType().Name}.{nameof(RaiseUpdateEvent)}");
-                throw;
-            }
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="event"></param>
-        protected void OnClientEvent(object sender, TEventArgs @event)
+        protected async void OnClientEvent(object sender, TEventArgs @event)
         {
-            // Post event to buffer block (queue).
-            _bufferBlock.Post(@event);
+            try
+            {
+                var eventArgs = await OnAction(@event);
+                if (eventArgs != null)
+                {
+                    try
+                    {
+                        _callback?.Invoke(eventArgs);
+                        Update?.Invoke(this, eventArgs);
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (Exception e) { LogException(e, $"{GetType().Name} event handler"); }
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception e)
+            {
+                LogException(e, $"{GetType().Name}.{nameof(OnClientEvent)}");
+            }
         }
 
         /// <summary>
@@ -189,9 +154,6 @@ namespace Binance.Cache
                 {
                     Client.Dispose();
                 }
-
-                _bufferBlock?.Complete();
-                _actionBlock?.Complete();
             }
 
             _disposed = true;
