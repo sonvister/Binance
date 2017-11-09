@@ -1,3 +1,5 @@
+#if INTEGRATION
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -171,3 +173,5 @@ namespace Binance.Tests.Integration
         #endregion Market Data
     }
 }
+
+#endif

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if INTEGRATION
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api.WebSocket;
@@ -68,3 +70,5 @@ namespace Binance.Tests.Integration
         }
     }
 }
+
+#endif

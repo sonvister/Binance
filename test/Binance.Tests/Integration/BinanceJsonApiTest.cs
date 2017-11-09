@@ -1,7 +1,7 @@
+#if INTEGRATION
+
 using System;
 using System.Threading.Tasks;
-using Binance.Account.Orders;
-using Binance.Api;
 using Binance.Api.Json;
 using Binance.Market;
 using Microsoft.Extensions.DependencyInjection;
@@ -118,3 +118,5 @@ namespace Binance.Tests.Integration
         }
     }
 }
+
+#endif
