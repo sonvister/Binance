@@ -3,12 +3,19 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Api.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Api.WebSocket
 {
     public sealed class WebSocketClient : IWebSocketClient
     {
+        #region Public Events
+
+        public event EventHandler<WebSocketClientMessageEventArgs> Message;
+
+        #endregion Public Events
+
         #region Private Constants
 
         private const int ReceiveBufferSize = 16 * 1024;
@@ -38,7 +45,7 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public async Task OpenAsync(Uri uri, Action<string> onMessage, CancellationToken token)
+        public async Task OpenAsync(Uri uri, CancellationToken token)
         {
             _webSocket = new ClientWebSocket();
             _webSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
@@ -104,7 +111,7 @@ namespace Binance.Api.WebSocket
 
                     if (!string.IsNullOrWhiteSpace(json))
                     {
-                        onMessage(json);
+                        RaiseMessageEvent(new WebSocketClientMessageEventArgs(json));
                     }
                     else
                     {
@@ -123,6 +130,26 @@ namespace Binance.Api.WebSocket
         }
 
         #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        /// Raise message event.
+        /// </summary>
+        /// <param name="args"></param>
+        private void RaiseMessageEvent(WebSocketClientMessageEventArgs args)
+        {
+            Throw.IfNull(args, nameof(args));
+
+            try { Message?.Invoke(this, args); }
+            catch (Exception e)
+            {
+                LogException(e, $"{nameof(WebSocketClient)}.{nameof(RaiseMessageEvent)}");
+                throw;
+            }
+        }
+
+        #endregion Protected Methods
 
         #region Private Methods
 

@@ -102,7 +102,9 @@ namespace Binance.Api.WebSocket
 
                 var uri = new Uri($"{BaseUri}{uriPath}");
 
-                await _client.OpenAsync(uri, json => BufferBlock.Post(json), token)
+                _client.Message += (s, e) => BufferBlock.Post(e.Message);
+
+                await _client.OpenAsync(uri, token)
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException) { }
