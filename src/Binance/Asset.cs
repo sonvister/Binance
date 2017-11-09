@@ -11,7 +11,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1510194785382;
+        public static readonly long LastUpdateAt = 1510253717494;
 
         public static readonly string ARK = "ARK";
         public static readonly string AST = "AST";
@@ -56,6 +56,7 @@ namespace Binance
         public static readonly string POWR = "POWR";
         public static readonly string QTUM = "QTUM";
         public static readonly string RCN = "RCN";
+        public static readonly string RDN = "RDN";
         public static readonly string REQ = "REQ";
         public static readonly string SALT = "SALT";
         public static readonly string SNGLS = "SNGLS";
