@@ -47,16 +47,19 @@ namespace BinancePriceChart
                     .AddFile(configuration.GetSection("Logging").GetSection("File"));
 
                 // Get configuration settings.
-                var limit = 25;
                 var symbol = configuration.GetSection("PriceChart")?["Symbol"] ?? Symbol.BTC_USDT;
-                try { limit = Convert.ToInt32(configuration.GetSection("PriceChart")?["Limit"]); }
+
+                var interval = CandlestickInterval.Minute;
+                try { interval = configuration.GetSection("PriceChart")?["Interval"].ToCandlestickInterval() ?? CandlestickInterval.Minute; }
+                catch { /* ignored */ }
+
+                var limit = 25;
+                try { limit = Convert.ToInt32(configuration.GetSection("PriceChart")?["Limit"] ?? "25"); }
                 catch { /* ignored */ }
 
                 using (var controller = new Program(services))
                 using (var api = services.GetService<IBinanceApi>())
                 {
-                    const CandlestickInterval interval = CandlestickInterval.Minute;
-
                     // Query and display the latest aggregate trades for the symbol.
                     Display(await api.GetCandlesticksAsync(symbol, interval, limit));
 
