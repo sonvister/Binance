@@ -35,7 +35,6 @@ namespace Binance.Tests.Cache
 
                 cts.Cancel();
                 await task;
-                // NOTE: Exception thrown by WebSocket connect due to cancel. 
             }
         }
 

@@ -6,6 +6,7 @@ using Binance;
 using Binance.Account;
 using Binance.Api;
 using Binance.Cache;
+using Binance.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -45,27 +46,25 @@ namespace BinanceConsoleApp.Examples
                     .AddBinance()
                     .BuildServiceProvider();
 
-                using (var cts = new CancellationTokenSource())
+                using (var controller = new TaskController())
                 using (var user = new BinanceApiUser(key, secret))
                 using (var api = services.GetService<IBinanceApi>())
                 using (var cache = services.GetService<IAccountInfoCache>())
                 {
                     // Query and display current account balance.
-                    var account = await api.GetAccountInfoAsync(user, token: cts.Token);
+                    var account = await api.GetAccountInfoAsync(user);
 
                     var asset = Asset.BTC;
 
                     Display(account.GetBalance(asset));
 
                     // Display updated account balance.
-                    var task = Task.Run(() =>
-                        cache.SubscribeAsync(user, e => Display(e.AccountInfo.GetBalance(asset)), cts.Token), cts.Token);
+                    controller.Run(tkn => cache.SubscribeAsync(user, 
+                        evt => Display(evt.AccountInfo.GetBalance(asset)), tkn),
+                        err => Console.WriteLine(err.Message));
 
                     Console.WriteLine("...press any key to continue.");
                     Console.ReadKey(true);
-
-                    cts.Cancel();
-                    await task;
                 }
             }
             catch (Exception e) { Console.WriteLine(e.Message); }

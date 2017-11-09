@@ -41,11 +41,11 @@ namespace Binance.Application
                         try { await action(service, _cts.Token); }
                         catch (OperationCanceledException) { }
                         catch (Exception e) { OnError(e); }
+                    }
 
-                        if (!_cts.IsCancellationRequested)
-                        {
-                            await Task.Delay(5000, _cts.Token); // ...wait a bit.
-                        }
+                    if (!_cts.IsCancellationRequested)
+                    {
+                        await Task.Delay(5000, _cts.Token); // ...wait a bit.
                     }
                 }
             });
