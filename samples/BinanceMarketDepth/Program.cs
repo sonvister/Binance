@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Api;
@@ -19,8 +18,12 @@ namespace BinanceMarketDepth
     /// Demonstrate how to maintain an order book cache for a symbol
     /// and respond to real-time depth-of-market update events.
     /// </summary>
-    internal class Program
+    internal class Program : TaskServiceController<IOrderBookCache>
     {
+        private Program(IServiceProvider services)
+            : base(services)
+        { }
+
         private static async Task Main()
         {
             try
@@ -48,38 +51,16 @@ namespace BinanceMarketDepth
                 catch { /* ignored */ }
                 // NOTE: Currently the Depth WebSocket Endpoint/Client only supports maximum limit of 100.
 
+                using (var controller = new Program(services))
                 using (var api = services.GetService<IBinanceApi>())
-                using (var cts = new CancellationTokenSource())
                 {
                     // Query and display the order book.
-                    Display(await api.GetOrderBookAsync(symbol, limit, cts.Token));
+                    Display(await api.GetOrderBookAsync(symbol, limit));
 
                     // Monitor order book and display updates in real-time.
-                    // ReSharper disable once MethodSupportsCancellation
-                    var task = Task.Run(async () =>
-                    {
-                        while (!cts.IsCancellationRequested)
-                        {
-                            using (var cache = services.GetService<IOrderBookCache>())
-                            {
-                                try
-                                {
-                                    await cache.SubscribeAsync(symbol, e => Display(e.OrderBook), limit, cts.Token);
-                                }
-                                catch (OperationCanceledException) { }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine(e.Message);
-                                    await Task.Delay(5000, cts.Token); // ...wait a bit.
-                                }
-                            }
-                        }
-                    });
+                    controller.Run((s, t) => s.SubscribeAsync(symbol, e => Display(e.OrderBook), limit, t));
 
                     Console.ReadKey(true);
-
-                    cts.Cancel();
-                    await task;
                 }
             }
             catch (Exception e)
@@ -89,6 +70,11 @@ namespace BinanceMarketDepth
                 Console.WriteLine("  ...press any key to close window.");
                 Console.ReadKey(true);
             }
+        }
+
+        protected override void OnError(Exception e)
+        {
+            Console.WriteLine(e.Message);
         }
 
         private static void Display(OrderBook orderBook)

@@ -11,8 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable AccessToDisposedClosure
 
-// ReSharper disable once CheckNamespace
-namespace BinanceConsoleApp
+namespace BinanceConsoleApp.Examples
 {
     /// <summary>
     /// Demonstrate how to get current account balances, maintain a local cache
@@ -43,12 +42,13 @@ namespace BinanceConsoleApp
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance().BuildServiceProvider();
+                    .AddBinance()
+                    .BuildServiceProvider();
 
+                using (var cts = new CancellationTokenSource())
                 using (var user = new BinanceApiUser(key, secret))
                 using (var api = services.GetService<IBinanceApi>())
                 using (var cache = services.GetService<IAccountInfoCache>())
-                using (var cts = new CancellationTokenSource())
                 {
                     // Query and display current account balance.
                     var account = await api.GetAccountInfoAsync(user, token: cts.Token);

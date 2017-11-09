@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Api;
@@ -21,8 +20,12 @@ namespace BinancePriceChart
     /// Demonstrate how to maintain an aggregate trades cache for a symbol
     /// and respond to real-time aggregate trade events.
     /// </summary>
-    internal class Program
+    internal class Program : TaskServiceController<ICandlesticksCache>
     {
+        private Program(IServiceProvider services)
+            : base(services)
+        { }
+
         private static async Task Main()
         {
             try
@@ -49,40 +52,18 @@ namespace BinancePriceChart
                 try { limit = Convert.ToInt32(configuration.GetSection("PriceChart")?["Limit"]); }
                 catch { /* ignored */ }
 
+                using (var controller = new Program(services))
                 using (var api = services.GetService<IBinanceApi>())
-                using (var cts = new CancellationTokenSource())
                 {
                     const CandlestickInterval interval = CandlestickInterval.Minute;
 
                     // Query and display the latest aggregate trades for the symbol.
-                    Display(await api.GetCandlesticksAsync(symbol, interval, limit, token: cts.Token));
+                    Display(await api.GetCandlesticksAsync(symbol, interval, limit));
 
                     // Monitor latest aggregate trades and display updates in real-time.
-                    // ReSharper disable once MethodSupportsCancellation
-                    var task = Task.Run(async () =>
-                    {
-                        while (!cts.IsCancellationRequested)
-                        {
-                            using (var cache = services.GetService<ICandlesticksCache>())
-                            {
-                                try
-                                {
-                                    await cache.SubscribeAsync(symbol, interval, e => Display(e.Candlesticks), limit, cts.Token);
-                                }
-                                catch (OperationCanceledException) { } 
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine(e.Message);
-                                    await Task.Delay(5000, cts.Token); // ...wait a bit.
-                                }
-                            }
-                        }
-                    });
+                    controller.Run((s, t) => s.SubscribeAsync(symbol, interval, e => Display(e.Candlesticks), limit, t));
 
                     Console.ReadKey(true);
-
-                    cts.Cancel();
-                    await task;
                 }
             }
             catch (Exception e)
@@ -92,6 +73,11 @@ namespace BinancePriceChart
                 Console.WriteLine("  ...press any key to close window.");
                 Console.ReadKey(true);
             }
+        }
+
+        protected override void OnError(Exception e)
+        {
+            Console.WriteLine(e.Message);
         }
 
         private static void Display(IEnumerable<Candlestick> candlesticks)

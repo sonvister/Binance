@@ -49,7 +49,7 @@ namespace BinanceConsoleApp
 
         public static async Task Main(string[] args)
         {
-            // Un-comment to run example(s)...
+            // Un-comment (and add using Binance.Examples) to run...
             //await AccountBalancesExample.ExampleMain(args);
             //await MinimalWithDependencyInjection.ExampleMain(args);
             //await MinimalWithoutDependencyInjection.ExampleMain(args);
@@ -153,7 +153,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  time                                                 display the current server time (UTC).");
                 Console.WriteLine();
                 Console.WriteLine(" Market Data:");
-                Console.WriteLine("  stats <symbol>                                       display 24h stats for symbol.");
+                Console.WriteLine("  stats <symbol>                                       display 24h stats for a symbol.");
                 Console.WriteLine("  depth|book <symbol> [limit]                          display symbol order book, where limit: [1-100].");
                 Console.WriteLine("  trades <symbol> [limit]                              display latest trades, where limit: [1-500].");
                 Console.WriteLine("  tradesIn <symbol> <start> <end>                      display trades within a time range (inclusive).");

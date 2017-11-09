@@ -4,8 +4,7 @@ using Binance;
 using Binance.Api;
 using Microsoft.Extensions.DependencyInjection;
 
-// ReSharper disable once CheckNamespace
-namespace BinanceConsoleApp
+namespace BinanceConsoleApp.Examples
 {
     internal class MinimalWithDependencyInjection
     {
