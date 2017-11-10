@@ -39,6 +39,9 @@ namespace Binance.Api.WebSocket
         public WebSocketClient(ILogger<WebSocketClient> logger = null)
         {
             _logger = logger;
+
+            _webSocket = new ClientWebSocket();
+            _webSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
         }
 
         #endregion Constructors
@@ -47,34 +50,30 @@ namespace Binance.Api.WebSocket
 
         public async Task OpenAsync(Uri uri, CancellationToken token)
         {
-            _webSocket = new ClientWebSocket();
-            _webSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+            Throw.IfNull(uri, nameof(uri));
+            Throw.IfNull(token, nameof(token));
 
-            await _webSocket
-                .ConnectAsync(uri, token)
-                .ConfigureAwait(false);
-
-            if (_webSocket.State != WebSocketState.Open)
-            {
-                var e = new Exception($"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: WebSocket connect failed (state: {_webSocket.State}).");
-                LogException(e, $"{nameof(WebSocketClient)}.{nameof(OpenAsync)}");
-
-                if (!token.IsCancellationRequested)
-                    throw e;
-            }
+            token.ThrowIfCancellationRequested();
 
             try
             {
+                await _webSocket
+                    .ConnectAsync(uri, token)
+                    .ConfigureAwait(false);
+
                 var bytes = new byte[ReceiveBufferSize];
                 var buffer = new ArraySegment<byte>(bytes);
 
                 var stringBuilder = new StringBuilder();
 
-                while (_webSocket.State == WebSocketState.Open)
+                while (!token.IsCancellationRequested)
                 {
                     WebSocketReceiveResult result;
                     do
                     {
+                        if (_webSocket.State != WebSocketState.Open)
+                            throw new Exception($"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: WebSocket is not open (state: {_webSocket.State}).");
+
                         result = await _webSocket
                             .ReceiveAsync(buffer, token)
                             .ConfigureAwait(false);
@@ -82,21 +81,16 @@ namespace Binance.Api.WebSocket
                         switch (result.MessageType)
                         {
                             case WebSocketMessageType.Close:
-                                if (result.CloseStatus.HasValue)
-                                {
-                                    _logger?.LogWarning($"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: WebSocket closed ({result.CloseStatus.Value}): \"{result.CloseStatusDescription ?? "[no reason provided]"}\"");
-                                }
-                                await _webSocket
-                                    .CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
-                                    .ConfigureAwait(false);
-                                break;
+                                throw new Exception(result.CloseStatus.HasValue
+                                    ? $"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: WebSocket closed ({result.CloseStatus.Value}): \"{result.CloseStatusDescription ?? "[no reason provided]"}\""
+                                    : $"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: WebSocket closed: \"{result.CloseStatusDescription ?? "[no reason provided]"}\"");
 
                             case WebSocketMessageType.Text when result.Count > 0:
                                 stringBuilder.Append(Encoding.UTF8.GetString(bytes, 0, result.Count));
                                 break;
 
                             case WebSocketMessageType.Binary:
-                                _logger?.LogWarning($"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: Received binary message type.");
+                                _logger?.LogWarning($"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: Received unsupported binary message type.");
                                 break;
 
                             default:
@@ -106,7 +100,6 @@ namespace Binance.Api.WebSocket
                     while (!result.EndOfMessage);
 
                     var json = stringBuilder.ToString();
-
                     stringBuilder.Clear();
 
                     if (!string.IsNullOrWhiteSpace(json))
@@ -122,16 +115,29 @@ namespace Binance.Api.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(WebSocketClient)}.{nameof(OpenAsync)}");
-
                 if (!token.IsCancellationRequested)
+                {
+                    _logger?.LogError(e, $"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: \"{e.Message}\"");
                     throw;
+                }
             }
+            finally
+            {
+                await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
+                    .ConfigureAwait(false);
+            }
+        }
+
+        public Task CloseAsync(CancellationToken token = default)
+        {
+            return _webSocket != null
+                ? _webSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token)
+                : Task.CompletedTask;
         }
 
         #endregion Public Methods
 
-        #region Protected Methods
+        #region Private Methods
 
         /// <summary>
         /// Raise message event.
@@ -139,30 +145,12 @@ namespace Binance.Api.WebSocket
         /// <param name="args"></param>
         private void RaiseMessageEvent(WebSocketClientMessageEventArgs args)
         {
-            Throw.IfNull(args, nameof(args));
-
             try { Message?.Invoke(this, args); }
+            catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(WebSocketClient)}.{nameof(RaiseMessageEvent)}");
-                throw;
+                _logger?.LogError(e, $"{nameof(WebSocketClient)}: Unhandled message event handler exception.");
             }
-        }
-
-        #endregion Protected Methods
-
-        #region Private Methods
-
-        /// <summary>
-        /// Log an exception if not already logged within this library.
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="source"></param>
-        private void LogException(Exception e, string source)
-        {
-            if (e.IsLogged()) return;
-            _logger?.LogError(e, $"{source}: \"{e.Message}\"");
-            e.Logged();
         }
 
         #endregion Private Methods

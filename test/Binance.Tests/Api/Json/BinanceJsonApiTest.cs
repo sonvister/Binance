@@ -36,7 +36,7 @@ namespace Binance.Tests.Api.Json
         {
             var now = DateTimeOffset.UtcNow;
 
-            var startTime = DateTimeOffset.UtcNow.AddHours(-24).ToUnixTimeMilliseconds();
+            var startTime = DateTimeOffset.UtcNow.AddHours(-25).ToUnixTimeMilliseconds();
             var endTime = now.ToUnixTimeMilliseconds();
 
             await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _api.GetAggregateTradesAsync(null));
