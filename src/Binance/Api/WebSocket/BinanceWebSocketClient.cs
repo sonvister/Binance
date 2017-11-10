@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Binance.Api.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Api.WebSocket
@@ -86,7 +87,10 @@ namespace Binance.Api.WebSocket
                         catch (OperationCanceledException) { }
                         catch (Exception e)
                         {
-                            LogException(e, $"{GetType().Name}");
+                            if (!token.IsCancellationRequested)
+                            {
+                                Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(DeserializeJsonAndRaiseEvent)} exception.");
+                            }
                         }
                     },
                     new ExecutionDataflowBlockOptions
@@ -102,7 +106,7 @@ namespace Binance.Api.WebSocket
 
                 var uri = new Uri($"{BaseUri}{uriPath}");
 
-                _client.Message += (s, e) => BufferBlock.Post(e.Message);
+                _client.Message += OnClientMessage;
 
                 await _client.OpenAsync(uri, token)
                     .ConfigureAwait(false);
@@ -110,26 +114,31 @@ namespace Binance.Api.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(SubscribeToAsync)}");
-                
                 if (!token.IsCancellationRequested)
+                {
+                    Logger?.LogError(e, $"{GetType().Name}.{nameof(SubscribeToAsync)}: Exception.");
                     throw;
+                }
+            }
+            finally
+            {
+                _client.Message -= OnClientMessage;
+
+                BufferBlock?.Complete();
+                ActionBlock?.Complete();
             }
         }
 
-        /// <summary>
-        /// Log an exception if not already logged within this library.
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="source"></param>
-        protected void LogException(Exception e, string source)
+        #endregion Protected Methods
+
+        #region Private Methods
+
+        private void OnClientMessage(object sender, WebSocketClientMessageEventArgs e)
         {
-            if (e.IsLogged()) return;
-            Logger?.LogError(e, $"{source}: \"{e.Message}\"");
-            e.Logged();
+            BufferBlock.Post(e.Message);
         }
 
-        #endregion Protected Methods
+        #endregion Private Methods
 
         #region IDisposable
 
@@ -145,14 +154,11 @@ namespace Binance.Api.WebSocket
                 try
                 {
                     _client?.Dispose();
-
-                    BufferBlock?.Complete();
-                    ActionBlock?.Complete();
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    Logger?.LogError(e, $"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(Dispose)}: \"{e.Message}\"");
+                    Logger?.LogError(e, $"{GetType().Name}.{nameof(Dispose)}");
                 }
             }
 

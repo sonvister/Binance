@@ -94,9 +94,13 @@ namespace Binance.Api.WebSocket
                         callback?.Invoke(eventArgs);
                         DepthUpdate?.Invoke(this, eventArgs);
                     }
+                    catch (OperationCanceledException) { }
                     catch (Exception e)
                     {
-                        LogException(e, $"{nameof(DepthWebSocketClient)} event handler");
+                        if (!token.IsCancellationRequested)
+                        {
+                            Logger?.LogError(e, $"{nameof(DepthWebSocketClient)}: Unhandled depth update event handler exception.");
+                        }
                     }
                 }
                 else
@@ -107,8 +111,10 @@ namespace Binance.Api.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
-                throw;
+                if (!token.IsCancellationRequested)
+                {
+                    Logger?.LogError(e, $"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
+                }
             }
         }
 

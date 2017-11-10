@@ -90,7 +90,7 @@ namespace Binance.Api.WebSocket
                     var candlestick = new Candlestick(
                         jObject["k"]["s"].Value<string>(),  // symbol
                         jObject["k"]["i"].Value<string>()
-                            .ToCandlestickInterval(),             // interval
+                            .ToCandlestickInterval(),       // interval
                         jObject["k"]["t"].Value<long>(),    // open time
                         jObject["k"]["o"].Value<decimal>(), // open
                         jObject["k"]["h"].Value<decimal>(), // high
@@ -111,9 +111,13 @@ namespace Binance.Api.WebSocket
                         callback?.Invoke(eventArgs);
                         Candlestick?.Invoke(this, eventArgs);
                     }
+                    catch (OperationCanceledException) { }
                     catch (Exception e)
                     {
-                        LogException(e, $"{nameof(CandlestickWebSocketClient)} event handler");
+                        if (!token.IsCancellationRequested)
+                        {
+                            Logger?.LogError(e, $"{nameof(CandlestickWebSocketClient)}: Unhandled candlestick event handler exception.");
+                        }
                     }
                 }
                 else
@@ -124,8 +128,10 @@ namespace Binance.Api.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(CandlestickWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
-                throw;
+                if (!token.IsCancellationRequested)
+                {
+                    Logger?.LogError(e, $"{nameof(CandlestickWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
+                }
             }
         }
 

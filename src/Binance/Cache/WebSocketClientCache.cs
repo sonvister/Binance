@@ -88,14 +88,14 @@ namespace Binance.Cache
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="event"></param>
-        /// <returns></returns>
-        protected abstract Task<TCacheEventArgs> OnAction(TEventArgs @event);
+        protected abstract void OnLinkTo();
 
         /// <summary>
         /// 
         /// </summary>
-        protected abstract void OnLinkTo();
+        /// <param name="event"></param>
+        /// <returns></returns>
+        protected abstract Task<TCacheEventArgs> OnAction(TEventArgs @event);
 
         /// <summary>
         /// 
@@ -104,37 +104,32 @@ namespace Binance.Cache
         /// <param name="event"></param>
         protected async void OnClientEvent(object sender, TEventArgs @event)
         {
+            TCacheEventArgs eventArgs = null;
+
             try
             {
-                var eventArgs = await OnAction(@event);
-                if (eventArgs != null)
-                {
-                    try
-                    {
-                        _callback?.Invoke(eventArgs);
-                        Update?.Invoke(this, eventArgs);
-                    }
-                    catch (OperationCanceledException) { }
-                    catch (Exception e) { LogException(e, $"{GetType().Name} event handler"); }
-                }
+                eventArgs = await OnAction(@event)
+                    .ConfigureAwait(false);
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{GetType().Name}.{nameof(OnClientEvent)}");
+                Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(OnAction)} exception.");
             }
-        }
 
-        /// <summary>
-        /// Log an exception if not already logged within this library.
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="source"></param>
-        protected void LogException(Exception e, string source)
-        {
-            if (e.IsLogged()) return;
-            Logger?.LogError(e, $"{source}: \"{e.Message}\"");
-            e.Logged();
+            if (eventArgs != null)
+            {
+                try
+                {
+                    _callback?.Invoke(eventArgs);
+                    Update?.Invoke(this, eventArgs);
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e)
+                {
+                    Logger?.LogError(e, $"{GetType().Name}: Unhandled update event handler exception.");
+                }
+            }
         }
 
         #endregion Protected Methods

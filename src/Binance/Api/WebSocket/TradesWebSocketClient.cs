@@ -99,9 +99,13 @@ namespace Binance.Api.WebSocket
                         callback?.Invoke(eventArgs);
                         AggregateTrade?.Invoke(this, eventArgs);
                     }
+                    catch (OperationCanceledException) { }
                     catch (Exception e)
                     {
-                        LogException(e, $"{nameof(TradesWebSocketClient)} event handler");
+                        if (!token.IsCancellationRequested)
+                        {
+                            Logger?.LogError(e, $"{nameof(TradesWebSocketClient)}: Unhandled aggregate trade event handler exception.");
+                        }
                     }
                 }
                 else
@@ -112,8 +116,10 @@ namespace Binance.Api.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
-                throw;
+                if (!token.IsCancellationRequested)
+                {
+                    Logger?.LogError(e, $"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
+                }
             }
         }
 

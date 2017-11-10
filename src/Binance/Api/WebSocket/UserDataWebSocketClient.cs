@@ -146,9 +146,13 @@ namespace Binance.Api.WebSocket
                         callback?.Invoke(eventArgs);
                         AccountUpdate?.Invoke(this, eventArgs);
                     }
+                    catch (OperationCanceledException) { }
                     catch (Exception e)
                     {
-                        LogException(e, $"{nameof(UserDataWebSocketClient)} event handler");
+                        if (!token.IsCancellationRequested)
+                        {
+                            Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}: Unhandled account update event handler exception.");
+                        }
                     }
                 }
                 else if (eventType == "executionReport")
@@ -184,9 +188,13 @@ namespace Binance.Api.WebSocket
                             callback?.Invoke(eventArgs);
                             TradeUpdate?.Invoke(this, eventArgs);
                         }
+                        catch (OperationCanceledException) { }
                         catch (Exception e)
                         {
-                            LogException(e, $"{nameof(UserDataWebSocketClient)} event handler");
+                            if (!token.IsCancellationRequested)
+                            {
+                                Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}: Unhandled trade update event handler exception.");
+                            }
                         }
                     }
                     else // order update event.
@@ -198,9 +206,13 @@ namespace Binance.Api.WebSocket
                             callback?.Invoke(eventArgs);
                             OrderUpdate?.Invoke(this, eventArgs);
                         }
+                        catch (OperationCanceledException) { }
                         catch (Exception e)
                         {
-                            LogException(e, $"{nameof(UserDataWebSocketClient)} event handler");
+                            if (!token.IsCancellationRequested)
+                            {
+                                Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}: Unhandled order update event handler exception.");
+                            }
                         }
                     }
                 }
@@ -212,8 +224,10 @@ namespace Binance.Api.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                LogException(e, $"{nameof(UserDataWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
-                throw;
+                if (!token.IsCancellationRequested)
+                {
+                    Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
+                }
             }
         }
 
