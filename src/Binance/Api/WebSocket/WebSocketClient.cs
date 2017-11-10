@@ -72,7 +72,9 @@ namespace Binance.Api.WebSocket
                     do
                     {
                         if (_webSocket.State != WebSocketState.Open)
+                        {
                             throw new Exception($"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: WebSocket is not open (state: {_webSocket.State}).");
+                        }
 
                         result = await _webSocket
                             .ReceiveAsync(buffer, token)
@@ -126,13 +128,6 @@ namespace Binance.Api.WebSocket
                 await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
                     .ConfigureAwait(false);
             }
-        }
-
-        public Task CloseAsync(CancellationToken token = default)
-        {
-            return _webSocket != null
-                ? _webSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token)
-                : Task.CompletedTask;
         }
 
         #endregion Public Methods
