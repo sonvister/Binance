@@ -11,11 +11,13 @@ namespace Binance.Tests.Api.WebSocket
     public class UserDataWebSocketClientTest
     {
         [Fact]
-        public Task SubscribeThrows()
+        public async Task SubscribeThrows()
         {
-            using (var cts = new CancellationTokenSource())
-            using (var client = new UserDataWebSocketClient(new Mock<IBinanceApi>().Object, new Mock<IWebSocketClient>().Object))
-                return Assert.ThrowsAsync<ArgumentNullException>("user", () => client.SubscribeAsync(null, cts.Token));
+            var user = new BinanceApiUser("api-key");
+            var client = new UserDataWebSocketClient(new Mock<IBinanceApi>().Object, new Mock<IWebSocketClient>().Object);
+
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => client.SubscribeAsync(null, new CancellationToken()));
+            await Assert.ThrowsAsync<ArgumentException>("token", () => client.SubscribeAsync(user, CancellationToken.None));
         }
     }
 }

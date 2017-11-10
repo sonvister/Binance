@@ -24,8 +24,6 @@ namespace Binance.Api.WebSocket
 
         #region Private Fields
 
-        private ClientWebSocket _webSocket;
-
         private ILogger<WebSocketClient> _logger;
 
         #endregion Private Fields
@@ -39,27 +37,40 @@ namespace Binance.Api.WebSocket
         public WebSocketClient(ILogger<WebSocketClient> logger = null)
         {
             _logger = logger;
-
-            _webSocket = new ClientWebSocket();
-            _webSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
         }
 
         #endregion Constructors
 
         #region Public Methods
 
-        public async Task OpenAsync(Uri uri, CancellationToken token)
+        public async Task RunAsync(Uri uri, CancellationToken token)
         {
             Throw.IfNull(uri, nameof(uri));
-            Throw.IfNull(token, nameof(token));
+
+            if (!token.CanBeCanceled)
+                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
 
             token.ThrowIfCancellationRequested();
 
+            var webSocket = new ClientWebSocket();
+            webSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+
             try
             {
-                await _webSocket
-                    .ConnectAsync(uri, token)
-                    .ConfigureAwait(false);
+                try
+                {
+                    await webSocket.ConnectAsync(uri, token)
+                        .ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e)
+                {
+                    if (!token.IsCancellationRequested)
+                    {
+                        _logger?.LogError(e, $"{nameof(WebSocketClient)}.{nameof(RunAsync)}: WebSocket connect exception.");
+                        throw;
+                    }
+                }
 
                 var bytes = new byte[ReceiveBufferSize];
                 var buffer = new ArraySegment<byte>(bytes);
@@ -68,65 +79,76 @@ namespace Binance.Api.WebSocket
 
                 while (!token.IsCancellationRequested)
                 {
-                    WebSocketReceiveResult result;
-                    do
+                    try
                     {
-                        if (_webSocket.State != WebSocketState.Open)
+                        WebSocketReceiveResult result;
+                        do
                         {
-                            throw new Exception($"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: WebSocket is not open (state: {_webSocket.State}).");
+                            if (webSocket.State != WebSocketState.Open)
+                            {
+                                throw new Exception($"{nameof(WebSocketClient)}.{nameof(RunAsync)}: WebSocket is not open (state: {webSocket.State}).");
+                            }
+
+                            result = await webSocket
+                                .ReceiveAsync(buffer, token)
+                                .ConfigureAwait(false);
+
+                            switch (result.MessageType)
+                            {
+                                case WebSocketMessageType.Close:
+                                    throw new Exception(result.CloseStatus.HasValue
+                                        ? $"{nameof(WebSocketClient)}.{nameof(RunAsync)}: WebSocket closed ({result.CloseStatus.Value}): \"{result.CloseStatusDescription ?? "[no reason provided]"}\""
+                                        : $"{nameof(WebSocketClient)}.{nameof(RunAsync)}: WebSocket closed: \"{result.CloseStatusDescription ?? "[no reason provided]"}\"");
+
+                                case WebSocketMessageType.Text when result.Count > 0:
+                                    stringBuilder.Append(Encoding.UTF8.GetString(bytes, 0, result.Count));
+                                    break;
+
+                                case WebSocketMessageType.Binary:
+                                    _logger?.LogWarning($"{nameof(WebSocketClient)}.{nameof(RunAsync)}: Received unsupported binary message type.");
+                                    break;
+
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(result.MessageType), $"{nameof(WebSocketClient)}.{nameof(RunAsync)}: Unknown result message type ({result.MessageType}).");
+                            }
                         }
-
-                        result = await _webSocket
-                            .ReceiveAsync(buffer, token)
-                            .ConfigureAwait(false);
-
-                        switch (result.MessageType)
+                        while (!result.EndOfMessage);
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (Exception e)
+                    {
+                        if (!token.IsCancellationRequested)
                         {
-                            case WebSocketMessageType.Close:
-                                throw new Exception(result.CloseStatus.HasValue
-                                    ? $"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: WebSocket closed ({result.CloseStatus.Value}): \"{result.CloseStatusDescription ?? "[no reason provided]"}\""
-                                    : $"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: WebSocket closed: \"{result.CloseStatusDescription ?? "[no reason provided]"}\"");
-
-                            case WebSocketMessageType.Text when result.Count > 0:
-                                stringBuilder.Append(Encoding.UTF8.GetString(bytes, 0, result.Count));
-                                break;
-
-                            case WebSocketMessageType.Binary:
-                                _logger?.LogWarning($"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: Received unsupported binary message type.");
-                                break;
-
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(result.MessageType), "Unknown result message type.");
+                            _logger?.LogError(e, $"{nameof(WebSocketClient)}.{nameof(RunAsync)}: WebSocket receive exception.");
+                            throw;
                         }
                     }
-                    while (!result.EndOfMessage);
 
-                    var json = stringBuilder.ToString();
-                    stringBuilder.Clear();
+                    if (!token.IsCancellationRequested)
+                    {
+                        var json = stringBuilder.ToString();
+                        stringBuilder.Clear();
 
-                    if (!string.IsNullOrWhiteSpace(json))
-                    {
-                        RaiseMessageEvent(new WebSocketClientMessageEventArgs(json));
+                        if (!string.IsNullOrWhiteSpace(json))
+                        {
+                            RaiseMessageEvent(new WebSocketClientMessageEventArgs(json));
+                        }
+                        else
+                        {
+                            _logger?.LogWarning($"{nameof(WebSocketClient)}.{nameof(RunAsync)}: Received empty JSON message.");
+                        }
                     }
-                    else
-                    {
-                        _logger?.LogWarning($"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: Received empty JSON message.");
-                    }
-                }
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception e)
-            {
-                if (!token.IsCancellationRequested)
-                {
-                    _logger?.LogError(e, $"{nameof(WebSocketClient)}.{nameof(OpenAsync)}: \"{e.Message}\"");
-                    throw;
                 }
             }
             finally
             {
-                await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
-                    .ConfigureAwait(false);
+                if (webSocket.State == WebSocketState.Open || webSocket.State == WebSocketState.CloseReceived)
+                {
+                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
+                        .ConfigureAwait(false);
+                }
+
+                webSocket?.Dispose();
             }
         }
 
@@ -149,29 +171,5 @@ namespace Binance.Api.WebSocket
         }
 
         #endregion Private Methods
-
-        #region IDisposable
-
-        private bool _disposed = false;
-
-        void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                _webSocket?.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        #endregion IDisposable
     }
 }

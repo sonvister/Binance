@@ -8,7 +8,7 @@ using Binance.Market;
 
 namespace Binance.Cache
 {
-    public interface IAggregateTradesCache : IDisposable
+    public interface IAggregateTradesCache
     {
         #region Public Events
 
@@ -40,27 +40,17 @@ namespace Binance.Cache
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="limit"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task SubscribeAsync(string symbol, int limit = default, CancellationToken token = default);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="symbol"></param>
         /// <param name="callback"></param>
-        /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SubscribeAsync(string symbol, Action<AggregateTradesCacheEventArgs> callback, int limit = default, CancellationToken token = default);
-
+        Task SubscribeAsync(string symbol, int limit, Action<AggregateTradesCacheEventArgs> callback, CancellationToken token);
+        
         /// <summary>
         /// Link to a subscribed <see cref="ITradesWebSocketClient"/>.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="callback"></param>
-        /// <param name="leaveClientOpen"></param>
-        void LinkTo(ITradesWebSocketClient client, Action<AggregateTradesCacheEventArgs> callback = null, bool leaveClientOpen = true);
+        void LinkTo(ITradesWebSocketClient client, Action<AggregateTradesCacheEventArgs> callback = null);
 
         #endregion Public Methods
     }

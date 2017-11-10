@@ -73,27 +73,55 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(IBinanceApiUser user, CancellationToken token = default)
-            => SubscribeAsync(user, null, token);
-
-        public virtual async Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token = default)
+        public virtual async Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token)
         {
             Throw.IfNull(user, nameof(user));
+
+            if (!token.CanBeCanceled)
+                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
+
+            token.ThrowIfCancellationRequested();
 
             User = user;
 
             if (IsSubscribed)
                 throw new InvalidOperationException($"{nameof(UserDataWebSocketClient)} is already subscribed to a user.");
 
-            _listenKey = await _api.UserStreamStartAsync(user, token)
-                .ConfigureAwait(false);
+            try
+            {
+                _listenKey = await _api.UserStreamStartAsync(user, token)
+                    .ConfigureAwait(false);
 
-            var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
-            period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
+                if (string.IsNullOrWhiteSpace(_listenKey))
+                    throw new Exception($"{nameof(IUserDataWebSocketClient)}: Failed to get listen key from API.");
 
-            _keepAliveTimer = new Timer(OnKeepAliveTimer, token, period, period);
+                var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
+                period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
 
-            await SubscribeToAsync(_listenKey, callback, token);
+                _keepAliveTimer = new Timer(OnKeepAliveTimer, token, period, period);
+
+                try
+                {
+                    await SubscribeToAsync(_listenKey, callback, token)
+                        .ConfigureAwait(false);
+                }
+                finally
+                {
+                    _keepAliveTimer.Dispose();
+
+                    await _api.UserStreamCloseAsync(User, _listenKey)
+                        .ConfigureAwait(false);
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception e)
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}.{nameof(SubscribeAsync)}");
+                    throw;
+                }
+            }
         }
 
         #endregion Public Methods
@@ -325,40 +353,5 @@ namespace Binance.Api.WebSocket
         }
 
         #endregion Private Methods
-
-        #region IDisposable
-
-        private bool _disposed;
-
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                try
-                {
-                    _keepAliveTimer?.Dispose();
-
-                    if (!string.IsNullOrWhiteSpace(_listenKey))
-                    {
-                        _api.UserStreamCloseAsync(User, _listenKey)
-                            .GetAwaiter().GetResult();
-                    }
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception e)
-                {
-                    Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}.{nameof(Dispose)}: \"{e.Message}\"");
-                }
-            }
-
-            _disposed = true;
-
-            base.Dispose(disposing);
-        }
-
-        #endregion IDisposable
     }
 }

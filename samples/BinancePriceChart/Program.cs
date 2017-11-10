@@ -8,6 +8,7 @@ using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
+using Binance.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,12 +21,8 @@ namespace BinancePriceChart
     /// Demonstrate how to maintain an aggregate trades cache for a symbol
     /// and respond to real-time aggregate trade events.
     /// </summary>
-    internal class Program : TaskServiceController<ICandlesticksCache>
+    internal class Program
     {
-        private Program(IServiceProvider services)
-            : base(services)
-        { }
-
         private static async Task Main()
         {
             try
@@ -57,14 +54,18 @@ namespace BinancePriceChart
                 try { limit = Convert.ToInt32(configuration.GetSection("PriceChart")?["Limit"] ?? "25"); }
                 catch { /* ignored */ }
 
-                using (var controller = new Program(services))
+                var cache = services.GetService<ICandlesticksCache>();
+
+                using (var controller = new RetryTaskController())
                 using (var api = services.GetService<IBinanceApi>())
                 {
                     // Query and display the latest aggregate trades for the symbol.
                     Display(await api.GetCandlesticksAsync(symbol, interval, limit));
 
                     // Monitor latest aggregate trades and display updates in real-time.
-                    controller.Run((s, t) => s.SubscribeAsync(symbol, interval, e => Display(e.Candlesticks), limit, t));
+                    controller.Begin(
+                        tkn => cache.SubscribeAsync(symbol, interval, limit, evt => Display(evt.Candlesticks), tkn),
+                        err => Console.WriteLine(err.Message));
 
                     Console.ReadKey(true);
                 }
@@ -76,11 +77,6 @@ namespace BinancePriceChart
                 Console.WriteLine("  ...press any key to close window.");
                 Console.ReadKey(true);
             }
-        }
-
-        protected override void OnError(Exception e)
-        {
-            Console.WriteLine(e.Message);
         }
 
         private static void Display(IEnumerable<Candlestick> candlesticks)

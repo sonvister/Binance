@@ -10,11 +10,12 @@ namespace Binance.Tests.Cache
     public class DepthWebSocketClientTest
     {
         [Fact]
-        public Task SubscribeThrows()
+        public async Task SubscribeThrows()
         {
-            using (var cts = new CancellationTokenSource())
-            using (var client = new DepthWebSocketClient(new Mock<IWebSocketClient>().Object))
-                return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.SubscribeAsync(null, cts.Token));
+            var client = new DepthWebSocketClient(new Mock<IWebSocketClient>().Object);
+
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.SubscribeAsync(null, new CancellationToken()));
+            await Assert.ThrowsAsync<ArgumentException>("token", () => client.SubscribeAsync(Symbol.BTC_USDT, CancellationToken.None));
         }
     }
 }

@@ -8,7 +8,7 @@ using Binance.Cache.Events;
 
 namespace Binance.Cache
 {
-    public interface IAccountInfoCache : IDisposable
+    public interface IAccountInfoCache
     {
         #region Public Events
 
@@ -30,7 +30,7 @@ namespace Binance.Cache
         /// The client that provides account synchronization.
         /// </summary>
         IUserDataWebSocketClient Client { get; }
-        
+
         #endregion Public Properties
 
         #region Public Methods
@@ -39,27 +39,18 @@ namespace Binance.Cache
         /// 
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task SubscribeAsync(IBinanceApiUser user, CancellationToken token = default);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="user"></param>
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SubscribeAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token = default);
+        Task SubscribeAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token);
 
         /// <summary>
         /// Link to a subscribed <see cref="IUserDataWebSocketClient"/>.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="callback"></param>
-        /// <param name="leaveClientOpen"></param>
         /// <returns></returns>
-        void LinkTo(IUserDataWebSocketClient client, Action<AccountInfoCacheEventArgs> callback = null, bool leaveClientOpen = true);
+        void LinkTo(IUserDataWebSocketClient client, Action<AccountInfoCacheEventArgs> callback = null);
 
         #endregion Public Methods
     }

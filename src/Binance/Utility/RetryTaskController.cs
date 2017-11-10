@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Binance.Application
+namespace Binance.Utility
 {
-    public abstract class TaskServiceController<TService> : IDisposable
-        where TService : IDisposable
+    public class RetryTaskController : IDisposable
     {
+        #region Public Properties
+
+        public Task Task { get; private set; }
+
+        public int RetryDelayMilliseconds { get; set; } = 5000;
+
+        #endregion Public Properties
+
         #region Private Fields
-
-        private IServiceProvider _services;
-
-        private Task _task;
 
         private CancellationTokenSource _cts;
 
@@ -20,9 +22,8 @@ namespace Binance.Application
 
         #region Constructors
 
-        public TaskServiceController(IServiceProvider services)
+        public RetryTaskController()
         {
-            _services = services;
             _cts = new CancellationTokenSource();
         }
 
@@ -30,22 +31,26 @@ namespace Binance.Application
 
         #region Public Methods
 
-        public void Run(Func<TService, CancellationToken, Task> action)
+        public void Begin(Func<CancellationToken, Task> action, Action<Exception> onError = null)
         {
-            _task = Task.Run(async () =>
+            Task = Task.Run(async () =>
             {
                 while (!_cts.IsCancellationRequested)
                 {
-                    using (var service = _services.GetService<TService>())
+                    try { await action(_cts.Token); }
+                    catch (OperationCanceledException) { }
+                    catch (Exception e)
                     {
-                        try { await action(service, _cts.Token); }
-                        catch (OperationCanceledException) { }
-                        catch (Exception e) { OnError(e); }
+                        if (!_cts.IsCancellationRequested)
+                        {
+                            onError?.Invoke(e);
+                            OnError(e);
+                        }
                     }
 
                     if (!_cts.IsCancellationRequested)
                     {
-                        await Task.Delay(5000, _cts.Token); // ...wait a bit.
+                        await Task.Delay(RetryDelayMilliseconds, _cts.Token);
                     }
                 }
             });
@@ -71,7 +76,7 @@ namespace Binance.Application
             if (disposing)
             {
                 _cts?.Cancel();
-                _task?.GetAwaiter().GetResult();
+                Task?.GetAwaiter().GetResult();
                 _cts?.Dispose();
             }
 

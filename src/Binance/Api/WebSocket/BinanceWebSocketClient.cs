@@ -65,8 +65,6 @@ namespace Binance.Api.WebSocket
         /// <returns></returns>
         protected async Task SubscribeToAsync(string uriPath, Action<TEventArgs> callback, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             Logger?.LogInformation($"{GetType().Name}.{nameof(SubscribeToAsync)}: \"{BaseUri}{uriPath}\"");
 
             IsSubscribed = true;
@@ -108,7 +106,7 @@ namespace Binance.Api.WebSocket
 
                 _client.Message += OnClientMessage;
 
-                await _client.OpenAsync(uri, token)
+                await _client.RunAsync(uri, token)
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException) { }
@@ -139,37 +137,5 @@ namespace Binance.Api.WebSocket
         }
 
         #endregion Private Methods
-
-        #region IDisposable
-
-        private bool _disposed;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                try
-                {
-                    _client?.Dispose();
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception e)
-                {
-                    Logger?.LogError(e, $"{GetType().Name}.{nameof(Dispose)}");
-                }
-            }
-
-            _disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        #endregion IDisposable
     }
 }

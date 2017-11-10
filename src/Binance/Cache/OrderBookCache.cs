@@ -31,20 +31,20 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public OrderBookCache(IBinanceApi api, IDepthWebSocketClient client, bool leaveClientOpen = false, ILogger<OrderBookCache> logger = null)
-            : base(api, client, leaveClientOpen, logger)
+        public OrderBookCache(IBinanceApi api, IDepthWebSocketClient client, ILogger<OrderBookCache> logger = null)
+            : base(api, client, logger)
         { }
 
         #endregion Constructors
 
         #region Public Methods
 
-        public Task SubscribeAsync(string symbol, int limit = default, CancellationToken token = default)
-            => SubscribeAsync(symbol, null, limit, token);
-
-        public Task SubscribeAsync(string symbol, Action<OrderBookCacheEventArgs> callback, int limit = default, CancellationToken token = default)
+        public async Task SubscribeAsync(string symbol, int limit, Action<OrderBookCacheEventArgs> callback, CancellationToken token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            if (!token.CanBeCanceled)
+                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
 
             token.ThrowIfCancellationRequested();
 
@@ -52,9 +52,14 @@ namespace Binance.Cache
             _limit = limit;
             Token = token;
 
-            LinkTo(Client, callback, LeaveClientOpen);
+            LinkTo(Client, callback);
 
-            return Client.SubscribeAsync(symbol, token);
+            try
+            {
+                await Client.SubscribeAsync(symbol, token)
+                    .ConfigureAwait(false);
+            }
+            finally { Client.DepthUpdate -= OnClientEvent; }
         }
 
         #endregion Public Methods
@@ -135,26 +140,5 @@ namespace Binance.Cache
         }
 
         #endregion Protected Methods
-
-        #region IDisposable
-
-        private bool _disposed;
-
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                Client.DepthUpdate -= OnClientEvent;
-            }
-
-            _disposed = true;
-
-            base.Dispose(disposing);
-        }
-
-        #endregion IDisposable
     }
 }

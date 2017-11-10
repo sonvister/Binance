@@ -5,20 +5,22 @@ using Moq;
 using System;
 using Xunit;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Binance.Tests.Cache
 {
     public class AggregateTradesCacheTest
     {
         [Fact]
-        public Task SubscribeThrows()
+        public async Task SubscribeThrows()
         {
             var api = new Mock<IBinanceApi>().Object;
             var client = new Mock<ITradesWebSocketClient>().Object;
 
             var cache = new AggregateTradesCache(api, client);
 
-            return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.SubscribeAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.SubscribeAsync(null, new CancellationToken()));
+            await Assert.ThrowsAsync<ArgumentException>("token", () => cache.SubscribeAsync(Symbol.BTC_USDT, CancellationToken.None));
         }
     }
 }

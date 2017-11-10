@@ -39,8 +39,8 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public CandlesticksCache(IBinanceApi api, ICandlestickWebSocketClient client, bool leaveClientOpen = false, ILogger<CandlesticksCache> logger = null)
-            : base(api, client, leaveClientOpen, logger)
+        public CandlesticksCache(IBinanceApi api, ICandlestickWebSocketClient client, ILogger<CandlesticksCache> logger = null)
+            : base(api, client, logger)
         {
             _candlesticks = new List<Candlestick>();
         }
@@ -49,12 +49,12 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit = default, CancellationToken token = default)
-            => SubscribeAsync(symbol, interval, null, limit, token);
-
-        public Task SubscribeAsync(string symbol, CandlestickInterval interval, Action<CandlesticksCacheEventArgs> callback, int limit = default, CancellationToken token = default)
+        public async Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit, Action<CandlesticksCacheEventArgs> callback, CancellationToken token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            if (!token.CanBeCanceled)
+                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
 
             token.ThrowIfCancellationRequested();
 
@@ -63,9 +63,14 @@ namespace Binance.Cache
             _limit = limit;
             Token = token;
 
-            LinkTo(Client, callback, LeaveClientOpen);
+            LinkTo(Client, callback);
 
-            return Client.SubscribeAsync(symbol, interval, token);
+            try
+            {
+                await Client.SubscribeAsync(symbol, interval, token)
+                    .ConfigureAwait(false);
+            }
+            finally { Client.Candlestick -= OnClientEvent; }
         }
 
         #endregion Public Methods
@@ -129,26 +134,5 @@ namespace Binance.Cache
         }
 
         #endregion Private Methods
-
-        #region IDisposable
-
-        private bool _disposed;
-
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                Client.Candlestick -= OnClientEvent;
-            }
-
-            _disposed = true;
-
-            base.Dispose(disposing);
-        }
-
-        #endregion IDisposable
     }
 }

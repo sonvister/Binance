@@ -38,8 +38,8 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public AggregateTradesCache(IBinanceApi api, ITradesWebSocketClient client, bool leaveClientOpen = false, ILogger<AggregateTradesCache> logger = null)
-            : base(api, client, leaveClientOpen, logger)
+        public AggregateTradesCache(IBinanceApi api, ITradesWebSocketClient client, ILogger<AggregateTradesCache> logger = null)
+            : base(api, client, logger)
         {
             _trades = new Queue<AggregateTrade>();
         }
@@ -48,12 +48,12 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public Task SubscribeAsync(string symbol, int limit = default, CancellationToken token = default)
-            => SubscribeAsync(symbol, null, limit, token);
-
-        public Task SubscribeAsync(string symbol, Action<AggregateTradesCacheEventArgs> callback, int limit = default, CancellationToken token = default)
+        public async Task SubscribeAsync(string symbol, int limit, Action<AggregateTradesCacheEventArgs> callback, CancellationToken token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            if (!token.CanBeCanceled)
+                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
 
             token.ThrowIfCancellationRequested();
 
@@ -61,9 +61,14 @@ namespace Binance.Cache
             _limit = limit;
             Token = token;
 
-            LinkTo(Client, callback, LeaveClientOpen);
+            LinkTo(Client, callback);
 
-            return Client.SubscribeAsync(symbol, token);
+            try
+            {
+                await Client.SubscribeAsync(symbol, token)
+                    .ConfigureAwait(false);
+            }
+            finally { Client.AggregateTrade -= OnClientEvent; }
         }
 
         #endregion Public Methods
@@ -151,26 +156,5 @@ namespace Binance.Cache
         }
 
         #endregion Private Methods
-
-        #region IDisposable
-
-        private bool _disposed;
-
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                Client.AggregateTrade -= OnClientEvent;
-            }
-
-            _disposed = true;
-
-            base.Dispose(disposing);
-        }
-
-        #endregion IDisposable
     }
 }

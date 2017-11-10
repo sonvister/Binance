@@ -300,11 +300,6 @@ namespace BinanceConsoleApp
             if (LiveTask != null && !LiveTask.IsCompleted)
                 await LiveTask;
 
-            OrderBookCache?.Dispose();
-            TradesCache?.Dispose();
-            CandlestickCache?.Dispose();
-            UserDataClient?.Dispose();
-
             LiveTokenSource?.Dispose();
 
             if (OrderBookCache != null)

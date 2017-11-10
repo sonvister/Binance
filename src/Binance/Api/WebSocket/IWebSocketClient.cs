@@ -6,9 +6,9 @@ using Binance.Api.WebSocket.Events;
 namespace Binance.Api.WebSocket
 {
     /// <summary>
-    /// A web socket implementation facade for <see cref="BinanceWebSocketClient"/>.
+    /// A web socket client interface for <see cref="BinanceWebSocketClient"/>.
     /// </summary>
-    public interface IWebSocketClient : IDisposable
+    public interface IWebSocketClient
     {
         /// <summary>
         /// The message received event.
@@ -19,8 +19,8 @@ namespace Binance.Api.WebSocket
         /// Connect web socket to URI and begin receiving messages.
         /// </summary>
         /// <param name="uri">The URI.</param>
-        /// <param name="token">The cancellation token (required to abort operation).</param>
+        /// <param name="token">The cancellation token (required to cancel operation).</param>
         /// <returns></returns>
-        Task OpenAsync(Uri uri, CancellationToken token);
+        Task RunAsync(Uri uri, CancellationToken token);
     }
 }

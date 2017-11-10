@@ -8,7 +8,7 @@ using Binance.Market;
 
 namespace Binance.Cache
 {
-    public interface ICandlesticksCache : IDisposable
+    public interface ICandlesticksCache
     {
         #region Public Events
 
@@ -41,28 +41,17 @@ namespace Binance.Cache
         /// <param name="symbol"></param>
         /// <param name="interval"></param>
         /// <param name="limit"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit = default, CancellationToken token = default);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <param name="interval"></param>
         /// <param name="callback"></param>
-        /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SubscribeAsync(string symbol, CandlestickInterval interval, Action<CandlesticksCacheEventArgs> callback, int limit = default, CancellationToken token = default);
+        Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit, Action<CandlesticksCacheEventArgs> callback, CancellationToken token);
 
         /// <summary>
         /// Link to a subscribed <see cref="ICandlestickWebSocketClient"/>.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="callback"></param>
-        /// <param name="leaveClientOpen"></param>
-        void LinkTo(ICandlestickWebSocketClient client, Action<CandlesticksCacheEventArgs> callback = null, bool leaveClientOpen = true);
+        void LinkTo(ICandlestickWebSocketClient client, Action<CandlesticksCacheEventArgs> callback = null);
 
         #endregion Public Methods
     }

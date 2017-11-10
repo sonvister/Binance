@@ -29,7 +29,7 @@ namespace Binance.Utility
 
         #region Public Methods
 
-        public virtual void Run(Func<CancellationToken, Task> action, Action<Exception> onError = null)
+        public virtual void Begin(Func<CancellationToken, Task> action, Action<Exception> onError = null)
         {
             Task = Task.Run(async () =>
             {
@@ -37,8 +37,11 @@ namespace Binance.Utility
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    onError?.Invoke(e);
-                    OnError(e);
+                    if (!_cts.IsCancellationRequested)
+                    {
+                        onError?.Invoke(e);
+                        OnError(e);
+                    }
                 }
             });
         }

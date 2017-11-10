@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public abstract class WebSocketClientCache<TClient, TEventArgs, TCacheEventArgs> : IDisposable
-        where TClient : class, IDisposable 
+    public abstract class WebSocketClientCache<TClient, TEventArgs, TCacheEventArgs>
+        where TClient : class 
         where TEventArgs : EventArgs
         where TCacheEventArgs : EventArgs
     {
@@ -29,8 +29,6 @@ namespace Binance.Cache
 
         protected readonly ILogger Logger;
 
-        protected bool LeaveClientOpen;
-
         protected CancellationToken Token = CancellationToken.None;
 
         #endregion Protected Fields
@@ -45,14 +43,13 @@ namespace Binance.Cache
 
         #region Constructors
 
-        protected WebSocketClientCache(IBinanceApi api, TClient client, bool leaveClientOpen = false, ILogger logger = null)
+        protected WebSocketClientCache(IBinanceApi api, TClient client, ILogger logger = null)
         {
             Throw.IfNull(api, nameof(api));
             Throw.IfNull(client, nameof(client));
 
             Api = api;
             Client = client;
-            LeaveClientOpen = leaveClientOpen;
             Logger = logger;
         }
 
@@ -60,7 +57,7 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public void LinkTo(TClient client, Action<TCacheEventArgs> callback = null, bool leaveClientOpen = true)
+        public void LinkTo(TClient client, Action<TCacheEventArgs> callback = null)
         {
             Throw.IfNull(client, nameof(client));
 
@@ -75,8 +72,6 @@ namespace Binance.Cache
             _isLinked = true;
 
             _callback = callback;
-
-            LeaveClientOpen = leaveClientOpen;
 
             OnLinkTo();
         }
@@ -133,32 +128,5 @@ namespace Binance.Cache
         }
 
         #endregion Protected Methods
-
-        #region IDisposable
-
-        private bool _disposed;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                if (!LeaveClientOpen)
-                {
-                    Client.Dispose();
-                }
-            }
-
-            _disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        #endregion IDisposable
     }
 }

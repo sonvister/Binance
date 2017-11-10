@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Account;
@@ -49,7 +48,6 @@ namespace BinanceConsoleApp.Examples
                 using (var controller = new TaskController())
                 using (var user = new BinanceApiUser(key, secret))
                 using (var api = services.GetService<IBinanceApi>())
-                using (var cache = services.GetService<IAccountInfoCache>())
                 {
                     // Query and display current account balance.
                     var account = await api.GetAccountInfoAsync(user);
@@ -58,8 +56,10 @@ namespace BinanceConsoleApp.Examples
 
                     Display(account.GetBalance(asset));
 
+                    var cache = services.GetService<IAccountInfoCache>();
+
                     // Display updated account balance.
-                    controller.Run(tkn => cache.SubscribeAsync(user, 
+                    controller.Begin(tkn => cache.SubscribeAsync(user, 
                         evt => Display(evt.AccountInfo.GetBalance(asset)), tkn),
                         err => Console.WriteLine(err.Message));
 

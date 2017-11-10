@@ -20,28 +20,33 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public AccountInfoCache(IBinanceApi api, IUserDataWebSocketClient client, bool leaveClientOpen = false, ILogger<AccountInfoCache> logger = null)
-            : base(api, client, leaveClientOpen, logger)
+        public AccountInfoCache(IBinanceApi api, IUserDataWebSocketClient client, ILogger<AccountInfoCache> logger = null)
+            : base(api, client, logger)
         { }
 
         #endregion Constructors
 
         #region Public Methods
 
-        public Task SubscribeAsync(IBinanceApiUser user, CancellationToken token = default)
-            => SubscribeAsync(user, null, token);
-
-        public Task SubscribeAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token = default)
+        public async Task SubscribeAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token)
         {
             Throw.IfNull(user, nameof(user));
+
+            if (!token.CanBeCanceled)
+                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
 
             token.ThrowIfCancellationRequested();
 
             Token = token;
 
-            LinkTo(Client, callback, LeaveClientOpen);
+            LinkTo(Client, callback);
 
-            return Client.SubscribeAsync(user, token);
+            try
+            {
+                await Client.SubscribeAsync(user, token)
+                    .ConfigureAwait(false);
+            }
+            finally { Client.AccountUpdate -= OnClientEvent; }
         }
 
         #endregion Public Methods
@@ -61,26 +66,5 @@ namespace Binance.Cache
         }
 
         #endregion Protected Methods
-
-        #region IDisposable
-
-        private bool _disposed;
-
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                Client.AccountUpdate -= OnClientEvent;
-            }
-
-            _disposed = true;
-
-            base.Dispose(disposing);
-        }
-
-        #endregion IDisposable
     }
 }
