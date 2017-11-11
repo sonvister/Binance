@@ -34,6 +34,8 @@ namespace Binance.Api.WebSocket
 
         private IWebSocketClient _client;
 
+        private int _maxBufferCount;
+
         #endregion Private Fields
 
         #region Constructors
@@ -134,6 +136,16 @@ namespace Binance.Api.WebSocket
         private void OnClientMessage(object sender, WebSocketClientMessageEventArgs e)
         {
             BufferBlock.Post(e.Message);
+
+            var count = BufferBlock.Count;
+            if (count > _maxBufferCount)
+            {
+                _maxBufferCount = count;
+                if (_maxBufferCount > 1)
+                {
+                    Logger?.LogTrace($"{GetType().Name} - Maximum buffer block count: {_maxBufferCount}");
+                }
+            }
         }
 
         #endregion Private Methods
