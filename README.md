@@ -66,15 +66,15 @@ This library provides a complete implementation of the [Binance REST API](https:
 
 *NOTE*: The [`IBinanceApi`](src/Binance/Api/IBinanceApi.cs) interface is `IDisposable` and does not require an API Key or Secret for instantiation. [Authentication](#authentication) information is only required where necessary.
 ```c#
-    var api = serviceProvider.GetService<IBinanceApi>();
-    // or...
-    var api = new BinanceApi();
+var api = serviceProvider.GetService<IBinanceApi>();
+// or...
+var api = new BinanceApi();
 ```
 Alternatively, the low-level [`IBinanceJsonApi`](src/Binance/Api/Json/IBinanceJsonApi.cs) interface can be used with all the same capabilities, but returns JSON instead.
 ```c#
-    var jsonApi = serviceProvider.GetService<IBinanceJsonApi>();
-    // or...
-    var jsonApi = api.JsonApi; // ...property of IBinanceApi.
+var jsonApi = serviceProvider.GetService<IBinanceJsonApi>();
+// or...
+var jsonApi = api.JsonApi; // ...property of IBinanceApi.
 ```
 All API methods are asynchronous with an optional `CancellationToken` parameter.
 
@@ -100,14 +100,14 @@ The following classes are used to provide configurable options: [`BinanceJsonApi
 
 #### Ping
 ```c#
-    var successful = await api.PingAsync();
+var successful = await api.PingAsync();
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/Ping.cs).
 
 #### Server Time
 ```c#
-    var time = await api.GetTimeAsync(); // UTC date/time.
-    var timestamp = await api.GetTimestampAsync(); // Unix time milliseconds.
+var time = await api.GetTimeAsync(); // UTC date/time.
+var timestamp = await api.GetTimestampAsync(); // Unix time milliseconds.
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetTime.cs).
 
@@ -116,7 +116,7 @@ There are pre-defined constant symbols in the static [`Symbol`](src/Binance/Symb
 #### Order Book
 Get the [order book](src/Binance/Market/OrderBook.cs) (depth of market) for a symbol with optional limit [5, 10, 20, 50, 100, 200, 500].
 ```c#
-    var book = await api.GetOrderBookAsync(Symbol.BTC_USDT);
+var book = await api.GetOrderBookAsync(Symbol.BTC_USDT);
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrderBook.cs).
 
@@ -124,45 +124,44 @@ Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOr
 Get compressed/[aggregate trades](src/Binance/Market/AggregateTrade.cs) for a symbol with optional limit [1-500]. \
 Trades that fill at the same time, from the same order, with the same price will have an aggregate quantity.
 ```c#
-    var trades = await api.GetTradesAsync(Symbol.BTC_USDT);
+var trades = await api.GetTradesAsync(Symbol.BTC_USDT);
 ```
 Sample console application [example with limit](samples/BinanceConsoleApp/Controllers/GetAggregateTrades.cs), [example from trade ID](samples/BinanceConsoleApp/Controllers/GetAggregateTradesFrom.cs), [example with time range](samples/BinanceConsoleApp/Controllers/GetAggregateTradesIn.cs).
 
 #### Candlesticks
 Get [candlesticks](src/Binance/Market/Candlestick.cs) for a symbol with optional limit [1-500].
 ```c#
-    var candles = await api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Hour);
+var candles = await api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Hour);
 ```
 Sample console application [example with limit](samples/BinanceConsoleApp/Controllers/GetCandlesticks.cs), [example with time range](samples/BinanceConsoleApp/Controllers/GetCandlesticksIn.cs).
 
 #### 24-hour Statistics
 Get the [24-hour statistics](src/Binance/Market/Symbol24HourStatistics.cs) for a symbol.
 ```c#
-    var stats = await api.Get24HourStatisticsAsync(Symbol.BTC_USDT);
+var stats = await api.Get24HourStatisticsAsync(Symbol.BTC_USDT);
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/Get24HourStatistics.cs).
 
 #### Prices
 Get current [prices](src/Binance/Market/SymbolPrice.cs) for all symbols.
 ```c#
-    var prices = await api.GetPricesAsync();
+var prices = await api.GetPricesAsync();
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetPrices.cs).
 
 #### Order Book Tops
 Get best, [top price and quantity](src/Binance/Market/OrderBookTop.cs) on the order book for all symbols.
 ```c#
-    var tops = await api.GetOrderBookTopsAsync();
+var tops = await api.GetOrderBookTopsAsync();
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrderBookTops.cs).
 
 #### Symbols
 Get a list of all *current* symbols.
 ```c#
-    var symbols = await api.SymbolsAsync();
+var symbols = await api.SymbolsAsync();
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/Symbols.cs).
-
 
 
 ### Account
@@ -171,7 +170,7 @@ To use the following features of the API you must have a Binance account and cre
 #### Authentication
 Create a user authentication instance ([`IBinanceApiUser`](src/Binance/Api/IBinanceApiUser.cs)) with your Binance account **API Key** and **Secret** (optional). The interface and implementation is `IDisposable` due to an internal `HMAC` used for signing requests (subsequently, the API Secret is *not stored* as a property in the [`BinanceApiUser`](src/Binance/Api/BinanceApiUser.cs) class privately or otherwise).
 ```c#
-    var user = new BinanceApiUser("<Your API Key>", "<your API Secret>");
+var user = new BinanceApiUser("<Your API Key>", "<your API Secret>");
 ```
 *NOTE*: User authentication is method injected -- only where required -- so a single Binance API instance (with a single `HttpClient`) is capable of supporting multiple Binance users.
 
@@ -249,16 +248,16 @@ Create and place a new [*LIMIT* order](src/Binance/Account/Orders/LimitOrder.cs)
 
 NOTE: [Client orders](src/Binance/Account/Orders/ClientOrder.cs) are created to serve as a mutable order placeholder, only after the client order is placed successfully does an immutable [`Order`](src/Binance/Account/Orders/Order.cs) exist.
 ```c#
-    using (var user = new BinanceApiUser("api-key", "api-secret"))
+using (var user = new BinanceApiUser("api-key", "api-secret"))
+{
+    var order = await api.PlaceAsync(new LimitOrder(user)
     {
-        var order = await api.PlaceAsync(new LimitOrder(user)
-        {
-            Symbol = Symbol.BTC_USDT,
-            Side = OrderSide.Buy,
-            Quantity = 1,
-            Price = 1000
-        });
-    }
+        Symbol = Symbol.BTC_USDT,
+        Side = OrderSide.Buy,
+        Quantity = 1,
+        Price = 1000
+    });
+}
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/PlaceLimitOrder.cs).
 
@@ -267,110 +266,110 @@ Create and place a new [*MARKET* order](src/Binance/Account/Orders/MarketOrder.c
 
 NOTE: [Client orders](src/Binance/Account/Orders/ClientOrder.cs) are created to serve as a mutable order placeholder, only after that client order is placed does an immutable [`Order`](src/Binance/Account/Orders/Order.cs) exist.
 ```c#
-    using (var user = new BinanceApiUser("api-key", "api-secret"))
+using (var user = new BinanceApiUser("api-key", "api-secret"))
+{
+    var order = await api.PlaceAsync(new MarketOrder(user)
     {
-        var order = await api.PlaceAsync(new MarketOrder(user)
-        {
-            Symbol = Symbol.BTC_USDT,
-            Side = OrderSide.Sell,
-            Quantity = 1
-        });
-    }
+        Symbol = Symbol.BTC_USDT,
+        Side = OrderSide.Sell,
+        Quantity = 1
+    });
+}
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/PlaceMarketOrder.cs).
 
 #### Test Order
 Create and *TEST* place a new order. An exception will be thrown if the order placement test fails.
 ```c#
-    using (var user = new BinanceApiUser("api-key", "api-secret"))
+using (var user = new BinanceApiUser("api-key", "api-secret"))
+{
+    try
     {
-        try
+        await api.TestPlaceAsync(new MarketOrder(user)
         {
-            await api.TestPlaceAsync(new MarketOrder(user)
-            {
-                Symbol = Symbol.BTC_USDT,
-                Side = OrderSide.Sell,
-                Quantity = 1
-            });
-        }
-        catch (BinanceApiException) { }
+            Symbol = Symbol.BTC_USDT,
+            Side = OrderSide.Sell,
+            Quantity = 1
+        });
     }
+    catch (BinanceApiException) { }
+}
 ```
 Sample console application [example LIMIT order](samples/BinanceConsoleApp/Controllers/PlaceLimitOrder.cs), [example MARKET order](samples/BinanceConsoleApp/Controllers/PlaceMarketOrder.cs).
 
 #### Query an Order
 Get an order to determine current status. [`Order`](src/Binance/Account/Orders/Order.cs) lookup requires an order instance or the combination of a symbol and the order ID or original client order ID. If an order instance is provided, it will be updated in place in addition to being returned.
 ```c#
-    var order = await api.GetAsync(order); // use to update status in place.
-    // or...
-    var order = await api.GetOrderAsync(user, Symbol.BTC_USDT, orderId);
-    // or...
-    var order = await api.GetOrderAsync(user, Symbol.BTC_USDT, clientOrderId);
+var order = await api.GetAsync(order); // use to update status in place.
+// or...
+var order = await api.GetOrderAsync(user, Symbol.BTC_USDT, orderId);
+// or...
+var order = await api.GetOrderAsync(user, Symbol.BTC_USDT, clientOrderId);
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrCancelOrder.cs).
 
 #### Cancel an Order
 Cancel an order. [`Order`](src/Binance/Account/Orders/Order.cs) lookup requires an order instance or the combination of a symbol and the order ID or original client order ID.
 ```c#
-    await api.CancelAsync(order);
-    // or...
-    await api.CancelOrderAsync(user, Symbol.BTC_USDT, orderId);
-    // or...
-    await api.CancelOrderAsync(user, Symbol.BTC_USDT, clientOrderId);
+await api.CancelAsync(order);
+// or...
+await api.CancelOrderAsync(user, Symbol.BTC_USDT, orderId);
+// or...
+await api.CancelOrderAsync(user, Symbol.BTC_USDT, clientOrderId);
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrCancelOrder.cs).
 
 #### Open Orders
 Get all open [`orders`](src/Binance/Account/Orders/Order.cs) for a symbol with optional limit [1-500].
 ```c#
-    var orders = await api.GetOpenOrdersAsync(user, Symbol.BTC_USDT);
+var orders = await api.GetOpenOrdersAsync(user, Symbol.BTC_USDT);
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrders.cs).
 
 #### Orders
 Get all [`orders`](src/Binance/Account/Orders/Order.cs); active, canceled, or filled with optional limit [1-500].
 ```c#
-    var orders = await api.GetOrdersAsync(user, Symbol.BTC_USDT);
+var orders = await api.GetOrdersAsync(user, Symbol.BTC_USDT);
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetOrders.cs).
 
 #### Account Information
 Get current [account information](src/Binance/Account/AccountInfo.cs).
 ```c#
-    var account = await api.GetAccountInfoAsync(user);
+var account = await api.GetAccountInfoAsync(user);
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetAccountInfo.cs).
 
 #### Account Trades
 Get [trades](src/Binance/Account/AccountTrade.cs) for a specific account and symbol with optional limit [1-500].
 ```c#
-    var account = await api.GetTradesAsync(user, Symbol.BTC_USDT);
+var account = await api.GetTradesAsync(user, Symbol.BTC_USDT);
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetTrades.cs).
 
 #### Withdraw
 Submit a [withdraw request](src/Binance/Account/WithdrawRequest.cs) ...*optionally donate to me* :)
 ```c#
-    await api.WithdrawAsync(new WithdrawRequest(user)
-    {
-        Asset = Asset.BTC,
-        Address = "3JjG3tRR1dx98UJyNdpzpkrxRjXmPfQHk9",
-        Amount = 0.01m
-    });
+await api.WithdrawAsync(new WithdrawRequest(user)
+{
+    Asset = Asset.BTC,
+    Address = "3JjG3tRR1dx98UJyNdpzpkrxRjXmPfQHk9",
+    Amount = 0.01m
+});
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/Withdraw.cs).
 
 #### Deposit History
 Get [deposit](src/Binance/Account/Deposit.cs) history.
 ```c#
-    var deposits = await api.GetDepositsAsync(user);
+var deposits = await api.GetDepositsAsync(user);
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetDeposits.cs).
 
 #### Withdrawal History
 Get [withdrawal](src/Binance/Account/Withdrawal.cs) history.
 ```c#
-    var withdrawals = await api.GetWithdrawalsAsync(user);
+var withdrawals = await api.GetWithdrawalsAsync(user);
 ```
 Sample console application [example](samples/BinanceConsoleApp/Controllers/GetWithdrawals.cs).
 
@@ -380,20 +379,19 @@ This library provides a complete implementation of the [Binance WebSocket API](h
 #### Depth Endpoint
 Get real-time depth update events using [`IDepthWebSocketClient`](src/Binance/Api/WebSocket/IDepthWebSocketClient.cs).
 ```c#
-    using (var client = serviceProvider.GetService<IDepthWebSocketClient>())
-    {
-        client.DepthUpdate += OnDepthUpdateEvent; // optional event subscribing.
-        
-        var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, (e) =>
-        {
-            // optional inline event handler.
-        }, cts.Token));
-        
-        // ...
+var client = serviceProvider.GetService<IDepthWebSocketClient>();
 
-        cts.Cancel();
-        await task;
-    }
+client.DepthUpdate += OnDepthUpdateEvent; // optional event subscribing.
+    
+var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, e =>
+{
+    // optional inline event handler.
+}, cts.Token));
+
+// ...
+
+cts.Cancel();
+await task;
 ```
 ```c#
 void OnDepthUpdateEvent(object sender, DepthUpdateEventArgs e)
@@ -405,20 +403,19 @@ void OnDepthUpdateEvent(object sender, DepthUpdateEventArgs e)
 #### Candlestick Endpoint
 Get real-time candlestick events using [`ICandlestickWebSocketClient`](src/Binance/Api/WebSocket/ICandlestickWebSocketClient.cs).
 ```c#
-    using (var client = serviceProvider.GetService<ICandlestickWebSocketClient>())
-    {
-        client.Candlestick += OnCandlestickEvent; // optional event subscribing.
-        
-        var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, (e) =>
-        {
-            // optional inline event handler.
-        }, cts.Token));
-        
-        // ...
-        
-        cts.Cancel();
-        await task;
-    }
+var client = serviceProvider.GetService<ICandlestickWebSocketClient>();
+
+client.Candlestick += OnCandlestickEvent; // optional event subscribing.
+
+var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, e =>
+{
+    // optional inline event handler.
+}, cts.Token));
+
+// ...
+
+cts.Cancel();
+await task;
 ```
 ```c#
 void OnCandlestickEvent(object sender, CandlestickEventArgs e)
@@ -430,20 +427,20 @@ void OnCandlestickEvent(object sender, CandlestickEventArgs e)
 #### Trades Endpoint
 Get real-time aggregate trade events using [`ITradesWebSocketClient`](src/Binance/Api/WebSocket/ITradesWebSocketClient.cs).
 ```c#
-    using (var client = serviceProvider.GetService<ITradesWebSocketClient>())
-    {
-        client.AggregateTrade += OnAggregateTradeEvent; // optional event subscribing.
-        
-        var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, (e) => 
-        {
-            // optional inline event handler.
-        }, cts.Token));
-        
-        // ...
-        
-        cts.Cancel();
-        await task;
-    }
+var client = serviceProvider.GetService<ITradesWebSocketClient>();
+
+client.AggregateTrade += OnAggregateTradeEvent; // optional event subscribing.
+
+var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, e => 
+{
+    // optional inline event handler.
+}, cts.Token));
+
+// ...
+
+cts.Cancel();
+await task;
+}
 ```
 ```c#
 void OnAggregateTradeEvent(object sender, AggregateTradeEventArgs e)
@@ -455,23 +452,22 @@ void OnAggregateTradeEvent(object sender, AggregateTradeEventArgs e)
 #### User Data Endpoint
 Get real-time account update events using [`IUserDataWebSocketClient`](src/Binance/Api/WebSocket/IUserDataWebSocketClient.cs).
 ```c#
-    using (var client = serviceProvider.GetService<IUserDataWebSocketClient>())
-    {
-        // optional (preferred) event subscribing.
-        client.AccountUpdate += OnAccountUpdateEvent;
-        client.OrderUpdate += OnOrderUpdateEvent;
-        client.TradeUpdate += OnTradeUpdateEvent;
-        
-        var task = Task.Run(() => client.SubscribeAsync(user, (e) => 
-        {
-            // optional inline event handler (where 'e' is the base UserDataEventArgs type).
-        }, cts.Token));
-        
-        // ...
-        
-        cts.Cancel();
-        await task;
-    }
+var client = serviceProvider.GetService<IUserDataWebSocketClient>();
+
+// optional (preferred) event subscribing.
+client.AccountUpdate += OnAccountUpdateEvent;
+client.OrderUpdate += OnOrderUpdateEvent;
+client.TradeUpdate += OnTradeUpdateEvent;
+
+var task = Task.Run(() => client.SubscribeAsync(user, e => 
+{
+    // optional inline event handler (where 'e' is the base UserDataEventArgs type).
+}, cts.Token));
+
+// ...
+
+cts.Cancel();
+await task;
 ```
 ```c#
 void OnAccountUpdateEvent(object sender, AccountUpdateEventArgs e)
@@ -491,19 +487,19 @@ void OnTradeUpdateEvent(object sender, TradeUpdateEventArgs e)
 ##### Start User Stream
 Start a new user data stream.
 ```c#
-    var listenKey = await api.UserStreamStartAsync(user);
+var listenKey = await api.UserStreamStartAsync(user);
 ```
 
 ##### Keepalive User Stream
 Ping a user data stream to prevent a timeout.
 ```c#
-    await api.UserStreamKeepAliveAsync(user, listenKey);
+await api.UserStreamKeepAliveAsync(user, listenKey);
 ```
 
 ##### Close User Stream
 Close a user data stream.
 ```c#
-    await api.UserStreamCloseAsync(user, listenKey);
+await api.UserStreamCloseAsync(user, listenKey);
 ```
 
 #### Real-time Caching
@@ -514,25 +510,24 @@ The caching classes are high-level implementations that utilize the correspondin
 ##### Order Book Cache
 Use an [`IOrderBookCache`](src/Binance/Cache/IOrderBookCache.cs) (with an [`IDepthWebSocketClient`](src/Binance/Api/WebSocket/IDepthWebSocketClient.cs)) to create a real-time, synchronized order book for a symbol. Refer to the BinanceMarketDepth sample for an [additional example](samples/BinanceMarketDepth/Program.cs).
 ```c#
-    using (var cache = serviceProvider.GetService<IOrderBookCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var price = cache.OrderBook.Top.Bid.Price; // access latest order book (thread-safe).
-        var book = cache.OrderBook; // keep a static (snapshot) reference of order book.
-        
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
+var cache = serviceProvider.GetService<IOrderBookCache>();
+
+cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+
+var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
+{
+    // optionally, use an inline event handler.
+}, cts.Token)); // starts synchronization.
+
+// ...
+
+var price = cache.OrderBook.Top.Bid.Price; // access latest order book (thread-safe).
+var book = cache.OrderBook; // keep a static (snapshot) reference of order book.
+
+// ...
+
+cts.Cancel(); // end the task.
+await task; // wait for task to complete.
 ```
 ```c#
 void OnUpdateEvent(object sender, OrderBookCacheEventArgs e)
@@ -544,24 +539,23 @@ void OnUpdateEvent(object sender, OrderBookCacheEventArgs e)
 ##### Aggregate Trades Cache
 Use an [`IAggregateTradesCache`](src/Binance/Cache/IAggregateTradesCache.cs) (with an [`ITradesWebSocketClient`](src/Binance/Api/WebSocket/ITradesWebSocketClient.cs)) to create a real-time, synchronized trade history for a symbol. Refer to the BinanceTradeHistory sample for an [additional example](samples/BinanceTradeHistory/Program.cs).
 ```c#
-    using (var cache = serviceProvider.GetService<IAggregateTradeCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var trades = cache.Trades; // access latest aggregate trades (thread-safe).
+var cache = serviceProvider.GetService<IAggregateTradeCache>();
 
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
+cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+
+var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
+{
+    // optionally, use an inline event handler.
+}, cts.Token)); // starts synchronization.
+
+// ...
+
+var trades = cache.Trades; // access latest aggregate trades (thread-safe).
+
+// ...
+
+cts.Cancel(); // end the task.
+await task; // wait for task to complete.
 ```
 ```c#
 void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
@@ -574,24 +568,23 @@ void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
 Use an [`ICandlesticksCache`](src/Binance/Cache/ICandlesticksCache.cs) (with an [`ICandlestickWebSocketClient`](src/Binance/Api/WebSocket/ICandlestickWebSocketClient.cs)) to create a real-time, synchronized price chart for a symbol. Refer to the BinancePriceChart sample for an [additional example](samples/BinancePriceChart/Program.cs).
 
 ```c#
-    using (var cache = serviceProvider.GetService<ICandlesticksCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var candlesticks = cache.Candlestics; // access latest candlesticks (thread-safe).
+var cache = serviceProvider.GetService<ICandlesticksCache>();
 
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
+cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+
+var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, (e) =>
+{
+    // optionally, use an inline event handler.
+}, cts.Token)); // starts synchronization.
+
+// ...
+
+var candlesticks = cache.Candlestics; // access latest candlesticks (thread-safe).
+
+// ...
+
+cts.Cancel(); // end the task.
+await task; // wait for task to complete.
 ```
 ```c#
 void OnUpdateEvent(object sender, CandlesticksCacheEventArgs e)
@@ -604,24 +597,23 @@ void OnUpdateEvent(object sender, CandlesticksCacheEventArgs e)
 Use an [`IAccountInfoCache`](src/Binance/Cache/IAccountInfoCache.cs) (with an [`IUserDataWebSocketClient`](src/Binance/Api/WebSocket/IUserDataWebSocketClient.cs)) to create a real-time, synchronized account profile for a user. Refer to the following for an [additional example](samples/BinanceConsoleApp/Examples/AccountBalancesExample.cs).
 
 ```c#
-    using (var cache = serviceProvider.GetService<IAccountInfoCache>())
-    {
-        cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
-        
-        var task = Task.Run(() => cache.SubscribeAsync(user, (e) =>
-        {
-            // optionally, use an inline event handler.
-        }, cts.Token)); // starts synchronization.
-        
-        // ...
-        
-        var accountInfo = cache.AccountInfo; // access latest candlesticks (thread-safe).
+var cache = serviceProvider.GetService<IAccountInfoCache>();
 
-        // ...
-        
-        cts.Cancel(); // end the task.
-        await task; // wait for task to complete.
-    }
+cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
+
+var task = Task.Run(() => cache.SubscribeAsync(user, (e) =>
+{
+    // optionally, use an inline event handler.
+}, cts.Token)); // starts synchronization.
+
+// ...
+
+var accountInfo = cache.AccountInfo; // access latest candlesticks (thread-safe).
+
+// ...
+
+cts.Cancel(); // end the task.
+await task; // wait for task to complete.
 ```
 ```c#
 void OnUpdateEvent(object sender, AccountInfoCacheEventArgs e)
