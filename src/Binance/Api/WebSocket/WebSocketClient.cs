@@ -12,7 +12,11 @@ namespace Binance.Api.WebSocket
     {
         #region Public Events
 
+        public event EventHandler<EventArgs> Open;
+
         public event EventHandler<WebSocketClientMessageEventArgs> Message;
+
+        public event EventHandler<EventArgs> Close;
 
         #endregion Public Events
 
@@ -61,6 +65,9 @@ namespace Binance.Api.WebSocket
                 {
                     await webSocket.ConnectAsync(uri, token)
                         .ConfigureAwait(false);
+
+                    if (webSocket.State == WebSocketState.Open)
+                        RaiseOpenEvent();
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
@@ -79,6 +86,8 @@ namespace Binance.Api.WebSocket
 
                 while (!token.IsCancellationRequested)
                 {
+                    stringBuilder.Clear();
+
                     try
                     {
                         WebSocketReceiveResult result;
@@ -128,8 +137,6 @@ namespace Binance.Api.WebSocket
                         continue;
 
                     var json = stringBuilder.ToString();
-                    stringBuilder.Clear();
-
                     if (!string.IsNullOrWhiteSpace(json))
                     {
                         RaiseMessageEvent(new WebSocketClientMessageEventArgs(json));
@@ -142,10 +149,13 @@ namespace Binance.Api.WebSocket
             }
             finally
             {
+                // NOTE: WebSocketState.CloseSent should not be encountered since CloseOutputAsync is not used.
                 if (webSocket.State == WebSocketState.Open || webSocket.State == WebSocketState.CloseReceived)
                 {
                     await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
                         .ConfigureAwait(false);
+
+                    RaiseCloseEvent();
                 }
 
                 webSocket?.Dispose();
@@ -155,6 +165,20 @@ namespace Binance.Api.WebSocket
         #endregion Public Methods
 
         #region Private Methods
+
+        /// <summary>
+        /// Raise open event.
+        /// </summary>
+        /// <param name="args"></param>
+        private void RaiseOpenEvent()
+        {
+            try { Open?.Invoke(this, EventArgs.Empty); }
+            catch (OperationCanceledException) { }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, $"{nameof(WebSocketClient)}: Unhandled open event handler exception.");
+            }
+        }
 
         /// <summary>
         /// Raise message event.
@@ -167,6 +191,20 @@ namespace Binance.Api.WebSocket
             catch (Exception e)
             {
                 _logger?.LogError(e, $"{nameof(WebSocketClient)}: Unhandled message event handler exception.");
+            }
+        }
+
+        /// <summary>
+        /// Raise close event.
+        /// </summary>
+        /// <param name="args"></param>
+        private void RaiseCloseEvent()
+        {
+            try { Close?.Invoke(this, EventArgs.Empty); }
+            catch (OperationCanceledException) { }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, $"{nameof(WebSocketClient)}: Unhandled close event handler exception.");
             }
         }
 

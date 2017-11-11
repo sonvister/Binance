@@ -5,7 +5,7 @@ using Binance.Api.WebSocket.Events;
 
 namespace Binance.Api.WebSocket
 {
-    public interface ITradesWebSocketClient
+    public interface ITradesWebSocketClient : IBinanceWebSocketClient
     {
         #region Public Events
 

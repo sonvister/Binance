@@ -11,9 +11,19 @@ namespace Binance.Api.WebSocket
     public interface IWebSocketClient
     {
         /// <summary>
+        /// The open event.
+        /// </summary>
+        event EventHandler<EventArgs> Open;
+
+        /// <summary>
         /// The message received event.
         /// </summary>
         event EventHandler<WebSocketClientMessageEventArgs> Message;
+
+        /// <summary>
+        /// The close event.
+        /// </summary>
+        event EventHandler<EventArgs> Close;
 
         /// <summary>
         /// Connect web socket to URI and begin receiving messages.

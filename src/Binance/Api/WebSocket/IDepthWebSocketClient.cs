@@ -8,7 +8,7 @@ namespace Binance.Api.WebSocket
     /// <summary>
     /// The depth client ...what makes order book synchronization possible.
     /// </summary>
-    public interface IDepthWebSocketClient
+    public interface IDepthWebSocketClient : IBinanceWebSocketClient
     {
         #region Public Events
 

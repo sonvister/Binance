@@ -6,7 +6,7 @@ using Binance.Market;
 
 namespace Binance.Api.WebSocket
 {
-    public interface ICandlestickWebSocketClient
+    public interface ICandlestickWebSocketClient : IBinanceWebSocketClient
     {
         #region Public Events
 

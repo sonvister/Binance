@@ -10,9 +10,15 @@ namespace Binance.Api.WebSocket
     /// <summary>
     /// WebSocket client base class.
     /// </summary>
-    public abstract class BinanceWebSocketClient<TEventArgs>
+    public abstract class BinanceWebSocketClient<TEventArgs> : IBinanceWebSocketClient
         where TEventArgs : EventArgs
     {
+        #region Public Properties
+
+        public IWebSocketClient WebSocket { get; }
+
+        #endregion Public Properties
+
         #region Protected Fields
 
         protected BufferBlock<string> BufferBlock;
@@ -32,8 +38,6 @@ namespace Binance.Api.WebSocket
 
         #region Private Fields
 
-        private readonly IWebSocketClient _client;
-
         private int _maxBufferCount;
 
         #endregion Private Fields
@@ -49,7 +53,7 @@ namespace Binance.Api.WebSocket
         {
             Throw.IfNull(client, nameof(client));
 
-            _client = client;
+            WebSocket = client;
             Logger = logger;
         }
 
@@ -107,9 +111,9 @@ namespace Binance.Api.WebSocket
 
                 var uri = new Uri($"{BaseUri}{uriPath}");
 
-                _client.Message += OnClientMessage;
+                WebSocket.Message += OnClientMessage;
 
-                await _client.RunAsync(uri, token)
+                await WebSocket.RunAsync(uri, token)
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException) { }
@@ -123,7 +127,7 @@ namespace Binance.Api.WebSocket
             }
             finally
             {
-                _client.Message -= OnClientMessage;
+                WebSocket.Message -= OnClientMessage;
 
                 BufferBlock?.Complete();
                 ActionBlock?.Complete();
