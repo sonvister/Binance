@@ -70,17 +70,24 @@ namespace Binance.Cache
                 await Client.SubscribeAsync(symbol, interval, token)
                     .ConfigureAwait(false);
             }
-            finally { Client.Candlestick -= OnClientEvent; }
+            finally { UnLink(); }
+        }
+
+        public override void LinkTo(ICandlestickWebSocketClient client, Action<CandlesticksCacheEventArgs> callback = null)
+        {
+            base.LinkTo(client, callback);
+            Client.Candlestick += OnClientEvent;
+        }
+
+        public override void UnLink()
+        {
+            Client.Candlestick -= OnClientEvent;
+            base.UnLink();
         }
 
         #endregion Public Methods
 
         #region Protected Methods
-
-        protected override void OnLinkTo()
-        {
-            Client.Candlestick += OnClientEvent;
-        }
 
         protected override async Task<CandlesticksCacheEventArgs> OnAction(CandlestickEventArgs @event)
         {

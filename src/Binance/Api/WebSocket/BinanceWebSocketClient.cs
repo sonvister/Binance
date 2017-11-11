@@ -135,6 +135,7 @@ namespace Binance.Api.WebSocket
 
         private void OnClientMessage(object sender, WebSocketClientMessageEventArgs e)
         {
+            // Provides buffering and single-threaded execution.
             BufferBlock.Post(e.Message);
 
             var count = BufferBlock.Count;

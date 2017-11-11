@@ -46,17 +46,24 @@ namespace Binance.Cache
                 await Client.SubscribeAsync(user, token)
                     .ConfigureAwait(false);
             }
-            finally { Client.AccountUpdate -= OnClientEvent; }
+            finally { UnLink(); }
+        }
+
+        public override void LinkTo(IUserDataWebSocketClient client, Action<AccountInfoCacheEventArgs> callback = null)
+        {
+            base.LinkTo(client, callback);
+            Client.AccountUpdate += OnClientEvent;
+        }
+
+        public override void UnLink()
+        {
+            Client.AccountUpdate -= OnClientEvent;
+            base.UnLink();
         }
 
         #endregion Public Methods
 
         #region Protected Methods
-
-        protected override void OnLinkTo()
-        {
-            Client.AccountUpdate += OnClientEvent;
-        }
 
         protected override Task<AccountInfoCacheEventArgs> OnAction(AccountUpdateEventArgs @event)
         {

@@ -58,6 +58,11 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         void LinkTo(IDepthWebSocketClient client, Action<OrderBookCacheEventArgs> callback = null);
 
+        /// <summary>
+        /// Unlink from client.
+        /// </summary>
+        void UnLink();
+
         #endregion Public Methods
     }
 }

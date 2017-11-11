@@ -59,20 +59,24 @@ namespace Binance.Cache
                 await Client.SubscribeAsync(symbol, token)
                     .ConfigureAwait(false);
             }
-            finally { Client.DepthUpdate -= OnClientEvent; }
+            finally { UnLink(); }
+        }
+
+        public override void LinkTo(IDepthWebSocketClient client, Action<OrderBookCacheEventArgs> callback = null)
+        {
+            base.LinkTo(client, callback);
+            Client.DepthUpdate += OnClientEvent;
+        }
+
+        public override void UnLink()
+        {
+            Client.DepthUpdate -= OnClientEvent;
+            base.UnLink();
         }
 
         #endregion Public Methods
 
         #region Protected Methods
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected override void OnLinkTo()
-        {
-            Client.DepthUpdate += OnClientEvent;
-        }
 
         /// <summary>
         /// 

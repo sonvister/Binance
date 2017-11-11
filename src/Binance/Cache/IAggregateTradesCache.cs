@@ -52,6 +52,11 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         void LinkTo(ITradesWebSocketClient client, Action<AggregateTradesCacheEventArgs> callback = null);
 
+        /// <summary>
+        /// Unlink from client.
+        /// </summary>
+        void UnLink();
+
         #endregion Public Methods
     }
 }

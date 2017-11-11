@@ -53,6 +53,11 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         void LinkTo(ICandlestickWebSocketClient client, Action<CandlesticksCacheEventArgs> callback = null);
 
+        /// <summary>
+        /// Unlink from client.
+        /// </summary>
+        void UnLink();
+
         #endregion Public Methods
     }
 }

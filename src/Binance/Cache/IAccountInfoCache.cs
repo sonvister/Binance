@@ -52,6 +52,11 @@ namespace Binance.Cache
         /// <returns></returns>
         void LinkTo(IUserDataWebSocketClient client, Action<AccountInfoCacheEventArgs> callback = null);
 
+        /// <summary>
+        /// Unlink from client.
+        /// </summary>
+        void UnLink();
+
         #endregion Public Methods
     }
 }

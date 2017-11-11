@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Binance.Api;
 using Microsoft.Extensions.Logging;
 
@@ -37,6 +38,9 @@ namespace Binance.Cache
 
         private Action<TCacheEventArgs> _callback;
 
+        private BufferBlock<TEventArgs> _bufferBlock;
+        private ActionBlock<TEventArgs> _actionBlock;
+
         private bool _isLinked;
 
         #endregion Private Fields
@@ -57,7 +61,7 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public void LinkTo(TClient client, Action<TCacheEventArgs> callback = null)
+        public virtual void LinkTo(TClient client, Action<TCacheEventArgs> callback = null)
         {
             Throw.IfNull(client, nameof(client));
 
@@ -73,17 +77,67 @@ namespace Binance.Cache
 
             _callback = callback;
 
-            OnLinkTo();
+            _bufferBlock = new BufferBlock<TEventArgs>(new DataflowBlockOptions
+            {
+                EnsureOrdered = true,
+                CancellationToken = Token,
+                BoundedCapacity = DataflowBlockOptions.Unbounded,
+                MaxMessagesPerTask = DataflowBlockOptions.Unbounded
+            });
+
+            _actionBlock = new ActionBlock<TEventArgs>(async @event =>
+            {
+                TCacheEventArgs eventArgs = null;
+
+                try
+                {
+                    eventArgs = await OnAction(@event)
+                        .ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e)
+                {
+                    Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(OnAction)} exception.");
+                }
+
+                if (eventArgs != null)
+                {
+                    try
+                    {
+                        _callback?.Invoke(eventArgs);
+                        Update?.Invoke(this, eventArgs);
+                    }
+                    catch (OperationCanceledException) { }
+                    catch (Exception e)
+                    {
+                        Logger?.LogError(e, $"{GetType().Name}: Unhandled update event handler exception.");
+                    }
+                }
+            }, new ExecutionDataflowBlockOptions
+            {
+                BoundedCapacity = 1,
+                EnsureOrdered = true,
+                MaxDegreeOfParallelism = 1,
+                CancellationToken = Token,
+                SingleProducerConstrained = true
+            });
+
+            _bufferBlock.LinkTo(_actionBlock);
+        }
+
+        public virtual void UnLink()
+        {
+            _callback = null;
+
+            _isLinked = false;
+
+            _bufferBlock?.Complete();
+            _actionBlock?.Complete();
         }
 
         #endregion Public Methods
 
         #region Protected Methods
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected abstract void OnLinkTo();
 
         /// <summary>
         /// 
@@ -97,34 +151,10 @@ namespace Binance.Cache
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="event"></param>
-        protected async void OnClientEvent(object sender, TEventArgs @event)
+        protected void OnClientEvent(object sender, TEventArgs @event)
         {
-            TCacheEventArgs eventArgs = null;
-
-            try
-            {
-                eventArgs = await OnAction(@event)
-                    .ConfigureAwait(false);
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception e)
-            {
-                Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(OnAction)} exception.");
-            }
-
-            if (eventArgs != null)
-            {
-                try
-                {
-                    _callback?.Invoke(eventArgs);
-                    Update?.Invoke(this, eventArgs);
-                }
-                catch (OperationCanceledException) { }
-                catch (Exception e)
-                {
-                    Logger?.LogError(e, $"{GetType().Name}: Unhandled update event handler exception.");
-                }
-            }
+            // Provides buffering and single-threaded execution.
+            _bufferBlock.Post(@event);
         }
 
         #endregion Protected Methods

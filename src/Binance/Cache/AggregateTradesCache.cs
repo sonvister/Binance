@@ -68,17 +68,24 @@ namespace Binance.Cache
                 await Client.SubscribeAsync(symbol, token)
                     .ConfigureAwait(false);
             }
-            finally { Client.AggregateTrade -= OnClientEvent; }
+            finally { UnLink(); }
+        }
+
+        public override void LinkTo(ITradesWebSocketClient client, Action<AggregateTradesCacheEventArgs> callback = null)
+        {
+            base.LinkTo(client, callback);
+            Client.AggregateTrade += OnClientEvent;
+        }
+
+        public override void UnLink()
+        {
+            Client.AggregateTrade -= OnClientEvent;
+            base.UnLink();
         }
 
         #endregion Public Methods
 
         #region Protected Methods
-
-        protected override void OnLinkTo()
-        {
-            Client.AggregateTrade += OnClientEvent;
-        }
 
         protected override async Task<AggregateTradesCacheEventArgs> OnAction(AggregateTradeEventArgs @event)
         {
