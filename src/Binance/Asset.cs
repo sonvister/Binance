@@ -11,8 +11,9 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1510253717494;
+        public static readonly long LastUpdateAt = 1510364430223;
 
+        public static readonly string AMB = "AMB";
         public static readonly string ARK = "ARK";
         public static readonly string AST = "AST";
         public static readonly string BCC = "BCC";
@@ -24,6 +25,7 @@ namespace Binance
         public static readonly string BTM = "BTM";
         public static readonly string CTR = "CTR";
         public static readonly string DASH = "DASH";
+        public static readonly string DLT = "DLT";
         public static readonly string DNT = "DNT";
         public static readonly string ELC = "ELC";
         public static readonly string ENG = "ENG";
@@ -70,6 +72,7 @@ namespace Binance
         public static readonly string VEN = "VEN";
         public static readonly string VIB = "VIB";
         public static readonly string WTC = "WTC";
+        public static readonly string XMR = "XMR";
         public static readonly string XRP = "XRP";
         public static readonly string XVG = "XVG";
         public static readonly string YOYO = "YOYO";

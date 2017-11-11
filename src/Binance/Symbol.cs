@@ -11,7 +11,7 @@ namespace Binance
         /// <summary>
         /// When the symbols were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1510253717494;
+        public static readonly long LastUpdateAt = 1510364430223;
 
         // USDT
         public static readonly string BNB_USDT = "BNBUSDT";
@@ -19,6 +19,7 @@ namespace Binance
         public static readonly string ETH_USDT = "ETHUSDT";
 
         // BTC
+        public static readonly string AMB_BTC = "AMBBTC";
         public static readonly string ARK_BTC = "ARKBTC";
         public static readonly string AST_BTC = "ASTBTC";
         public static readonly string BCC_BTC = "BCCBTC";
@@ -28,6 +29,7 @@ namespace Binance
         public static readonly string BTG_BTC = "BTGBTC";
         public static readonly string CTR_BTC = "CTRBTC";
         public static readonly string DASH_BTC = "DASHBTC";
+        public static readonly string DLT_BTC = "DLTBTC";
         public static readonly string DNT_BTC = "DNTBTC";
         public static readonly string ELC_BTC = "ELCBTC";
         public static readonly string ENG_BTC = "ENGBTC";
@@ -73,6 +75,7 @@ namespace Binance
         public static readonly string VEN_BTC = "VENBTC";
         public static readonly string VIB_BTC = "VIBBTC";
         public static readonly string WTC_BTC = "WTCBTC";
+        public static readonly string XMR_BTC = "XMRBTC";
         public static readonly string XRP_BTC = "XRPBTC";
         public static readonly string XVG_BTC = "XVGBTC";
         public static readonly string YOYO_BTC = "YOYOBTC";
@@ -80,6 +83,7 @@ namespace Binance
         public static readonly string ZRX_BTC = "ZRXBTC";
 
         // ETH
+        public static readonly string AMB_ETH = "AMBETH";
         public static readonly string ARK_ETH = "ARKETH";
         public static readonly string AST_ETH = "ASTETH";
         public static readonly string BNB_ETH = "BNBETH";
@@ -89,6 +93,7 @@ namespace Binance
         public static readonly string BTM_ETH = "BTMETH";
         public static readonly string CTR_ETH = "CTRETH";
         public static readonly string DASH_ETH = "DASHETH";
+        public static readonly string DLT_ETH = "DLTETH";
         public static readonly string DNT_ETH = "DNTETH";
         public static readonly string ENG_ETH = "ENGETH";
         public static readonly string ENJ_ETH = "ENJETH";
@@ -128,6 +133,7 @@ namespace Binance
         public static readonly string VEN_ETH = "VENETH";
         public static readonly string VIB_ETH = "VIBETH";
         public static readonly string WTC_ETH = "WTCETH";
+        public static readonly string XMR_ETH = "XMRETH";
         public static readonly string XRP_ETH = "XRPETH";
         public static readonly string XVG_ETH = "XVGETH";
         public static readonly string YOYO_ETH = "YOYOETH";
@@ -135,11 +141,14 @@ namespace Binance
         public static readonly string ZRX_ETH = "ZRXETH";
 
         // BNB
+        public static readonly string AMB_BNB = "AMBBNB";
+        public static readonly string DLT_BNB = "DLTBNB";
         public static readonly string NULS_BNB = "NULSBNB";
         public static readonly string POWR_BNB = "POWRBNB";
         public static readonly string RCN_BNB = "RCNBNB";
         public static readonly string RDN_BNB = "RDNBNB";
         public static readonly string VEN_BNB = "VENBNB";
+        public static readonly string WTC_BNB = "WTCBNB";
         public static readonly string YOYO_BNB = "YOYOBNB";
 
         #endregion Public Constants

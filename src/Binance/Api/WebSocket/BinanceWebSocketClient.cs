@@ -116,7 +116,7 @@ namespace Binance.Api.WebSocket
             {
                 if (!token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{GetType().Name}.{nameof(SubscribeToAsync)}: Exception.");
+                    Logger?.LogError(e, $"{GetType().Name}.{nameof(SubscribeToAsync)}");
                     throw;
                 }
             }

@@ -66,7 +66,7 @@ namespace BinanceCodeGenerator
                     // If no matching quote currency is found.
                     if (!match)
                     {
-                        Console.WriteLine($"!! Symbol does not match known quote currencies: {symbol}");
+                        Console.WriteLine($"Warning: Symbol does not match known quote currencies: {symbol}");
                     }
                 }
             }
