@@ -383,7 +383,7 @@ var client = serviceProvider.GetService<IDepthWebSocketClient>();
 
 client.DepthUpdate += OnDepthUpdateEvent; // optional event subscribing.
     
-var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, e =>
+var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, evt =>
 {
     // optional inline event handler.
 }, cts.Token));
@@ -394,9 +394,24 @@ cts.Cancel();
 await task;
 ```
 ```c#
-void OnDepthUpdateEvent(object sender, DepthUpdateEventArgs e)
+void OnDepthUpdateEvent(object sender, DepthUpdateEventArgs evt)
 {
     // ...
+}
+```
+Optionally, you can use the `IDisposable` [`TaskController`](src/Binance/Utility/TaskController.cs) to encapsulate the `Task` and `CancellationTokenSource`.
+```c#
+var client = serviceProvider.GetService<IDepthWebSocketClient>();
+
+using (var controller = new TaskController())
+{
+    controller.Begin(tkn => client.SubscribeAsync(Symbol.BTC_USDT,
+        evt => { /* optional inline event handler. */ }, tkn),
+        err => { /* optional inline exception handler. */ });
+
+    // ...
+
+    // NOTE: The encapsulated Task is canceled and awaited when the controller is disposed.
 }
 ```
 
@@ -407,7 +422,7 @@ var client = serviceProvider.GetService<ICandlestickWebSocketClient>();
 
 client.Candlestick += OnCandlestickEvent; // optional event subscribing.
 
-var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, e =>
+var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, evt =>
 {
     // optional inline event handler.
 }, cts.Token));
@@ -418,9 +433,24 @@ cts.Cancel();
 await task;
 ```
 ```c#
-void OnCandlestickEvent(object sender, CandlestickEventArgs e)
+void OnCandlestickEvent(object sender, CandlestickEventArgs evt)
 {
     // ...
+}
+```
+Optionally, you can use the `IDisposable` [`TaskController`](src/Binance/Utility/TaskController.cs) to encapsulate the `Task` and `CancellationTokenSource`.
+```c#
+var client = serviceProvider.GetService<ICandlestickWebSocketClient>();
+
+using (var controller = new TaskController())
+{
+    controller.Begin(tkn => client.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour,
+        evt => { /* optional inline event handler. */ }, tkn),
+        err => { /* optional inline exception handler. */ });
+
+    // ...
+
+    // NOTE: The encapsulated Task is canceled and awaited when the controller is disposed.
 }
 ```
 
@@ -431,7 +461,7 @@ var client = serviceProvider.GetService<ITradesWebSocketClient>();
 
 client.AggregateTrade += OnAggregateTradeEvent; // optional event subscribing.
 
-var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, e => 
+var task = Task.Run(() => client.SubscribeAsync(Symbol.BTC_USDT, evt => 
 {
     // optional inline event handler.
 }, cts.Token));
@@ -443,9 +473,24 @@ await task;
 }
 ```
 ```c#
-void OnAggregateTradeEvent(object sender, AggregateTradeEventArgs e)
+void OnAggregateTradeEvent(object sender, AggregateTradeEventArgs evt)
 {
     // ...
+}
+```
+Optionally, you can use the `IDisposable` [`TaskController`](src/Binance/Utility/TaskController.cs) to encapsulate the `Task` and `CancellationTokenSource`.
+```c#
+var client = serviceProvider.GetService<ITradesWebSocketClient>();
+
+using (var controller = new TaskController())
+{
+    controller.Begin(tkn => client.SubscribeAsync(Symbol.BTC_USDT,
+        evt => { /* optional inline event handler. */ }, tkn),
+        err => { /* optional inline exception handler. */ });
+
+    // ...
+
+    // NOTE: The encapsulated Task is canceled and awaited when the controller is disposed.
 }
 ```
 
@@ -459,9 +504,9 @@ client.AccountUpdate += OnAccountUpdateEvent;
 client.OrderUpdate += OnOrderUpdateEvent;
 client.TradeUpdate += OnTradeUpdateEvent;
 
-var task = Task.Run(() => client.SubscribeAsync(user, e => 
+var task = Task.Run(() => client.SubscribeAsync(user, evt => 
 {
-    // optional inline event handler (where 'e' is the base UserDataEventArgs type).
+    // optional inline event handler (where 'evt' is the base UserDataEventArgs type).
 }, cts.Token));
 
 // ...
@@ -470,19 +515,35 @@ cts.Cancel();
 await task;
 ```
 ```c#
-void OnAccountUpdateEvent(object sender, AccountUpdateEventArgs e)
+void OnAccountUpdateEvent(object sender, AccountUpdateEventArgs evt)
 {
     // ...
 }
-void OnOrderUpdateEvent(object sender, OrderUpdateEventArgs e)
+void OnOrderUpdateEvent(object sender, OrderUpdateEventArgs evt)
 {
     // ...
 }
-void OnTradeUpdateEvent(object sender, TradeUpdateEventArgs e)
+void OnTradeUpdateEvent(object sender, TradeUpdateEventArgs evt)
 {
     // ...
 }
 ```
+Optionally, you can use the `IDisposable` [`TaskController`](src/Binance/Utility/TaskController.cs) to encapsulate the `Task` and `CancellationTokenSource`.
+```c#
+var client = serviceProvider.GetService<IUserDataWebSocketClient>();
+
+using (var controller = new TaskController())
+{
+    controller.Begin(tkn => client.SubscribeAsync(user,
+        evt => { /* optional inline event handler. */ }, tkn),
+        err => { /* optional inline exception handler. */ });
+
+    // ...
+
+    // NOTE: The encapsulated Task is canceled and awaited when the controller is disposed.
+}
+```
+
 #### User Stream Control
 ##### Start User Stream
 Start a new user data stream.
@@ -514,7 +575,7 @@ var cache = serviceProvider.GetService<IOrderBookCache>();
 
 cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
 
-var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
+var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, evt =>
 {
     // optionally, use an inline event handler.
 }, cts.Token)); // starts synchronization.
@@ -530,12 +591,28 @@ cts.Cancel(); // end the task.
 await task; // wait for task to complete.
 ```
 ```c#
-void OnUpdateEvent(object sender, OrderBookCacheEventArgs e)
+void OnUpdateEvent(object sender, OrderBookCacheEventArgs evt)
 {
     // Event has an immutable copy of the order book.
-    var price = e.OrderBook.Top.Bid.Price;
+    var price = evt.OrderBook.Top.Bid.Price;
 }
 ```
+Optionally, you can use the `IDisposable` [`TaskController`](src/Binance/Utility/TaskController.cs) to encapsulate the `Task` and `CancellationTokenSource`.
+```c#
+var cache = serviceProvider.GetService<IOrderBookCache>();
+
+using (var controller = new TaskController())
+{
+    controller.Begin(tkn => cache.SubscribeAsync(Symbol.BTC_USDT,
+        evt => { /* optional inline event handler. */ }, tkn),
+        err => { /* optional inline exception handler. */ });
+
+    // ...
+
+    // NOTE: The encapsulated Task is canceled and awaited when the controller is disposed.
+}
+```
+
 ##### Aggregate Trades Cache
 Use an [`IAggregateTradesCache`](src/Binance/Cache/IAggregateTradesCache.cs) (with an [`ITradesWebSocketClient`](src/Binance/Api/WebSocket/ITradesWebSocketClient.cs)) to create a real-time, synchronized trade history for a symbol. Refer to the BinanceTradeHistory sample for an [additional example](samples/BinanceTradeHistory/Program.cs).
 ```c#
@@ -543,7 +620,7 @@ var cache = serviceProvider.GetService<IAggregateTradeCache>();
 
 cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
 
-var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, (e) =>
+var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, evt =>
 {
     // optionally, use an inline event handler.
 }, cts.Token)); // starts synchronization.
@@ -558,12 +635,28 @@ cts.Cancel(); // end the task.
 await task; // wait for task to complete.
 ```
 ```c#
-void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs e)
+void OnUpdateEvent(object sender, AggregateTradesCacheEventArgs evt)
 {
     // Event has an immutable copy of aggregate trades.
-    var trades = e.Trades.
+    var trades = evt.Trades.
 }
 ```
+Optionally, you can use the `IDisposable` [`TaskController`](src/Binance/Utility/TaskController.cs) to encapsulate the `Task` and `CancellationTokenSource`.
+```c#
+var cache = serviceProvider.GetService<IAggregateTradeCache>();
+
+using (var controller = new TaskController())
+{
+    controller.Begin(tkn => cache.SubscribeAsync(Symbol.BTC_USDT,
+        evt => { /* optional inline event handler. */ }, tkn),
+        err => { /* optional inline exception handler. */ });
+
+    // ...
+
+    // NOTE: The encapsulated Task is canceled and awaited when the controller is disposed.
+}
+```
+
 ##### Candlesticks Cache
 Use an [`ICandlesticksCache`](src/Binance/Cache/ICandlesticksCache.cs) (with an [`ICandlestickWebSocketClient`](src/Binance/Api/WebSocket/ICandlestickWebSocketClient.cs)) to create a real-time, synchronized price chart for a symbol. Refer to the BinancePriceChart sample for an [additional example](samples/BinancePriceChart/Program.cs).
 
@@ -572,7 +665,7 @@ var cache = serviceProvider.GetService<ICandlesticksCache>();
 
 cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
 
-var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, (e) =>
+var task = Task.Run(() => cache.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, evt =>
 {
     // optionally, use an inline event handler.
 }, cts.Token)); // starts synchronization.
@@ -587,12 +680,28 @@ cts.Cancel(); // end the task.
 await task; // wait for task to complete.
 ```
 ```c#
-void OnUpdateEvent(object sender, CandlesticksCacheEventArgs e)
+void OnUpdateEvent(object sender, CandlesticksCacheEventArgs evt)
 {
     // Event has an immutable copy of candlesticks.
-    var candlesticks = e.Candlesticks.
+    var candlesticks = evt.Candlesticks.
 }
 ```
+Optionally, you can use the `IDisposable` [`TaskController`](src/Binance/Utility/TaskController.cs) to encapsulate the `Task` and `CancellationTokenSource`.
+```c#
+var cache = serviceProvider.GetService<ICandlesticksCache>();
+
+using (var controller = new TaskController())
+{
+    controller.Begin(tkn => cache.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour,
+        evt => { /* optional inline event handler. */ }, tkn),
+        err => { /* optional inline exception handler. */ });
+
+    // ...
+
+    // NOTE: The encapsulated Task is canceled and awaited when the controller is disposed.
+}
+```
+
 ##### Account Info Cache
 Use an [`IAccountInfoCache`](src/Binance/Cache/IAccountInfoCache.cs) (with an [`IUserDataWebSocketClient`](src/Binance/Api/WebSocket/IUserDataWebSocketClient.cs)) to create a real-time, synchronized account profile for a user. Refer to the following for an [additional example](samples/BinanceConsoleApp/Examples/AccountBalancesExample.cs).
 
@@ -601,7 +710,7 @@ var cache = serviceProvider.GetService<IAccountInfoCache>();
 
 cache.Update += OnUpdateEvent; // optionally, subscribe to update events.
 
-var task = Task.Run(() => cache.SubscribeAsync(user, (e) =>
+var task = Task.Run(() => cache.SubscribeAsync(user, evt =>
 {
     // optionally, use an inline event handler.
 }, cts.Token)); // starts synchronization.
@@ -616,9 +725,24 @@ cts.Cancel(); // end the task.
 await task; // wait for task to complete.
 ```
 ```c#
-void OnUpdateEvent(object sender, AccountInfoCacheEventArgs e)
+void OnUpdateEvent(object sender, AccountInfoCacheEventArgs evt)
 {
     // Event has an immutable copy of account info.
-    var accountInfo = e.AccountInfo.
+    var accountInfo = evt.AccountInfo.
+}
+```
+Optionally, you can use the `IDisposable` [`TaskController`](src/Binance/Utility/TaskController.cs) to encapsulate the `Task` and `CancellationTokenSource`.
+```c#
+var cache = serviceProvider.GetService<IAccountInfoCache>();
+
+using (var controller = new TaskController())
+{
+    controller.Begin(tkn => cache.SubscribeAsync(user,
+        evt => { /* optional inline event handler. */ }, tkn),
+        err => { /* optional inline exception handler. */ });
+
+    // ...
+
+    // NOTE: The encapsulated Task is canceled and awaited when the controller is disposed.
 }
 ```
