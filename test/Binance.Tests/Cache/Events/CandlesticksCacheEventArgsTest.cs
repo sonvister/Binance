@@ -16,8 +16,6 @@ namespace Binance.Tests.Cache.Events
         [Fact]
         public void Properties()
         {
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
             var symbol = Symbol.BTC_USDT;
             const CandlestickInterval interval = CandlestickInterval.Hour;
             const long openTime = 1234567890;
@@ -34,7 +32,7 @@ namespace Binance.Tests.Cache.Events
 
             var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
 
-            var candlesticks = new Candlestick[] { candlestick };
+            var candlesticks = new[] { candlestick };
 
             var args = new CandlesticksCacheEventArgs(candlesticks);
 

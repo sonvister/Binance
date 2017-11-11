@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public class CandlesticksCache : WebSocketClientCache<ICandlestickWebSocketClient, CandlestickEventArgs, CandlesticksCacheEventArgs>, ICandlesticksCache
+    public sealed class CandlesticksCache : WebSocketClientCache<ICandlestickWebSocketClient, CandlestickEventArgs, CandlesticksCacheEventArgs>, ICandlesticksCache
     {
         #region Public Properties
 

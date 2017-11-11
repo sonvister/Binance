@@ -109,7 +109,7 @@ namespace Binance.Api.WebSocket
                 {
                     _keepAliveTimer.Dispose();
 
-                    await _api.UserStreamCloseAsync(User, _listenKey)
+                    await _api.UserStreamCloseAsync(User, _listenKey, CancellationToken.None)
                         .ConfigureAwait(false);
                 }
             }
@@ -132,6 +132,7 @@ namespace Binance.Api.WebSocket
         /// Deserialize JSON and raise <see cref="UserDataEventArgs"/> event.
         /// </summary>
         /// <param name="json"></param>
+        /// <param name="token"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
         protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<UserDataEventArgs> callback = null)
@@ -147,6 +148,7 @@ namespace Binance.Api.WebSocket
                 var eventType = jObject["e"].Value<string>();
                 var eventTime = jObject["E"].Value<long>();
 
+                // ReSharper disable once ConvertIfStatementToSwitchStatement
                 if (eventType == "outboundAccountInfo")
                 {
                     var commissions = new AccountCommissions(

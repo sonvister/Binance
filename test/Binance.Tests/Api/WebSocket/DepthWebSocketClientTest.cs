@@ -5,7 +5,7 @@ using Binance.Api.WebSocket;
 using Moq;
 using Xunit;
 
-namespace Binance.Tests.Cache
+namespace Binance.Tests.Api.WebSocket
 {
     public class DepthWebSocketClientTest
     {

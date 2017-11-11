@@ -145,7 +145,7 @@ namespace Binance.Api
             Throw.IfNull(api, nameof(api));
 
             var symbols = string.IsNullOrWhiteSpace(symbol)
-                ? await api.SymbolsAsync().ConfigureAwait(false)
+                ? await api.SymbolsAsync(token).ConfigureAwait(false)
                 : new [] { symbol };
 
             var cancelOrderIds = new List<string>();

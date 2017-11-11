@@ -17,8 +17,6 @@ namespace Binance.Tests.Cache.Events
         [Fact]
         public void Properties()
         {
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
             var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);

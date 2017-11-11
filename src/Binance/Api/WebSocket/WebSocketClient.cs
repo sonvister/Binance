@@ -24,7 +24,7 @@ namespace Binance.Api.WebSocket
 
         #region Private Fields
 
-        private ILogger<WebSocketClient> _logger;
+        private readonly ILogger<WebSocketClient> _logger;
 
         #endregion Private Fields
 
@@ -124,19 +124,19 @@ namespace Binance.Api.WebSocket
                         }
                     }
 
-                    if (!token.IsCancellationRequested)
-                    {
-                        var json = stringBuilder.ToString();
-                        stringBuilder.Clear();
+                    if (token.IsCancellationRequested)
+                        continue;
 
-                        if (!string.IsNullOrWhiteSpace(json))
-                        {
-                            RaiseMessageEvent(new WebSocketClientMessageEventArgs(json));
-                        }
-                        else
-                        {
-                            _logger?.LogWarning($"{nameof(WebSocketClient)}.{nameof(RunAsync)}: Received empty JSON message.");
-                        }
+                    var json = stringBuilder.ToString();
+                    stringBuilder.Clear();
+
+                    if (!string.IsNullOrWhiteSpace(json))
+                    {
+                        RaiseMessageEvent(new WebSocketClientMessageEventArgs(json));
+                    }
+                    else
+                    {
+                        _logger?.LogWarning($"{nameof(WebSocketClient)}.{nameof(RunAsync)}: Received empty JSON message.");
                     }
                 }
             }

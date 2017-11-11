@@ -6,7 +6,7 @@ using Binance.Api.WebSocket.Events;
 namespace Binance.Api.WebSocket
 {
     /// <summary>
-    /// A web socket client interface for <see cref="BinanceWebSocketClient"/>.
+    /// A web socket client interface for BinanceWebSocketClient.
     /// </summary>
     public interface IWebSocketClient
     {

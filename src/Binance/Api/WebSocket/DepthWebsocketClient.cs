@@ -65,6 +65,7 @@ namespace Binance.Api.WebSocket
         /// Deserialize JSON and raise <see cref="DepthUpdateEventArgs"/> event.
         /// </summary>
         /// <param name="json"></param>
+        /// <param name="token"></param>
         /// <param name="callback"></param>
         protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<DepthUpdateEventArgs> callback = null)
         {

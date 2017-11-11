@@ -8,9 +8,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace BinanceCodeGenerator
 {
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main()
         {
             // Load configuration.
             var configuration = new ConfigurationBuilder()
@@ -50,17 +50,17 @@ namespace BinanceCodeGenerator
 
                     foreach (var currency in quoteCurrencies)
                     {
-                        if (symbol.EndsWith(currency))
-                        {
-                            var asset = symbol.Substring(0, symbol.IndexOf(currency));
+                        if (!symbol.EndsWith(currency))
+                            continue;
 
-                            if (!assets.Contains(asset))
-                                assets.Add(asset);
+                        var asset = symbol.Substring(0, symbol.IndexOf(currency, StringComparison.Ordinal));
 
-                            currencyPairs[currency].Add(asset);
+                        if (!assets.Contains(asset))
+                            assets.Add(asset);
 
-                            match = true;
-                        }
+                        currencyPairs[currency].Add(asset);
+
+                        match = true;
                     }
 
                     // If no matching quote currency is found.
@@ -78,7 +78,7 @@ namespace BinanceCodeGenerator
             var index = lines.FindIndex(l => l.Contains("<<insert timestamp>>"));
             lines[index] = $"        public static readonly long LastUpdateAt = {timestamp};";
 
-            index = lines.FindIndex(l => l.Contains($"<<insert symbols>>"));
+            index = lines.FindIndex(l => l.Contains("<<insert symbols>>"));
             lines.RemoveAt(index);
 
             // Insert definition for each currency pair.
@@ -96,11 +96,11 @@ namespace BinanceCodeGenerator
                     index++;
                 }
 
-                if (!quoteCurrency.Equals(quoteCurrencies.Last()))
-                {
-                    lines.Insert(index, string.Empty);
-                    index++;
-                }
+                if (quoteCurrency.Equals(quoteCurrencies.Last()))
+                    continue;
+
+                lines.Insert(index, string.Empty);
+                index++;
             }
 
             // Save the generated source code (replacing original).
@@ -113,7 +113,7 @@ namespace BinanceCodeGenerator
             index = lines.FindIndex(l => l.Contains("<<insert timestamp>>"));
             lines[index] = $"        public static readonly long LastUpdateAt = {timestamp};";
 
-            index = lines.FindIndex(l => l.Contains($"<<insert assets>>"));
+            index = lines.FindIndex(l => l.Contains("<<insert assets>>"));
             lines.RemoveAt(index);
 
             // Sort assets.

@@ -29,7 +29,7 @@ namespace Binance.Tests.Cache.Events
 
             var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch);
 
-            var trades = new AggregateTrade[] { trade };
+            var trades = new[] { trade };
 
             var args = new AggregateTradesCacheEventArgs(trades);
 

@@ -28,6 +28,7 @@ namespace BinanceConsoleApp.Examples
                 // Load configuration.
                 var configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
+                    // ReSharper disable once ArgumentsStyleLiteral
                     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
                     .AddUserSecrets<AccountBalancesExample>()
                     .Build();

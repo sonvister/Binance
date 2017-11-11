@@ -77,6 +77,7 @@ namespace BinanceConsoleApp.Controllers
             {
                 var order = await Program.Api.PlaceAsync(clientOrder, token: token);
 
+                // ReSharper disable once InvertIf
                 if (order != null)
                 {
                     lock (Program.ConsoleSync)

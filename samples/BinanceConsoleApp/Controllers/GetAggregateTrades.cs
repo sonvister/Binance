@@ -18,13 +18,13 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string symbol = Symbol.BTC_USDT;
+            var symbol = Symbol.BTC_USDT;
             if (args.Length > 1)
             {
                 symbol = args[1];
             }
 
-            int limit = 10;
+            var limit = 10;
             if (args.Length > 2)
             {
                 int.TryParse(args[2], out limit);

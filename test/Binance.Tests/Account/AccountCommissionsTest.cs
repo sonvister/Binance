@@ -25,10 +25,10 @@ namespace Binance.Tests.Account
         [Fact]
         public void Properties()
         {
-            int maker = 10;
-            int taker = 20;
-            int buyer = 30;
-            int seller = 40;
+            var maker = 10;
+            var taker = 20;
+            var buyer = 30;
+            var seller = 40;
 
             var commissions = new AccountCommissions(maker, taker, buyer, seller);
 

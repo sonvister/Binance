@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public class AccountInfoCache : WebSocketClientCache<IUserDataWebSocketClient, AccountUpdateEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
+    public sealed class AccountInfoCache : WebSocketClientCache<IUserDataWebSocketClient, AccountUpdateEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
     {
         #region Public Properties
 

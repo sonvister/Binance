@@ -101,7 +101,7 @@ namespace BinanceConsoleApp
                 // Instantiate all assembly command handlers.
                 foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
                 {
-                    if ((typeof(IHandleCommand)).IsAssignableFrom(type) && !type.IsAbstract)
+                    if (typeof(IHandleCommand).IsAssignableFrom(type) && !type.IsAbstract)
                     {
                         CommandHandlers.Add((IHandleCommand)Activator.CreateInstance(type));
                     }

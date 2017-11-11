@@ -32,7 +32,7 @@ namespace BinanceConsoleApp.Controllers
             lock (Program.ConsoleSync)
                 Console.WriteLine("  Canceling all open orders...");
 
-            var cancelOrderIds = await Program.Api.CancelAllOrdersAsync(Program.User, symbol, token: token);
+            await Program.Api.CancelAllOrdersAsync(Program.User, symbol, token: token);
 
             lock (Program.ConsoleSync)
             {

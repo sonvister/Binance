@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public class OrderBookCache : WebSocketClientCache<IDepthWebSocketClient, DepthUpdateEventArgs, OrderBookCacheEventArgs>, IOrderBookCache
+    public sealed class OrderBookCache : WebSocketClientCache<IDepthWebSocketClient, DepthUpdateEventArgs, OrderBookCacheEventArgs>, IOrderBookCache
     {
         #region Public Properties
 
@@ -119,7 +119,7 @@ namespace Binance.Cache
                 }
             }
 
-            return Modify(@event.LastUpdateId, @event.Bids, @event.Asks, _limit);
+            return ModifyOrderBook(@event.LastUpdateId, @event.Bids, @event.Asks, _limit);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Binance.Cache
         /// <param name="bids"></param>
         /// <param name="asks"></param>
         /// <param name="limit"></param>
-        protected virtual OrderBookCacheEventArgs Modify(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks, int limit)
+        private OrderBookCacheEventArgs ModifyOrderBook(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks, int limit)
         {
             if (lastUpdateId <= _orderBook.LastUpdateId)
                 return null;

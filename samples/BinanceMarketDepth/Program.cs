@@ -58,7 +58,7 @@ namespace BinanceMarketDepth
 
                     // Monitor order book and display updates in real-time.
                     controller.Begin(
-                        tkn => cache.SubscribeAsync(symbol, limit, e => Display(e.OrderBook), tkn),
+                        tkn => cache.SubscribeAsync(symbol, limit, evt => Display(evt.OrderBook), tkn),
                         err => Console.WriteLine(err.Message));
 
                     Console.ReadKey(true);

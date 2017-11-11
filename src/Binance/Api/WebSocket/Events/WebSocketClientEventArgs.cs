@@ -28,6 +28,7 @@ namespace Binance.Api.WebSocket.Events
         /// Constructor.
         /// </summary>
         /// <param name="timestamp">The event time.</param>
+        /// <param name="token"></param>
         protected WebSocketClientEventArgs(long timestamp, CancellationToken token)
         {
             if (timestamp <= 0)

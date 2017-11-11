@@ -16,7 +16,7 @@ namespace Binance.Utility
 
         #region Private Fields
 
-        private CancellationTokenSource _cts;
+        private readonly CancellationTokenSource _cts;
 
         #endregion Private Fields
 
@@ -66,7 +66,7 @@ namespace Binance.Utility
 
         #region IDisposable
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         private void Dispose(bool disposing)
         {

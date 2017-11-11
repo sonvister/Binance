@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public class AggregateTradesCache : WebSocketClientCache<ITradesWebSocketClient, AggregateTradeEventArgs, AggregateTradesCacheEventArgs>, IAggregateTradesCache
+    public sealed class AggregateTradesCache : WebSocketClientCache<ITradesWebSocketClient, AggregateTradeEventArgs, AggregateTradesCacheEventArgs>, IAggregateTradesCache
     {
         #region Public Properties
 

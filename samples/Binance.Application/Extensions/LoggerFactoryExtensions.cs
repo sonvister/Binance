@@ -28,6 +28,7 @@ namespace Binance.Application
             var logLevelSection = configuration.GetSection("LogLevel");
             var defaultLogLevel = logLevelSection?["Default"];
 
+            // ReSharper disable once InvertIf
             if (!string.IsNullOrWhiteSpace(defaultLogLevel))
             {
                 if (!Enum.TryParse(defaultLogLevel, out level))

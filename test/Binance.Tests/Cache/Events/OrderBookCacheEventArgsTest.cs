@@ -1,9 +1,9 @@
-﻿using Binance.Cache.Events;
+﻿using System;
+using Binance.Cache.Events;
 using Binance.Market;
-using System;
 using Xunit;
 
-namespace Binance.Tests.Api.WebSocket.Events
+namespace Binance.Tests.Cache.Events
 {
     public class OrderBookCacheEventArgsTest
     {
