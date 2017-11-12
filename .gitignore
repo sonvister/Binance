@@ -287,5 +287,5 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 
-# Log files
+# Sample application log files
 *.log.txt
