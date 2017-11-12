@@ -55,8 +55,10 @@ namespace Binance.Tests.Api
 
             stopwatch.Stop();
 
-            Assert.True(stopwatch.ElapsedMilliseconds > rateLimiter.Duration.TotalMilliseconds * (intervals - 0.1));
-            Assert.False(stopwatch.ElapsedMilliseconds > rateLimiter.Duration.TotalMilliseconds * (intervals + 0.1));
+            // Assume elapsed milliseconds is within +/- 30 milliseconds of expected time (15 msec time resolution).
+            // NOTE: Accounts for the error in the timestamp, ignoring Delay() and Stopwatch errors, and processing time.
+            Assert.True(stopwatch.ElapsedMilliseconds > rateLimiter.Duration.TotalMilliseconds * intervals - 30);
+            Assert.False(stopwatch.ElapsedMilliseconds > rateLimiter.Duration.TotalMilliseconds * intervals + 30);
         }
     }
 }
