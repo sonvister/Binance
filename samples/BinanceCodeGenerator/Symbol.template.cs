@@ -13,6 +13,11 @@ namespace Binance
         /// </summary>
         // <<insert timestamp>>
 
+        // Redirect Bitcoin Cash (BCC = BitConnect)
+        public static readonly string BCH_USDT = "BCCUSDT";
+        public static readonly string BCH_BTC = "BCCBTC";
+        public static readonly string BCH_ETH = "BCCETH";
+
         // <<insert symbols>>
 
         #endregion Public Constants

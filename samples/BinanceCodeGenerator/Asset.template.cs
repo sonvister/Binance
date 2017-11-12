@@ -13,6 +13,9 @@ namespace Binance
         /// </summary>
         // <<insert timestamp>>
 
+        // Redirect Bitcoin Cash (BCC = BitConnect)
+        public static readonly string BCH = "BCC";
+
         // <<insert assets>>
 
         #endregion Public Constants
