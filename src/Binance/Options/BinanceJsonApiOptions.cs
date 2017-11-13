@@ -1,5 +1,4 @@
-﻿using Binance.Api;
-using Binance.Api.Json;
+﻿using Binance.Api.Json;
 
 // ReSharper disable once CheckNamespace
 namespace Binance
@@ -12,14 +11,44 @@ namespace Binance
         public long RecvWindowDefault { get; set; } = default;
 
         /// <summary>
-        /// Rate limiter default count.
+        /// Get or set the default rate limit count for queries.
         /// </summary>
-        public int RateLimiterCountDefault { get; set; } = RateLimiter.CountDefault;
+        public int QueryRateLimitCount { get; set; } = BinanceJsonApi.QueryRateLimitCountDefault;
 
         /// <summary>
-        /// Rate limiter default duration (seconds).
+        /// Get or set the default rate limit duration for queries (minutes).
         /// </summary>
-        public int RateLimiterDurationSecondsDefault { get; set; } = RateLimiter.DurationSecondsDefault;
+        public int QueryRateLimitDurationMinutes { get; set; } = BinanceJsonApi.QueryRateLimitDurationMinutesDefault;
+
+        /// <summary>
+        /// Get or set the default burst rate limit count for queries.
+        /// </summary>
+        public int QueryRateLimitBurstCount { get; set; } = BinanceJsonApi.QueryRateLimitBurstCountDefault;
+
+        /// <summary>
+        /// Get or set the default burst rate limit duration for queries (seconds).
+        /// </summary>
+        public int QueryRateLimitBurstDurationSeconds { get; set; } = BinanceJsonApi.QueryRateLimitBurstDurationSecondsDefault;
+
+        /// <summary>
+        /// Get or set the default rate limit count for orders.
+        /// </summary>
+        public int OrderRateLimitCount { get; set; } = BinanceJsonApi.OrderRateLimitCountDefault;
+
+        /// <summary>
+        /// Get or set the default rate limit duration for orders (seconds).
+        /// </summary>
+        public int OrderRateLimitDurationDays { get; set; } = BinanceJsonApi.OrderRateLimitDurationDaysDefault;
+
+        /// <summary>
+        /// Get or set the default burst rate limit count for orders.
+        /// </summary>
+        public int OrderRateLimitBurstCount { get; set; } = BinanceJsonApi.OrderRateLimitBurstCountDefault;
+
+        /// <summary>
+        /// Get or set the default burst rate limit duration for orders (seconds).
+        /// </summary>
+        public int OrderRateLimitBurstDurationSeconds { get; set; } = BinanceJsonApi.OrderRateLimitBurstDurationSecondsDefault;
 
         /// <summary>
         /// Timestamp offset refresh period (minutes).

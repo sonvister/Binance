@@ -9,7 +9,8 @@ namespace BinanceConsoleApp.Controllers
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
-            if (!command.Equals("symbols", StringComparison.OrdinalIgnoreCase))
+            if (!command.Equals("symbols", StringComparison.OrdinalIgnoreCase) &&
+                !command.Equals("pairs", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             var symbols = await Program.Api.SymbolsAsync(token);

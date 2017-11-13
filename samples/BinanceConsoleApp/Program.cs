@@ -80,20 +80,22 @@ namespace BinanceConsoleApp
                         .AddConsole(Configuration.GetSection("Logging").GetSection("Console"))
                         .AddFile(Configuration.GetSection("Logging").GetSection("File"));
 
-                var key = Configuration["BinanceApiKey"] // user secrets configuration.
+                var apiKey = Configuration["BinanceApiKey"] // user secrets configuration.
                     ?? Configuration.GetSection("User")["ApiKey"]; // appsettings.json configuration.
 
-                var secret = Configuration["BinanceApiSecret"] // user secrets configuration.
+                var apiSecret = Configuration["BinanceApiSecret"] // user secrets configuration.
                     ?? Configuration.GetSection("User")["ApiSecret"]; // appsettings.json configuration.
 
-                if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(secret))
+                if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(apiSecret))
                 {
                     PrintApiNotice();
                 }
 
-                if (!string.IsNullOrEmpty(key))
+                if (!string.IsNullOrEmpty(apiKey))
                 {
-                    User = new BinanceApiUser(key, secret);
+                    User = ServiceProvider
+                        .GetService<IBinanceApiUserProvider>()
+                        .CreateUser(apiKey, apiSecret);
                 }
 
                 Api = ServiceProvider.GetService<IBinanceApi>();
@@ -160,7 +162,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  tradesFrom <symbol> <tradeId> [limit]                display trades beginning with trade ID.");
                 Console.WriteLine("  candles|klines <symbol> <interval> [limit]           display candlesticks for a symbol.");
                 Console.WriteLine("  candlesIn|klinesIn <symbol> <interval> <start> <end> display candlesticks for a symbol in time range.");
-                Console.WriteLine("  symbols                                              display all symbols.");
+                Console.WriteLine("  symbols|pairs                                        display all symbols (currency pairs).");
                 Console.WriteLine("  prices                                               display current price for all symbols.");
                 Console.WriteLine("  tops                                                 display order book top price and quantity for all symbols.");
                 Console.WriteLine("  live depth|book <symbol>                             enable order book live feed for a symbol.");

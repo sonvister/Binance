@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using Binance.Api.Json;
+using Microsoft.Extensions.Options;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.Api
 {
     /// <summary>
@@ -13,7 +16,7 @@ namespace Binance.Api
 
         public string ApiKey { get; }
 
-        public IRateLimiter RateLimiter { get; set; }
+        public IApiRateLimiter RateLimiter { get; set; }
 
         #endregion Public Properties
 
@@ -30,21 +33,32 @@ namespace Binance.Api
         /// key and optional API secret. The API secret is not required for 
         /// the user stream methods, but is required for other account methods.
         /// </summary>
-        /// <param name="key">The user's API key.</param>
-        /// <param name="secret">The user's API secret (optional).</param>
-        /// <param name="rateLimiter">The rate limiter.</param>
-        public BinanceApiUser(string key, string secret = null, IRateLimiter rateLimiter = null)
+        /// <param name="apiKey">The user's API key.</param>
+        /// <param name="apiSecret">The user's API secret (optional).</param>
+        /// <param name="rateLimiter">The rate limiter (auto-configured).</param>
+        /// <param name="options">The JSON API options.</param>
+        public BinanceApiUser(string apiKey, string apiSecret = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceJsonApiOptions> options = null)
         {
-            Throw.IfNullOrWhiteSpace(key, nameof(key));
+            Throw.IfNullOrWhiteSpace(apiKey, nameof(apiKey));
 
-            ApiKey = key;
+            ApiKey = apiKey;
 
-            if (!string.IsNullOrWhiteSpace(secret))
+            if (!string.IsNullOrWhiteSpace(apiSecret))
             {
-                _hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
+                _hmac = new HMACSHA256(Encoding.UTF8.GetBytes(apiSecret));
             }
 
             RateLimiter = rateLimiter;
+
+            // Configure order rate limiter.
+            RateLimiter?.Configure(
+                TimeSpan.FromDays(options?.Value.OrderRateLimitDurationDays ?? BinanceJsonApi.OrderRateLimitDurationDaysDefault),
+                options?.Value.OrderRateLimitCount ?? BinanceJsonApi.OrderRateLimitCountDefault);
+
+            // Configure order burst rate limiter.
+            RateLimiter?.Configure(
+                TimeSpan.FromSeconds(options?.Value.OrderRateLimitBurstDurationSeconds ?? BinanceJsonApi.OrderRateLimitBurstDurationSecondsDefault),
+                options?.Value.OrderRateLimitBurstCount ?? BinanceJsonApi.OrderRateLimitBurstCountDefault);
         }
 
         #endregion Constructors

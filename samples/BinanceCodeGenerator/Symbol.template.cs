@@ -9,7 +9,7 @@ namespace Binance
         #region Public Constants
 
         /// <summary>
-        /// When the symbols were last updated.
+        /// When the symbols (currency pairs) were last updated.
         /// </summary>
         // <<insert timestamp>>
 

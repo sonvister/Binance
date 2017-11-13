@@ -9,56 +9,60 @@ namespace Binance.Tests.Api
     public class RateLimiterTest
     {
         [Fact]
-        public void ConfigureThrows()
+        public void CountThrows()
         {
             var rateLimiter = new RateLimiter();
 
-            Assert.Throws<ArgumentException>("count", () => rateLimiter.Configure(-1, TimeSpan.FromSeconds(1)));
-            Assert.Throws<ArgumentException>("count", () => rateLimiter.Configure(0, TimeSpan.FromSeconds(1)));
+            Assert.Throws<ArgumentException>(nameof(rateLimiter.Count), () => rateLimiter.Count = -1);
+            Assert.Throws<ArgumentException>(nameof(rateLimiter.Count), () => rateLimiter.Count = 0);
         }
 
         [Fact]
-        public void Configure()
+        public void Properties()
         {
             const int count = 3;
             var duration = TimeSpan.FromSeconds(3);
 
-            var enabled = !RateLimiter.EnabledDefault;
-
-            var rateLimiter = new RateLimiter
+            var rateLimiter = new RateLimiter()
             {
-                IsEnabled = enabled
+                Count = count,
+                Duration = duration
             };
-            rateLimiter.Configure(count, duration);
 
             Assert.Equal(count, rateLimiter.Count);
             Assert.Equal(duration, rateLimiter.Duration);
-            Assert.Equal(enabled, rateLimiter.IsEnabled);
         }
 
         [Fact]
         public async Task RateLimit()
         {
-            const int count = 3;
-            const int intervals = 2;
+            const int count = 100;
+            var duration = TimeSpan.FromSeconds(0.5);
 
-            var rateLimiter = new RateLimiter
+            const int repetitions = 10;
+
+            var rateLimiter = new RateLimiter()
             {
-                IsEnabled = true
+                Count = count,
+                Duration = duration
             };
-            rateLimiter.Configure(count, TimeSpan.FromSeconds(1));
 
-            var stopwatch = Stopwatch.StartNew();
+            var stopwatch = new Stopwatch();
 
-            for (var i = 0; i < count * intervals + 1; i++)
-                await rateLimiter.DelayAsync();
+            for (var i = 0; i < repetitions; i++)
+            {
+                stopwatch.Restart();
 
-            stopwatch.Stop();
+                for (var j = 0; j < count + 1; j++)
+                    await rateLimiter.DelayAsync();
 
-            // Assume elapsed milliseconds is within +/- 30 milliseconds of expected time (15 msec time resolution).
-            // NOTE: Accounts for the error in the timestamp, ignoring Delay() and Stopwatch errors, and processing time.
-            Assert.True(stopwatch.ElapsedMilliseconds > rateLimiter.Duration.TotalMilliseconds * intervals - 30);
-            Assert.False(stopwatch.ElapsedMilliseconds > rateLimiter.Duration.TotalMilliseconds * intervals + 30);
+                stopwatch.Stop();
+
+                // Assume elapsed milliseconds is within +/- 45 msec of expected time (15 msec clock resolution).
+                // NOTE: Accounts for error in two timestamps and Task.Delay() ignoring any Stopwatch errors.
+                Assert.True(stopwatch.ElapsedMilliseconds >= duration.TotalMilliseconds - 45);
+                Assert.False(stopwatch.ElapsedMilliseconds > duration.TotalMilliseconds + 45);
+            }
         }
     }
 }

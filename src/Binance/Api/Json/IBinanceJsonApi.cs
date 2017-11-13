@@ -14,7 +14,7 @@ namespace Binance.Api.Json
         /// <summary>
         /// The API request rate limiter.
         /// </summary>
-        IRateLimiter RateLimiter { get; }
+        IApiRateLimiter RateLimiter { get; }
 
         #endregion Public Properties
 

@@ -23,11 +23,23 @@ namespace Binance.Api.Json
 
         public const int TimestampOffsetRefreshPeriodMinutesDefault = 60;
 
+        public static readonly int QueryRateLimitCountDefault = 1200;
+        public static readonly int QueryRateLimitDurationMinutesDefault = 1;
+
+        public static readonly int QueryRateLimitBurstCountDefault = 100;
+        public static readonly int QueryRateLimitBurstDurationSecondsDefault = 1;
+
+        public static readonly int OrderRateLimitCountDefault = 100000;
+        public static readonly int OrderRateLimitDurationDaysDefault = 1;
+
+        public static readonly int OrderRateLimitBurstCountDefault = 10;
+        public static readonly int OrderRateLimitBurstDurationSecondsDefault = 1;
+
         #endregion Public Constants
 
         #region Public Properties
 
-        public IRateLimiter RateLimiter { get; }
+        public IApiRateLimiter RateLimiter { get; }
 
         #endregion Public Properties
 
@@ -55,18 +67,30 @@ namespace Binance.Api.Json
 
         #region Constructors
 
-        public BinanceJsonApi(IRateLimiter rateLimiter = null, IOptions<BinanceJsonApiOptions> options = null, ILogger<BinanceJsonApi> logger = null)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="rateLimiter">The rate limiter (auto configured).</param>
+        /// <param name="options">The options.</param>
+        /// <param name="logger">The logger</param>
+        public BinanceJsonApi(IApiRateLimiter rateLimiter = null, IOptions<BinanceJsonApiOptions> options = null, ILogger<BinanceJsonApi> logger = null)
         {
-            RateLimiter = rateLimiter ?? new RateLimiter();
+            RateLimiter = rateLimiter;
 
             _options = options?.Value;
             _logger = logger;
 
             _timestampOffsetSync = new SemaphoreSlim(1, 1);
 
-            RateLimiter.Configure(
-                options?.Value.RateLimiterCountDefault ?? Api.RateLimiter.CountDefault,
-                TimeSpan.FromSeconds(options?.Value.RateLimiterDurationSecondsDefault ?? Api.RateLimiter.DurationSecondsDefault));
+            // Configure query rate limiter.
+            RateLimiter?.Configure(
+                TimeSpan.FromMinutes(options?.Value.QueryRateLimitDurationMinutes ?? QueryRateLimitDurationMinutesDefault),
+                options?.Value.QueryRateLimitCount ?? QueryRateLimitCountDefault);
+
+            // Configure query burst rate limiter.
+            RateLimiter?.Configure(
+                TimeSpan.FromSeconds(options?.Value.QueryRateLimitBurstDurationSeconds ?? QueryRateLimitBurstDurationSecondsDefault),
+                options?.Value.QueryRateLimitBurstCount ?? QueryRateLimitBurstCountDefault);
 
             _httpClient = new HttpClient
             {
@@ -88,14 +112,14 @@ namespace Binance.Api.Json
         {
             token.ThrowIfCancellationRequested();
 
-            return GetAsync("/api/v1/ping", token);
+            return GetAsync("/api/v1/ping", null, RateLimiter, token);
         }
 
         public virtual Task<string> GetServerTimeAsync(CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
-            return GetAsync("/api/v1/time", token);
+            return GetAsync("/api/v1/time", null, RateLimiter, token);
         }
 
         #endregion Connectivity
@@ -115,7 +139,7 @@ namespace Binance.Api.Json
                 totalParams += $"&limit={limit}";
             }
 
-            return GetAsync($"/api/v1/depth?{totalParams}", token);
+            return GetAsync($"/api/v1/depth?{totalParams}", null, RateLimiter, token);
         }
 
         public virtual Task<string> GetAggregateTradesAsync(string symbol, long fromId = BinanceApi.NullId, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
@@ -149,7 +173,7 @@ namespace Binance.Api.Json
                     throw new ArgumentException($"The interval between {nameof(startTime)} and {nameof(endTime)} must be less than 24 hours.", nameof(endTime));
             }
 
-            return GetAsync($"/api/v1/aggTrades?{totalParams}", token);
+            return GetAsync($"/api/v1/aggTrades?{totalParams}", null, RateLimiter, token);
         }
 
         public virtual Task<string> GetCandlesticksAsync(string symbol, CandlestickInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
@@ -169,7 +193,7 @@ namespace Binance.Api.Json
             if (endTime > 0)
                 totalParams += $"&endTime={endTime}";
 
-            return GetAsync($"/api/v1/klines?{totalParams}", token);
+            return GetAsync($"/api/v1/klines?{totalParams}", null, RateLimiter, token);
         }
 
         public virtual Task<string> Get24HourStatisticsAsync(string symbol, CancellationToken token = default)
@@ -178,21 +202,21 @@ namespace Binance.Api.Json
 
             token.ThrowIfCancellationRequested();
 
-            return GetAsync($"/api/v1/ticker/24hr?symbol={symbol.FormatSymbol()}", token);
+            return GetAsync($"/api/v1/ticker/24hr?symbol={symbol.FormatSymbol()}", null, RateLimiter, token);
         }
 
         public virtual Task<string> GetPricesAsync(CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
-            return GetAsync("/api/v1/ticker/allPrices", token);
+            return GetAsync("/api/v1/ticker/allPrices", null, RateLimiter, token);
         }
 
         public virtual Task<string> GetOrderBookTopsAsync(CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
 
-            return GetAsync("/api/v1/ticker/allBookTickers", token);
+            return GetAsync("/api/v1/ticker/allBookTickers", null, RateLimiter, token);
         }
 
         #endregion Market Data
@@ -241,7 +265,7 @@ namespace Binance.Api.Json
 
             var query = $"{totalParams}&signature={signature}";
 
-            return await PostAsync($"/api/v3/order{(isTestOnly ? "/test" : string.Empty)}?{query}", string.Empty, token, user, true)
+            return await PostAsync($"/api/v3/order{(isTestOnly ? "/test" : string.Empty)}?{query}", null, user, user.RateLimiter, token)
                 .ConfigureAwait(false);
         }
 
@@ -276,7 +300,7 @@ namespace Binance.Api.Json
 
             var signature = user.Sign(totalParams);
 
-            return await GetAsync($"/api/v3/order?{totalParams}&signature={signature}", token, user)
+            return await GetAsync($"/api/v3/order?{totalParams}&signature={signature}", user, user.RateLimiter, token)
                 .ConfigureAwait(false);
         }
 
@@ -314,7 +338,7 @@ namespace Binance.Api.Json
 
             var signature = user.Sign(totalParams);
 
-            return await DeleteAsync($"/api/v3/order?{totalParams}&signature={signature}", token, user, true)
+            return await DeleteAsync($"/api/v3/order?{totalParams}&signature={signature}", user, user.RateLimiter, token)
                 .ConfigureAwait(false);
         }
 
@@ -339,7 +363,7 @@ namespace Binance.Api.Json
 
             var signature = user.Sign(totalParams);
 
-            return await GetAsync($"/api/v3/openOrders?{totalParams}&signature={signature}", token, user)
+            return await GetAsync($"/api/v3/openOrders?{totalParams}&signature={signature}", user, RateLimiter, token)
                 .ConfigureAwait(false);
         }
 
@@ -370,7 +394,7 @@ namespace Binance.Api.Json
 
             var signature = user.Sign(totalParams);
 
-            return await GetAsync($"/api/v3/allOrders?{totalParams}&signature={signature}", token, user)
+            return await GetAsync($"/api/v3/allOrders?{totalParams}&signature={signature}", user, RateLimiter, token)
                 .ConfigureAwait(false);
         }
 
@@ -392,7 +416,7 @@ namespace Binance.Api.Json
 
             var signature = user.Sign(totalParams);
 
-            return await GetAsync($"/api/v3/account?{totalParams}&signature={signature}", token, user);
+            return await GetAsync($"/api/v3/account?{totalParams}&signature={signature}", user, RateLimiter, token);
         }
 
         public virtual async Task<string> GetTradesAsync(IBinanceApiUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default)
@@ -422,7 +446,7 @@ namespace Binance.Api.Json
 
             var signature = user.Sign(totalParams);
 
-            return await GetAsync($"/api/v3/myTrades?{totalParams}&signature={signature}", token, user)
+            return await GetAsync($"/api/v3/myTrades?{totalParams}&signature={signature}", user, RateLimiter, token)
                 .ConfigureAwait(false);
         }
 
@@ -455,7 +479,7 @@ namespace Binance.Api.Json
 
             var signature = user.Sign(totalParams);
 
-            return await PostAsync($"/wapi/v1/withdraw.html?{totalParams}&signature={signature}", null, token, user)
+            return await PostAsync($"/wapi/v1/withdraw.html?{totalParams}&signature={signature}", null, user, RateLimiter, token)
                 .ConfigureAwait(false);
         }
 
@@ -495,7 +519,7 @@ namespace Binance.Api.Json
 
             var signature = user.Sign(totalParams);
 
-            return await PostAsync($"/wapi/v1/getDepositHistory.html?{totalParams}&signature={signature}", null, token, user)
+            return await PostAsync($"/wapi/v1/getDepositHistory.html?{totalParams}&signature={signature}", null, user, RateLimiter, token)
                 .ConfigureAwait(false);
         }
 
@@ -535,7 +559,7 @@ namespace Binance.Api.Json
 
             var signature = user.Sign(totalParams);
 
-            return await PostAsync($"/wapi/v1/getWithdrawHistory.html?{totalParams}&signature={signature}", null, token, user)
+            return await PostAsync($"/wapi/v1/getWithdrawHistory.html?{totalParams}&signature={signature}", null, user, RateLimiter, token)
                 .ConfigureAwait(false);
         }
 
@@ -549,7 +573,7 @@ namespace Binance.Api.Json
 
             token.ThrowIfCancellationRequested();
 
-            return PostAsync("/api/v1/userDataStream", string.Empty, token, user);
+            return PostAsync("/api/v1/userDataStream", null, user, RateLimiter, token);
         }
 
         public virtual Task<string> UserStreamKeepAliveAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default)
@@ -559,7 +583,7 @@ namespace Binance.Api.Json
 
             token.ThrowIfCancellationRequested();
 
-            return PutAsync($"/api/v1/userDataStream?listenKey={listenKey}", string.Empty, token, user);
+            return PutAsync($"/api/v1/userDataStream?listenKey={listenKey}", null, user, RateLimiter, token);
         }
 
         public virtual Task<string> UserStreamCloseAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default)
@@ -569,7 +593,7 @@ namespace Binance.Api.Json
 
             token.ThrowIfCancellationRequested();
 
-            return DeleteAsync($"/api/v1/userDataStream?listenKey={listenKey}", token, user);
+            return DeleteAsync($"/api/v1/userDataStream?listenKey={listenKey}", user, RateLimiter, token);
         }
 
         #endregion User Stream
@@ -614,27 +638,27 @@ namespace Binance.Api.Json
             return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + _timestampOffset;
         }
 
-        private Task<string> GetAsync(string requestPath, CancellationToken token, IBinanceApiUser user = null)
+        private Task<string> GetAsync(string requestPath, IBinanceApiUser user = null, IApiRateLimiter rateLimiter = null, CancellationToken token = default)
         {
-            return RequestAsync(HttpMethod.Get, requestPath, null, user, false, token);
+            return RequestAsync(HttpMethod.Get, requestPath, null, user, rateLimiter, token);
         }
 
-        private Task<string> PostAsync(string requestPath, string body, CancellationToken token, IBinanceApiUser user = null, bool bypassDelay = false)
+        private Task<string> PostAsync(string requestPath, string body, IBinanceApiUser user = null, IApiRateLimiter rateLimiter = null, CancellationToken token = default)
         {
-            return RequestAsync(HttpMethod.Post, requestPath, body, user, bypassDelay, token);
+            return RequestAsync(HttpMethod.Post, requestPath, body, user, rateLimiter, token);
         }
 
-        private Task<string> PutAsync(string requestPath, string body, CancellationToken token, IBinanceApiUser user = null, bool bypassDelay = false)
+        private Task<string> PutAsync(string requestPath, string body, IBinanceApiUser user = null, IApiRateLimiter rateLimiter = null, CancellationToken token = default)
         {
-            return RequestAsync(HttpMethod.Put, requestPath, body, user, bypassDelay, token);
+            return RequestAsync(HttpMethod.Put, requestPath, body, user, rateLimiter, token);
         }
 
-        private Task<string> DeleteAsync(string requestPath, CancellationToken token, IBinanceApiUser user = null, bool bypassDelay = false)
+        private Task<string> DeleteAsync(string requestPath, IBinanceApiUser user = null, IApiRateLimiter rateLimiter = null, CancellationToken token = default)
         {
-            return RequestAsync(HttpMethod.Delete, requestPath, null, user, bypassDelay, token);
+            return RequestAsync(HttpMethod.Delete, requestPath, null, user, rateLimiter, token);
         }
 
-        private async Task<string> RequestAsync(HttpMethod method, string requestPath, string body = null, IBinanceApiUser user = null, bool bypassDelay = false, CancellationToken token = default)
+        private async Task<string> RequestAsync(HttpMethod method, string requestPath, string body = null, IBinanceApiUser user = null, IApiRateLimiter rateLimiter = null, CancellationToken token = default)
         {
             var request = new HttpRequestMessage(method, requestPath);
 
@@ -650,9 +674,9 @@ namespace Binance.Api.Json
 
             _logger?.LogDebug($"{nameof(BinanceJsonApi)}.{nameof(RequestAsync)}: [{method.Method}] \"{requestPath}\"");
 
-            if (!bypassDelay)
+            if (rateLimiter != null)
             {
-                await (user?.RateLimiter ?? RateLimiter).DelayAsync(token)
+                await rateLimiter.DelayAsync(token)
                     .ConfigureAwait(false);
             }
 

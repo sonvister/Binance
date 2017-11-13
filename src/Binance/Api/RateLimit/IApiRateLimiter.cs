@@ -2,9 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.Api
 {
-    public interface IRateLimiter
+    public interface IApiRateLimiter
     {
         #region Public Properties
 
@@ -13,30 +14,20 @@ namespace Binance.Api
         /// </summary>
         bool IsEnabled { get; set; }
 
-        /// <summary>
-        /// Get the maximum count allowed for duration.
-        /// </summary>
-        int Count { get; }
-
-        /// <summary>
-        /// Get the time duration used to measure rate.
-        /// </summary>
-        TimeSpan Duration { get; }
-
         #endregion Public Properties
 
         #region Public Methods
 
         /// <summary>
-        /// Set the maximum count and duration.
+        /// Set a duration and maximum count (remove with count = 0).
         /// Rate is limited to count/duration.
         /// </summary>
-        /// <param name="count"></param>
         /// <param name="duration"></param>
-        void Configure(int count, TimeSpan duration);
+        /// <param name="count"></param>
+        void Configure(TimeSpan duration, int count);
 
         /// <summary>
-        /// Perform rate limiting delay.
+        /// Perform the rate limiting delay.
         /// </summary>
         /// <returns></returns>
         Task DelayAsync(CancellationToken token = default);

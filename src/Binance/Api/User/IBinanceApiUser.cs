@@ -1,5 +1,6 @@
 ﻿using System;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.Api
 {
     public interface IBinanceApiUser : IDisposable
@@ -14,7 +15,7 @@ namespace Binance.Api
         /// <summary>
         /// The API request rate limiter.
         /// </summary>
-        IRateLimiter RateLimiter { get; set; }
+        IApiRateLimiter RateLimiter { get; set; }
 
         #endregion Public Properties
 

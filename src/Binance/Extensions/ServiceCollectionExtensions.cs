@@ -15,7 +15,9 @@ namespace Binance
             services.AddTransient<IAccountInfoCache, AccountInfoCache>();
 
             // API
+            services.AddSingleton<IBinanceApiUserProvider, BinanceApiUserProvider>();
             services.AddSingleton<IBinanceJsonApi, BinanceJsonApi>();
+            services.AddTransient<IApiRateLimiter, ApiRateLimiter>();
             services.AddTransient<IRateLimiter, RateLimiter>();
             services.AddSingleton<IBinanceApi, BinanceApi>();
 
