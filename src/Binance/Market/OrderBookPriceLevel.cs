@@ -17,7 +17,7 @@ namespace Binance.Market
         /// <summary>
         /// Get the aggregate quantity.
         /// </summary>
-        public decimal Quantity { get; }
+        public decimal Quantity { get; internal set; }
 
         #endregion Public Properties
 

@@ -169,7 +169,6 @@ namespace Binance.Api.WebSocket
         /// <summary>
         /// Raise open event.
         /// </summary>
-        /// <param name="args"></param>
         private void RaiseOpenEvent()
         {
             try { Open?.Invoke(this, EventArgs.Empty); }
@@ -197,7 +196,6 @@ namespace Binance.Api.WebSocket
         /// <summary>
         /// Raise close event.
         /// </summary>
-        /// <param name="args"></param>
         private void RaiseCloseEvent()
         {
             try { Close?.Invoke(this, EventArgs.Empty); }

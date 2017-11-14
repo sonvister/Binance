@@ -26,38 +26,24 @@ namespace Binance.Market
         /// Get the order book top (best ask and bid) or null
         /// if either the bid or ask is not available.
         /// </summary>
-        public OrderBookTop Top
-        {
-            get
-            {
-                if (!_bids.Any() || !_asks.Any())
-                    return null;
-
-                var bid = _bids.First();
-                var ask = _asks.First();
-
-                return new OrderBookTop(Symbol, bid.Key, bid.Value, ask.Key, ask.Value);
-            }
-        }
+        public OrderBookTop Top { get; private set; }
 
         /// <summary>
         /// Get the buyer bids in order of decreasing price.
         /// </summary>
-        public IEnumerable<OrderBookPriceLevel> Bids
-            => _bids.Select(_ => new OrderBookPriceLevel(_.Key, _.Value));
+        public IEnumerable<OrderBookPriceLevel> Bids { get; private set; }
 
         /// <summary>
         /// Get the seller asks in order of increasing price.
         /// </summary>
-        public IEnumerable<OrderBookPriceLevel> Asks
-            => _asks.Select(_ => new OrderBookPriceLevel(_.Key, _.Value));
+        public IEnumerable<OrderBookPriceLevel> Asks { get; private set; }
 
         #endregion Public Properties
 
         #region Private Fields
 
-        private readonly SortedDictionary<decimal, decimal> _bids;
-        private readonly SortedDictionary<decimal, decimal> _asks;
+        private readonly SortedDictionary<decimal, OrderBookPriceLevel> _bids;
+        private readonly SortedDictionary<decimal, OrderBookPriceLevel> _asks;
 
         #endregion Private Fields
 
@@ -82,18 +68,25 @@ namespace Binance.Market
             Symbol = symbol;
             LastUpdateId = lastUpdateId;
 
-            _bids = new SortedDictionary<decimal, decimal>(new ReverseComparer<decimal>());
-            _asks = new SortedDictionary<decimal, decimal>();
+            _bids = new SortedDictionary<decimal, OrderBookPriceLevel>(new ReverseComparer<decimal>());
+            _asks = new SortedDictionary<decimal, OrderBookPriceLevel>();
 
             foreach (var bid in bids)
             {
-                _bids.Add(bid.Item1, bid.Item2);
+                _bids.Add(bid.Item1, new OrderBookPriceLevel(bid.Item1, bid.Item2));
             }
 
             foreach (var ask in asks)
             {
-                _asks.Add(ask.Item1, ask.Item2);
+                _asks.Add(ask.Item1, new OrderBookPriceLevel(ask.Item1, ask.Item2));
             }
+
+            Bids = _bids.Values.ToArray();
+            Asks = _asks.Values.ToArray();
+
+            Top = !Bids.Any() || !Asks.Any()
+                ? null
+                : new OrderBookTop(Symbol, Bids.First().Price, Bids.First().Quantity, Asks.First().Price, Asks.First().Quantity);
         }
 
         #endregion Constructors
@@ -107,8 +100,8 @@ namespace Binance.Market
         /// <returns>The quantity at price (0 if no entry at price).</returns>
         public decimal Quantity(decimal price)
         {
-            return _bids.ContainsKey(price) ? _bids[price]
-                : _asks.ContainsKey(price) ? _asks[price] : 0;
+            return _bids.ContainsKey(price) ? _bids[price].Quantity
+                : _asks.ContainsKey(price) ? _asks[price].Quantity : 0;
         }
 
         /// <summary>
@@ -119,8 +112,8 @@ namespace Binance.Market
         /// <returns>The order book depth up to price.</returns>
         public decimal Depth(decimal price)
         {
-            return _bids.TakeWhile(level => level.Key >= price).Sum(level => level.Value)
-                + _asks.TakeWhile(level => level.Key <= price).Sum(level => level.Value);
+            return _bids.TakeWhile(_ => _.Key >= price).Sum(_ => _.Value.Quantity)
+                + _asks.TakeWhile(_ => _.Key <= price).Sum(_ => _.Value.Quantity);
         }
 
         /// <summary>
@@ -131,8 +124,8 @@ namespace Binance.Market
         /// <returns>The order book volume up to price.</returns>
         public decimal Volume(decimal price)
         {
-            return _bids.TakeWhile(level => level.Key >= price).Sum(level => level.Key * level.Value)
-                + _asks.TakeWhile(level => level.Key <= price).Sum(level => level.Key * level.Value);
+            return _bids.TakeWhile(_ => _.Key >= price).Sum(_ => _.Value.Price * _.Value.Quantity)
+                + _asks.TakeWhile(_ => _.Key <= price).Sum(_ => _.Value.Price * _.Value.Quantity);
         }
 
         #endregion Public Methods
@@ -152,7 +145,12 @@ namespace Binance.Market
             {
                 // If quantity is > 0, then set the quantity.
                 if (bid.Item2 > 0)
-                    _bids[bid.Item1] = bid.Item2;
+                {
+                    if (_bids.ContainsKey(bid.Item1))
+                        _bids[bid.Item1].Quantity = bid.Item2;
+                    else
+                        _bids[bid.Item1] = new OrderBookPriceLevel(bid.Item1, bid.Item2);
+                }
                 else // otherwise, remove the price level.
                     _bids.Remove(bid.Item1);
             }
@@ -162,10 +160,22 @@ namespace Binance.Market
             {
                 // If quantity is > 0, then set the quantity.
                 if (ask.Item2 > 0)
-                    _asks[ask.Item1] = ask.Item2;
+                {
+                    if (_asks.ContainsKey(ask.Item1))
+                        _asks[ask.Item1].Quantity = ask.Item2;
+                    else
+                        _asks[ask.Item1] = new OrderBookPriceLevel(ask.Item1, ask.Item2);
+                }
                 else // otherwise, remove the price level.
                     _asks.Remove(ask.Item1);
             }
+
+            Bids = _bids.Values.ToArray();
+            Asks = _asks.Values.ToArray();
+
+            Top = Bids.Any() && Asks.Any()
+                ? new OrderBookTop(Symbol, Bids.First().Price, Bids.First().Quantity, Asks.First().Price, Asks.First().Quantity)
+                : null;
 
             // Set the order book last update ID.
             LastUpdateId = lastUpdateId;
@@ -181,7 +191,7 @@ namespace Binance.Market
         /// <returns></returns>
         public OrderBook Clone()
         {
-            return new OrderBook(Symbol, LastUpdateId, _bids.Select(_ => (_.Key, _.Value)), _asks.Select(_ => (_.Key, _.Value)));
+            return new OrderBook(Symbol, LastUpdateId, _bids.Select(_ => (_.Key, _.Value.Quantity)), _asks.Select(_ => (_.Key, _.Value.Quantity)));
         }
 
         /// <summary>
@@ -192,7 +202,7 @@ namespace Binance.Market
         {
             if (limit <= 0) throw new ArgumentOutOfRangeException(nameof(limit));
 
-            return new OrderBook(Symbol, LastUpdateId, _bids.Take(limit).Select(_ => (_.Key, _.Value)), _asks.Take(limit).Select(_ => (_.Key, _.Value)));
+            return new OrderBook(Symbol, LastUpdateId, _bids.Take(limit).Select(_ => (_.Key, _.Value.Quantity)), _asks.Take(limit).Select(_ => (_.Key, _.Value.Quantity)));
         }
 
         /// <summary>

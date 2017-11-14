@@ -139,5 +139,37 @@ namespace Binance.Tests.Market
             Assert.Equal(130, orderBook.Volume(1.5m)); // 3 * 30 + 2 * 20
             Assert.Equal(410, orderBook.Volume(5.5m)); // 4 * 40 + 5 * 50
         }
+
+        [Fact]
+        public void BidPrice()
+        {
+            var symbol = Symbol.BTC_USDT;
+            const long lastUpdateId = 1234567890;
+            var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
+            var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
+
+            var orderBook = new OrderBook(symbol, lastUpdateId, bids, asks);
+
+            Assert.Equal(3, orderBook.Bids.PriceAt(15));
+            Assert.Equal(2, orderBook.Bids.PriceAt(40));
+            Assert.Equal(1, orderBook.Bids.PriceAt(55));
+            Assert.Equal(1, orderBook.Bids.PriceAt(80));
+        }
+
+        [Fact]
+        public void AskPrice()
+        {
+            var symbol = Symbol.BTC_USDT;
+            const long lastUpdateId = 1234567890;
+            var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
+            var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
+
+            var orderBook = new OrderBook(symbol, lastUpdateId, bids, asks);
+
+            Assert.Equal(4, orderBook.Asks.PriceAt(20));
+            Assert.Equal(5, orderBook.Asks.PriceAt(65));
+            Assert.Equal(6, orderBook.Asks.PriceAt(120));
+            Assert.Equal(6, orderBook.Asks.PriceAt(200));
+        }
     }
 }

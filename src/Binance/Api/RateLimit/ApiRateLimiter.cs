@@ -24,7 +24,7 @@ namespace Binance.Api
 
         #region Private Fields
 
-        private IServiceProvider _services;
+        private readonly IServiceProvider _services;
 
         private volatile bool _isEnabled = EnabledDefault;
 

@@ -23,7 +23,7 @@ namespace Binance.Tests.Api
             const int count = 3;
             var duration = TimeSpan.FromSeconds(3);
 
-            var rateLimiter = new RateLimiter()
+            var rateLimiter = new RateLimiter
             {
                 Count = count,
                 Duration = duration
@@ -41,7 +41,7 @@ namespace Binance.Tests.Api
 
             const int repetitions = 10;
 
-            var rateLimiter = new RateLimiter()
+            var rateLimiter = new RateLimiter
             {
                 Count = count,
                 Duration = duration

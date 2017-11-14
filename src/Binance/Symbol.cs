@@ -11,7 +11,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1510613503259;
+        public static readonly long LastUpdateAt = 1510677594782;
 
         // Redirect Bitcoin Cash (BCC = BitConnect)
         public static readonly string BCH_USDT = "BCCUSDT";
@@ -30,6 +30,7 @@ namespace Binance
         public static readonly string AST_BTC = "ASTBTC";
         public static readonly string BAT_BTC = "BATBTC";
         public static readonly string BCC_BTC = "BCCBTC";
+        public static readonly string BCPT_BTC = "BCPTBTC";
         public static readonly string BNB_BTC = "BNBBTC";
         public static readonly string BNT_BTC = "BNTBTC";
         public static readonly string BQX_BTC = "BQXBTC";
@@ -95,6 +96,7 @@ namespace Binance
         public static readonly string AST_ETH = "ASTETH";
         public static readonly string BAT_ETH = "BATETH";
         public static readonly string BCC_ETH = "BCCETH";
+        public static readonly string BCPT_ETH = "BCPTETH";
         public static readonly string BNB_ETH = "BNBETH";
         public static readonly string BNT_ETH = "BNTETH";
         public static readonly string BQX_ETH = "BQXETH";
@@ -153,6 +155,7 @@ namespace Binance
         public static readonly string AMB_BNB = "AMBBNB";
         public static readonly string BAT_BNB = "BATBNB";
         public static readonly string BCC_BNB = "BCCBNB";
+        public static readonly string BCPT_BNB = "BCPTBNB";
         public static readonly string DLT_BNB = "DLTBNB";
         public static readonly string NULS_BNB = "NULSBNB";
         public static readonly string POWR_BNB = "POWRBNB";

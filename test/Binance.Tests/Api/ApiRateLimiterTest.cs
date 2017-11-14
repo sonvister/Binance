@@ -21,7 +21,7 @@ namespace Binance.Tests.Api
         {
             var enabled = !ApiRateLimiter.EnabledDefault;
 
-            var rateLimiter = new ApiRateLimiter()
+            var rateLimiter = new ApiRateLimiter
             {
                 IsEnabled = enabled
             };

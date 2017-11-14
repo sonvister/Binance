@@ -47,7 +47,7 @@ namespace Binance.Tests.Integration
 
             using (var cts = new CancellationTokenSource())
             {
-                var task = client.SubscribeAsync(symbol, cts.Token);
+                client.SubscribeAsync(symbol, cts.Token);
 
                 return Assert.ThrowsAsync<InvalidOperationException>(() => client.SubscribeAsync(symbol, cts.Token));
             }
@@ -64,6 +64,7 @@ namespace Binance.Tests.Integration
                 var task = client.SubscribeAsync(symbol, args =>
                 {
                     // NOTE: The first event will cancel the client ...could be a while.
+                    // ReSharper disable once AccessToDisposedClosure
                     cts.Cancel();
                 },
                 cts.Token);

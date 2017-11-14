@@ -120,7 +120,7 @@ namespace Binance.Tests.Integration
         {
             const int limit = 24;
 
-            var candlesticks = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, limit: limit);
+            var candlesticks = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, limit);
 
             Assert.NotNull(candlesticks);
             Assert.NotEmpty(candlesticks);
@@ -132,7 +132,7 @@ namespace Binance.Tests.Integration
         {
             const int limit = 24;
 
-            var limitCandlesticks = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, limit: limit);
+            var limitCandlesticks = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, limit);
 
             var startTime = limitCandlesticks.First().OpenTime;
             var endTime = limitCandlesticks.Last().OpenTime;
