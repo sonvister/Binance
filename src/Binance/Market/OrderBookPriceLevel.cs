@@ -5,7 +5,7 @@ namespace Binance.Market
     /// <summary>
     /// Order book (depth of market) price and quantity.
     /// </summary>
-    public sealed class OrderBookPriceLevel : ICloneable
+    public sealed class OrderBookPriceLevel
     {
         #region Public Properties
 
@@ -40,24 +40,5 @@ namespace Binance.Market
         }
 
         #endregion Constructors
-
-        #region ICloneable
-
-        /// <summary>
-        /// Get a duplicate order book level (deep copy).
-        /// </summary>
-        /// <returns><see cref="OrderBookPriceLevel"/></returns>
-        public OrderBookPriceLevel Clone()
-        {
-            return new OrderBookPriceLevel(Price, Quantity);
-        }
-
-        /// <summary>
-        /// Get a duplicate order book level (deep copy).
-        /// </summary>
-        /// <returns><see cref="object"/></returns>
-        object ICloneable.Clone() { return Clone(); }
-
-        #endregion ICloneable
     }
 }

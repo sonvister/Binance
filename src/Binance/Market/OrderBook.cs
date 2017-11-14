@@ -84,9 +84,7 @@ namespace Binance.Market
             Bids = _bids.Values.ToArray();
             Asks = _asks.Values.ToArray();
 
-            Top = !Bids.Any() || !Asks.Any()
-                ? null
-                : new OrderBookTop(Symbol, Bids.First().Price, Bids.First().Quantity, Asks.First().Price, Asks.First().Quantity);
+            Top = Bids.Any() && Asks.Any() ? new OrderBookTop(this) : null;
         }
 
         #endregion Constructors
@@ -173,9 +171,7 @@ namespace Binance.Market
             Bids = _bids.Values.ToArray();
             Asks = _asks.Values.ToArray();
 
-            Top = Bids.Any() && Asks.Any()
-                ? new OrderBookTop(Symbol, Bids.First().Price, Bids.First().Quantity, Asks.First().Price, Asks.First().Quantity)
-                : null;
+            Top = Bids.Any() && Asks.Any() ? new OrderBookTop(this) : null;
 
             // Set the order book last update ID.
             LastUpdateId = lastUpdateId;

@@ -36,21 +36,5 @@ namespace Binance.Tests.Market
             Assert.Equal(price, level.Price);
             Assert.Equal(quantity, level.Quantity);
         }
-
-        [Fact]
-        public void Clone()
-        {
-            const decimal price = 0.123456789m;
-            const decimal quantity = 0.987654321m;
-
-            var level = new OrderBookPriceLevel(price, quantity);
-
-            var clone = level.Clone();
-
-            Assert.Equal(price, clone.Price);
-            Assert.Equal(quantity, clone.Quantity);
-
-            Assert.NotEqual(clone, level);
-        }
     }
 }

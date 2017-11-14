@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Linq;
 
 namespace Binance.Market
 {
     /// <summary>
     /// Best order book bid and ask price and quantity.
     /// </summary>
-    public sealed class OrderBookTop : ICloneable
+    public sealed class OrderBookTop
     {
         #region Public Properties
 
@@ -31,6 +32,20 @@ namespace Binance.Market
         /// <summary>
         /// Construct order book top.
         /// </summary>
+        /// <param name="orderBook">The order book.</param>
+        public OrderBookTop(OrderBook orderBook)
+        {
+            Throw.IfNull(orderBook, nameof(orderBook));
+
+            Symbol = orderBook.Symbol;
+
+            Bid = orderBook.Bids.First();
+            Ask = orderBook.Asks.First();
+        }
+
+        /// <summary>
+        /// Construct order book top.
+        /// </summary>
         /// <param name="symbol">The symbol.</param>
         /// <param name="bidPrice">The best bid price.</param>
         /// <param name="bidQuantity">The best bid quantity.</param>
@@ -50,24 +65,5 @@ namespace Binance.Market
         }
 
         #endregion Constructors
-
-        #region ICloneable
-
-        /// <summary>
-        /// Get a duplicate order book top (deep copy).
-        /// </summary>
-        /// <returns><see cref="OrderBookTop"/></returns>
-        public OrderBookTop Clone()
-        {
-            return new OrderBookTop(Symbol, Bid.Price, Bid.Quantity, Ask.Price, Ask.Quantity);
-        }
-
-        /// <summary>
-        /// Get a duplicate order book top (deep copy).
-        /// </summary>
-        /// <returns><see cref="object"/></returns>
-        object ICloneable.Clone() { return Clone(); }
-
-        #endregion ICloneable
     }
 }
