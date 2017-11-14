@@ -65,12 +65,14 @@ namespace Binance.Api
 
         #region Public Methods
 
-        public string Sign(string query)
+        public string Sign(string totalParams)
         {
+            Throw.IfNullOrWhiteSpace(totalParams, nameof(totalParams));
+
             if (_hmac == null)
                 throw new InvalidOperationException("Signature requires the user's API secret.");
 
-            var hash = _hmac.ComputeHash(Encoding.UTF8.GetBytes(query));
+            var hash = _hmac.ComputeHash(Encoding.UTF8.GetBytes(totalParams));
 
             return BitConverter.ToString(hash).Replace("-", string.Empty);
         }
