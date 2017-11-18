@@ -1,4 +1,6 @@
-﻿namespace Binance.Account
+﻿using System;
+
+namespace Binance.Account
 {
     /// <summary>
     /// An account trade.
@@ -6,6 +8,11 @@
     public sealed class AccountTrade : Trade
     {
         #region Public Properties
+
+        /// <summary>
+        /// The order ID.
+        /// </summary>
+        public long OrderId { get; }
 
         /// <summary>
         /// Get the commission.
@@ -36,6 +43,7 @@
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="id"></param>
+        /// <param name="orderId"></param>
         /// <param name="price"></param>
         /// <param name="quantity"></param>
         /// <param name="commission"></param>
@@ -47,6 +55,7 @@
         public AccountTrade(
             string symbol,
             long id,
+            long orderId,
             decimal price,
             decimal quantity,
             decimal commission,
@@ -57,8 +66,12 @@
             bool isBestPriceMatch)
             : base(symbol, id, price, quantity, timestamp, isBestPriceMatch)
         {
+            if (orderId < 0)
+                throw new ArgumentException($"{nameof(Trade)}: ID must not be less than 0.", nameof(orderId));
+
             AccountCommissions.ThrowIfCommissionIsInvalid(commission, nameof(commission));
 
+            OrderId = orderId;
             Commission = commission;
             CommissionAsset = commissionAsset;
             IsBuyer = isBuyer;

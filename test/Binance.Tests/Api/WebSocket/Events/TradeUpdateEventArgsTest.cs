@@ -35,6 +35,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             const string newClientOrderId = "new-test-order";
 
             const long tradeId = 12345;
+            const long orderId = 54321;
             const decimal quantity = 1;
             const decimal commission = 10;
             const string commissionAsset = "BNB";
@@ -42,7 +43,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             const bool isMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AccountTrade(symbol, tradeId, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch);
+            var trade = new AccountTrade(symbol, tradeId, orderId, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch);
 
             decimal quantityOfLastFilledTrade = 1;
 
@@ -79,6 +80,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             const string newClientOrderId = "new-test-order";
 
             const long tradeId = 12345;
+            const long orderId = 54321;
             const decimal quantity = 1;
             const decimal commission = 10;
             const string commissionAsset = "BNB";
@@ -86,7 +88,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             const bool isMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AccountTrade(symbol, tradeId, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch);
+            var trade = new AccountTrade(symbol, tradeId, orderId, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch);
 
             const decimal quantityOfLastFilledTrade = 1;
 

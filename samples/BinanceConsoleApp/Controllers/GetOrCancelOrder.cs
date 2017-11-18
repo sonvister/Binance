@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance;
+using Binance.Api;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -13,24 +15,38 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            if (args.Length < 3)
+            if (args.Length < 2)
             {
-                Console.WriteLine("A symbol and order ID are required.");
+                Console.WriteLine("An order ID is required.");
                 return true;
             }
 
-            var symbol = args[1];
+            var symbol = Symbol.BTC_USDT;
+            if (!long.TryParse(args[1], out var id))
+            {
+                symbol = args[1];
+                id = BinanceApi.NullId;
+
+                if (args.Length < 3)
+                {
+                    Console.WriteLine("A symbol and order ID are required.");
+                    return true;
+                }
+            }
 
             string clientOrderId = null;
 
-            if (!long.TryParse(args[2], out var id))
+            if (args.Length > 2)
             {
-                clientOrderId = args[2];
-            }
-            else if (id < 0)
-            {
-                Console.WriteLine("An order ID not less than 0 is required.");
-                return true;
+                if (!long.TryParse(args[2], out id))
+                {
+                    clientOrderId = args[2];
+                }
+                else if (id < 0)
+                {
+                    Console.WriteLine("An order ID not less than 0 is required.");
+                    return true;
+                }
             }
 
             if (args.Length > 3 && args[3].Equals("cancel", StringComparison.OrdinalIgnoreCase))

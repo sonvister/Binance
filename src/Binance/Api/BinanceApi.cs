@@ -501,6 +501,7 @@ namespace Binance.Api
                 return jArray.Select(jToken => new AccountTrade(
                     symbol.FormatSymbol(),
                     jToken["id"].Value<long>(),
+                    jToken["orderId"].Value<long>(),
                     jToken["price"].Value<decimal>(),
                     jToken["qty"].Value<decimal>(),
                     jToken["commission"].Value<decimal>(),

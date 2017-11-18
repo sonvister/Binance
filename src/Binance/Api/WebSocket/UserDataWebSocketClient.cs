@@ -200,6 +200,7 @@ namespace Binance.Api.WebSocket
                         var trade = new AccountTrade(
                             jObject["s"].Value<string>(),  // symbol
                             jObject["t"].Value<long>(),    // ID
+                            jObject["i"].Value<long>(),    // order ID
                             jObject["L"].Value<decimal>(), // price (price of last filled trade)
                             jObject["z"].Value<decimal>(), // quantity (accumulated quantity of filled trades)
                             jObject["n"].Value<decimal>(), // commission

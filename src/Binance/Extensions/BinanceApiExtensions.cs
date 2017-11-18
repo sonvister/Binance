@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Account;
 
 // ReSharper disable once CheckNamespace
 namespace Binance.Api
@@ -165,6 +166,58 @@ namespace Binance.Api
             }
 
             return cancelOrderIds;
+        }
+
+        /// <summary>
+        /// Get trades associated with an order.
+        /// 
+        /// NOTE: Without any trade reference (e.g. first and last trade ID),
+        ///       this must query ALL account trades for a symbol.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="order"></param>
+        /// <param name="recvWindow"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task<IEnumerable<AccountTrade>> GetTradesAsync(this IBinanceApi api, Order order, long recvWindow = default, CancellationToken token = default)
+        {
+            Throw.IfNull(api, nameof(api));
+            Throw.IfNull(order, nameof(order));
+
+            var orderTrades = new List<AccountTrade>();
+
+            if (order.Status == OrderStatus.Rejected)
+                return orderTrades;
+
+            // TODO: Can 'canceled' orders have trades?
+            //if (order.Status == OrderStatus.Canceled)
+            //    return orderTrades;
+            
+            // TODO: Can expired orders have trades?
+            //if (order.Status == OrderStatus.Expired)
+            //    return orderTrades;
+
+            long fromId = -1;
+            const int limit = 500;
+            while (!token.IsCancellationRequested)
+            {
+                // Get trades newer than trade ID (inclusive) returns oldest to newest (begin with trade ID: 0).
+                var trades = await api.GetTradesAsync(order.User, order.Symbol, fromId + 1, limit, recvWindow, token)
+                    .ConfigureAwait(false);
+
+                if (!trades.Any())
+                    break;
+
+                // Add trades with matching order ID.
+                orderTrades.AddRange(trades.Where(t => t.OrderId == order.Id));
+
+                if (trades.Count() < limit)
+                    break;
+
+                fromId = trades.Last().Id;
+            }
+
+            return orderTrades;
         }
     }
 }

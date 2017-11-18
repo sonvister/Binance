@@ -169,7 +169,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  live candles|klines <symbol> <interval>              enable candlestick live feed for a symbol and interval.");
                 Console.WriteLine("  live trades <symbol>                                 enable trades live feed for a symbol.");
                 Console.WriteLine("  live account|user                                    enable user data live feed (api key required).");
-                Console.WriteLine("  live off                                             disable the websocket live feed (there can be only one).");
+                Console.WriteLine("  live off                                             disable the websocket live feed (only one supported by app).");
                 Console.WriteLine();
                 Console.WriteLine(" Account (authentication required):");
                 Console.WriteLine("  market <side> <symbol> <qty> [stop]                  create a market order.");
@@ -181,6 +181,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  order <symbol> <ID> cancel                           cancel an order by symbol and ID.");
                 Console.WriteLine("  account|balances                                     display user account information (including balances).");
                 Console.WriteLine("  myTrades <symbol> [limit]                            display user trades of a symbol.");
+                Console.WriteLine("  myTrades order <symbol> <orderId>                    display user trades of a symbol by order ID.");
                 Console.WriteLine("  deposits [asset]                                     display user deposits of an asset or all deposits.");
                 Console.WriteLine("  withdrawals [asset]                                  display user withdrawals of an asset or all withdrawals.");
                 Console.WriteLine("  withdraw <asset> <address> <amount>                  submit a withdraw request (NOTE: 'test only' does NOT apply).");
