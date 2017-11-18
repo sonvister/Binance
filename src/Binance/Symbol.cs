@@ -11,7 +11,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1510677594782;
+        public static readonly long LastUpdateAt = 1510969427235;
 
         // Redirect Bitcoin Cash (BCC = BitConnect)
         public static readonly string BCH_USDT = "BCCUSDT";
@@ -27,6 +27,7 @@ namespace Binance
         // BTC
         public static readonly string AMB_BTC = "AMBBTC";
         public static readonly string ARK_BTC = "ARKBTC";
+        public static readonly string ARN_BTC = "ARNBTC";
         public static readonly string AST_BTC = "ASTBTC";
         public static readonly string BAT_BTC = "BATBTC";
         public static readonly string BCC_BTC = "BCCBTC";
@@ -35,6 +36,7 @@ namespace Binance
         public static readonly string BNT_BTC = "BNTBTC";
         public static readonly string BQX_BTC = "BQXBTC";
         public static readonly string BTG_BTC = "BTGBTC";
+        public static readonly string CDT_BTC = "CDTBTC";
         public static readonly string CTR_BTC = "CTRBTC";
         public static readonly string DASH_BTC = "DASHBTC";
         public static readonly string DLT_BTC = "DLTBTC";
@@ -48,6 +50,8 @@ namespace Binance
         public static readonly string EVX_BTC = "EVXBTC";
         public static readonly string FUN_BTC = "FUNBTC";
         public static readonly string GAS_BTC = "GASBTC";
+        public static readonly string GVT_BTC = "GVTBTC";
+        public static readonly string GXS_BTC = "GXSBTC";
         public static readonly string HCC_BTC = "HCCBTC";
         public static readonly string HSR_BTC = "HSRBTC";
         public static readonly string ICN_BTC = "ICNBTC";
@@ -93,6 +97,7 @@ namespace Binance
         // ETH
         public static readonly string AMB_ETH = "AMBETH";
         public static readonly string ARK_ETH = "ARKETH";
+        public static readonly string ARN_ETH = "ARNETH";
         public static readonly string AST_ETH = "ASTETH";
         public static readonly string BAT_ETH = "BATETH";
         public static readonly string BCC_ETH = "BCCETH";
@@ -102,6 +107,7 @@ namespace Binance
         public static readonly string BQX_ETH = "BQXETH";
         public static readonly string BTG_ETH = "BTGETH";
         public static readonly string BTM_ETH = "BTMETH";
+        public static readonly string CDT_ETH = "CDTETH";
         public static readonly string CTR_ETH = "CTRETH";
         public static readonly string DASH_ETH = "DASHETH";
         public static readonly string DLT_ETH = "DLTETH";
@@ -112,6 +118,8 @@ namespace Binance
         public static readonly string ETC_ETH = "ETCETH";
         public static readonly string EVX_ETH = "EVXETH";
         public static readonly string FUN_ETH = "FUNETH";
+        public static readonly string GVT_ETH = "GVTETH";
+        public static readonly string GXS_ETH = "GXSETH";
         public static readonly string HSR_ETH = "HSRETH";
         public static readonly string ICN_ETH = "ICNETH";
         public static readonly string IOTA_ETH = "IOTAETH";

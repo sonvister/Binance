@@ -11,13 +11,14 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1510677594782;
+        public static readonly long LastUpdateAt = 1510969427235;
 
         // Redirect Bitcoin Cash (BCC = BitConnect)
         public static readonly string BCH = "BCC";
 
         public static readonly string AMB = "AMB";
         public static readonly string ARK = "ARK";
+        public static readonly string ARN = "ARN";
         public static readonly string AST = "AST";
         public static readonly string BAT = "BAT";
         public static readonly string BCC = "BCC";
@@ -28,6 +29,7 @@ namespace Binance
         public static readonly string BTC = "BTC";
         public static readonly string BTG = "BTG";
         public static readonly string BTM = "BTM";
+        public static readonly string CDT = "CDT";
         public static readonly string CTR = "CTR";
         public static readonly string DASH = "DASH";
         public static readonly string DLT = "DLT";
@@ -41,6 +43,8 @@ namespace Binance
         public static readonly string EVX = "EVX";
         public static readonly string FUN = "FUN";
         public static readonly string GAS = "GAS";
+        public static readonly string GVT = "GVT";
+        public static readonly string GXS = "GXS";
         public static readonly string HCC = "HCC";
         public static readonly string HSR = "HSR";
         public static readonly string ICN = "ICN";
