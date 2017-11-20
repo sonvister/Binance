@@ -11,7 +11,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1510969427235;
+        public static readonly long LastUpdateAt = 1511203075430;
 
         // Redirect Bitcoin Cash (BCC = BitConnect)
         public static readonly string BCH_USDT = "BCCUSDT";
@@ -23,6 +23,7 @@ namespace Binance
         public static readonly string BNB_USDT = "BNBUSDT";
         public static readonly string BTC_USDT = "BTCUSDT";
         public static readonly string ETH_USDT = "ETHUSDT";
+        public static readonly string NEO_USDT = "NEOUSDT";
 
         // BTC
         public static readonly string AMB_BTC = "AMBBTC";
@@ -71,6 +72,7 @@ namespace Binance
         public static readonly string NULS_BTC = "NULSBTC";
         public static readonly string OAX_BTC = "OAXBTC";
         public static readonly string OMG_BTC = "OMGBTC";
+        public static readonly string POE_BTC = "POEBTC";
         public static readonly string POWR_BTC = "POWRBTC";
         public static readonly string QTUM_BTC = "QTUMBTC";
         public static readonly string RCN_BTC = "RCNBTC";
@@ -136,6 +138,7 @@ namespace Binance
         public static readonly string NULS_ETH = "NULSETH";
         public static readonly string OAX_ETH = "OAXETH";
         public static readonly string OMG_ETH = "OMGETH";
+        public static readonly string POE_ETH = "POEETH";
         public static readonly string POWR_ETH = "POWRETH";
         public static readonly string QTUM_ETH = "QTUMETH";
         public static readonly string RCN_ETH = "RCNETH";
@@ -165,6 +168,7 @@ namespace Binance
         public static readonly string BCC_BNB = "BCCBNB";
         public static readonly string BCPT_BNB = "BCPTBNB";
         public static readonly string DLT_BNB = "DLTBNB";
+        public static readonly string NEO_BNB = "NEOBNB";
         public static readonly string NULS_BNB = "NULSBNB";
         public static readonly string POWR_BNB = "POWRBNB";
         public static readonly string RCN_BNB = "RCNBNB";
