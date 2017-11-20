@@ -43,7 +43,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (args.Length > 2)
             {
-                if (symbol.Equals("order", StringComparison.OrdinalIgnoreCase))
+                if (symbol.ToString().Equals("order", StringComparison.OrdinalIgnoreCase))
                 {
                     symbol = Symbol.BTC_USDT;
 

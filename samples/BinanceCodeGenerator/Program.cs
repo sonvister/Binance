@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Binance;
 using Binance.Api;
-using Microsoft.Extensions.Configuration;
 
 namespace BinanceCodeGenerator
 {
@@ -12,28 +12,11 @@ namespace BinanceCodeGenerator
     {
         private static async Task Main()
         {
-            // Load configuration.
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true, false)
-                .Build();
-
-            // Read list of known quote currencies.
-            var quoteCurrencies = configuration
-                .GetSection("QuoteCurrencies").GetChildren()
-                .Select(c => c.Value).ToArray();
-            
-            // Initailize base currency lists.
-            var currencyPairs = new Dictionary<string, List<string>>();
-            foreach (var currency in quoteCurrencies)
-            {
-                currencyPairs[currency] = new List<string>();
-            }
-
-            // Initialize assets list.
-            var assets = new List<string>(quoteCurrencies);
+            var assets = new List<Asset>();
 
             long timestamp;
+
+            List<Symbol> symbols;
 
             using (var api = new BinanceApi())
             {
@@ -41,33 +24,16 @@ namespace BinanceCodeGenerator
                 timestamp = await api.GetTimestampAsync();
 
                 // Get latest currency pairs (symbols).
-                var symbols = await api.SymbolsAsync();
+                symbols = (await api.GetSymbolsAsync()).ToList();
 
-                // Organize base currencies into quote currency lists.
+                // Get assets.
                 foreach (var symbol in symbols)
                 {
-                    var match = false;
+                    if (!assets.Contains(symbol.BaseAsset))
+                        assets.Add(symbol.BaseAsset);
 
-                    foreach (var currency in quoteCurrencies)
-                    {
-                        if (!symbol.EndsWith(currency))
-                            continue;
-
-                        var asset = symbol.Substring(0, symbol.IndexOf(currency, StringComparison.Ordinal));
-
-                        if (!assets.Contains(asset))
-                            assets.Add(asset);
-
-                        currencyPairs[currency].Add(asset);
-
-                        match = true;
-                    }
-
-                    // If no matching quote currency is found.
-                    if (!match)
-                    {
-                        Console.WriteLine($"Warning: Symbol does not match known quote currencies: {symbol}");
-                    }
+                    if (!assets.Contains(symbol.QuoteAsset))
+                        assets.Add(symbol.QuoteAsset);
                 }
             }
 
@@ -81,26 +47,31 @@ namespace BinanceCodeGenerator
             index = lines.FindIndex(l => l.Contains("<<insert symbols>>"));
             lines.RemoveAt(index);
 
-            // Insert definition for each currency pair.
-            foreach (var quoteCurrency in quoteCurrencies)
+            // Sort symbols.
+            symbols.Sort();
+
+            var groups = symbols.GroupBy(s => s.QuoteAsset);
+
+            // Insert definition for each currency pair (symbol).
+            foreach (var group in groups)
             {
-                lines.Insert(index, $"        // {quoteCurrency}");
-                index++;
+                lines.Insert(index++, $"        // {group.First().QuoteAsset}");
 
-                // Sort base currencies.
-                currencyPairs[quoteCurrency].Sort();
-
-                foreach (var baseCurrency in currencyPairs[quoteCurrency])
-                {
-                    lines.Insert(index, $"        public static readonly string {baseCurrency}_{quoteCurrency} = \"{baseCurrency}{quoteCurrency}\";");
-                    index++;
+                foreach (var symbol in group)
+                { 
+                    lines.Insert(index++, $"        public static readonly Symbol {symbol.BaseAsset}_{symbol.QuoteAsset} = new Symbol(Asset.{symbol.BaseAsset}, Asset.{symbol.QuoteAsset}, {symbol.BaseMinQuantity}m, {symbol.BaseMaxQuantity}m, {symbol.QuoteIncrement}m);");
                 }
 
-                if (quoteCurrency.Equals(quoteCurrencies.Last()))
-                    continue;
+                lines.Insert(index++, string.Empty);
+            }
+            lines.RemoveAt(index);
 
-                lines.Insert(index, string.Empty);
-                index++;
+            index = lines.FindIndex(l => l.Contains("<<insert symbol definitions>>"));
+            lines.RemoveAt(index);
+
+            foreach(var symbol in symbols)
+            {
+                lines.Insert(index++, $"            {{ \"{symbol.BaseAsset}_{symbol.QuoteAsset}\", {symbol.BaseAsset}_{symbol.QuoteAsset} }},");
             }
 
             // Save the generated source code (replacing original).
@@ -122,8 +93,15 @@ namespace BinanceCodeGenerator
             // Insert definition for each asset.
             foreach (var asset in assets)
             {
-                lines.Insert(index, $"        public static readonly string {asset} = \"{asset}\";");
-                index++;
+                lines.Insert(index++, $"        public static readonly Asset {asset} = new Asset(\"{asset}\", {asset.Precision});");
+            }
+
+            index = lines.FindIndex(l => l.Contains("<<insert asset definitions>>"));
+            lines.RemoveAt(index);
+
+            foreach (var asset in assets)
+            {
+                lines.Insert(index++, $"            {{ \"{asset}\", {asset} }},");
             }
 
             // Save the generated source code (replacing original).

@@ -5,7 +5,7 @@ using Binance.Api;
 
 namespace BinanceConsoleApp.Controllers
 {
-    internal class Symbols : IHandleCommand
+    internal class GetSymbols : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -14,6 +14,7 @@ namespace BinanceConsoleApp.Controllers
                 return false;
 
             var symbols = await Program.Api.SymbolsAsync(token);
+            //var symbols = await Program.Api.GetSymbolsAsync(token); // ...too slow.
 
             lock (Program.ConsoleSync)
             {

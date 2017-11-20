@@ -39,6 +39,13 @@ namespace Binance.Api.Json
         #region Market Data
 
         /// <summary>
+        /// Get exchange information.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<string> GetExchangeInfoAsync(CancellationToken token = default);
+
+        /// <summary>
         /// Get order book (market depth) of a symbol.
         /// </summary>
         /// <param name="symbol"></param>

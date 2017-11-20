@@ -23,11 +23,11 @@ namespace Binance.Api.Json
 
         public const int TimestampOffsetRefreshPeriodMinutesDefault = 60;
 
-        public static readonly int QueryRateLimitCountDefault = 1200;
-        public static readonly int QueryRateLimitDurationMinutesDefault = 1;
+        public static readonly int RequestRateLimitCountDefault = 1200;
+        public static readonly int RequestRateLimitDurationMinutesDefault = 1;
 
-        public static readonly int QueryRateLimitBurstCountDefault = 100;
-        public static readonly int QueryRateLimitBurstDurationSecondsDefault = 1;
+        public static readonly int RequestRateLimitBurstCountDefault = 100;
+        public static readonly int RequestRateLimitBurstDurationSecondsDefault = 1;
 
         public static readonly int OrderRateLimitCountDefault = 100000;
         public static readonly int OrderRateLimitDurationDaysDefault = 1;
@@ -84,13 +84,13 @@ namespace Binance.Api.Json
 
             // Configure query rate limiter.
             RateLimiter?.Configure(
-                TimeSpan.FromMinutes(options?.Value.QueryRateLimitDurationMinutes ?? QueryRateLimitDurationMinutesDefault),
-                options?.Value.QueryRateLimitCount ?? QueryRateLimitCountDefault);
+                TimeSpan.FromMinutes(options?.Value.RequestRateLimitDurationMinutes ?? RequestRateLimitDurationMinutesDefault),
+                options?.Value.RequestRateLimitCount ?? RequestRateLimitCountDefault);
 
             // Configure query burst rate limiter.
             RateLimiter?.Configure(
-                TimeSpan.FromSeconds(options?.Value.QueryRateLimitBurstDurationSeconds ?? QueryRateLimitBurstDurationSecondsDefault),
-                options?.Value.QueryRateLimitBurstCount ?? QueryRateLimitBurstCountDefault);
+                TimeSpan.FromSeconds(options?.Value.RequestRateLimitBurstDurationSeconds ?? RequestRateLimitBurstDurationSecondsDefault),
+                options?.Value.RequestRateLimitBurstCount ?? RequestRateLimitBurstCountDefault);
 
             _httpClient = new HttpClient
             {
@@ -125,6 +125,13 @@ namespace Binance.Api.Json
         #endregion Connectivity
 
         #region Market Data
+
+        public virtual Task<string> GetExchangeInfoAsync(CancellationToken token = default)
+        {
+            token.ThrowIfCancellationRequested();
+
+            return GetAsync($"/api/v1/exchangeInfo", null, RateLimiter, token);
+        }
 
         public virtual Task<string> GetOrderBookAsync(string symbol, int limit = default, CancellationToken token = default)
         {

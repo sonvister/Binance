@@ -112,6 +112,13 @@ namespace Binance.Api
         /// <returns></returns>
         Task<IEnumerable<OrderBookTop>> GetOrderBookTopsAsync(CancellationToken token = default);
 
+        /// <summary>
+        /// Get all symbols.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IEnumerable<Symbol>> GetSymbolsAsync(CancellationToken token = default);
+
         #endregion Market Data
 
         #region Account

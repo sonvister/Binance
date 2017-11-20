@@ -261,6 +261,57 @@ namespace Binance.Api
             }
         }
 
+        public virtual async Task<IEnumerable<Symbol>> GetSymbolsAsync(CancellationToken token = default)
+        {
+            var json = await JsonApi.GetExchangeInfoAsync(token)
+                .ConfigureAwait(false);
+
+            var symbols = new List<Symbol>();
+
+            try
+            {
+                var jObject = JObject.Parse(json);
+
+                var jArray = jObject["symbols"];
+
+                if (jArray != null)
+                {
+                    symbols.AddRange(
+                        jArray.Select(jToken =>
+                        {
+                            // HACK: Support inconsistent precision naming and possible future changes.
+                            var baseAssetPrecision = jToken["baseAssetPrecision"]?.Value<int>() ?? jToken["basePrecision"]?.Value<int>() ?? 0;
+                            var quoteAssetPrecision = jToken["quoteAssetPrecision"]?.Value<int>() ?? jToken["quotePrecision"]?.Value<int>() ?? 0;
+
+                            var baseAsset = new Asset(jToken["baseAsset"].Value<string>(), baseAssetPrecision);
+                            var quoteAsset = new Asset(jToken["quoteAsset"].Value<string>(), quoteAssetPrecision);
+
+                            var filters = jToken["filters"];
+
+                            var baseMinQty = filters[1]["minQty"].Value<decimal>();
+                            var baseMaxQty = filters[1]["maxQty"].Value<decimal>();
+
+                            var quoteIncrement = filters[0]["minPrice"].Value<decimal>();
+
+                            var symbol = new Symbol(baseAsset, quoteAsset, baseMinQty, baseMaxQty, quoteIncrement);
+
+                            if (symbol.ToString() != jToken["symbol"].Value<string>())
+                            {
+                                throw new BinanceApiException($"Symbol does not match assets ({jToken["symbol"].Value<string>()} != {symbol}).");
+                            }
+
+                            return symbol;
+                        }));
+                }
+            }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetSymbolsAsync), json, e);
+            }
+
+            return symbols;
+        }
+
         #endregion Market Data
 
         #region Account
@@ -478,8 +529,12 @@ namespace Binance.Api
                     jObject["canWithdraw"].Value<bool>(),
                     jObject["canDeposit"].Value<bool>());
 
-                var balances = jObject["balances"].Select(entry => new AccountBalance(entry["asset"].Value<string>(),
-                    entry["free"].Value<decimal>(), entry["locked"].Value<decimal>())).ToList();
+                var balances = jObject["balances"]
+                    .Select(entry => new AccountBalance(
+                        entry["asset"].Value<string>(),
+                        entry["free"].Value<decimal>(),
+                        entry["locked"].Value<decimal>()))
+                    .ToArray();
 
                 return new AccountInfo(user, commissions, status, balances);
             }
@@ -498,18 +553,20 @@ namespace Binance.Api
             {
                 var jArray = JArray.Parse(json);
 
-                return jArray.Select(jToken => new AccountTrade(
-                    symbol.FormatSymbol(),
-                    jToken["id"].Value<long>(),
-                    jToken["orderId"].Value<long>(),
-                    jToken["price"].Value<decimal>(),
-                    jToken["qty"].Value<decimal>(),
-                    jToken["commission"].Value<decimal>(),
-                    jToken["commissionAsset"].Value<string>(),
-                    jToken["time"].Value<long>(),
-                    jToken["isBuyer"].Value<bool>(),
-                    jToken["isMaker"].Value<bool>(),
-                    jToken["isBestMatch"].Value<bool>())).ToList();
+                return jArray
+                    .Select(jToken => new AccountTrade(
+                        symbol.FormatSymbol(),
+                        jToken["id"].Value<long>(),
+                        jToken["orderId"].Value<long>(),
+                        jToken["price"].Value<decimal>(),
+                        jToken["qty"].Value<decimal>(),
+                        jToken["commission"].Value<decimal>(),
+                        jToken["commissionAsset"].Value<string>(),
+                        jToken["time"].Value<long>(),
+                        jToken["isBuyer"].Value<bool>(),
+                        jToken["isMaker"].Value<bool>(),
+                        jToken["isBestMatch"].Value<bool>()))
+                    .ToArray();
             }
             catch (Exception e)
             {
