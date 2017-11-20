@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Api;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -13,13 +13,12 @@ namespace BinanceConsoleApp.Controllers
                 !command.Equals("pairs", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            var symbols = await Program.Api.SymbolsAsync(token);
-            //var symbols = await Program.Api.GetSymbolsAsync(token); // ...too slow.
+            var symbols = await Program.Api.GetSymbolsAsync(token);
 
             lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
-                Console.WriteLine(string.Join(", ", symbols));
+                Console.WriteLine(string.Join(", ", symbols.Select(s => s)));
                 Console.WriteLine();
             }
 

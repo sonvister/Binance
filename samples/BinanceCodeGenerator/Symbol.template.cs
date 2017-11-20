@@ -1,6 +1,7 @@
 ﻿// ReSharper disable InconsistentNaming
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Binance
 {
@@ -27,6 +28,10 @@ namespace Binance
         #endregion Public Constants
 
         #region Implicit Operators
+
+        public static bool operator ==(Symbol x, Symbol y) => Equals(x, y);
+
+        public static bool operator !=(Symbol x, Symbol y) => !(x == y);
 
         public static implicit operator string(Symbol symbol) => symbol.ToString();
 
@@ -82,6 +87,8 @@ namespace Binance
 
         private readonly string _symbol;
 
+        private static readonly object _sync = new object();
+
         #endregion Private Fields
 
         #region Constructors
@@ -118,6 +125,37 @@ namespace Binance
         #endregion Constructors
 
         #region Public Methods
+
+        /// <summary>
+        /// Update the symbol cache.
+        /// </summary>
+        /// <param name="symbols">The symbols.</param>
+        /// <returns></returns>
+        public static void UpdateCache(IEnumerable<Symbol> symbols)
+        {
+            Throw.IfNull(symbols, nameof(symbols));
+
+            if (symbols.Any())
+                throw new ArgumentException("Enumerable must not be empty.", nameof(symbols));
+
+            lock (_sync)
+            {
+                // Remove any old symbols (preserves redirections).
+                foreach (var symbol in Cache.Values.ToArray())
+                {
+                    if (!symbols.Contains(symbol))
+                    {
+                        Cache.Remove(symbol);
+                    }
+                }
+
+                // Update existing and add any new symbols.
+                foreach (var symbol in symbols)
+                {
+                    Cache[symbol] = symbol;
+                }
+            }
+        }
 
         public override string ToString()
         {

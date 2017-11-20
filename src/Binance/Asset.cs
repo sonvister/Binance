@@ -1,6 +1,7 @@
 // ReSharper disable InconsistentNaming
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Binance
 {
@@ -14,11 +15,11 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1511217569515;
+        public static readonly long LastUpdateAt = 1511220857757;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH = BCC;
-        
+
         public static readonly Asset AMB = new Asset("AMB", 8);
         public static readonly Asset ARK = new Asset("ARK", 8);
         public static readonly Asset ARN = new Asset("ARN", 8);
@@ -91,6 +92,10 @@ namespace Binance
         #endregion Public Constants
 
         #region Implicit Operators
+
+        public static bool operator ==(Asset x, Asset y) => Equals(x, y);
+
+        public static bool operator !=(Asset x, Asset y) => !(x == y);
 
         public static implicit operator string(Asset asset) => asset.ToString();
 
@@ -190,6 +195,12 @@ namespace Binance
 
         #endregion Public Properties
 
+        #region Private Fields
+
+        private static readonly object _sync = new object();
+
+        #endregion Private Fields
+
         #region Constructors
 
         /// <summary>
@@ -212,6 +223,48 @@ namespace Binance
         #endregion Constructors
 
         #region Public Methods
+
+        /// <summary>
+        /// Update the asset cache.
+        /// </summary>
+        /// <param name="symbols">The symbols.</param>
+        /// <returns></returns>
+        public static void UpdateCache(IEnumerable<Symbol> symbols)
+        {
+            Throw.IfNull(symbols, nameof(symbols));
+
+            if (symbols.Any())
+                throw new ArgumentException("Enumerable must not be empty.", nameof(symbols));
+
+            var assets = new List<Asset>();
+
+            foreach (var symbol in symbols)
+            {
+                if (!assets.Contains(symbol.BaseAsset))
+                    assets.Add(symbol.BaseAsset);
+
+                if (!assets.Contains(symbol.QuoteAsset))
+                    assets.Add(symbol.QuoteAsset);
+            }
+
+            lock (_sync)
+            {
+                // Remove any old assets (preserves redirections).
+                foreach (var asset in Cache.Values.ToArray())
+                {
+                    if (!assets.Contains(asset))
+                    {
+                        Cache.Remove(asset);
+                    }
+                }
+
+                // Update existing and add any new assets.
+                foreach (var asset in assets)
+                {
+                    Cache[asset] = asset;
+                }
+            }
+        }
 
         public override bool Equals(object obj)
         {
