@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1511220857757;
+        public static readonly long LastUpdateAt = 1511299718414;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Symbol BCH_USDT = BCC_USDT;
@@ -28,10 +28,12 @@ namespace Binance
         public static readonly Symbol BAT_BNB = new Symbol(Asset.BAT, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol BCC_BNB = new Symbol(Asset.BCC, Asset.BNB, 0.00001000m, 10000000.00000000m, 0.01000000m);
         public static readonly Symbol BCPT_BNB = new Symbol(Asset.BCPT, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
+        public static readonly Symbol BTS_BNB = new Symbol(Asset.BTS, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol DLT_BNB = new Symbol(Asset.DLT, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol NEO_BNB = new Symbol(Asset.NEO, Asset.BNB, 0.00100000m, 10000000.00000000m, 0.00100000m);
         public static readonly Symbol NULS_BNB = new Symbol(Asset.NULS, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol POWR_BNB = new Symbol(Asset.POWR, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
+        public static readonly Symbol QSP_BNB = new Symbol(Asset.QSP, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol RCN_BNB = new Symbol(Asset.RCN, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol RDN_BNB = new Symbol(Asset.RDN, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol VEN_BNB = new Symbol(Asset.VEN, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00010000m);
@@ -50,6 +52,7 @@ namespace Binance
         public static readonly Symbol BNT_BTC = new Symbol(Asset.BNT, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol BQX_BTC = new Symbol(Asset.BQX, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol BTG_BTC = new Symbol(Asset.BTG, Asset.BTC, 0.01000000m, 10000000.00000000m, 0.00000100m);
+        public static readonly Symbol BTS_BTC = new Symbol(Asset.BTS, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol CDT_BTC = new Symbol(Asset.CDT, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol CTR_BTC = new Symbol(Asset.CTR, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol DASH_BTC = new Symbol(Asset.DASH, Asset.BTC, 0.00100000m, 10000000.00000000m, 0.00000100m);
@@ -84,6 +87,7 @@ namespace Binance
         public static readonly Symbol OMG_BTC = new Symbol(Asset.OMG, Asset.BTC, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol POE_BTC = new Symbol(Asset.POE, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol POWR_BTC = new Symbol(Asset.POWR, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
+        public static readonly Symbol QSP_BTC = new Symbol(Asset.QSP, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol QTUM_BTC = new Symbol(Asset.QTUM, Asset.BTC, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol RCN_BTC = new Symbol(Asset.RCN, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol RDN_BTC = new Symbol(Asset.RDN, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
@@ -118,6 +122,7 @@ namespace Binance
         public static readonly Symbol BNT_ETH = new Symbol(Asset.BNT, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol BQX_ETH = new Symbol(Asset.BQX, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000010m);
         public static readonly Symbol BTG_ETH = new Symbol(Asset.BTG, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
+        public static readonly Symbol BTS_ETH = new Symbol(Asset.BTS, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol CDT_ETH = new Symbol(Asset.CDT, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol CTR_ETH = new Symbol(Asset.CTR, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000010m);
         public static readonly Symbol DASH_ETH = new Symbol(Asset.DASH, Asset.ETH, 0.00100000m, 10000000.00000000m, 0.00001000m);
@@ -149,6 +154,7 @@ namespace Binance
         public static readonly Symbol OMG_ETH = new Symbol(Asset.OMG, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol POE_ETH = new Symbol(Asset.POE, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol POWR_ETH = new Symbol(Asset.POWR, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
+        public static readonly Symbol QSP_ETH = new Symbol(Asset.QSP, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol QTUM_ETH = new Symbol(Asset.QTUM, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol RCN_ETH = new Symbol(Asset.RCN, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol RDN_ETH = new Symbol(Asset.RDN, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000010m);
@@ -234,6 +240,9 @@ namespace Binance
             { "BTC_USDT", BTC_USDT },
             { "BTG_BTC", BTG_BTC },
             { "BTG_ETH", BTG_ETH },
+            { "BTS_BNB", BTS_BNB },
+            { "BTS_BTC", BTS_BTC },
+            { "BTS_ETH", BTS_ETH },
             { "CDT_BTC", CDT_BTC },
             { "CDT_ETH", CDT_ETH },
             { "CTR_BTC", CTR_BTC },
@@ -305,6 +314,9 @@ namespace Binance
             { "POWR_BNB", POWR_BNB },
             { "POWR_BTC", POWR_BTC },
             { "POWR_ETH", POWR_ETH },
+            { "QSP_BNB", QSP_BNB },
+            { "QSP_BTC", QSP_BTC },
+            { "QSP_ETH", QSP_ETH },
             { "QTUM_BTC", QTUM_BTC },
             { "QTUM_ETH", QTUM_ETH },
             { "RCN_BNB", RCN_BNB },
