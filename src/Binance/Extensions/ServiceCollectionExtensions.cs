@@ -16,6 +16,7 @@ namespace Binance
 
             // API
             services.AddSingleton<IBinanceApiUserProvider, BinanceApiUserProvider>();
+            services.AddSingleton<IBinanceHttpClient, BinanceHttpClient>();
             services.AddSingleton<IBinanceJsonApi, BinanceJsonApi>();
             services.AddTransient<IApiRateLimiter, ApiRateLimiter>();
             services.AddTransient<IRateLimiter, RateLimiter>();

@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Binance.Tests.Api
 {
+    [Collection("Rate Limiter Test Collection")]
     public class ApiRateLimiterTest
     {
         [Fact]
@@ -36,7 +37,7 @@ namespace Binance.Tests.Api
             var duration = TimeSpan.FromSeconds(1);
 
             const int burstCount = 75;
-            var burstDuration = TimeSpan.FromSeconds(0.5);
+            var burstDuration = TimeSpan.FromSeconds(1);
 
             var rateLimiter = new ApiRateLimiter();
 
@@ -58,10 +59,10 @@ namespace Binance.Tests.Api
         public async Task RateLimitBurst()
         {
             const int count = 100;
-            var duration = TimeSpan.FromSeconds(1);
+            var duration = TimeSpan.FromSeconds(2);
 
             const int burstCount = 75;
-            var burstDuration = TimeSpan.FromSeconds(0.5);
+            var burstDuration = TimeSpan.FromSeconds(1);
 
             var rateLimiter = new ApiRateLimiter();
 
@@ -75,18 +76,18 @@ namespace Binance.Tests.Api
 
             stopwatch.Stop();
 
-            Assert.True(stopwatch.ElapsedMilliseconds >= burstDuration.TotalMilliseconds - 60);
-            Assert.False(stopwatch.ElapsedMilliseconds > burstDuration.TotalMilliseconds + 60);
+            Assert.True(stopwatch.ElapsedMilliseconds >= burstDuration.TotalMilliseconds - 45);
+            Assert.False(stopwatch.ElapsedMilliseconds > burstDuration.TotalMilliseconds + 45);
         }
 
         [Fact]
         public async Task RateLimitBurstTwice()
         {
-            const int count = 100;
-            var duration = TimeSpan.FromSeconds(1);
+            const int count = 200;
+            var duration = TimeSpan.FromSeconds(5);
 
             const int burstCount = 75;
-            var burstDuration = TimeSpan.FromSeconds(0.5);
+            var burstDuration = TimeSpan.FromSeconds(1);
 
             var rateLimiter = new ApiRateLimiter();
 
@@ -108,10 +109,10 @@ namespace Binance.Tests.Api
         public async Task RateLimitPlusBurst()
         {
             const int count = 100;
-            var duration = TimeSpan.FromSeconds(1);
+            var duration = TimeSpan.FromSeconds(2);
 
             const int burstCount = 75;
-            var burstDuration = TimeSpan.FromSeconds(0.5);
+            var burstDuration = TimeSpan.FromSeconds(1);
 
             var rateLimiter = new ApiRateLimiter();
 

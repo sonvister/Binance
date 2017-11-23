@@ -12,7 +12,12 @@ namespace Binance.Api.Json
         #region Public Properties
 
         /// <summary>
-        /// The API request rate limiter.
+        /// Get the HTTP client.
+        /// </summary>
+        IBinanceHttpClient HttpClient { get; }
+
+        /// <summary>
+        /// Get the API request rate limiter.
         /// </summary>
         IApiRateLimiter RateLimiter { get; }
 
