@@ -5,7 +5,6 @@ using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace Binance.Api.Json
@@ -16,27 +15,11 @@ namespace Binance.Api.Json
 
         public static readonly string SuccessfulTestResponse = "{}";
 
-        public const int TimestampOffsetRefreshPeriodMinutesDefault = 60;
-
-        public static readonly int RequestRateLimitCountDefault = 1200;
-        public static readonly int RequestRateLimitDurationMinutesDefault = 1;
-
-        public static readonly int RequestRateLimitBurstCountDefault = 100;
-        public static readonly int RequestRateLimitBurstDurationSecondsDefault = 1;
-
-        public static readonly int OrderRateLimitCountDefault = 100000;
-        public static readonly int OrderRateLimitDurationDaysDefault = 1;
-
-        public static readonly int OrderRateLimitBurstCountDefault = 10;
-        public static readonly int OrderRateLimitBurstDurationSecondsDefault = 1;
-
         #endregion Public Constants
 
         #region Public Properties
 
         public IBinanceHttpClient HttpClient { get; }
-
-        public IApiRateLimiter RateLimiter { get; }
 
         #endregion Public Properties
 
@@ -47,8 +30,6 @@ namespace Binance.Api.Json
         private DateTime _timestampOffsetUpdatedAt;
 
         private readonly SemaphoreSlim _timestampOffsetSync;
-
-        private readonly BinanceJsonApiOptions _options;
 
         private readonly ILogger<BinanceJsonApi> _logger;
 
@@ -68,31 +49,16 @@ namespace Binance.Api.Json
         /// Constructor.
         /// </summary>
         /// <param name="httpClient">The HTTP client.</param>
-        /// <param name="rateLimiter">The rate limiter (auto configured).</param>
-        /// <param name="options">The options.</param>
         /// <param name="logger">The logger</param>
-        public BinanceJsonApi(IBinanceHttpClient httpClient, IApiRateLimiter rateLimiter = null, IOptions<BinanceJsonApiOptions> options = null, ILogger<BinanceJsonApi> logger = null)
+        public BinanceJsonApi(IBinanceHttpClient httpClient, ILogger<BinanceJsonApi> logger = null)
         {
             Throw.IfNull(httpClient, nameof(httpClient));
 
             HttpClient = httpClient;
 
-            RateLimiter = rateLimiter;
-
-            _options = options?.Value;
             _logger = logger;
 
             _timestampOffsetSync = new SemaphoreSlim(1, 1);
-
-            // Configure query rate limiter.
-            RateLimiter?.Configure(
-                TimeSpan.FromMinutes(options?.Value.RequestRateLimitDurationMinutes ?? RequestRateLimitDurationMinutesDefault),
-                options?.Value.RequestRateLimitCount ?? RequestRateLimitCountDefault);
-
-            // Configure query burst rate limiter.
-            RateLimiter?.Configure(
-                TimeSpan.FromSeconds(options?.Value.RequestRateLimitBurstDurationSeconds ?? RequestRateLimitBurstDurationSecondsDefault),
-                options?.Value.RequestRateLimitBurstCount ?? RequestRateLimitBurstCountDefault);
         }
 
         #endregion Constructors
@@ -101,16 +67,12 @@ namespace Binance.Api.Json
 
         public virtual Task<string> PingAsync(CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
-
-            return HttpClient.GetAsync("/api/v1/ping", null, RateLimiter, token);
+            return HttpClient.GetAsync("/api/v1/ping", token);
         }
 
         public virtual Task<string> GetServerTimeAsync(CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
-
-            return HttpClient.GetAsync("/api/v1/time", null, RateLimiter, token);
+            return HttpClient.GetAsync("/api/v1/time", token);
         }
 
         #endregion Connectivity
@@ -119,48 +81,46 @@ namespace Binance.Api.Json
 
         public virtual Task<string> GetExchangeInfoAsync(CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
-
-            return HttpClient.GetAsync($"/api/v1/exchangeInfo", null, RateLimiter, token);
+            return HttpClient.GetAsync("/api/v1/exchangeInfo", token);
         }
 
         public virtual Task<string> GetOrderBookAsync(string symbol, int limit = default, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            token.ThrowIfCancellationRequested();
+            var request = new BinanceHttpRequest("/api/v1/depth");
 
-            var totalParams = $"symbol={symbol.FormatSymbol()}";
+            request.AddParameter("symbol", symbol.FormatSymbol());
 
             if (limit > 0)
             {
-                totalParams += $"&limit={limit}";
+                request.AddParameter("limit", limit);
             }
 
-            return HttpClient.GetAsync($"/api/v1/depth?{totalParams}", null, RateLimiter, token);
+            return HttpClient.GetAsync(request, token);
         }
 
         public virtual Task<string> GetAggregateTradesAsync(string symbol, long fromId = BinanceApi.NullId, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            token.ThrowIfCancellationRequested();
+            var request = new BinanceHttpRequest("/api/v1/aggTrades");
 
-            var totalParams = $"symbol={symbol.FormatSymbol()}";
+            request.AddParameter("symbol", symbol.FormatSymbol());
 
             if (fromId >= 0)
-                totalParams += $"&fromId={fromId}";
+                request.AddParameter("fromId", fromId);
 
             if (startTime > 0)
-                totalParams += $"&startTime={startTime}";
+                request.AddParameter("startTime", startTime);
 
             if (endTime > 0)
-                totalParams += $"&endTime={endTime}";
+                request.AddParameter("endTime", endTime);
 
             if (startTime <= 0 || endTime <= 0)
             {
                 if (limit > 0)
-                    totalParams += $"&limit={limit}";
+                    request.AddParameter("limit", limit);
             }
             else
             {
@@ -171,50 +131,49 @@ namespace Binance.Api.Json
                     throw new ArgumentException($"The interval between {nameof(startTime)} and {nameof(endTime)} must be less than 24 hours.", nameof(endTime));
             }
 
-            return HttpClient.GetAsync($"/api/v1/aggTrades?{totalParams}", null, RateLimiter, token);
+            return HttpClient.GetAsync(request, token);
         }
 
         public virtual Task<string> GetCandlesticksAsync(string symbol, CandlestickInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            token.ThrowIfCancellationRequested();
+            var request = new BinanceHttpRequest("/api/v1/klines");
 
-            var totalParams = $"symbol={symbol.FormatSymbol()}&interval={interval.AsString()}";
+            request.AddParameter("symbol", symbol.FormatSymbol());
+            request.AddParameter("interval", interval.AsString());
 
             if (limit > 0)
-                totalParams += $"&limit={limit}";
+                request.AddParameter("limit", limit);
 
             if (startTime > 0)
-                totalParams += $"&startTime={startTime}";
+                request.AddParameter("startTime", startTime);
 
             if (endTime > 0)
-                totalParams += $"&endTime={endTime}";
+                request.AddParameter("endTime", endTime);
 
-            return HttpClient.GetAsync($"/api/v1/klines?{totalParams}", null, RateLimiter, token);
+            return HttpClient.GetAsync(request, token);
         }
 
         public virtual Task<string> Get24HourStatisticsAsync(string symbol, CancellationToken token = default)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            token.ThrowIfCancellationRequested();
+            var request = new BinanceHttpRequest("/api/v1/ticker/24hr");
 
-            return HttpClient.GetAsync($"/api/v1/ticker/24hr?symbol={symbol.FormatSymbol()}", null, RateLimiter, token);
+            request.AddParameter("symbol", symbol.FormatSymbol());
+
+            return HttpClient.GetAsync(request, token);
         }
 
         public virtual Task<string> GetPricesAsync(CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
-
-            return HttpClient.GetAsync("/api/v1/ticker/allPrices", null, RateLimiter, token);
+            return HttpClient.GetAsync("/api/v1/ticker/allPrices", token);
         }
 
         public virtual Task<string> GetOrderBookTopsAsync(CancellationToken token = default)
         {
-            token.ThrowIfCancellationRequested();
-
-            return HttpClient.GetAsync("/api/v1/ticker/allBookTickers", null, RateLimiter, token);
+            return HttpClient.GetAsync("/api/v1/ticker/allBookTickers", token);
         }
 
         #endregion Market Data
@@ -226,44 +185,50 @@ namespace Binance.Api.Json
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            token.ThrowIfCancellationRequested();
-
             if (quantity <= 0)
                 throw new ArgumentException("Order quantity must be greater than 0.", nameof(quantity));
 
             if (recvWindow <= 0)
-                recvWindow = _options?.RecvWindowDefault ?? 0;
+                recvWindow = HttpClient.Options.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FormatSymbol()}&side={side.ToString().ToUpper()}&type={type.ToString().ToUpper()}&quantity={quantity}";
+            var request = new BinanceHttpRequest($"/api/v3/order{(isTestOnly ? "/test" : string.Empty)}")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            request.AddParameter("symbol", symbol.FormatSymbol());
+            request.AddParameter("side", side.ToString().ToUpper());
+            request.AddParameter("type", type.ToString().ToUpper());
+            request.AddParameter("quantity", quantity);
 
             if (price > 0)
-                totalParams += $"&price={price}";
+                request.AddParameter("price", price);
 
             if (timeInForce.HasValue)
-                totalParams += $"&timeInForce={timeInForce.ToString().ToUpper()}";
+                request.AddParameter("timeInForce", timeInForce.ToString().ToUpper());
 
             if (!string.IsNullOrWhiteSpace(newClientOrderId))
-                totalParams += $"&newClientOrderId={newClientOrderId}";
+                request.AddParameter("newClientOrderId", newClientOrderId);
 
             if (stopPrice > 0)
-                totalParams += $"&stopPrice={stopPrice}";
+                request.AddParameter("stopPrice", stopPrice);
 
             if (icebergQty > 0)
-                totalParams += $"&icebergQty={icebergQty}";
+                request.AddParameter("icebergQty", icebergQty);
 
             if (recvWindow > 0)
-                totalParams += $"&recvWindow={recvWindow}";
+                request.AddParameter("recvWindow", recvWindow);
 
             var timestamp = await GetTimestampAsync(token)
                 .ConfigureAwait(false);
 
-            totalParams += $"&timestamp={timestamp}";
+            request.AddParameter("timestamp", timestamp);
 
-            var signature = user.Sign(totalParams);
+            var signature = user.Sign(request.QueryString);
 
-            var query = $"{totalParams}&signature={signature}";
+            request.AddParameter("signature", signature);
 
-            return await HttpClient.PostAsync($"/api/v3/order{(isTestOnly ? "/test" : string.Empty)}?{query}", null, user, user.RateLimiter, token)
+            return await HttpClient.PostAsync(request, token, user.RateLimiter)
                 .ConfigureAwait(false);
         }
 
@@ -275,30 +240,35 @@ namespace Binance.Api.Json
             if (orderId < 0 && string.IsNullOrWhiteSpace(origClientOrderId))
                 throw new ArgumentException($"Either '{nameof(orderId)}' or '{nameof(origClientOrderId)}' must be provided, but both were invalid.");
 
-            token.ThrowIfCancellationRequested();
-
             if (recvWindow <= 0)
-                recvWindow = _options?.RecvWindowDefault ?? 0;
+                recvWindow = HttpClient.Options.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FormatSymbol()}";
+            var request = new BinanceHttpRequest($"/api/v3/order")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            request.AddParameter("symbol", symbol.FormatSymbol());
 
             if (orderId >= 0)
-                totalParams += $"&orderId={orderId}";
+                request.AddParameter("orderId", orderId);
 
             if (!string.IsNullOrWhiteSpace(origClientOrderId))
-                totalParams += $"&origClientOrderId={origClientOrderId}";
+                request.AddParameter("origClientOrderId", origClientOrderId);
 
             if (recvWindow > 0)
-                totalParams += $"&recvWindow={recvWindow}";
+                request.AddParameter("recvWindow", recvWindow);
 
             var timestamp = await GetTimestampAsync(token)
                 .ConfigureAwait(false);
 
-            totalParams += $"&timestamp={timestamp}";
+            request.AddParameter("timestamp", timestamp);
 
-            var signature = user.Sign(totalParams);
+            var signature = user.Sign(request.QueryString);
 
-            return await HttpClient.GetAsync($"/api/v3/order?{totalParams}&signature={signature}", user, user.RateLimiter, token)
+            request.AddParameter("signature", signature);
+
+            return await HttpClient.GetAsync(request, token, user.RateLimiter)
                 .ConfigureAwait(false);
         }
 
@@ -310,33 +280,38 @@ namespace Binance.Api.Json
             if (orderId < 0 && string.IsNullOrWhiteSpace(origClientOrderId))
                 throw new ArgumentException($"Either '{nameof(orderId)}' or '{nameof(origClientOrderId)}' must be provided, but both were invalid.");
 
-            token.ThrowIfCancellationRequested();
-
             if (recvWindow <= 0)
-                recvWindow = _options?.RecvWindowDefault ?? 0;
+                recvWindow = HttpClient.Options.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FormatSymbol()}";
+            var request = new BinanceHttpRequest($"/api/v3/order")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            request.AddParameter("symbol", symbol.FormatSymbol());
 
             if (orderId >= 0)
-                totalParams += $"&orderId={orderId}";
+                request.AddParameter("orderId", orderId);
 
             if (!string.IsNullOrWhiteSpace(origClientOrderId))
-                totalParams += $"&origClientOrderId={origClientOrderId}";
+                request.AddParameter("origClientOrderId", origClientOrderId);
 
             if (!string.IsNullOrWhiteSpace(newClientOrderId))
-                totalParams += $"&newClientOrderId={newClientOrderId}";
+                request.AddParameter("newClientOrderId", newClientOrderId);
 
             if (recvWindow > 0)
-                totalParams += $"&recvWindow={recvWindow}";
+                request.AddParameter("recvWindow", recvWindow);
 
             var timestamp = await GetTimestampAsync(token)
                 .ConfigureAwait(false);
 
-            totalParams += $"&timestamp={timestamp}";
+            request.AddParameter("timestamp", timestamp);
 
-            var signature = user.Sign(totalParams);
+            var signature = user.Sign(request.QueryString);
 
-            return await HttpClient.DeleteAsync($"/api/v3/order?{totalParams}&signature={signature}", user, user.RateLimiter, token)
+            request.AddParameter("signature", signature);
+
+            return await HttpClient.DeleteAsync(request, token, user.RateLimiter)
                 .ConfigureAwait(false);
         }
 
@@ -345,23 +320,29 @@ namespace Binance.Api.Json
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            token.ThrowIfCancellationRequested();
-
             if (recvWindow <= 0)
-                recvWindow = _options?.RecvWindowDefault ?? 0;
+                recvWindow = HttpClient.Options.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FormatSymbol()}";
+            var request = new BinanceHttpRequest($"/api/v3/openOrders")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            request.AddParameter("symbol", symbol.FormatSymbol());
 
             if (recvWindow > 0)
-                totalParams += $"&recvWindow={recvWindow}";
+                request.AddParameter("recvWindow", recvWindow);
 
-            var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
+            var timestamp = await GetTimestampAsync(token)
+                .ConfigureAwait(false);
 
-            totalParams += $"&timestamp={timestamp}";
+            request.AddParameter("timestamp", timestamp);
 
-            var signature = user.Sign(totalParams);
+            var signature = user.Sign(request.QueryString);
 
-            return await HttpClient.GetAsync($"/api/v3/openOrders?{totalParams}&signature={signature}", user, RateLimiter, token)
+            request.AddParameter("signature", signature);
+
+            return await HttpClient.GetAsync(request, token)
                 .ConfigureAwait(false);
         }
 
@@ -370,29 +351,35 @@ namespace Binance.Api.Json
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            token.ThrowIfCancellationRequested();
-
             if (recvWindow <= 0)
-                recvWindow = _options?.RecvWindowDefault ?? 0;
+                recvWindow = HttpClient.Options.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FormatSymbol()}";
+            var request = new BinanceHttpRequest($"/api/v3/allOrders")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            request.AddParameter("symbol", symbol.FormatSymbol());
 
             if (orderId >= 0)
-                totalParams += $"&orderId={orderId}";
+                request.AddParameter("orderId", orderId);
 
             if (limit > 0)
-                totalParams += $"&limit={limit}";
+                request.AddParameter("limit", limit);
 
             if (recvWindow > 0)
-                totalParams += $"&recvWindow={recvWindow}";
+                request.AddParameter("recvWindow", recvWindow);
 
-            var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
+            var timestamp = await GetTimestampAsync(token)
+                .ConfigureAwait(false);
 
-            totalParams += $"&timestamp={timestamp}";
+            request.AddParameter("timestamp", timestamp);
 
-            var signature = user.Sign(totalParams);
+            var signature = user.Sign(request.QueryString);
 
-            return await HttpClient.GetAsync($"/api/v3/allOrders?{totalParams}&signature={signature}", user, RateLimiter, token)
+            request.AddParameter("signature", signature);
+
+            return await HttpClient.GetAsync(request, token)
                 .ConfigureAwait(false);
         }
 
@@ -400,21 +387,27 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
 
-            token.ThrowIfCancellationRequested();
-
             if (recvWindow <= 0)
-                recvWindow = _options?.RecvWindowDefault ?? 0;
+                recvWindow = HttpClient.Options.RecvWindowDefault ?? 0;
 
-            var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
+            var request = new BinanceHttpRequest($"/api/v3/account")
+            {
+                ApiKey = user.ApiKey
+            };
 
-            var totalParams = $"timestamp={timestamp}";
+            var timestamp = await GetTimestampAsync(token)
+                .ConfigureAwait(false);
+
+            request.AddParameter("timestamp", timestamp);
 
             if (recvWindow > 0)
-                totalParams += $"&recvWindow={recvWindow}";
+                request.AddParameter("recvWindow", recvWindow);
 
-            var signature = user.Sign(totalParams);
+            var signature = user.Sign(request.QueryString);
 
-            return await HttpClient.GetAsync($"/api/v3/account?{totalParams}&signature={signature}", user, RateLimiter, token)
+            request.AddParameter("signature", signature);
+
+            return await HttpClient.GetAsync(request, token)
                 .ConfigureAwait(false);
         }
 
@@ -423,29 +416,34 @@ namespace Binance.Api.Json
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            token.ThrowIfCancellationRequested();
-
             if (recvWindow <= 0)
-                recvWindow = _options?.RecvWindowDefault ?? 0;
+                recvWindow = HttpClient.Options.RecvWindowDefault ?? 0;
 
-            var totalParams = $"symbol={symbol.FormatSymbol()}";
+            var request = new BinanceHttpRequest($"/api/v3/myTrades")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            request.AddParameter("symbol", symbol.FormatSymbol());
 
             if (fromId >= 0)
-                totalParams += $"&fromId={fromId}";
+                request.AddParameter("fromId", fromId);
 
             if (limit > 0)
-                totalParams += $"&limit={limit}";
+                request.AddParameter("limit", limit);
 
             if (recvWindow > 0)
-                totalParams += $"&recvWindow={recvWindow}";
+                request.AddParameter("recvWindow", recvWindow);
 
             var timestamp = await GetTimestampAsync(token).ConfigureAwait(false);
 
-            totalParams += $"&timestamp={timestamp}";
+            request.AddParameter("timestamp", timestamp);
 
-            var signature = user.Sign(totalParams);
+            var signature = user.Sign(request.QueryString);
 
-            return await HttpClient.GetAsync($"/api/v3/myTrades?{totalParams}&signature={signature}", user, RateLimiter, token)
+            request.AddParameter("signature", signature);
+
+            return await HttpClient.GetAsync(request, token)
                 .ConfigureAwait(false);
         }
 
@@ -458,27 +456,34 @@ namespace Binance.Api.Json
             if (amount <= 0)
                 throw new ArgumentException("Withdraw amount must be greater than 0.", nameof(amount));
 
-            token.ThrowIfCancellationRequested();
-
             if (recvWindow <= 0)
-                recvWindow = _options?.RecvWindowDefault ?? 0;
+                recvWindow = HttpClient.Options.RecvWindowDefault ?? 0;
 
-            var totalParams = $"asset={asset.FormatSymbol()}&address={address}&amount={amount}";
+            var request = new BinanceHttpRequest($"/wapi/v1/withdraw.html")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            request.AddParameter("asset", asset.FormatSymbol());
+            request.AddParameter("address", address);
+            request.AddParameter("amount", amount);
 
             if (!string.IsNullOrWhiteSpace(name))
-                totalParams += $"&name={name}";
+                request.AddParameter("name", name);
 
             if (recvWindow > 0)
-                totalParams += $"&recvWindow={recvWindow}";
+                request.AddParameter("recvWindow", recvWindow);
 
             var timestamp = await GetTimestampAsync(token)
                 .ConfigureAwait(false);
 
-            totalParams += $"&timestamp={timestamp}";
+            request.AddParameter("timestamp", timestamp);
 
-            var signature = user.Sign(totalParams);
+            var signature = user.Sign(request.QueryString);
 
-            return await HttpClient.PostAsync($"/wapi/v1/withdraw.html?{totalParams}&signature={signature}", null, user, RateLimiter, token)
+            request.AddParameter("signature", signature);
+
+            return await HttpClient.PostAsync(request, token)
                 .ConfigureAwait(false);
         }
 
@@ -486,39 +491,39 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
 
-            token.ThrowIfCancellationRequested();
-
             if (recvWindow <= 0)
-                recvWindow = _options?.RecvWindowDefault ?? 0;
+                recvWindow = HttpClient.Options.RecvWindowDefault ?? 0;
+
+            var request = new BinanceHttpRequest($"/wapi/v1/getDepositHistory.html")
+            {
+                ApiKey = user.ApiKey
+            };
 
             var timestamp = await GetTimestampAsync(token)
                 .ConfigureAwait(false);
 
-            var totalParams = $"timestamp={timestamp}";
+            request.AddParameter("timestamp", timestamp);
 
             if (!string.IsNullOrWhiteSpace(asset))
-            {
-                asset = asset.FormatSymbol();
-                totalParams += $"&asset={asset}";
-            }
+                request.AddParameter("asset", asset.FormatSymbol());
 
             if (status.HasValue)
-            {
-                totalParams += $"&status={(int)status}";
-            }
+                request.AddParameter("status", (int)status);
 
             if (startTime > 0)
-                totalParams += $"&startTime={startTime}";
+                request.AddParameter("startTime", startTime);
 
             if (endTime > 0)
-                totalParams += $"&endTime={endTime}";
+                request.AddParameter("endTime", endTime);
 
             if (recvWindow > 0)
-                totalParams += $"&recvWindow={recvWindow}";
+                request.AddParameter("recvWindow", recvWindow);
 
-            var signature = user.Sign(totalParams);
+            var signature = user.Sign(request.QueryString);
 
-            return await HttpClient.PostAsync($"/wapi/v1/getDepositHistory.html?{totalParams}&signature={signature}", null, user, RateLimiter, token)
+            request.AddParameter("signature", signature);
+
+            return await HttpClient.PostAsync(request, token)
                 .ConfigureAwait(false);
         }
 
@@ -526,39 +531,37 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
 
-            token.ThrowIfCancellationRequested();
-
             if (recvWindow <= 0)
-                recvWindow = _options?.RecvWindowDefault ?? 0;
+                recvWindow = HttpClient.Options.RecvWindowDefault ?? 0;
+
+            var request = new BinanceHttpRequest($"/wapi/v1/getWithdrawHistory.html")
+            {
+                ApiKey = user.ApiKey
+            };
 
             var timestamp = await GetTimestampAsync(token)
                 .ConfigureAwait(false);
 
-            var totalParams = $"timestamp={timestamp}";
+            request.AddParameter("timestamp", timestamp);
 
             if (!string.IsNullOrWhiteSpace(asset))
-            {
-                asset = asset.FormatSymbol();
-                totalParams += $"&asset={asset}";
-            }
+                request.AddParameter("asset", asset.FormatSymbol());
 
             if (status.HasValue)
-            {
-                totalParams += $"&status={(int)status}";
-            }
+                request.AddParameter("status", (int)status);
 
             if (startTime > 0)
-                totalParams += $"&startTime={startTime}";
+                request.AddParameter("startTime", startTime);
 
             if (endTime > 0)
-                totalParams += $"&endTime={endTime}";
+                request.AddParameter("endTime", endTime);
 
             if (recvWindow > 0)
-                totalParams += $"&recvWindow={recvWindow}";
+                request.AddParameter("recvWindow", recvWindow);
 
-            var signature = user.Sign(totalParams);
+            var signature = user.Sign(request.QueryString);
 
-            return await HttpClient.PostAsync($"/wapi/v1/getWithdrawHistory.html?{totalParams}&signature={signature}", null, user, RateLimiter, token)
+            return await HttpClient.PostAsync(request, token)
                 .ConfigureAwait(false);
         }
 
@@ -570,9 +573,12 @@ namespace Binance.Api.Json
         {
             Throw.IfNull(user, nameof(user));
 
-            token.ThrowIfCancellationRequested();
+            var request = new BinanceHttpRequest("/api/v1/userDataStream")
+            {
+                ApiKey = user.ApiKey
+            };
 
-            return HttpClient.PostAsync("/api/v1/userDataStream", null, user, RateLimiter, token);
+            return HttpClient.PostAsync(request, token);
         }
 
         public virtual Task<string> UserStreamKeepAliveAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default)
@@ -580,9 +586,14 @@ namespace Binance.Api.Json
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
 
-            token.ThrowIfCancellationRequested();
+            var request = new BinanceHttpRequest("/api/v1/userDataStream")
+            {
+                ApiKey = user.ApiKey
+            };
 
-            return HttpClient.PutAsync($"/api/v1/userDataStream?listenKey={listenKey}", null, user, RateLimiter, token);
+            request.AddParameter("listenKey", listenKey);
+
+            return HttpClient.PutAsync(request, token);
         }
 
         public virtual Task<string> UserStreamCloseAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default)
@@ -590,9 +601,14 @@ namespace Binance.Api.Json
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
 
-            token.ThrowIfCancellationRequested();
+            var request = new BinanceHttpRequest("/api/v1/userDataStream")
+            {
+                ApiKey = user.ApiKey
+            };
 
-            return HttpClient.DeleteAsync($"/api/v1/userDataStream?listenKey={listenKey}", user, RateLimiter, token);
+            request.AddParameter("listenKey", listenKey);
+
+            return HttpClient.DeleteAsync(request, token);
         }
 
         #endregion User Stream
@@ -611,8 +627,7 @@ namespace Binance.Api.Json
 
             try
             {
-                if (DateTime.UtcNow - _timestampOffsetUpdatedAt > 
-                    TimeSpan.FromMinutes(_options?.TimestampOffsetRefreshPeriodMinutes ?? TimestampOffsetRefreshPeriodMinutesDefault))
+                if (DateTime.UtcNow - _timestampOffsetUpdatedAt > TimeSpan.FromMinutes(HttpClient.Options.TimestampOffsetRefreshPeriodMinutes))
                 {
                     var systemTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace Binance.Api.Json
@@ -16,6 +16,14 @@ namespace Binance.Api.Json
         public static readonly string EndpointUrl = "https://www.binance.com";
 
         #endregion Public Constants
+
+        #region Public Properties
+
+        public IApiRateLimiter RateLimiter { get; }
+
+        public BinanceJsonApiOptions Options { get; }
+
+        #endregion Public Properties
 
         #region Private Constants
 
@@ -36,10 +44,19 @@ namespace Binance.Api.Json
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="logger"></param>
-        public BinanceHttpClient(ILogger<BinanceHttpClient> logger = null)
+        /// <param name="rateLimiter">The rate limiter (auto configured).</param>
+        /// <param name="options">The options.</param>
+        /// <param name="logger">The logger.</param>
+        public BinanceHttpClient(IApiRateLimiter rateLimiter = null, IOptions<BinanceJsonApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
         {
+            RateLimiter = rateLimiter ?? new ApiRateLimiter();
+            Options = options?.Value ?? new BinanceJsonApiOptions();
             _logger = logger;
+
+            // Configure request rate limiter.
+            RateLimiter.Configure(TimeSpan.FromMinutes(Options.RequestRateLimitDurationMinutes), Options.RequestRateLimitCount);
+            // Configure request burst rate limiter.
+            RateLimiter.Configure(TimeSpan.FromSeconds(Options.RequestRateLimitBurstDurationSeconds), Options.RequestRateLimitBurstCount);
 
             _httpClient = new HttpClient
             {
@@ -57,53 +74,47 @@ namespace Binance.Api.Json
 
         #region Public Methods
 
-        public Task<string> GetAsync(string requestPath, IBinanceApiUser user = null, IApiRateLimiter rateLimiter = null, CancellationToken token = default)
+        public Task<string> GetAsync(string path, CancellationToken token = default)
+            => GetAsync(new BinanceHttpRequest(path), token);
+
+        public Task<string> GetAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null)
         {
-            return RequestAsync(HttpMethod.Get, requestPath, null, user, rateLimiter, token);
+            return RequestAsync(HttpMethod.Get, request, token, rateLimiter);
         }
 
-        public Task<string> PostAsync(string requestPath, string body, IBinanceApiUser user = null, IApiRateLimiter rateLimiter = null, CancellationToken token = default)
+        public Task<string> PostAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null)
         {
-            return RequestAsync(HttpMethod.Post, requestPath, body, user, rateLimiter, token);
+            return RequestAsync(HttpMethod.Post, request, token, rateLimiter);
         }
 
-        public Task<string> PutAsync(string requestPath, string body, IBinanceApiUser user = null, IApiRateLimiter rateLimiter = null, CancellationToken token = default)
+        public Task<string> PutAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null)
         {
-            return RequestAsync(HttpMethod.Put, requestPath, body, user, rateLimiter, token);
+            return RequestAsync(HttpMethod.Put, request, token, rateLimiter);
         }
 
-        public Task<string> DeleteAsync(string requestPath, IBinanceApiUser user = null, IApiRateLimiter rateLimiter = null, CancellationToken token = default)
+        public Task<string> DeleteAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null)
         {
-            return RequestAsync(HttpMethod.Delete, requestPath, null, user, rateLimiter, token);
+            return RequestAsync(HttpMethod.Delete, request, token, rateLimiter);
         }
 
         #endregion Public Methods
 
         #region Private Methods
 
-        private async Task<string> RequestAsync(HttpMethod method, string requestPath, string body = null, IBinanceApiUser user = null, IApiRateLimiter rateLimiter = null, CancellationToken token = default)
+        private async Task<string> RequestAsync(HttpMethod method, BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null)
         {
-            var request = new HttpRequestMessage(method, requestPath);
+            Throw.IfNull(request, nameof(request));
 
-            if (body != null)
-            {
-                request.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
-            }
+            token.ThrowIfCancellationRequested();
 
-            if (user != null)
-            {
-                request.Headers.Add(RequestHeaderKeyName, user.ApiKey);
-            }
+            var requestMessage = request.CreateMessage(method);
 
-            _logger?.LogDebug($"{nameof(BinanceJsonApi)}.{nameof(RequestAsync)}: [{method.Method}] \"{requestPath}\"");
+            _logger?.LogDebug($"{nameof(BinanceHttpClient)}.{nameof(RequestAsync)}: [{method.Method}] \"{requestMessage.RequestUri}\"");
 
-            if (rateLimiter != null)
-            {
-                await rateLimiter.DelayAsync(token)
-                    .ConfigureAwait(false);
-            }
+            await (rateLimiter ?? RateLimiter).DelayAsync(token)
+                .ConfigureAwait(false);
 
-            using (var response = await _httpClient.SendAsync(request, token).ConfigureAwait(false))
+            using (var response = await _httpClient.SendAsync(requestMessage, token).ConfigureAwait(false))
             {
                 if (response.IsSuccessStatusCode)
                 {

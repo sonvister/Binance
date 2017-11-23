@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
-using Binance.Api.Json;
 using Microsoft.Extensions.Options;
 
 // ReSharper disable once CheckNamespace
@@ -17,6 +16,8 @@ namespace Binance.Api
         public string ApiKey { get; }
 
         public IApiRateLimiter RateLimiter { get; set; }
+
+        public BinanceApiUserOptions Options { get; }
 
         #endregion Public Properties
 
@@ -37,7 +38,7 @@ namespace Binance.Api
         /// <param name="apiSecret">The user's API secret (optional).</param>
         /// <param name="rateLimiter">The rate limiter (auto-configured).</param>
         /// <param name="options">The JSON API options.</param>
-        public BinanceApiUser(string apiKey, string apiSecret = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceJsonApiOptions> options = null)
+        public BinanceApiUser(string apiKey, string apiSecret = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceApiUserOptions> options = null)
         {
             Throw.IfNullOrWhiteSpace(apiKey, nameof(apiKey));
 
@@ -49,16 +50,12 @@ namespace Binance.Api
             }
 
             RateLimiter = rateLimiter;
+            Options = options?.Value ?? new BinanceApiUserOptions();
 
             // Configure order rate limiter.
-            RateLimiter?.Configure(
-                TimeSpan.FromDays(options?.Value.OrderRateLimitDurationDays ?? BinanceJsonApi.OrderRateLimitDurationDaysDefault),
-                options?.Value.OrderRateLimitCount ?? BinanceJsonApi.OrderRateLimitCountDefault);
-
+            RateLimiter?.Configure(TimeSpan.FromDays(Options.OrderRateLimitDurationDays), Options.OrderRateLimitCount);
             // Configure order burst rate limiter.
-            RateLimiter?.Configure(
-                TimeSpan.FromSeconds(options?.Value.OrderRateLimitBurstDurationSeconds ?? BinanceJsonApi.OrderRateLimitBurstDurationSecondsDefault),
-                options?.Value.OrderRateLimitBurstCount ?? BinanceJsonApi.OrderRateLimitBurstCountDefault);
+            RateLimiter?.Configure(TimeSpan.FromSeconds(Options.OrderRateLimitBurstDurationSeconds), Options.OrderRateLimitBurstCount);
         }
 
         #endregion Constructors

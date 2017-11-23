@@ -642,7 +642,7 @@ namespace Binance.Api
             // ReSharper disable once InvertIf
             if (!success)
             {
-                var message = $"{nameof(BinanceApi)}.{nameof(GetDepositsAsync)} failed.";
+                var message = $"{nameof(BinanceApi)}.{nameof(GetDepositsAsync)} unsuccessful.";
                 _logger?.LogError(message);
                 throw new BinanceApiException(message);
             }
@@ -689,7 +689,7 @@ namespace Binance.Api
             // ReSharper disable once InvertIf
             if (!success)
             {
-                var message = $"{nameof(BinanceApi)}.{nameof(GetWithdrawalsAsync)} failed.";
+                var message = $"{nameof(BinanceApi)}.{nameof(GetWithdrawalsAsync)} unsuccessful.";
                 _logger?.LogError(message);
                 throw new BinanceApiException(message);
             }

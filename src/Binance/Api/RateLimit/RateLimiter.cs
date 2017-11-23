@@ -62,6 +62,8 @@ namespace Binance.Api
             if (_count == 0)
                 return;
 
+            token.ThrowIfCancellationRequested();
+
             var millisecondsDelay = 0;
 
             // Create the current timestamp.

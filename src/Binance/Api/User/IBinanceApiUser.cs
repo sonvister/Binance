@@ -8,14 +8,19 @@ namespace Binance.Api
         #region Public Properties
 
         /// <summary>
-        /// API key.
+        /// Get the API key.
         /// </summary>
         string ApiKey { get; }
 
         /// <summary>
-        /// The API request rate limiter.
+        /// Get or set the API request rate limiter.
         /// </summary>
         IApiRateLimiter RateLimiter { get; set; }
+
+        /// <summary>
+        /// Get the options;
+        /// </summary>
+        BinanceApiUserOptions Options { get; }
 
         #endregion Public Properties
 
