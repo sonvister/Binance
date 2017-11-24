@@ -14,13 +14,13 @@ namespace Binance.Api
 
         private readonly IServiceProvider _services;
 
-        private readonly IOptions<BinanceApiUserOptions> _options;
+        private readonly IOptions<BinanceApiOptions> _options;
 
         #endregion Private Fields
 
         #region Constructors
 
-        public BinanceApiUserProvider(IServiceProvider services, IOptions<BinanceApiUserOptions> options = null)
+        public BinanceApiUserProvider(IServiceProvider services, IOptions<BinanceApiOptions> options = null)
         {
             Throw.IfNull(services, nameof(services));
 

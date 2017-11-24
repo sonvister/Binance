@@ -17,11 +17,6 @@ namespace Binance.Api
         /// </summary>
         IApiRateLimiter RateLimiter { get; set; }
 
-        /// <summary>
-        /// Get the options;
-        /// </summary>
-        BinanceApiUserOptions Options { get; }
-
         #endregion Public Properties
 
         #region Public Methods

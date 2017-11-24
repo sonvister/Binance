@@ -14,7 +14,7 @@ namespace Binance.Api.Json
         /// <summary>
         /// Get the options.
         /// </summary>
-        BinanceJsonApiOptions Options { get; }
+        BinanceApiOptions Options { get; }
 
         /// <summary>
         /// Get request.

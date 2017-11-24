@@ -21,7 +21,7 @@ namespace Binance.Api.Json
 
         public IApiRateLimiter RateLimiter { get; }
 
-        public BinanceJsonApiOptions Options { get; }
+        public BinanceApiOptions Options { get; }
 
         #endregion Public Properties
 
@@ -47,16 +47,16 @@ namespace Binance.Api.Json
         /// <param name="rateLimiter">The rate limiter (auto configured).</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public BinanceHttpClient(IApiRateLimiter rateLimiter = null, IOptions<BinanceJsonApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
+        public BinanceHttpClient(IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
         {
             RateLimiter = rateLimiter ?? new ApiRateLimiter();
-            Options = options?.Value ?? new BinanceJsonApiOptions();
+            Options = options?.Value ?? new BinanceApiOptions();
             _logger = logger;
 
             // Configure request rate limiter.
-            RateLimiter.Configure(TimeSpan.FromMinutes(Options.RequestRateLimitDurationMinutes), Options.RequestRateLimitCount);
+            RateLimiter.Configure(TimeSpan.FromMinutes(Options.RequestRateLimit.DurationMinutes), Options.RequestRateLimit.Count);
             // Configure request burst rate limiter.
-            RateLimiter.Configure(TimeSpan.FromSeconds(Options.RequestRateLimitBurstDurationSeconds), Options.RequestRateLimitBurstCount);
+            RateLimiter.Configure(TimeSpan.FromSeconds(Options.RequestRateLimit.BurstDurationSeconds), Options.RequestRateLimit.BurstCount);
 
             _httpClient = new HttpClient
             {

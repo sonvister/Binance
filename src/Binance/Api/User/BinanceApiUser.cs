@@ -17,13 +17,13 @@ namespace Binance.Api
 
         public IApiRateLimiter RateLimiter { get; set; }
 
-        public BinanceApiUserOptions Options { get; }
-
         #endregion Public Properties
 
         #region Private Fields
 
         private readonly HMAC _hmac;
+
+        private readonly BinanceApiOptions _options;
 
         #endregion Private Fields
 
@@ -38,7 +38,7 @@ namespace Binance.Api
         /// <param name="apiSecret">The user's API secret (optional).</param>
         /// <param name="rateLimiter">The rate limiter (auto-configured).</param>
         /// <param name="options">The JSON API options.</param>
-        public BinanceApiUser(string apiKey, string apiSecret = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceApiUserOptions> options = null)
+        public BinanceApiUser(string apiKey, string apiSecret = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null)
         {
             Throw.IfNullOrWhiteSpace(apiKey, nameof(apiKey));
 
@@ -50,12 +50,12 @@ namespace Binance.Api
             }
 
             RateLimiter = rateLimiter;
-            Options = options?.Value ?? new BinanceApiUserOptions();
+            _options = options?.Value ?? new BinanceApiOptions();
 
             // Configure order rate limiter.
-            RateLimiter?.Configure(TimeSpan.FromDays(Options.OrderRateLimitDurationDays), Options.OrderRateLimitCount);
+            RateLimiter?.Configure(TimeSpan.FromDays(_options.OrderRateLimit.DurationDays), _options.OrderRateLimit.Count);
             // Configure order burst rate limiter.
-            RateLimiter?.Configure(TimeSpan.FromSeconds(Options.OrderRateLimitBurstDurationSeconds), Options.OrderRateLimitBurstCount);
+            RateLimiter?.Configure(TimeSpan.FromSeconds(_options.OrderRateLimit.BurstDurationSeconds), _options.OrderRateLimit.BurstCount);
         }
 
         #endregion Constructors
