@@ -47,8 +47,9 @@ namespace BinanceConsoleApp.Examples
 
                 using (var controller = new TaskController())
                 using (var user = new BinanceApiUser(key, secret))
-                using (var api = services.GetService<IBinanceApi>())
                 {
+                    var api = services.GetService<IBinanceApi>();
+
                     // Query and display current account balance.
                     var account = await api.GetAccountInfoAsync(user);
 

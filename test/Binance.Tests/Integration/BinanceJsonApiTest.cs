@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Binance.Api.Json;
+using Binance.Api;
 using Binance.Market;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -13,7 +13,7 @@ namespace Binance.Tests.Integration
 {
     public class BinanceJsonApiTest
     {
-        private readonly IBinanceJsonApi _api;
+        private readonly IBinanceHttpClient _api;
 
         public BinanceJsonApiTest()
         {
@@ -21,8 +21,8 @@ namespace Binance.Tests.Integration
             var serviceProvider = new ServiceCollection()
                 .AddBinance().BuildServiceProvider();
 
-            // Get IBinanceApi service.
-            _api = serviceProvider.GetService<IBinanceJsonApi>();
+            // Get IBinanceHttpClient service.
+            _api = serviceProvider.GetService<IBinanceHttpClient>();
         }
 
         #region Connectivity
@@ -30,7 +30,7 @@ namespace Binance.Tests.Integration
         [Fact]
         public async Task Ping()
         {
-            Assert.Equal(BinanceJsonApi.SuccessfulTestResponse, await _api.PingAsync());
+            Assert.Equal(BinanceApi.SuccessfulTestResponse, await _api.PingAsync());
         }
 
         [Fact]

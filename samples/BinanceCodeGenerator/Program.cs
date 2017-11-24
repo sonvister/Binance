@@ -18,23 +18,22 @@ namespace BinanceCodeGenerator
 
             List<Symbol> symbols;
 
-            using (var api = new BinanceApi())
+            var api = new BinanceApi();
+
+            // Get the current timestamp.
+            timestamp = await api.GetTimestampAsync();
+
+            // Get latest currency pairs (symbols).
+            symbols = (await api.GetSymbolsAsync()).ToList();
+
+            // Get assets.
+            foreach (var symbol in symbols)
             {
-                // Get the current timestamp.
-                timestamp = await api.GetTimestampAsync();
+                if (!assets.Contains(symbol.BaseAsset))
+                    assets.Add(symbol.BaseAsset);
 
-                // Get latest currency pairs (symbols).
-                symbols = (await api.GetSymbolsAsync()).ToList();
-
-                // Get assets.
-                foreach (var symbol in symbols)
-                {
-                    if (!assets.Contains(symbol.BaseAsset))
-                        assets.Add(symbol.BaseAsset);
-
-                    if (!assets.Contains(symbol.QuoteAsset))
-                        assets.Add(symbol.QuoteAsset);
-                }
+                if (!assets.Contains(symbol.QuoteAsset))
+                    assets.Add(symbol.QuoteAsset);
             }
 
             // Read the symbol template file.

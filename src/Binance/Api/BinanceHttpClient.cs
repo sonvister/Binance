@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
-namespace Binance.Api.Json
+namespace Binance.Api
 {
     public sealed class BinanceHttpClient : IBinanceHttpClient
     {
@@ -24,6 +24,21 @@ namespace Binance.Api.Json
         public BinanceApiOptions Options { get; }
 
         #endregion Public Properties
+
+        #region Internal
+
+        /// <summary>
+        /// Singleton.
+        /// </summary>
+        internal static BinanceHttpClient Instance => Initializer.Value;
+
+        /// <summary>
+        /// Lazy initializer.
+        /// </summary>
+        internal static Lazy<BinanceHttpClient> Initializer
+            = new Lazy<BinanceHttpClient>(() => new BinanceHttpClient(), true);
+
+        #endregion Internal
 
         #region Private Constants
 
@@ -47,7 +62,7 @@ namespace Binance.Api.Json
         /// <param name="rateLimiter">The rate limiter (auto configured).</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public BinanceHttpClient(IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
+        internal BinanceHttpClient(IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
         {
             RateLimiter = rateLimiter ?? new ApiRateLimiter();
             Options = options?.Value ?? new BinanceApiOptions();
@@ -121,7 +136,7 @@ namespace Binance.Api.Json
                     var json = await response.Content.ReadAsStringAsync()
                         .ConfigureAwait(false);
 
-                    _logger?.LogDebug($"{nameof(BinanceJsonApi)}: \"{json}\"");
+                    _logger?.LogDebug($"{nameof(BinanceHttpClient)}: \"{json}\"");
 
                     return json;
                 }
@@ -149,7 +164,7 @@ namespace Binance.Api.Json
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError(e, $"{nameof(BinanceJsonApi)}.{nameof(RequestAsync)} failed to parse server error response: \"{error}\"");
+                        _logger?.LogError(e, $"{nameof(BinanceHttpClient)}.{nameof(RequestAsync)} failed to parse server error response: \"{error}\"");
                     }
                 }
 

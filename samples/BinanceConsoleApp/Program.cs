@@ -129,7 +129,6 @@ namespace BinanceConsoleApp
                 cts.Cancel();
                 cts.Dispose();
 
-                Api?.Dispose();
                 User?.Dispose();
 
                 lock (ConsoleSync)

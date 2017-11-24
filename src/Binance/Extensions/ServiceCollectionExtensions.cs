@@ -1,8 +1,10 @@
-﻿using Binance.Api;
-using Binance.Api.Json;
+﻿using System;
+using Binance.Api;
 using Binance.Api.WebSocket;
 using Binance.Cache;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 // ReSharper disable once CheckNamespace
 namespace Binance
@@ -16,8 +18,22 @@ namespace Binance
 
             // API
             services.AddSingleton<IBinanceApiUserProvider, BinanceApiUserProvider>();
-            services.AddSingleton<IBinanceHttpClient, BinanceHttpClient>();
-            services.AddSingleton<IBinanceJsonApi, BinanceJsonApi>();
+            services.AddSingleton<IBinanceHttpClient>(s =>
+            {
+                if (!BinanceHttpClient.Initializer.IsValueCreated)
+                {
+                    // Replace initializer.
+                    BinanceHttpClient.Initializer = new Lazy<BinanceHttpClient>(() =>
+                    {
+                        return new BinanceHttpClient(
+                            s.GetService<IApiRateLimiter>(),
+                            s.GetService<IOptions<BinanceApiOptions>>(),
+                            s.GetService<ILogger<BinanceHttpClient>>());
+                    }, true);
+                }
+
+                return BinanceHttpClient.Instance;
+            });
             services.AddTransient<IApiRateLimiter, ApiRateLimiter>();
             services.AddTransient<IRateLimiter, RateLimiter>();
             services.AddSingleton<IBinanceApi, BinanceApi>();

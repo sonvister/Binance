@@ -13,14 +13,13 @@ namespace BinanceConsoleApp.Examples
             var services = new ServiceCollection()
                 .AddBinance().BuildServiceProvider();
 
-            using (var api = services.GetService<IBinanceApi>())
-            {
-                if (await api.PingAsync())
-                    Console.WriteLine("SUCCESSFUL!");
+            var api = services.GetService<IBinanceApi>();
 
-                Console.WriteLine("...press any key to continue.");
-                Console.ReadKey(true);
-            }
+            if (await api.PingAsync())
+                Console.WriteLine("SUCCESSFUL!");
+
+            Console.WriteLine("...press any key to continue.");
+            Console.ReadKey(true);
         }
     }
 }

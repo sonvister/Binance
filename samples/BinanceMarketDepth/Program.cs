@@ -51,8 +51,9 @@ namespace BinanceMarketDepth
                 var cache = services.GetService<IOrderBookCache>();
 
                 using (var controller = new RetryTaskController())
-                using (var api = services.GetService<IBinanceApi>())
                 {
+                    var api = services.GetService<IBinanceApi>();
+
                     // Query and display the order book.
                     Display(await api.GetOrderBookAsync(symbol, limit));
 

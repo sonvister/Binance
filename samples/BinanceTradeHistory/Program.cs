@@ -52,8 +52,9 @@ namespace BinanceTradeHistory
                 var cache = services.GetService<IAggregateTradesCache>();
 
                 using (var controller = new RetryTaskController())
-                using (var api = services.GetService<IBinanceApi>())
                 {
+                    var api = services.GetService<IBinanceApi>();
+
                     // Query and display the latest aggregate trades for the symbol.
                     Display(await api.GetAggregateTradesAsync(symbol, limit));
 

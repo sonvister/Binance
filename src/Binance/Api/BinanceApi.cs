@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Account.Orders;
-using Binance.Api.Json;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -19,13 +18,15 @@ namespace Binance.Api
     {
         #region Public Constants
 
+        public static readonly string SuccessfulTestResponse = "{}";
+
         public const long NullId = -1;
 
         #endregion Public Constants
 
         #region Public Properties
 
-        public IBinanceJsonApi JsonApi { get; }
+        public IBinanceHttpClient HttpClient { get; }
 
         #endregion Public Properties
 
@@ -42,19 +43,19 @@ namespace Binance.Api
         /// no configuration options, and no logging functionality.
         /// </summary>
         public BinanceApi()
-            : this(new BinanceJsonApi())
+            : this(BinanceHttpClient.Instance)
         { }
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="jsonApi"></param>
+        /// <param name="client"></param>
         /// <param name="logger"></param>
-        public BinanceApi(IBinanceJsonApi jsonApi, ILogger<BinanceApi> logger = null)
+        public BinanceApi(IBinanceHttpClient client, ILogger<BinanceApi> logger = null)
         {
-            Throw.IfNull(jsonApi, nameof(jsonApi));
+            Throw.IfNull(client, nameof(client));
 
-            JsonApi = jsonApi;
+            HttpClient = client;
             _logger = logger;
         }
 
@@ -64,14 +65,13 @@ namespace Binance.Api
 
         public virtual async Task<bool> PingAsync(CancellationToken token = default)
         {
-            return await JsonApi
-                       .PingAsync(token).ConfigureAwait(false)
-                   == BinanceJsonApi.SuccessfulTestResponse;
+            return await HttpClient.PingAsync(token).ConfigureAwait(false)
+                   == SuccessfulTestResponse;
         }
 
         public virtual async Task<long> GetTimestampAsync(CancellationToken token = default)
         {
-            var json = await JsonApi.GetServerTimeAsync(token)
+            var json = await HttpClient.GetServerTimeAsync(token)
                 .ConfigureAwait(false);
 
             try
@@ -90,7 +90,7 @@ namespace Binance.Api
 
         public virtual async Task<OrderBook> GetOrderBookAsync(string symbol, int limit = default, CancellationToken token = default)
         {
-            var json = await JsonApi.GetOrderBookAsync(symbol, limit, token)
+            var json = await HttpClient.GetOrderBookAsync(symbol, limit, token)
                 .ConfigureAwait(false);
 
             try
@@ -114,7 +114,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, int limit = default, CancellationToken token = default)
         {
-            var json = await JsonApi.GetAggregateTradesAsync(symbol, NullId, limit, 0, 0, token)
+            var json = await HttpClient.GetAggregateTradesAsync(symbol, NullId, limit, 0, 0, token)
                 .ConfigureAwait(false);
 
             try { return DeserializeAggregateTrades(symbol, json); }
@@ -129,7 +129,7 @@ namespace Binance.Api
             if (fromId < 0)
                 throw new ArgumentException("ID must not be less than 0.", nameof(fromId));
 
-            var json = await JsonApi.GetAggregateTradesAsync(symbol, fromId, limit, 0, 0, token)
+            var json = await HttpClient.GetAggregateTradesAsync(symbol, fromId, limit, 0, 0, token)
                 .ConfigureAwait(false);
 
             try { return DeserializeAggregateTrades(symbol, json); }
@@ -146,7 +146,7 @@ namespace Binance.Api
             if (endTime < startTime)
                 throw new ArgumentException($"Timestamp must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
 
-            var json = await JsonApi.GetAggregateTradesAsync(symbol, NullId, default, startTime, endTime, token)
+            var json = await HttpClient.GetAggregateTradesAsync(symbol, NullId, default, startTime, endTime, token)
                 .ConfigureAwait(false);
 
             try { return DeserializeAggregateTrades(symbol, json); }
@@ -158,7 +158,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<Candlestick>> GetCandlesticksAsync(string symbol, CandlestickInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
         {
-            var json = await JsonApi.GetCandlesticksAsync(symbol, interval, limit, startTime, endTime, token)
+            var json = await HttpClient.GetCandlesticksAsync(symbol, interval, limit, startTime, endTime, token)
                 .ConfigureAwait(false);
 
             try
@@ -189,7 +189,7 @@ namespace Binance.Api
 
         public virtual async Task<SymbolStatistics> Get24HourStatisticsAsync(string symbol, CancellationToken token = default)
         {
-            var json = await JsonApi.Get24HourStatisticsAsync(symbol, token)
+            var json = await HttpClient.Get24HourStatisticsAsync(symbol, token)
                 .ConfigureAwait(false);
 
             try
@@ -225,7 +225,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<SymbolPrice>> GetPricesAsync(CancellationToken token = default)
         {
-            var json = await JsonApi.GetPricesAsync(token)
+            var json = await HttpClient.GetPricesAsync(token)
                 .ConfigureAwait(false);
 
             try
@@ -241,7 +241,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<OrderBookTop>> GetOrderBookTopsAsync(CancellationToken token = default)
         {
-            var json = await JsonApi.GetOrderBookTopsAsync(token)
+            var json = await HttpClient.GetOrderBookTopsAsync(token)
                 .ConfigureAwait(false);
 
             try
@@ -263,7 +263,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<Symbol>> GetSymbolsAsync(CancellationToken token = default)
         {
-            var json = await JsonApi.GetExchangeInfoAsync(token)
+            var json = await HttpClient.GetExchangeInfoAsync(token)
                 .ConfigureAwait(false);
 
             var symbols = new List<Symbol>();
@@ -334,7 +334,7 @@ namespace Binance.Api
             };
 
             // Place the order.
-            var json = await JsonApi.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
+            var json = await HttpClient.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
                 clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce,
                 clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, false, token);
 
@@ -361,11 +361,11 @@ namespace Binance.Api
             var limitOrder = clientOrder as LimitOrder;
 
             // Place the order.
-            var json = await JsonApi.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
+            var json = await HttpClient.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
                 clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce,
                 clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, true, token);
 
-            if (json != BinanceJsonApi.SuccessfulTestResponse)
+            if (json != SuccessfulTestResponse)
             {
                 var message = $"{nameof(BinanceApi)}.{nameof(TestPlaceAsync)} failed order placement test.";
                 _logger?.LogError(message);
@@ -376,7 +376,7 @@ namespace Binance.Api
         public virtual async Task<Order> GetOrderAsync(IBinanceApiUser user, string symbol, long orderId, long recvWindow = default, CancellationToken token = default)
         {
             // Get order using order ID.
-            var json = await JsonApi.GetOrderAsync(user, symbol, orderId, null, recvWindow, token)
+            var json = await HttpClient.GetOrderAsync(user, symbol, orderId, null, recvWindow, token)
                 .ConfigureAwait(false);
 
             var order = new Order(user);
@@ -393,7 +393,7 @@ namespace Binance.Api
         public virtual async Task<Order> GetOrderAsync(IBinanceApiUser user, string symbol, string origClientOrderId, long recvWindow = default, CancellationToken token = default)
         {
             // Get order using original client order ID.
-            var json = await JsonApi.GetOrderAsync(user, symbol, NullId, origClientOrderId, recvWindow, token)
+            var json = await HttpClient.GetOrderAsync(user, symbol, NullId, origClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
 
             var order = new Order(user);
@@ -412,7 +412,7 @@ namespace Binance.Api
             Throw.IfNull(order, nameof(order));
 
             // Get order using order ID.
-            var json = await JsonApi.GetOrderAsync(order.User, order.Symbol, order.Id, null, recvWindow, token)
+            var json = await HttpClient.GetOrderAsync(order.User, order.Symbol, order.Id, null, recvWindow, token)
                 .ConfigureAwait(false);
 
             // Update existing order properties.
@@ -431,7 +431,7 @@ namespace Binance.Api
                 throw new ArgumentException("ID must not be less than 0.", nameof(orderId));
 
             // Cancel order using order ID.
-            var json = await JsonApi.CancelOrderAsync(user, symbol, orderId, null, newClientOrderId, recvWindow, token)
+            var json = await HttpClient.CancelOrderAsync(user, symbol, orderId, null, newClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
 
             try { return JObject.Parse(json)["clientOrderId"].Value<string>(); }
@@ -446,7 +446,7 @@ namespace Binance.Api
             Throw.IfNullOrWhiteSpace(origClientOrderId, nameof(origClientOrderId));
 
             // Cancel order using original client order ID.
-            var json = await JsonApi
+            var json = await HttpClient
                 .CancelOrderAsync(user, symbol, NullId, origClientOrderId, newClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
 
@@ -459,7 +459,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<Order>> GetOpenOrdersAsync(IBinanceApiUser user, string symbol, long recvWindow = default, CancellationToken token = default)
         {
-            var json = await JsonApi.GetOpenOrdersAsync(user, symbol, recvWindow, token)
+            var json = await HttpClient.GetOpenOrdersAsync(user, symbol, recvWindow, token)
                 .ConfigureAwait(false);
 
             try
@@ -485,7 +485,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<Order>> GetOrdersAsync(IBinanceApiUser user, string symbol, long orderId = NullId, int limit = default, long recvWindow = default, CancellationToken token = default)
         {
-            var json = await JsonApi.GetOrdersAsync(user, symbol, orderId, limit, recvWindow, token)
+            var json = await HttpClient.GetOrdersAsync(user, symbol, orderId, limit, recvWindow, token)
                 .ConfigureAwait(false);
 
             try
@@ -511,7 +511,7 @@ namespace Binance.Api
 
         public virtual async Task<AccountInfo> GetAccountInfoAsync(IBinanceApiUser user, long recvWindow = default, CancellationToken token = default)
         {
-            var json = await JsonApi.GetAccountInfoAsync(user, recvWindow, token)
+            var json = await HttpClient.GetAccountInfoAsync(user, recvWindow, token)
                 .ConfigureAwait(false);
 
             try
@@ -546,7 +546,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<AccountTrade>> GetTradesAsync(IBinanceApiUser user, string symbol, long fromId = NullId, int limit = default, long recvWindow = default, CancellationToken token = default)
         {
-            var json = await JsonApi.GetTradesAsync(user, symbol, fromId, limit, recvWindow, token)
+            var json = await HttpClient.GetTradesAsync(user, symbol, fromId, limit, recvWindow, token)
                 .ConfigureAwait(false);
 
             try
@@ -578,7 +578,7 @@ namespace Binance.Api
         {
             Throw.IfNull(withdrawRequest, nameof(withdrawRequest));
 
-            var json = await JsonApi.WithdrawAsync(withdrawRequest.User, withdrawRequest.Asset, withdrawRequest.Address, withdrawRequest.Amount, withdrawRequest.Name, recvWindow, token)
+            var json = await HttpClient.WithdrawAsync(withdrawRequest.User, withdrawRequest.Asset, withdrawRequest.Address, withdrawRequest.Amount, withdrawRequest.Name, recvWindow, token)
                 .ConfigureAwait(false);
 
             bool success;
@@ -607,7 +607,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceApiUser user, string asset, DepositStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default)
         {
-            var json = await JsonApi.GetDepositsAsync(user, asset, status, startTime, endTime, recvWindow, token)
+            var json = await HttpClient.GetDepositsAsync(user, asset, status, startTime, endTime, recvWindow, token)
                 .ConfigureAwait(false);
 
             bool success;
@@ -652,7 +652,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<Withdrawal>> GetWithdrawalsAsync(IBinanceApiUser user, string asset, WithdrawalStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default)
         {
-            var json = await JsonApi.GetWithdrawalsAsync(user, asset, status, startTime, endTime, recvWindow, token)
+            var json = await HttpClient.GetWithdrawalsAsync(user, asset, status, startTime, endTime, recvWindow, token)
                 .ConfigureAwait(false);
 
             bool success;
@@ -703,7 +703,7 @@ namespace Binance.Api
 
         public async Task<string> UserStreamStartAsync(IBinanceApiUser user, CancellationToken token = default)
         {
-            var json = await JsonApi.UserStreamStartAsync(user, token)
+            var json = await HttpClient.UserStreamStartAsync(user, token)
                 .ConfigureAwait(false);
 
             try
@@ -718,10 +718,10 @@ namespace Binance.Api
 
         public async Task UserStreamKeepAliveAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default)
         {
-            var json = await JsonApi.UserStreamKeepAliveAsync(user, listenKey, token)
+            var json = await HttpClient.UserStreamKeepAliveAsync(user, listenKey, token)
                 .ConfigureAwait(false);
 
-            if (json != BinanceJsonApi.SuccessfulTestResponse)
+            if (json != SuccessfulTestResponse)
             {
                 var message = $"{nameof(BinanceApi)}.{nameof(UserStreamKeepAliveAsync)} failed.";
                 _logger?.LogError(message);
@@ -731,10 +731,10 @@ namespace Binance.Api
 
         public async Task UserStreamCloseAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default)
         {
-            var json = await JsonApi.UserStreamCloseAsync(user, listenKey, token)
+            var json = await HttpClient.UserStreamCloseAsync(user, listenKey, token)
                 .ConfigureAwait(false);
 
-            if (json != BinanceJsonApi.SuccessfulTestResponse)
+            if (json != SuccessfulTestResponse)
             {
                 var message = $"{nameof(BinanceApi)}.{nameof(UserStreamCloseAsync)} failed.";
                 throw new BinanceApiException(message);
@@ -807,29 +807,5 @@ namespace Binance.Api
         }
 
         #endregion Private Methods
-
-        #region IDisposable
-
-        private bool _disposed;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                JsonApi?.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        #endregion
     }
 }

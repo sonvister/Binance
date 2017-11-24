@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Account.Orders;
-using Binance.Api.Json;
 using Binance.Market;
 
 namespace Binance.Api
 {
-    public interface IBinanceApi : IDisposable
+    public interface IBinanceApi
     {
         #region Public Properties
 
         /// <summary>
-        /// The (low-level) JSON web API.
+        /// The (low-level) HTTP client.
         /// </summary>
-        IBinanceJsonApi JsonApi { get; }
+        IBinanceHttpClient HttpClient { get; }
 
         #endregion Public Properties
 

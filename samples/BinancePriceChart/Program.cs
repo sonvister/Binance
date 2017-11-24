@@ -57,8 +57,9 @@ namespace BinancePriceChart
                 var cache = services.GetService<ICandlesticksCache>();
 
                 using (var controller = new RetryTaskController())
-                using (var api = services.GetService<IBinanceApi>())
                 {
+                    var api = services.GetService<IBinanceApi>();
+
                     // Query and display the latest aggregate trades for the symbol.
                     Display(await api.GetCandlesticksAsync(symbol, interval, limit));
 
