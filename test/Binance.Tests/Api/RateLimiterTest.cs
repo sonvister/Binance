@@ -6,7 +6,6 @@ using Xunit;
 
 namespace Binance.Tests.Api
 {
-    [Collection("Rate Limiter Test Collection")]
     public class RateLimiterTest
     {
         [Fact]
@@ -38,9 +37,9 @@ namespace Binance.Tests.Api
         public async Task RateLimit()
         {
             const int count = 100;
-            var duration = TimeSpan.FromSeconds(0.5);
+            var duration = TimeSpan.FromSeconds(1);
 
-            const int repetitions = 10;
+            const int repetitions = 5;
 
             var rateLimiter = new RateLimiter
             {

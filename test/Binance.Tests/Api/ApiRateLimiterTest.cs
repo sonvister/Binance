@@ -6,7 +6,6 @@ using Xunit;
 
 namespace Binance.Tests.Api
 {
-    [Collection("Rate Limiter Test Collection")]
     public class ApiRateLimiterTest
     {
         [Fact]
@@ -33,10 +32,10 @@ namespace Binance.Tests.Api
         [Fact]
         public async Task RateLimit()
         {
-            const int count = 100;
-            var duration = TimeSpan.FromSeconds(1);
+            const int count = 25;
+            var duration = TimeSpan.FromSeconds(3);
 
-            const int burstCount = 75;
+            const int burstCount = 10;
             var burstDuration = TimeSpan.FromSeconds(1);
 
             var rateLimiter = new ApiRateLimiter();
@@ -58,10 +57,10 @@ namespace Binance.Tests.Api
         [Fact]
         public async Task RateLimitBurst()
         {
-            const int count = 100;
-            var duration = TimeSpan.FromSeconds(2);
+            const int count = 25;
+            var duration = TimeSpan.FromSeconds(3);
 
-            const int burstCount = 75;
+            const int burstCount = 10;
             var burstDuration = TimeSpan.FromSeconds(1);
 
             var rateLimiter = new ApiRateLimiter();
@@ -76,17 +75,17 @@ namespace Binance.Tests.Api
 
             stopwatch.Stop();
 
-            Assert.True(stopwatch.ElapsedMilliseconds >= burstDuration.TotalMilliseconds - 45);
-            Assert.False(stopwatch.ElapsedMilliseconds > burstDuration.TotalMilliseconds + 45);
+            Assert.True(stopwatch.ElapsedMilliseconds >= burstDuration.TotalMilliseconds - 60);
+            Assert.False(stopwatch.ElapsedMilliseconds > burstDuration.TotalMilliseconds + 60);
         }
 
         [Fact]
         public async Task RateLimitBurstTwice()
         {
-            const int count = 200;
-            var duration = TimeSpan.FromSeconds(5);
+            const int count = 25;
+            var duration = TimeSpan.FromSeconds(3);
 
-            const int burstCount = 75;
+            const int burstCount = 10;
             var burstDuration = TimeSpan.FromSeconds(1);
 
             var rateLimiter = new ApiRateLimiter();
@@ -108,10 +107,10 @@ namespace Binance.Tests.Api
         [Fact]
         public async Task RateLimitPlusBurst()
         {
-            const int count = 100;
-            var duration = TimeSpan.FromSeconds(2);
+            const int count = 25;
+            var duration = TimeSpan.FromSeconds(3);
 
-            const int burstCount = 75;
+            const int burstCount = 10;
             var burstDuration = TimeSpan.FromSeconds(1);
 
             var rateLimiter = new ApiRateLimiter();

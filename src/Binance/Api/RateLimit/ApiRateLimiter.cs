@@ -90,14 +90,14 @@ namespace Binance.Api
 
             lock (_sync)
             {
-                limiters = _limiters.Values
-                    .Where(_ => _.Count > 0)
-                    .ToArray();
+                limiters = _limiters.Values.ToArray();
             }
 
             foreach (var limiter in limiters)
+            {
                 await limiter.DelayAsync(token)
                     .ConfigureAwait(false);
+            }
         }
 
         #endregion Public Methods

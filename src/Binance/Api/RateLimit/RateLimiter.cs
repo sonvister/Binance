@@ -62,10 +62,6 @@ namespace Binance.Api
             if (_count == 0)
                 return;
 
-            token.ThrowIfCancellationRequested();
-
-            var millisecondsDelay = 0;
-
             // Create the current timestamp.
             var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -79,6 +75,8 @@ namespace Binance.Api
 
             // Remove the oldest timestamp.
             var then = _timestamps.Dequeue();
+
+            var millisecondsDelay = 0;
 
             try
             {

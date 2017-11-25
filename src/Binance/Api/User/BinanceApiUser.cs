@@ -23,6 +23,8 @@ namespace Binance.Api
 
         private readonly HMAC _hmac;
 
+        private readonly object _sync = new object();
+
         private readonly BinanceApiOptions _options;
 
         #endregion Private Fields
@@ -35,7 +37,7 @@ namespace Binance.Api
         /// the user stream methods, but is required for other account methods.
         /// </summary>
         /// <param name="apiKey">The user's API key.</param>
-        /// <param name="apiSecret">The user's API secret (optional).</param>
+        /// <param name="apiSecret">The user's API secret (optional, but required for signing).</param>
         /// <param name="rateLimiter">The rate limiter (auto-configured).</param>
         /// <param name="options">The JSON API options.</param>
         public BinanceApiUser(string apiKey, string apiSecret = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null)
@@ -67,9 +69,13 @@ namespace Binance.Api
             Throw.IfNullOrWhiteSpace(totalParams, nameof(totalParams));
 
             if (_hmac == null)
-                throw new InvalidOperationException("Signature requires the user's API secret.");
+                throw new InvalidOperationException($"{nameof(BinanceApiUser)}.{nameof(Sign)} requires the user's API secret.");
 
-            var hash = _hmac.ComputeHash(Encoding.UTF8.GetBytes(totalParams));
+            byte[] hash;
+            lock (_sync)
+            {
+                hash = _hmac.ComputeHash(Encoding.UTF8.GetBytes(totalParams));
+            }
 
             return BitConverter.ToString(hash).Replace("-", string.Empty);
         }
