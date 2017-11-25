@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1511299718414;
+        public static readonly long LastUpdateAt = 1511647270534;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH = BCC;
@@ -44,6 +44,7 @@ namespace Binance
         public static readonly Asset ETC = new Asset("ETC", 8);
         public static readonly Asset ETH = new Asset("ETH", 8);
         public static readonly Asset EVX = new Asset("EVX", 8);
+        public static readonly Asset FUEL = new Asset("FUEL", 8);
         public static readonly Asset FUN = new Asset("FUN", 8);
         public static readonly Asset GAS = new Asset("GAS", 8);
         public static readonly Asset GVT = new Asset("GVT", 8);
@@ -55,7 +56,9 @@ namespace Binance
         public static readonly Asset KNC = new Asset("KNC", 8);
         public static readonly Asset LINK = new Asset("LINK", 8);
         public static readonly Asset LRC = new Asset("LRC", 8);
+        public static readonly Asset LSK = new Asset("LSK", 8);
         public static readonly Asset LTC = new Asset("LTC", 8);
+        public static readonly Asset MANA = new Asset("MANA", 8);
         public static readonly Asset MCO = new Asset("MCO", 8);
         public static readonly Asset MDA = new Asset("MDA", 8);
         public static readonly Asset MOD = new Asset("MOD", 8);
@@ -79,6 +82,7 @@ namespace Binance
         public static readonly Asset STORJ = new Asset("STORJ", 8);
         public static readonly Asset STRAT = new Asset("STRAT", 8);
         public static readonly Asset SUB = new Asset("SUB", 8);
+        public static readonly Asset TNT = new Asset("TNT", 8);
         public static readonly Asset TRX = new Asset("TRX", 8);
         public static readonly Asset USDT = new Asset("USDT", 8);
         public static readonly Asset VEN = new Asset("VEN", 8);
@@ -87,6 +91,7 @@ namespace Binance
         public static readonly Asset XMR = new Asset("XMR", 8);
         public static readonly Asset XRP = new Asset("XRP", 8);
         public static readonly Asset XVG = new Asset("XVG", 8);
+        public static readonly Asset XZC = new Asset("XZC", 8);
         public static readonly Asset YOYO = new Asset("YOYO", 8);
         public static readonly Asset ZEC = new Asset("ZEC", 8);
         public static readonly Asset ZRX = new Asset("ZRX", 8);
@@ -139,6 +144,7 @@ namespace Binance
             { "ETC", ETC },
             { "ETH", ETH },
             { "EVX", EVX },
+            { "FUEL", FUEL },
             { "FUN", FUN },
             { "GAS", GAS },
             { "GVT", GVT },
@@ -150,7 +156,9 @@ namespace Binance
             { "KNC", KNC },
             { "LINK", LINK },
             { "LRC", LRC },
+            { "LSK", LSK },
             { "LTC", LTC },
+            { "MANA", MANA },
             { "MCO", MCO },
             { "MDA", MDA },
             { "MOD", MOD },
@@ -174,6 +182,7 @@ namespace Binance
             { "STORJ", STORJ },
             { "STRAT", STRAT },
             { "SUB", SUB },
+            { "TNT", TNT },
             { "TRX", TRX },
             { "USDT", USDT },
             { "VEN", VEN },
@@ -182,6 +191,7 @@ namespace Binance
             { "XMR", XMR },
             { "XRP", XRP },
             { "XVG", XVG },
+            { "XZC", XZC },
             { "YOYO", YOYO },
             { "ZEC", ZEC },
             { "ZRX", ZRX },

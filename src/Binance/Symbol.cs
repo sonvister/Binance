@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1511299718414;
+        public static readonly long LastUpdateAt = 1511647270534;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Symbol BCH_USDT = BCC_USDT;
@@ -30,6 +30,7 @@ namespace Binance
         public static readonly Symbol BCPT_BNB = new Symbol(Asset.BCPT, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol BTS_BNB = new Symbol(Asset.BTS, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol DLT_BNB = new Symbol(Asset.DLT, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
+        public static readonly Symbol LSK_BNB = new Symbol(Asset.LSK, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00010000m);
         public static readonly Symbol NEO_BNB = new Symbol(Asset.NEO, Asset.BNB, 0.00100000m, 10000000.00000000m, 0.00100000m);
         public static readonly Symbol NULS_BNB = new Symbol(Asset.NULS, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol POWR_BNB = new Symbol(Asset.POWR, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
@@ -38,6 +39,7 @@ namespace Binance
         public static readonly Symbol RDN_BNB = new Symbol(Asset.RDN, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol VEN_BNB = new Symbol(Asset.VEN, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00010000m);
         public static readonly Symbol WTC_BNB = new Symbol(Asset.WTC, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00010000m);
+        public static readonly Symbol XZC_BNB = new Symbol(Asset.XZC, Asset.BNB, 0.00100000m, 10000000.00000000m, 0.00100000m);
         public static readonly Symbol YOYO_BNB = new Symbol(Asset.YOYO, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
 
         // BTC
@@ -64,6 +66,7 @@ namespace Binance
         public static readonly Symbol ETC_BTC = new Symbol(Asset.ETC, Asset.BTC, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol ETH_BTC = new Symbol(Asset.ETH, Asset.BTC, 0.00100000m, 100000.00000000m, 0.00000100m);
         public static readonly Symbol EVX_BTC = new Symbol(Asset.EVX, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
+        public static readonly Symbol FUEL_BTC = new Symbol(Asset.FUEL, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol FUN_BTC = new Symbol(Asset.FUN, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol GAS_BTC = new Symbol(Asset.GAS, Asset.BTC, 0.01000000m, 100000.00000000m, 0.00000100m);
         public static readonly Symbol GVT_BTC = new Symbol(Asset.GVT, Asset.BTC, 0.01000000m, 10000000.00000000m, 0.00000010m);
@@ -75,7 +78,9 @@ namespace Binance
         public static readonly Symbol KNC_BTC = new Symbol(Asset.KNC, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol LINK_BTC = new Symbol(Asset.LINK, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol LRC_BTC = new Symbol(Asset.LRC, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
+        public static readonly Symbol LSK_BTC = new Symbol(Asset.LSK, Asset.BTC, 0.01000000m, 10000000.00000000m, 0.00000010m);
         public static readonly Symbol LTC_BTC = new Symbol(Asset.LTC, Asset.BTC, 0.01000000m, 100000.00000000m, 0.00000100m);
+        public static readonly Symbol MANA_BTC = new Symbol(Asset.MANA, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol MCO_BTC = new Symbol(Asset.MCO, Asset.BTC, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol MDA_BTC = new Symbol(Asset.MDA, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol MOD_BTC = new Symbol(Asset.MOD, Asset.BTC, 0.01000000m, 10000000.00000000m, 0.00000010m);
@@ -99,6 +104,7 @@ namespace Binance
         public static readonly Symbol STORJ_BTC = new Symbol(Asset.STORJ, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol STRAT_BTC = new Symbol(Asset.STRAT, Asset.BTC, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol SUB_BTC = new Symbol(Asset.SUB, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
+        public static readonly Symbol TNT_BTC = new Symbol(Asset.TNT, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol TRX_BTC = new Symbol(Asset.TRX, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol VEN_BTC = new Symbol(Asset.VEN, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol VIB_BTC = new Symbol(Asset.VIB, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
@@ -106,6 +112,7 @@ namespace Binance
         public static readonly Symbol XMR_BTC = new Symbol(Asset.XMR, Asset.BTC, 0.00100000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol XRP_BTC = new Symbol(Asset.XRP, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol XVG_BTC = new Symbol(Asset.XVG, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
+        public static readonly Symbol XZC_BTC = new Symbol(Asset.XZC, Asset.BTC, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol YOYO_BTC = new Symbol(Asset.YOYO, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol ZEC_BTC = new Symbol(Asset.ZEC, Asset.BTC, 0.00100000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol ZRX_BTC = new Symbol(Asset.ZRX, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
@@ -133,6 +140,7 @@ namespace Binance
         public static readonly Symbol EOS_ETH = new Symbol(Asset.EOS, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol ETC_ETH = new Symbol(Asset.ETC, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol EVX_ETH = new Symbol(Asset.EVX, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000010m);
+        public static readonly Symbol FUEL_ETH = new Symbol(Asset.FUEL, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol FUN_ETH = new Symbol(Asset.FUN, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol GVT_ETH = new Symbol(Asset.GVT, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol GXS_ETH = new Symbol(Asset.GXS, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
@@ -143,6 +151,8 @@ namespace Binance
         public static readonly Symbol KNC_ETH = new Symbol(Asset.KNC, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000010m);
         public static readonly Symbol LINK_ETH = new Symbol(Asset.LINK, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol LRC_ETH = new Symbol(Asset.LRC, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
+        public static readonly Symbol LSK_ETH = new Symbol(Asset.LSK, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
+        public static readonly Symbol MANA_ETH = new Symbol(Asset.MANA, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol MCO_ETH = new Symbol(Asset.MCO, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol MDA_ETH = new Symbol(Asset.MDA, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000010m);
         public static readonly Symbol MOD_ETH = new Symbol(Asset.MOD, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
@@ -166,6 +176,7 @@ namespace Binance
         public static readonly Symbol STORJ_ETH = new Symbol(Asset.STORJ, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000010m);
         public static readonly Symbol STRAT_ETH = new Symbol(Asset.STRAT, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol SUB_ETH = new Symbol(Asset.SUB, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
+        public static readonly Symbol TNT_ETH = new Symbol(Asset.TNT, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol TRX_ETH = new Symbol(Asset.TRX, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol VEN_ETH = new Symbol(Asset.VEN, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol VIB_ETH = new Symbol(Asset.VIB, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
@@ -173,6 +184,7 @@ namespace Binance
         public static readonly Symbol XMR_ETH = new Symbol(Asset.XMR, Asset.ETH, 0.00100000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol XRP_ETH = new Symbol(Asset.XRP, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol XVG_ETH = new Symbol(Asset.XVG, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
+        public static readonly Symbol XZC_ETH = new Symbol(Asset.XZC, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol YOYO_ETH = new Symbol(Asset.YOYO, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol ZEC_ETH = new Symbol(Asset.ZEC, Asset.ETH, 0.00100000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol ZRX_ETH = new Symbol(Asset.ZRX, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
@@ -266,6 +278,8 @@ namespace Binance
             { "ETH_USDT", ETH_USDT },
             { "EVX_BTC", EVX_BTC },
             { "EVX_ETH", EVX_ETH },
+            { "FUEL_BTC", FUEL_BTC },
+            { "FUEL_ETH", FUEL_ETH },
             { "FUN_BTC", FUN_BTC },
             { "FUN_ETH", FUN_ETH },
             { "GAS_BTC", GAS_BTC },
@@ -287,7 +301,12 @@ namespace Binance
             { "LINK_ETH", LINK_ETH },
             { "LRC_BTC", LRC_BTC },
             { "LRC_ETH", LRC_ETH },
+            { "LSK_BNB", LSK_BNB },
+            { "LSK_BTC", LSK_BTC },
+            { "LSK_ETH", LSK_ETH },
             { "LTC_BTC", LTC_BTC },
+            { "MANA_BTC", MANA_BTC },
+            { "MANA_ETH", MANA_ETH },
             { "MCO_BTC", MCO_BTC },
             { "MCO_ETH", MCO_ETH },
             { "MDA_BTC", MDA_BTC },
@@ -341,6 +360,8 @@ namespace Binance
             { "STRAT_ETH", STRAT_ETH },
             { "SUB_BTC", SUB_BTC },
             { "SUB_ETH", SUB_ETH },
+            { "TNT_BTC", TNT_BTC },
+            { "TNT_ETH", TNT_ETH },
             { "TRX_BTC", TRX_BTC },
             { "TRX_ETH", TRX_ETH },
             { "VEN_BNB", VEN_BNB },
@@ -357,6 +378,9 @@ namespace Binance
             { "XRP_ETH", XRP_ETH },
             { "XVG_BTC", XVG_BTC },
             { "XVG_ETH", XVG_ETH },
+            { "XZC_BNB", XZC_BNB },
+            { "XZC_BTC", XZC_BTC },
+            { "XZC_ETH", XZC_ETH },
             { "YOYO_BNB", YOYO_BNB },
             { "YOYO_BTC", YOYO_BTC },
             { "YOYO_ETH", YOYO_ETH },
