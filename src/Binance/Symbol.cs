@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1511647270534;
+        public static readonly long LastUpdateAt = 1511747279257;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Symbol BCH_USDT = BCC_USDT;
@@ -49,6 +49,7 @@ namespace Binance
         public static readonly Symbol AST_BTC = new Symbol(Asset.AST, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol BAT_BTC = new Symbol(Asset.BAT, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol BCC_BTC = new Symbol(Asset.BCC, Asset.BTC, 0.00100000m, 100000.00000000m, 0.00000100m);
+        public static readonly Symbol BCD_BTC = new Symbol(Asset.BCD, Asset.BTC, 0.00100000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol BCPT_BTC = new Symbol(Asset.BCPT, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol BNB_BTC = new Symbol(Asset.BNB, Asset.BTC, 1.00000000m, 100000.00000000m, 0.00000001m);
         public static readonly Symbol BNT_BTC = new Symbol(Asset.BNT, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
@@ -124,6 +125,7 @@ namespace Binance
         public static readonly Symbol AST_ETH = new Symbol(Asset.AST, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000010m);
         public static readonly Symbol BAT_ETH = new Symbol(Asset.BAT, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol BCC_ETH = new Symbol(Asset.BCC, Asset.ETH, 0.00100000m, 10000000.00000000m, 0.00001000m);
+        public static readonly Symbol BCD_ETH = new Symbol(Asset.BCD, Asset.ETH, 0.00100000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol BCPT_ETH = new Symbol(Asset.BCPT, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol BNB_ETH = new Symbol(Asset.BNB, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol BNT_ETH = new Symbol(Asset.BNT, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
@@ -239,6 +241,8 @@ namespace Binance
             { "BCC_BTC", BCC_BTC },
             { "BCC_ETH", BCC_ETH },
             { "BCC_USDT", BCC_USDT },
+            { "BCD_BTC", BCD_BTC },
+            { "BCD_ETH", BCD_ETH },
             { "BCPT_BNB", BCPT_BNB },
             { "BCPT_BTC", BCPT_BTC },
             { "BCPT_ETH", BCPT_ETH },
