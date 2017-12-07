@@ -11,6 +11,11 @@ namespace Binance.Account.Orders
         /// <summary>
         /// Immediate or cancel.
         /// </summary>
-        IOC
+        IOC,
+
+        /// <summary>
+        /// Fill or kill.
+        /// </summary>
+        FOK
     }
 }

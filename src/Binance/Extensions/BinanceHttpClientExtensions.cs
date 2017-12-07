@@ -329,7 +329,16 @@ namespace Binance.Api
                 request.AddParameter("stopPrice", stopPrice);
 
             if (icebergQty > 0)
+            {
+                // Automatically set time-in-force to GTC if not set.
+                if (!timeInForce.HasValue)
+                    timeInForce = TimeInForce.GTC;
+
+                if (timeInForce != TimeInForce.GTC)
+                    throw new BinanceApiException("Any order with an icebergQty MUST have timeInForce set to GTC.");
+
                 request.AddParameter("icebergQty", icebergQty);
+            }
 
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);

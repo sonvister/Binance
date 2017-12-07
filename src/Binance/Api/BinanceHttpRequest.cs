@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 
@@ -99,6 +100,9 @@ namespace Binance.Api
             {
                 requestMessage.Headers.Add(RequestHeaderKeyName, ApiKey);
             }
+
+            if (method == HttpMethod.Get && Body != null)
+                throw new Exception($"{nameof(BinanceHttpRequest)}: parameters must be sent in query string for GET requests ({nameof(Body)} must be null).");
 
             if (Body != null)
             {

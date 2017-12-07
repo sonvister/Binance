@@ -131,6 +131,7 @@ namespace Binance
             {
                 case "GTC": return TimeInForce.GTC;
                 case "IOC": return TimeInForce.IOC;
+                case "FOK": return TimeInForce.FOK;
                 default:
                     throw new Exception($"Failed to convert time in force: \"{timeInForce}\"");
             }
