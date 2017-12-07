@@ -23,7 +23,7 @@ namespace BinanceConsoleApp.Controllers
                 endpoint = args[1];
             }
 
-            var symbol = Symbol.BTC_USDT;
+            string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
             {
                 symbol = args[2];

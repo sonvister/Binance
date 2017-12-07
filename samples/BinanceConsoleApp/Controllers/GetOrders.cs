@@ -24,7 +24,7 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            var symbol = Symbol.BTC_USDT;
+            string symbol = Symbol.BTC_USDT;
             var openOrders = false;
             var limit = 10;
 

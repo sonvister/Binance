@@ -24,7 +24,7 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string asset = null;
+            string asset = Asset.BTC;
             if (args.Length > 1)
             {
                 asset = args[1];

@@ -70,7 +70,7 @@ namespace BinanceCodeGenerator
 
             foreach(var symbol in symbols)
             {
-                lines.Insert(index++, $"            {{ \"{symbol.BaseAsset}_{symbol.QuoteAsset}\", {symbol.BaseAsset}_{symbol.QuoteAsset} }},");
+                lines.Insert(index++, $"            {{ \"{symbol}\", {symbol.BaseAsset}_{symbol.QuoteAsset} }},");
             }
 
             // Save the generated source code (replacing original).

@@ -19,7 +19,7 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            var symbol = Symbol.BTC_USDT;
+            string symbol = Symbol.BTC_USDT;
             var limit = 10;
 
             if (args.Length > 1)

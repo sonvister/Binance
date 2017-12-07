@@ -35,7 +35,11 @@ namespace Binance
 
         public static implicit operator string(Symbol symbol) => symbol.ToString();
 
-        public static implicit operator Symbol(string s) => Cache.ContainsKey(s) ? Cache[s] : null;
+        public static implicit operator Symbol(string s)
+        {
+            var _s = s.FormatSymbol();
+            return Cache.ContainsKey(_s) ? Cache[_s] : null;
+        }
 
         #endregion Implicit Operators
 
@@ -47,10 +51,10 @@ namespace Binance
         public static readonly IDictionary<string, Symbol> Cache = new Dictionary<string, Symbol>()
         {
             // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-            { "BCH_USDT", BCC_USDT },
-            { "BCH_BNB", BCC_BNB },
-            { "BCH_BTC", BCC_BTC },
-            { "BCH_ETH", BCC_ETH },
+            { "BCHUSDT", BCC_USDT },
+            { "BCHBNB", BCC_BNB },
+            { "BCHBTC", BCC_BTC },
+            { "BCHETH", BCC_ETH },
 
             // <<insert symbol definitions>>
         };

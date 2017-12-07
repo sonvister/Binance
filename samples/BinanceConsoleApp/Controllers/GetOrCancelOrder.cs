@@ -21,7 +21,7 @@ namespace BinanceConsoleApp.Controllers
                 return true;
             }
 
-            var symbol = Symbol.BTC_USDT;
+            string symbol = Symbol.BTC_USDT;
             if (!long.TryParse(args[1], out var id))
             {
                 symbol = args[1];

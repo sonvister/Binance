@@ -16,7 +16,7 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            var symbol = Symbol.BTC_USDT;
+            string symbol = Symbol.BTC_USDT;
             long fromId = 0;
 
             if (args.Length > 1)
