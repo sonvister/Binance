@@ -168,6 +168,15 @@ namespace Binance.Api
                     }
                 }
 
+                if (response.StatusCode == (HttpStatusCode)429)
+                {
+                    throw new BinanceRequestRateLimitExceededException(response.ReasonPhrase, errorCode, errorMessage);
+                }
+                else if (response.StatusCode == (HttpStatusCode)418)
+                {
+                    throw new BinanceRequestRateLimitIpBanException(response.ReasonPhrase, errorCode, errorMessage);
+                }
+
                 throw new BinanceHttpException(response.StatusCode, response.ReasonPhrase, errorCode, errorMessage);
             }
         }
