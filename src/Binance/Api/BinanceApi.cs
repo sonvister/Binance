@@ -230,8 +230,10 @@ namespace Binance.Api
 
             try
             {
-                return JArray.Parse(json).Select(item =>
-                    new SymbolPrice(item["symbol"].Value<string>(), item["price"].Value<decimal>())).ToList();
+                return JArray.Parse(json)
+                    .Select(item => new SymbolPrice(item["symbol"].Value<string>(), item["price"].Value<decimal>()))
+                    .Where(_ => _.Symbol != "123456")
+                    .ToList();
             }
             catch (Exception e)
             {
@@ -309,7 +311,8 @@ namespace Binance.Api
                 throw NewFailedToParseJsonException(nameof(GetSymbolsAsync), json, e);
             }
 
-            return symbols;
+            return symbols
+                .Where(_ => _.ToString() != "123456");
         }
 
         #endregion Market Data

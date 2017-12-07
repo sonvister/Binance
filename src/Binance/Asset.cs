@@ -15,11 +15,13 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1511747279257;
+        public static readonly long LastUpdateAt = 1512686326638;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH = BCC;
 
+        public static readonly Asset ADA = new Asset("ADA", 8);
+        public static readonly Asset ADX = new Asset("ADX", 8);
         public static readonly Asset AMB = new Asset("AMB", 8);
         public static readonly Asset ARK = new Asset("ARK", 8);
         public static readonly Asset ARN = new Asset("ARN", 8);
@@ -35,8 +37,10 @@ namespace Binance
         public static readonly Asset BTG = new Asset("BTG", 8);
         public static readonly Asset BTS = new Asset("BTS", 8);
         public static readonly Asset CDT = new Asset("CDT", 8);
+        public static readonly Asset CMT = new Asset("CMT", 8);
         public static readonly Asset CTR = new Asset("CTR", 8);
         public static readonly Asset DASH = new Asset("DASH", 8);
+        public static readonly Asset DGD = new Asset("DGD", 8);
         public static readonly Asset DLT = new Asset("DLT", 8);
         public static readonly Asset DNT = new Asset("DNT", 8);
         public static readonly Asset ENG = new Asset("ENG", 8);
@@ -71,6 +75,7 @@ namespace Binance
         public static readonly Asset OMG = new Asset("OMG", 8);
         public static readonly Asset POE = new Asset("POE", 8);
         public static readonly Asset POWR = new Asset("POWR", 8);
+        public static readonly Asset PPT = new Asset("PPT", 8);
         public static readonly Asset QSP = new Asset("QSP", 8);
         public static readonly Asset QTUM = new Asset("QTUM", 8);
         public static readonly Asset RCN = new Asset("RCN", 8);
@@ -121,6 +126,8 @@ namespace Binance
             // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
             { "BCH", BCC },
 
+            { "ADA", ADA },
+            { "ADX", ADX },
             { "AMB", AMB },
             { "ARK", ARK },
             { "ARN", ARN },
@@ -136,8 +143,10 @@ namespace Binance
             { "BTG", BTG },
             { "BTS", BTS },
             { "CDT", CDT },
+            { "CMT", CMT },
             { "CTR", CTR },
             { "DASH", DASH },
+            { "DGD", DGD },
             { "DLT", DLT },
             { "DNT", DNT },
             { "ENG", ENG },
@@ -172,6 +181,7 @@ namespace Binance
             { "OMG", OMG },
             { "POE", POE },
             { "POWR", POWR },
+            { "PPT", PPT },
             { "QSP", QSP },
             { "QTUM", QTUM },
             { "RCN", RCN },
