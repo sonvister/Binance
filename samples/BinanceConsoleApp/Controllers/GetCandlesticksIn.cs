@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
+using Binance.Api;
 using Binance.Market;
 
 namespace BinanceConsoleApp.Controllers
@@ -42,7 +43,7 @@ namespace BinanceConsoleApp.Controllers
                 long.TryParse(args[4], out endTime);
             }
 
-            var candlesticks = await Program.Api.GetCandlesticksAsync(symbol, interval, startTime: startTime, endTime: endTime, token: token);
+            var candlesticks = await Program.Api.GetCandlesticksAsync(symbol, interval, (startTime, endTime), token: token);
 
             lock (Program.ConsoleSync)
             {

@@ -76,7 +76,7 @@ namespace Binance.Api
         }
 
         /// <summary>
-        /// Get aggregate/compressed trades within a time range (INCLUSIVE).
+        /// Get aggregate/compressed trades within a time interval (INCLUSIVE).
         /// </summary>
         /// <param name="api"></param>
         /// <param name="symbol"></param>
@@ -93,7 +93,22 @@ namespace Binance.Api
             if (endTime.Kind != DateTimeKind.Utc)
                 throw new ArgumentException("Date/Time must be UTC.", nameof(endTime));
 
-            return api.GetAggregateTradesInAsync(symbol, new DateTimeOffset(startTime).ToUnixTimeMilliseconds(), new DateTimeOffset(endTime).ToUnixTimeMilliseconds(), token);
+            return GetAggregateTradesAsync(api, symbol, (new DateTimeOffset(startTime).ToUnixTimeMilliseconds(), new DateTimeOffset(endTime).ToUnixTimeMilliseconds()), token);
+        }
+
+        /// <summary>
+        /// Get aggregate/compressed trades within a time interval (INCLUSIVE).
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="symbol"></param>
+        /// <param name="timeInterval"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(this IBinanceApi api, string symbol, (long, long) timeInterval, CancellationToken token = default)
+        {
+            Throw.IfNull(api, nameof(api));
+
+            return api.GetAggregateTradesInAsync(symbol, timeInterval.Item1, timeInterval.Item2, token);
         }
 
         /// <summary>
@@ -115,7 +130,7 @@ namespace Binance.Api
         }
 
         /// <summary>
-        /// Get candlesticks for a symbol within a time range with optional limit.
+        /// Get candlesticks for a symbol within a time interval with optional limit.
         /// </summary>
         /// <param name="api"></param>
         /// <param name="symbol"></param>
@@ -130,6 +145,23 @@ namespace Binance.Api
             Throw.IfNull(api, nameof(api));
 
             return api.GetCandlesticksAsync(symbol, interval, limit, new DateTimeOffset(startTime).ToUnixTimeMilliseconds(), new DateTimeOffset(endTime).ToUnixTimeMilliseconds(), token);
+        }
+
+        /// <summary>
+        /// Get candlesticks for a symbol within a time interval with optional limit.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="symbol"></param>
+        /// <param name="interval"></param>
+        /// <param name="timeInterval"></param>
+        /// <param name="limit"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<IEnumerable<Candlestick>> GetCandlesticksAsync(this IBinanceApi api, string symbol, CandlestickInterval interval, (long, long) timeInterval, int limit = default, CancellationToken token = default)
+        {
+            Throw.IfNull(api, nameof(api));
+
+            return api.GetCandlesticksAsync(symbol, interval, limit, timeInterval.Item1, timeInterval.Item2, token);
         }
 
         /// <summary>
