@@ -194,28 +194,26 @@ namespace Binance.Api
 
             try
             {
-                var jObject = JObject.Parse(json);
+                return ConvertTo24HourStatistics(JObject.Parse(json), symbol.FormatSymbol());
+            }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(Get24HourStatisticsAsync), json, e);
+            }
+        }
 
-                var firstId = jObject["firstId"].Value<long>();
-                var lastId = jObject["lastId"].Value<long>();
+        public virtual async Task<IEnumerable<SymbolStatistics>> Get24HourStatisticsAsync(CancellationToken token = default)
+        {
+            var json = await HttpClient.Get24HourStatisticsAsync(null, token)
+                .ConfigureAwait(false);
 
-                return new SymbolStatistics(
-                    symbol.FormatSymbol(),
-                    TimeSpan.FromHours(24),
-                    jObject["priceChange"].Value<decimal>(),
-                    jObject["priceChangePercent"].Value<decimal>(),
-                    jObject["weightedAvgPrice"].Value<decimal>(),
-                    jObject["prevClosePrice"].Value<decimal>(),
-                    jObject["lastPrice"].Value<decimal>(),
-                    jObject["bidPrice"].Value<decimal>(),
-                    jObject["askPrice"].Value<decimal>(),
-                    jObject["openPrice"].Value<decimal>(),
-                    jObject["highPrice"].Value<decimal>(),
-                    jObject["lowPrice"].Value<decimal>(),
-                    jObject["volume"].Value<decimal>(),
-                    jObject["openTime"].Value<long>(),
-                    jObject["closeTime"].Value<long>(),
-                    firstId, lastId, lastId - firstId + 1); // TODO
+            var list = new List<SymbolStatistics>();
+
+            try
+            {
+                return JArray.Parse(json)
+                    .Select(item => ConvertTo24HourStatistics(item))
+                    .ToList();
             }
             catch (Exception e)
             {
@@ -769,6 +767,30 @@ namespace Binance.Api
                     item["m"].Value<bool>(), // is buyer maker
                     item["M"].Value<bool>())) // is best price match
                 .ToList();
+        }
+
+        private SymbolStatistics ConvertTo24HourStatistics(JToken jToken, string symbol = null)
+        {
+            var firstId = jToken["firstId"].Value<long>();
+            var lastId = jToken["lastId"].Value<long>();
+
+            return new SymbolStatistics(
+                symbol ?? jToken["symbol"].Value<string>(), // TODO
+                TimeSpan.FromHours(24),
+                jToken["priceChange"].Value<decimal>(),
+                jToken["priceChangePercent"].Value<decimal>(),
+                jToken["weightedAvgPrice"].Value<decimal>(),
+                jToken["prevClosePrice"].Value<decimal>(),
+                jToken["lastPrice"].Value<decimal>(),
+                jToken["bidPrice"].Value<decimal>(),
+                jToken["askPrice"].Value<decimal>(),
+                jToken["openPrice"].Value<decimal>(),
+                jToken["highPrice"].Value<decimal>(),
+                jToken["lowPrice"].Value<decimal>(),
+                jToken["volume"].Value<decimal>(),
+                jToken["openTime"].Value<long>(),
+                jToken["closeTime"].Value<long>(),
+                firstId, lastId, lastId - firstId + 1); // TODO
         }
 
         /// <summary>
