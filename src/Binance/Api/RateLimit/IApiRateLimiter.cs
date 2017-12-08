@@ -29,8 +29,10 @@ namespace Binance.Api
         /// <summary>
         /// Perform the rate limiting delay.
         /// </summary>
+        /// <param name="count"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        Task DelayAsync(CancellationToken token = default);
+        Task DelayAsync(int count = 1, CancellationToken token = default);
 
         #endregion Public Methods
     }

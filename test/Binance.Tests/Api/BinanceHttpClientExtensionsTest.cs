@@ -48,12 +48,6 @@ namespace Binance.Tests.Api
             return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _client.GetCandlesticksAsync(null, CandlestickInterval.Day));
         }
 
-        [Fact]
-        public Task Get24HourStatisticsThrows()
-        {
-            return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _client.Get24HourStatisticsAsync(null));
-        }
-
         #endregion Market Data
 
         #region Account

@@ -126,7 +126,7 @@ namespace Binance.Api
 
             _logger?.LogDebug($"{nameof(BinanceHttpClient)}.{nameof(RequestAsync)}: [{method.Method}] \"{requestMessage.RequestUri}\"");
 
-            await (rateLimiter ?? RateLimiter).DelayAsync(token)
+            await (rateLimiter ?? RateLimiter).DelayAsync(request.RateLimitWeight, token)
                 .ConfigureAwait(false);
 
             using (var response = await _httpClient.SendAsync(requestMessage, token).ConfigureAwait(false))

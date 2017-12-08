@@ -81,7 +81,7 @@ namespace Binance.Api
             }
         }
 
-        public async Task DelayAsync(CancellationToken token = default)
+        public async Task DelayAsync(int count = 1, CancellationToken token = default)
         {
             if (!IsEnabled)
                 return;
@@ -95,7 +95,7 @@ namespace Binance.Api
 
             foreach (var limiter in limiters)
             {
-                await limiter.DelayAsync(token)
+                await limiter.DelayAsync(count, token)
                     .ConfigureAwait(false);
             }
         }

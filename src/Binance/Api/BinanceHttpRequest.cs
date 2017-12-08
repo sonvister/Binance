@@ -47,6 +47,11 @@ namespace Binance.Api
             }
         }
 
+        /// <summary>
+        /// Get the rate limit weight.
+        /// </summary>
+        public int RateLimitWeight { get; private set; }
+
         #endregion Public Properties
 
         #region Private Constants
@@ -72,11 +77,14 @@ namespace Binance.Api
         /// Constructor.
         /// </summary>
         /// <param name="path"></param>
-        public BinanceHttpRequest(string path)
+        /// <param name="rateLimitWeight"></param>
+        public BinanceHttpRequest(string path, int rateLimitWeight = 1)
         {
             Throw.IfNullOrWhiteSpace(path, nameof(path));
 
             _path = path;
+
+            RateLimitWeight = rateLimitWeight;
         }
 
         #endregion Constructors

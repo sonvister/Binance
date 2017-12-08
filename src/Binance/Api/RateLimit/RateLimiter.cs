@@ -57,52 +57,63 @@ namespace Binance.Api
 
         #region Public Methods
 
-        public async Task DelayAsync(CancellationToken token = default)
+        public async Task DelayAsync(int count = 1, CancellationToken token = default)
         {
+            if (count < 1)
+                throw new ArgumentException($"{nameof(RateLimiter)}.{nameof(DelayAsync)} {nameof(count)} must not be less than 1.", nameof(count));
+
             if (_count == 0)
                 return;
 
             // Create the current timestamp.
             var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            // If the maximum count has not been reached.
-            if (_timestamps.Count < _count)
+            do
             {
-                // Queue the current timestammp.
-                _timestamps.Enqueue(now);
-                return;
-            }
-
-            // Remove the oldest timestamp.
-            var then = _timestamps.Dequeue();
-
-            var millisecondsDelay = 0;
-
-            try
-            {
-                // How long has it been?
-                var time = Convert.ToInt32(now - then);
-
-                // If elapsed time is less than allowed time...
-                if (time < Duration.TotalMilliseconds)
+                // If the maximum count has not been reached.
+                if (_timestamps.Count < _count)
                 {
-                    // ...set the delay as the time difference.
-                    millisecondsDelay = Convert.ToInt32(Duration.TotalMilliseconds) - time;
+                    // Queue the current timestammp.
+                    _timestamps.Enqueue(now);
+                    continue;
                 }
-            }
-            catch (OverflowException) { /* ignore */  }
 
-            // Add the current/future timestammp.
-            _timestamps.Enqueue(now + millisecondsDelay);
+                // Remove the oldest timestamp.
+                var then = _timestamps.Dequeue();
 
-            // Delay if required.
-            if (millisecondsDelay > 0)
-            {
-                _logger?.LogDebug($"{nameof(RateLimiter)} delaying for {millisecondsDelay} msec.");
+                var millisecondsDelay = 0;
 
-                await Task.Delay(millisecondsDelay, token)
-                    .ConfigureAwait(false);
-            }
+                try
+                {
+                    // How long has it been?
+                    var time = Convert.ToInt32(now - then);
+
+                    // If elapsed time is less than allowed time...
+                    if (time < Duration.TotalMilliseconds)
+                    {
+                        // ...set the delay as the time difference.
+                        millisecondsDelay = Convert.ToInt32(Duration.TotalMilliseconds) - time;
+                    }
+                }
+                catch (OverflowException) { /* ignore */  }
+
+                // Add the current/future timestammp.
+                _timestamps.Enqueue(now + millisecondsDelay);
+
+                // Delay if required.
+                if (millisecondsDelay > 0)
+                {
+                    _logger?.LogDebug($"{nameof(RateLimiter)} delaying for {millisecondsDelay} msec.");
+
+                    await Task.Delay(millisecondsDelay, token)
+                        .ConfigureAwait(false);
+
+                    if (count > 1)
+                    {
+                        now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    }
+                }
+            } while (--count > 0);
         }
 
         #endregion Public Methods

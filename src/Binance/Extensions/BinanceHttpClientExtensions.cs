@@ -116,7 +116,7 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            var request = new BinanceHttpRequest("/api/v1/depth");
+            var request = new BinanceHttpRequest("/api/v1/depth", limit >= 1000 ? 50 : limit >= 500 ? 25 : 1);
 
             request.AddParameter("symbol", symbol.FormatSymbol());
 
@@ -212,7 +212,7 @@ namespace Binance.Api
         /// <summary>
         /// Extension allowing candlestick interval as a string.
         /// </summary>
-        /// <param name="jsonApi"></param>
+        /// <param name="client"></param>
         /// <param name="symbol"></param>
         /// <param name="interval"></param>
         /// <param name="limit"></param>
@@ -237,9 +237,9 @@ namespace Binance.Api
         public static Task<string> Get24HourStatisticsAsync(this IBinanceHttpClient client, string symbol, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
-            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            var request = new BinanceHttpRequest("/api/v1/ticker/24hr");
+            // HACK: When symbol is not provided estimate number of symbols that are TRADING for weight.
+            var request = new BinanceHttpRequest("/api/v1/ticker/24hr", string.IsNullOrWhiteSpace(symbol) ? 200 : 1);
 
             request.AddParameter("symbol", symbol.FormatSymbol());
 
