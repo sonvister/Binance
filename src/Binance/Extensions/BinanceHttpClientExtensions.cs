@@ -71,6 +71,7 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
+            // Acquire synchronization lock.
             await _timestampOffsetSync.WaitAsync(token)
                 .ConfigureAwait(false);
 
@@ -78,13 +79,25 @@ namespace Binance.Api
             {
                 if (DateTime.UtcNow - _timestampOffsetUpdatedAt > TimeSpan.FromMinutes(client.Options.TimestampOffsetRefreshPeriodMinutes))
                 {
-                    var systemTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    const long N = 3;
 
-                    var json = await GetServerTimeAsync(client, token)
-                        .ConfigureAwait(false);
+                    long sum = 0;
+                    var count = N;
+                    do
+                    {
+                        var systemTimeBefore = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                    // Calculate timestamp offset to account for time differences and delays.
-                    _timestampOffset = JObject.Parse(json)["serverTime"].Value<long>() - systemTime;
+                        var json = await GetServerTimeAsync(client, token)
+                            .ConfigureAwait(false);
+
+                        var systemTimeAfter = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+                        // Calculate timestamp offset to account for time differences and delays.
+                        sum += systemTimeAfter - JObject.Parse(json)["serverTime"].Value<long>() + (systemTimeAfter - systemTimeBefore) / 2;
+                    } while (--count > 0);
+
+                    // Calculate average offset.
+                    _timestampOffset = sum / N;
 
                     // Record the current system time to determine when to refresh offset.
                     _timestampOffsetUpdatedAt = DateTime.UtcNow;
@@ -93,6 +106,7 @@ namespace Binance.Api
             catch (Exception) { /* ignore */ }
             finally
             {
+                // Release synchronization lock.
                 _timestampOffsetSync.Release();
             }
 
@@ -127,6 +141,55 @@ namespace Binance.Api
 
             return client.GetAsync(request, token);
         }
+
+        /// <summary>
+        /// Get older (non-compressed) trades.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="user"></param>
+        /// <param name="symbol"></param>
+        /// <param name="fromId"></param>
+        /// <param name="limit"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<string> GetTradesAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, CancellationToken token = default)
+        {
+            Throw.IfNull(user, nameof(user));
+
+            return GetTradesAsync(client, user.ApiKey, symbol, fromId, limit, token);
+        }
+
+        /// <summary>
+        /// Get older (non-compressed) trades.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="apiKey"></param>
+        /// <param name="symbol"></param>
+        /// <param name="fromId">TradeId to fetch from. Default gets most recent trades.</param>
+        /// <param name="limit">Default 500; max 500.</param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<string> GetTradesAsync(this IBinanceHttpClient client, string apiKey, string symbol, long fromId = BinanceApi.NullId, int limit = default, CancellationToken token = default)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            var request = new BinanceHttpRequest("/api/v1/historicalTrades", 100)
+            {
+                ApiKey = apiKey
+            };
+
+            request.AddParameter("symbol", symbol.FormatSymbol());
+
+            if (fromId >= 0)
+                request.AddParameter("fromId", fromId);
+
+            if (limit > 0)
+                request.AddParameter("limit", limit);
+
+            return client.GetAsync(request, token);
+        }
+
 
         /// <summary>
         /// Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
@@ -603,7 +666,7 @@ namespace Binance.Api
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> GetTradesAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default)
+        public static async Task<string> GetAccountTradesAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(user, nameof(user));
@@ -805,6 +868,7 @@ namespace Binance.Api
         /// <summary>
         /// Start a new user data stream.
         /// </summary>
+        /// <param name="client"></param>
         /// <param name="user"></param>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -812,9 +876,23 @@ namespace Binance.Api
         {
             Throw.IfNull(user, nameof(user));
 
+            return UserStreamStartAsync(client, user.ApiKey, token);
+        }
+
+        /// <summary>
+        /// Start a new user data stream.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="apiKey"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<string> UserStreamStartAsync(this IBinanceHttpClient client, string apiKey, CancellationToken token = default)
+        {
+            Throw.IfNullOrWhiteSpace(apiKey, nameof(apiKey));
+
             var request = new BinanceHttpRequest("/api/v1/userDataStream")
             {
-                ApiKey = user.ApiKey
+                ApiKey = apiKey
             };
 
             return client.PostAsync(request, token);
@@ -823,6 +901,7 @@ namespace Binance.Api
         /// <summary>
         /// Ping a user data stream to prevent a time out.
         /// </summary>
+        /// <param name="client"></param>
         /// <param name="user"></param>
         /// <param name="listenKey"></param>
         /// <param name="token"></param>
@@ -830,21 +909,40 @@ namespace Binance.Api
         public static Task<string> UserStreamKeepAliveAsync(this IBinanceHttpClient client, IBinanceApiUser user, string listenKey, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
+
+            return UserStreamKeepAliveAsync(client, user.ApiKey, listenKey, token);
+        }
+
+        /// <summary>
+        /// Ping a user data stream to prevent a time out.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="apiKey"></param>
+        /// <param name="listenKey"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<string> UserStreamKeepAliveAsync(this IBinanceHttpClient client, string apiKey, string listenKey, CancellationToken token = default)
+        {
+            Throw.IfNullOrWhiteSpace(apiKey, nameof(apiKey));
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
 
             var request = new BinanceHttpRequest("/api/v1/userDataStream")
             {
-                ApiKey = user.ApiKey
+                ApiKey = apiKey
             };
 
             request.AddParameter("listenKey", listenKey);
 
+            // TODO
+            // A POST will either get back your current stream (and effectively do a PUT) or get back a new stream.
+            //return client.PostAsync(request, token);
             return client.PutAsync(request, token);
         }
 
         /// <summary>
         /// Close out a user data stream.
         /// </summary>
+        /// <param name="client"></param>
         /// <param name="user"></param>
         /// <param name="listenKey"></param>
         /// <param name="token"></param>
@@ -852,11 +950,26 @@ namespace Binance.Api
         public static Task<string> UserStreamCloseAsync(this IBinanceHttpClient client, IBinanceApiUser user, string listenKey, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
+
+            return UserStreamCloseAsync(client, user.ApiKey, listenKey, token);
+        }
+
+        /// <summary>
+        /// Close out a user data stream.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="apiKey"></param>
+        /// <param name="listenKey"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<string> UserStreamCloseAsync(this IBinanceHttpClient client, string apiKey, string listenKey, CancellationToken token = default)
+        {
+            Throw.IfNullOrWhiteSpace(apiKey, nameof(apiKey));
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
 
             var request = new BinanceHttpRequest("/api/v1/userDataStream")
             {
-                ApiKey = user.ApiKey
+                ApiKey = apiKey
             };
 
             request.AddParameter("listenKey", listenKey);

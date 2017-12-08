@@ -20,11 +20,6 @@ namespace Binance.Market
         /// </summary>
         public long LastTradeId { get; }
 
-        /// <summary>
-        /// Get flag indicating if the buyer the maker.
-        /// </summary>
-        public bool IsBuyerMaker { get; }
-
         #endregion Public Properties
 
         #region Constructors
@@ -51,7 +46,7 @@ namespace Binance.Market
             long timestamp,
             bool isBuyerMaker,
             bool isBestPriceMatch)
-            : base(symbol, id, price, quantity, timestamp, isBestPriceMatch)
+            : base(symbol, id, price, quantity, timestamp, isBuyerMaker, isBestPriceMatch)
         {
             if (firstTradeId < 0)
                 throw new ArgumentException($"{nameof(AggregateTrade)} ID must not be less than 0.", nameof(firstTradeId));
@@ -62,7 +57,6 @@ namespace Binance.Market
 
             FirstTradeId = firstTradeId;
             LastTradeId = lastTradeId;
-            IsBuyerMaker = isBuyerMaker;
         }
 
         #endregion Constructors

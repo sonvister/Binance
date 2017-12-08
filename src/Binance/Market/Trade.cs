@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Binance
+namespace Binance.Market
 {
     /// <summary>
     /// A abstract trade class.
     /// </summary>
-    public abstract class Trade : IChronological
+    public class Trade : IChronological
     {
         #region Public Properties
 
@@ -35,6 +35,11 @@ namespace Binance
         public long Timestamp { get; }
 
         /// <summary>
+        /// Get flag indicating if the buyer the maker.
+        /// </summary>
+        public bool IsBuyerMaker { get; }
+
+        /// <summary>
         /// Get flag indicating if the trade was the best price match.
         /// </summary>
         public bool IsBestPriceMatch { get; }
@@ -51,13 +56,15 @@ namespace Binance
         /// <param name="price">The price.</param>
         /// <param name="quantity">The quantity.</param>
         /// <param name="timestamp">The timestamp.</param>
+        /// <param name="isBuyerMaker">Is buyer maker.</param>
         /// <param name="isBestPriceMatch">Flag indicating if the trade was the best price match.</param>
-        protected Trade(
+        public Trade(
             string symbol,
             long id,
             decimal price,
             decimal quantity,
             long timestamp,
+            bool isBuyerMaker,
             bool isBestPriceMatch)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
@@ -76,6 +83,7 @@ namespace Binance
             Price = price;
             Quantity = quantity;
             Timestamp = timestamp;
+            IsBuyerMaker = isBuyerMaker;
             IsBestPriceMatch = isBestPriceMatch;
         }
 

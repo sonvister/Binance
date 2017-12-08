@@ -120,7 +120,7 @@ namespace Binance.Tests.Api
         {
             var symbol = Symbol.BTC_USDT;
 
-            return Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.GetTradesAsync(null, symbol));
+            return Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.GetAccountTradesAsync(null, symbol));
         }
 
         [Fact]
@@ -156,9 +156,10 @@ namespace Binance.Tests.Api
         #region User Stream
 
         [Fact]
-        public Task UserStreamStartThrows()
+        public async Task UserStreamStartThrows()
         {
-            return Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.UserStreamStartAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.UserStreamStartAsync(((IBinanceApiUser)null)));
+            await Assert.ThrowsAsync<ArgumentNullException>("apiKey", () => _client.UserStreamStartAsync(((string)null)));
         }
 
         [Fact]
@@ -167,7 +168,8 @@ namespace Binance.Tests.Api
             var user = new BinanceApiUser("api-key");
             const string listenKey = "listen-key";
 
-            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.UserStreamKeepAliveAsync(null, listenKey));
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.UserStreamKeepAliveAsync((IBinanceApiUser)null, listenKey));
+            await Assert.ThrowsAsync<ArgumentNullException>("apiKey", () => _client.UserStreamKeepAliveAsync((string)null, listenKey));
             await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => _client.UserStreamKeepAliveAsync(user, null));
             await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => _client.UserStreamKeepAliveAsync(user, string.Empty));
         }
@@ -178,7 +180,8 @@ namespace Binance.Tests.Api
             var user = new BinanceApiUser("api-key");
             const string listenKey = "listen-key";
 
-            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.UserStreamCloseAsync(null, listenKey));
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.UserStreamCloseAsync((IBinanceApiUser)null, listenKey));
+            await Assert.ThrowsAsync<ArgumentNullException>("apiKey", () => _client.UserStreamCloseAsync((string)null, listenKey));
             await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => _client.UserStreamCloseAsync(user, null));
             await Assert.ThrowsAsync<ArgumentNullException>("listenKey", () => _client.UserStreamCloseAsync(user, string.Empty));
         }

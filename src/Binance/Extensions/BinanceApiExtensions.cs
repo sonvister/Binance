@@ -42,6 +42,24 @@ namespace Binance.Api
         }
 
         /// <summary>
+        /// Get older (non-compressed) trades.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="user"></param>
+        /// <param name="symbol"></param>
+        /// <param name="fromId"></param>
+        /// <param name="limit"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<IEnumerable<Trade>> GetTradesAsync(this IBinanceApi api, IBinanceApiUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, CancellationToken token = default)
+        {
+            Throw.IfNull(api, nameof(api));
+            Throw.IfNull(user, nameof(user));
+
+            return api.GetTradesAsync(user.ApiKey, symbol, fromId, limit, token);
+        }
+
+        /// <summary>
         /// Get the most recent trades from trade (EXCLUSIVE).
         /// </summary>
         /// <param name="api"></param>
@@ -193,7 +211,7 @@ namespace Binance.Api
             //if (order.Status == OrderStatus.Canceled)
             //    return orderTrades;
             
-            // TODO: Can expired orders have trades?
+            // TODO: Can 'expired' orders have trades?
             //if (order.Status == OrderStatus.Expired)
             //    return orderTrades;
 
@@ -202,18 +220,21 @@ namespace Binance.Api
             while (!token.IsCancellationRequested)
             {
                 // Get trades newer than trade ID (inclusive) returns oldest to newest (begin with trade ID: 0).
-                var trades = await api.GetTradesAsync(order.User, order.Symbol, fromId + 1, limit, recvWindow, token)
+                var trades = await api.GetAccountTradesAsync(order.User, order.Symbol, fromId + 1, limit, recvWindow, token)
                     .ConfigureAwait(false);
 
+                // No more trades to sift through.
                 if (!trades.Any())
                     break;
 
                 // Add trades with matching order ID.
                 orderTrades.AddRange(trades.Where(t => t.OrderId == order.Id));
 
+                // No more trades to query.
                 if (trades.Count() < limit)
                     break;
 
+                // Update trade ID for next query.
                 fromId = trades.Last().Id;
             }
 

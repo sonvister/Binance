@@ -11,11 +11,11 @@ using Xunit;
 
 namespace Binance.Tests.Integration
 {
-    public class BinanceJsonApiTest
+    public class BinanceHttpClientTest
     {
         private readonly IBinanceHttpClient _api;
 
-        public BinanceJsonApiTest()
+        public BinanceHttpClientTest()
         {
             // Configure services.
             var serviceProvider = new ServiceCollection()
@@ -54,7 +54,7 @@ namespace Binance.Tests.Integration
         }
 
         [Fact]
-        public async Task GetTrades()
+        public async Task GetAggregateTrades()
         {
             var now = DateTimeOffset.UtcNow;
 

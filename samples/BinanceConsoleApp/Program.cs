@@ -156,8 +156,10 @@ namespace BinanceConsoleApp
                 Console.WriteLine(" Market Data:");
                 Console.WriteLine("  stats <symbol>                                       display 24h stats for a symbol.");
                 Console.WriteLine("  depth|book <symbol> [limit]                          display symbol order book, where limit: [1-100].");
+                Console.WriteLine("  aggTrades <symbol> [limit]                           display latest aggregate trades, where limit: [1-500].");
+                Console.WriteLine("  aggTradesIn <symbol> <start> <end>                   display aggregate trades within a time range (inclusive).");
+                Console.WriteLine("  aggTradesFrom <symbol> <tradeId> [limit]             display aggregate trades beginning with aggregate trade ID.");
                 Console.WriteLine("  trades <symbol> [limit]                              display latest trades, where limit: [1-500].");
-                Console.WriteLine("  tradesIn <symbol> <start> <end>                      display trades within a time range (inclusive).");
                 Console.WriteLine("  tradesFrom <symbol> <tradeId> [limit]                display trades beginning with trade ID.");
                 Console.WriteLine("  candles|klines <symbol> <interval> [limit]           display candlesticks for a symbol.");
                 Console.WriteLine("  candlesIn|klinesIn <symbol> <interval> <start> <end> display candlesticks for a symbol in time range.");
@@ -348,7 +350,7 @@ namespace BinanceConsoleApp
             LiveTask = null;
         }
 
-        internal static void Display(AggregateTrade trade)
+        internal static void Display(Trade trade)
         {
             lock (ConsoleSync)
             {

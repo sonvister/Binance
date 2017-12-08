@@ -3,38 +3,44 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using System.Linq;
+using Binance.Api;
 
 namespace BinanceConsoleApp.Controllers
 {
-    internal class GetAggregateTradesIn : IHandleCommand
+    internal class GetTradesFrom : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
-            if (!command.StartsWith("aggTradesIn ", StringComparison.OrdinalIgnoreCase)
-                && !command.Equals("aggTradesIn", StringComparison.OrdinalIgnoreCase))
+            if (!command.StartsWith("tradesFrom ", StringComparison.OrdinalIgnoreCase)
+                && !command.Equals("tradesFrom", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             var args = command.Split(' ');
 
             string symbol = Symbol.BTC_USDT;
+            long fromId = BinanceApi.NullId;
+
             if (args.Length > 1)
             {
-                symbol = args[1];
+                if (!long.TryParse(args[1], out fromId))
+                {
+                    symbol = args[1];
+                    fromId = BinanceApi.NullId;
+                }
             }
 
-            long startTime = 0;
             if (args.Length > 2)
             {
-                long.TryParse(args[2], out startTime);
+                long.TryParse(args[2], out fromId);
             }
 
-            long endTime = 0;
+            var limit = 10;
             if (args.Length > 3)
             {
-                long.TryParse(args[3], out endTime);
+                int.TryParse(args[3], out limit);
             }
 
-            var trades = (await Program.Api.GetAggregateTradesInAsync(symbol, startTime, endTime, token))
+            var trades = (await Program.Api.GetTradesAsync(Program.User, symbol, fromId, limit, token))
                 .Reverse().ToArray();
 
             lock (Program.ConsoleSync)

@@ -112,6 +112,18 @@ namespace Binance.Api
             }
         }
 
+        public virtual async Task<IEnumerable<Trade>> GetTradesAsync(string apiKey, string symbol, long fromId = NullId, int limit = default, CancellationToken token = default)
+        {
+            var json = await HttpClient.GetTradesAsync(apiKey, symbol, fromId, limit, token)
+                .ConfigureAwait(false);
+
+            try { return DeserializeTrades(symbol, json); }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetAccountTradesAsync), json, e);
+            }
+        }
+
         public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, int limit = default, CancellationToken token = default)
         {
             var json = await HttpClient.GetAggregateTradesAsync(symbol, NullId, limit, 0, 0, token)
@@ -545,9 +557,9 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<IEnumerable<AccountTrade>> GetTradesAsync(IBinanceApiUser user, string symbol, long fromId = NullId, int limit = default, long recvWindow = default, CancellationToken token = default)
+        public virtual async Task<IEnumerable<AccountTrade>> GetAccountTradesAsync(IBinanceApiUser user, string symbol, long fromId = NullId, int limit = default, long recvWindow = default, CancellationToken token = default)
         {
-            var json = await HttpClient.GetTradesAsync(user, symbol, fromId, limit, recvWindow, token)
+            var json = await HttpClient.GetAccountTradesAsync(user, symbol, fromId, limit, recvWindow, token)
                 .ConfigureAwait(false);
 
             try
@@ -571,7 +583,7 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw NewFailedToParseJsonException(nameof(GetTradesAsync), json, e);
+                throw NewFailedToParseJsonException(nameof(GetAccountTradesAsync), json, e);
             }
         }
 
@@ -747,7 +759,28 @@ namespace Binance.Api
         #region Private Methods
 
         /// <summary>
-        /// Deserialize aggregate trade.
+        /// Deserialize trades.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        private static IEnumerable<Trade> DeserializeTrades(string symbol, string json)
+        {
+            var jArray = JArray.Parse(json);
+
+            return jArray.Select(item => new Trade(
+                    symbol.FormatSymbol(),
+                    item["id"].Value<long>(), // ID
+                    item["price"].Value<decimal>(), // price
+                    item["qty"].Value<decimal>(), // quantity
+                    item["time"].Value<long>(), // timestamp
+                    item["isBuyerMaker"].Value<bool>(), // is buyer maker
+                    item["isBestMatch"].Value<bool>())) // is best price match
+                .ToList();
+        }
+
+        /// <summary>
+        /// Deserialize aggregate trades.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="json"></param>

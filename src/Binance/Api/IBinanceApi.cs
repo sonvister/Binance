@@ -47,6 +47,17 @@ namespace Binance.Api
         Task<OrderBook> GetOrderBookAsync(string symbol, int limit = default, CancellationToken token = default);
 
         /// <summary>
+        /// Get older (non-compressed) trades.
+        /// </summary>
+        /// <param name="apiKey"></param>
+        /// <param name="symbol"></param>
+        /// <param name="fromId"></param>
+        /// <param name="limit"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IEnumerable<Trade>> GetTradesAsync(string apiKey, string symbol, long fromId = BinanceApi.NullId, int limit = default, CancellationToken token = default);
+
+        /// <summary>
         /// Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
         /// </summary>
         /// <param name="symbol"></param>
@@ -244,7 +255,7 @@ namespace Binance.Api
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<AccountTrade>> GetTradesAsync(IBinanceApiUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default);
+        Task<IEnumerable<AccountTrade>> GetAccountTradesAsync(IBinanceApiUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Submit a withdraw request.
