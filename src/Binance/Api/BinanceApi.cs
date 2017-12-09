@@ -112,15 +112,30 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<IEnumerable<Trade>> GetTradesAsync(string apiKey, string symbol, long fromId = NullId, int limit = default, CancellationToken token = default)
+        public virtual async Task<IEnumerable<Trade>> GetTradesAsync(string symbol, int limit = default, CancellationToken token = default)
         {
+            var json = await HttpClient.GetTradesAsync(symbol, limit, token)
+                .ConfigureAwait(false);
+
+            try { return DeserializeTrades(symbol, json); }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetTradesAsync), json, e);
+            }
+        }
+
+        public virtual async Task<IEnumerable<Trade>> GetTradesFromAsync(string apiKey, string symbol, long fromId, int limit = default, CancellationToken token = default)
+        {
+            if (fromId < 0)
+                throw new ArgumentException($"ID ({nameof(fromId)}) must not be less than 0.", nameof(fromId));
+
             var json = await HttpClient.GetTradesAsync(apiKey, symbol, fromId, limit, token)
                 .ConfigureAwait(false);
 
             try { return DeserializeTrades(symbol, json); }
             catch (Exception e)
             {
-                throw NewFailedToParseJsonException(nameof(GetAccountTradesAsync), json, e);
+                throw NewFailedToParseJsonException(nameof(GetTradesFromAsync), json, e);
             }
         }
 
@@ -707,9 +722,9 @@ namespace Binance.Api
 
         #region User Data Stream
 
-        public async Task<string> UserStreamStartAsync(IBinanceApiUser user, CancellationToken token = default)
+        public async Task<string> UserStreamStartAsync(string apiKey, CancellationToken token = default)
         {
-            var json = await HttpClient.UserStreamStartAsync(user, token)
+            var json = await HttpClient.UserStreamStartAsync(apiKey, token)
                 .ConfigureAwait(false);
 
             try
@@ -722,9 +737,9 @@ namespace Binance.Api
             }
         }
 
-        public async Task UserStreamKeepAliveAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default)
+        public async Task UserStreamKeepAliveAsync(string apiKey, string listenKey, CancellationToken token = default)
         {
-            var json = await HttpClient.UserStreamKeepAliveAsync(user, listenKey, token)
+            var json = await HttpClient.UserStreamKeepAliveAsync(apiKey, listenKey, token)
                 .ConfigureAwait(false);
 
             if (json != SuccessfulTestResponse)
@@ -735,9 +750,9 @@ namespace Binance.Api
             }
         }
 
-        public async Task UserStreamCloseAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default)
+        public async Task UserStreamCloseAsync(string apiKey, string listenKey, CancellationToken token = default)
         {
-            var json = await HttpClient.UserStreamCloseAsync(user, listenKey, token)
+            var json = await HttpClient.UserStreamCloseAsync(apiKey, listenKey, token)
                 .ConfigureAwait(false);
 
             if (json != SuccessfulTestResponse)

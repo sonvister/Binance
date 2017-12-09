@@ -80,6 +80,11 @@ namespace Binance.Api
             return BitConverter.ToString(hash).Replace("-", string.Empty);
         }
 
+        public override string ToString()
+        {
+            return ApiKey;
+        }
+
         #endregion Public Methods
 
         #region IDisposable

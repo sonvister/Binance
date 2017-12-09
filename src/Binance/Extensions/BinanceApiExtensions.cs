@@ -51,12 +51,12 @@ namespace Binance.Api
         /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task<IEnumerable<Trade>> GetTradesAsync(this IBinanceApi api, IBinanceApiUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, CancellationToken token = default)
+        public static Task<IEnumerable<Trade>> GetTradesFromAsync(this IBinanceApi api, IBinanceApiUser user, string symbol, long fromId, int limit = default, CancellationToken token = default)
         {
             Throw.IfNull(api, nameof(api));
             Throw.IfNull(user, nameof(user));
 
-            return api.GetTradesAsync(user.ApiKey, symbol, fromId, limit, token);
+            return api.GetTradesFromAsync(user.ApiKey, symbol, fromId, limit, token);
         }
 
         /// <summary>
@@ -271,6 +271,53 @@ namespace Binance.Api
             }
 
             return orderTrades;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="user"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<string> UserStreamStartAsync(this IBinanceApi api, IBinanceApiUser user, CancellationToken token = default)
+        {
+            Throw.IfNull(api, nameof(api));
+            Throw.IfNull(user, nameof(user));
+
+            return api.UserStreamStartAsync(user.ApiKey, token);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="user"></param>
+        /// <param name="listenKey"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task UserStreamKeepAliveAsync(this IBinanceApi api, IBinanceApiUser user, string listenKey, CancellationToken token = default)
+        {
+            Throw.IfNull(api, nameof(api));
+            Throw.IfNull(user, nameof(user));
+
+            return api.UserStreamKeepAliveAsync(user.ApiKey, listenKey, token);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="user"></param>
+        /// <param name="listenKey"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task UserStreamCloseAsync(this IBinanceApi api, IBinanceApiUser user, string listenKey, CancellationToken token = default)
+        {
+            Throw.IfNull(api, nameof(api));
+            Throw.IfNull(user, nameof(user));
+
+            return api.UserStreamCloseAsync(user.ApiKey, listenKey, token);
         }
     }
 }

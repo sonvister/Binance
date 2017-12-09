@@ -147,20 +147,26 @@ namespace Binance.Api
         }
 
         /// <summary>
-        /// Get older (non-compressed) trades.
+        /// Get latest (non-compressed) trades.
         /// </summary>
         /// <param name="client"></param>
-        /// <param name="user"></param>
         /// <param name="symbol"></param>
-        /// <param name="fromId"></param>
         /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task<string> GetTradesAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, CancellationToken token = default)
+        public static Task<string> GetTradesAsync(this IBinanceHttpClient client, string symbol, int limit = default, CancellationToken token = default)
         {
-            Throw.IfNull(user, nameof(user));
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            return GetTradesAsync(client, user.ApiKey, symbol, fromId, limit, token);
+            var request = new BinanceHttpRequest("/api/v1/trades");
+
+            request.AddParameter("symbol", symbol.FormatSymbol());
+
+            if (limit > 0)
+                request.AddParameter("limit", limit);
+
+            return client.GetAsync(request, token);
         }
 
         /// <summary>

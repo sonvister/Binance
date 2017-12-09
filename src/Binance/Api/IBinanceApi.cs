@@ -47,15 +47,24 @@ namespace Binance.Api
         Task<OrderBook> GetOrderBookAsync(string symbol, int limit = default, CancellationToken token = default);
 
         /// <summary>
+        /// Get latest (non-compressed) trades.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="limit">Default 500; max 500.</param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IEnumerable<Trade>> GetTradesAsync(string symbol, int limit = default, CancellationToken token = default);
+
+        /// <summary>
         /// Get older (non-compressed) trades.
         /// </summary>
         /// <param name="apiKey"></param>
         /// <param name="symbol"></param>
-        /// <param name="fromId"></param>
-        /// <param name="limit"></param>
+        /// <param name="fromId">ID to get trades from INCLUSIVE.</param>
+        /// <param name="limit">Default 500; max 500.</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<Trade>> GetTradesAsync(string apiKey, string symbol, long fromId = BinanceApi.NullId, int limit = default, CancellationToken token = default);
+        Task<IEnumerable<Trade>> GetTradesFromAsync(string apiKey, string symbol, long fromId, int limit = default, CancellationToken token = default);
 
         /// <summary>
         /// Get latest compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
@@ -307,28 +316,28 @@ namespace Binance.Api
         /// <summary>
         /// Start a new user data stream.
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="apiKey"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> UserStreamStartAsync(IBinanceApiUser user, CancellationToken token = default);
+        Task<string> UserStreamStartAsync(string apiKey, CancellationToken token = default);
 
         /// <summary>
         /// Ping a user data stream to prevent a time out.
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="apiKey"></param>
         /// <param name="listenKey"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task UserStreamKeepAliveAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default);
+        Task UserStreamKeepAliveAsync(string apiKey, string listenKey, CancellationToken token = default);
 
         /// <summary>
         /// Close out a user data stream.
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="apiKey"></param>
         /// <param name="listenKey"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task UserStreamCloseAsync(IBinanceApiUser user, string listenKey, CancellationToken token = default);
+        Task UserStreamCloseAsync(string apiKey, string listenKey, CancellationToken token = default);
 
         #endregion User Stream
     }

@@ -34,7 +34,8 @@ namespace BinanceConsoleApp.Controllers
             IEnumerable<Trade> trades = null;
 
             if (trades == null)
-                trades = (await Program.Api.GetTradesAsync(Program.User, symbol, BinanceApi.NullId, limit, token)).Reverse();
+                trades = (await Program.Api.GetTradesAsync(symbol, limit, token))
+                    .Reverse().ToArray();
 
             lock (Program.ConsoleSync)
             {
