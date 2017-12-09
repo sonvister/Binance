@@ -14,8 +14,8 @@ namespace BinanceConsoleApp.Controllers
         {
             if (!command.StartsWith("candles ", StringComparison.OrdinalIgnoreCase)
                 && !command.Equals("candles", StringComparison.OrdinalIgnoreCase)
-                && !command.StartsWith("klines ", StringComparison.OrdinalIgnoreCase)
-                && !command.Equals("klines", StringComparison.OrdinalIgnoreCase))
+                && !command.StartsWith("kLines ", StringComparison.OrdinalIgnoreCase)
+                && !command.Equals("kLines", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             var args = command.Split(' ');

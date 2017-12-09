@@ -31,7 +31,7 @@ namespace BinanceConsoleApp.Controllers
                 symbol = args[2];
             }
 
-            if (!endpoint.Equals("klines", StringComparison.OrdinalIgnoreCase)
+            if (!endpoint.Equals("kLines", StringComparison.OrdinalIgnoreCase)
                 && !endpoint.Equals("candles", StringComparison.OrdinalIgnoreCase))
                 return Task.FromResult(false);
 

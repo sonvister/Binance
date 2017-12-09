@@ -58,7 +58,7 @@ namespace Binance.Api
         Task<IEnumerable<Trade>> GetTradesAsync(string apiKey, string symbol, long fromId = BinanceApi.NullId, int limit = default, CancellationToken token = default);
 
         /// <summary>
-        /// Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
+        /// Get latest compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="limit">Default 500; max 500.</param>

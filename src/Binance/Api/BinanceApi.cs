@@ -158,6 +158,7 @@ namespace Binance.Api
             if (endTime < startTime)
                 throw new ArgumentException($"Timestamp ({nameof(endTime)}) must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
 
+            // NOTE: Limit does not apply when using start and end time.
             var json = await HttpClient.GetAggregateTradesAsync(symbol, NullId, default, startTime, endTime, token)
                 .ConfigureAwait(false);
 
@@ -175,23 +176,7 @@ namespace Binance.Api
 
             try
             {
-                var jArray = JArray.Parse(json);
-
-                return jArray.Select(item => new Candlestick(
-                    symbol.FormatSymbol(), // symbol
-                    interval, // interval
-                    item[0].Value<long>(), // open time
-                    item[1].Value<decimal>(), // open
-                    item[2].Value<decimal>(), // high
-                    item[3].Value<decimal>(), // low
-                    item[4].Value<decimal>(), // close
-                    item[5].Value<decimal>(), // volume
-                    item[6].Value<long>(), // close time
-                    item[7].Value<decimal>(), // quote asset volume
-                    item[8].Value<long>(), // number of trades
-                    item[9].Value<decimal>(), // taker buy base asset volume
-                    item[10].Value<decimal>() // taker buy quote asset volume
-                )).ToList();
+                return DeserializeCandlesticks(symbol, interval, json);
             }
             catch (Exception e)
             {
@@ -800,6 +785,34 @@ namespace Binance.Api
                     item["m"].Value<bool>(), // is buyer maker
                     item["M"].Value<bool>())) // is best price match
                 .ToList();
+        }
+
+        /// <summary>
+        /// Deserialize candlesticks.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="interval"></param>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        private static IEnumerable<Candlestick> DeserializeCandlesticks(string symbol, CandlestickInterval interval, string json)
+        {
+            var jArray = JArray.Parse(json);
+
+            return jArray.Select(item => new Candlestick(
+                symbol.FormatSymbol(), // symbol
+                interval, // interval
+                item[0].Value<long>(), // open time
+                item[1].Value<decimal>(), // open
+                item[2].Value<decimal>(), // high
+                item[3].Value<decimal>(), // low
+                item[4].Value<decimal>(), // close
+                item[5].Value<decimal>(), // volume
+                item[6].Value<long>(), // close time
+                item[7].Value<decimal>(), // quote asset volume
+                item[8].Value<long>(), // number of trades
+                item[9].Value<decimal>(), // taker buy base asset volume
+                item[10].Value<decimal>() // taker buy quote asset volume
+            )).ToList();
         }
 
         private SymbolStatistics ConvertTo24HourStatistics(JToken jToken, string symbol = null)
