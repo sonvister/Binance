@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -15,21 +14,25 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string symbol = Symbol.BTC_USDT;
+            string symbol = null;
             if (args.Length > 1)
             {
                 symbol = args[1];
             }
 
-            var stats = await Program.Api.Get24HourStatisticsAsync(symbol, token);
-
-            lock (Program.ConsoleSync)
+            if (string.IsNullOrWhiteSpace(symbol))
             {
-                Console.WriteLine();
-                Console.WriteLine($"  24-hour statistics for {stats.Symbol}:");
-                Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
-                Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
-                Console.WriteLine();
+                var allStats = await Program.Api.Get24HourStatisticsAsync(token);
+
+                foreach (var stats in allStats)
+                {
+                    Program.Display(stats);
+                }
+            }
+            else
+            {
+                var stats = await Program.Api.Get24HourStatisticsAsync(symbol, token);
+                Program.Display(stats);
             }
 
             return true;

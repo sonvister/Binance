@@ -109,7 +109,7 @@ namespace Binance.Api
         Task<IEnumerable<Candlestick>> GetCandlesticksAsync(string symbol, CandlestickInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default);
 
         /// <summary>
-        /// Get 24 hour price change statistics for a symbol.
+        /// Get 24-hour price change statistics for a symbol.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="token"></param>
@@ -117,7 +117,7 @@ namespace Binance.Api
         Task<SymbolStatistics> Get24HourStatisticsAsync(string symbol, CancellationToken token = default);
 
         /// <summary>
-        /// Get 24 hour price change statistics for all symbols.
+        /// Get 24-hour price change statistics for all symbols.
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>

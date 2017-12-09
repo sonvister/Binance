@@ -154,7 +154,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  time                                                 display the current server time (UTC).");
                 Console.WriteLine();
                 Console.WriteLine(" Market Data:");
-                Console.WriteLine("  stats <symbol>                                       display 24h stats for a symbol.");
+                Console.WriteLine("  stats <symbol>                                       display 24h stats for a symbol or all symbols.");
                 Console.WriteLine("  depth|book <symbol> [limit]                          display symbol order book, where limit: [1-100].");
                 Console.WriteLine("  aggTrades <symbol> [limit]                           display latest aggregate trades, where limit: [1-500].");
                 Console.WriteLine("  aggTradesIn <symbol> <start> <end>                   display aggregate trades within a time interval (inclusive).");
@@ -349,6 +349,17 @@ namespace BinanceConsoleApp
 
             LiveTokenSource = null;
             LiveTask = null;
+        }
+
+        internal static void Display(SymbolStatistics stats)
+        {
+            lock (ConsoleSync)
+            {
+                Console.WriteLine($"  24-hour statistics for {stats.Symbol}:");
+                Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
+                Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
+                Console.WriteLine();
+            }
         }
 
         internal static void Display(OrderBookTop top)

@@ -300,20 +300,23 @@ namespace Binance.Api
         }
 
         /// <summary>
-        /// Get 24 hour price change statistics for a symbol.
+        /// Get 24 hour price change statistics for a symbol or all symbols.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task<string> Get24HourStatisticsAsync(this IBinanceHttpClient client, string symbol, CancellationToken token = default)
+        public static Task<string> Get24HourStatisticsAsync(this IBinanceHttpClient client, string symbol = null, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
 
             // HACK: When symbol is not provided estimate number of symbols that are TRADING for weight.
             var request = new BinanceHttpRequest("/api/v1/ticker/24hr", string.IsNullOrWhiteSpace(symbol) ? 200 : 1);
 
-            request.AddParameter("symbol", symbol.FormatSymbol());
+            if (!string.IsNullOrWhiteSpace(symbol))
+            {
+                request.AddParameter("symbol", symbol.FormatSymbol());
+            }
 
             return client.GetAsync(request, token);
         }

@@ -201,12 +201,14 @@ namespace Binance.Api
 
         public virtual async Task<SymbolStatistics> Get24HourStatisticsAsync(string symbol, CancellationToken token = default)
         {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
             var json = await HttpClient.Get24HourStatisticsAsync(symbol, token)
                 .ConfigureAwait(false);
 
             try
             {
-                return ConvertTo24HourStatistics(JObject.Parse(json), symbol.FormatSymbol());
+                return ConvertTo24HourStatistics(JObject.Parse(json));
             }
             catch (Exception e)
             {
@@ -216,7 +218,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<SymbolStatistics>> Get24HourStatisticsAsync(CancellationToken token = default)
         {
-            var json = await HttpClient.Get24HourStatisticsAsync(null, token)
+            var json = await HttpClient.Get24HourStatisticsAsync(token: token)
                 .ConfigureAwait(false);
 
             var list = new List<SymbolStatistics>();
@@ -242,7 +244,7 @@ namespace Binance.Api
             {
                 return JArray.Parse(json)
                     .Select(item => new SymbolPrice(item["symbol"].Value<string>(), item["price"].Value<decimal>()))
-                    .Where(_ => _.Symbol != "123456")
+                    .Where(_ => _.Symbol != "123456") // HACK
                     .ToList();
             }
             catch (Exception e)
@@ -330,7 +332,7 @@ namespace Binance.Api
             }
 
             return symbols
-                .Where(_ => _.ToString() != "123456");
+                .Where(_ => _.ToString() != "123456"); // HACK
         }
 
         #endregion Market Data
@@ -857,15 +859,14 @@ namespace Binance.Api
         /// Convert to 24-hour statistics.
         /// </summary>
         /// <param name="jToken"></param>
-        /// <param name="symbol"></param>
         /// <returns></returns>
-        private SymbolStatistics ConvertTo24HourStatistics(JToken jToken, string symbol = null)
+        private SymbolStatistics ConvertTo24HourStatistics(JToken jToken)
         {
             var firstId = jToken["firstId"].Value<long>();
             var lastId = jToken["lastId"].Value<long>();
 
             return new SymbolStatistics(
-                symbol ?? jToken["symbol"].Value<string>(), // TODO
+                jToken["symbol"].Value<string>(),
                 TimeSpan.FromHours(24),
                 jToken["priceChange"].Value<decimal>(),
                 jToken["priceChangePercent"].Value<decimal>(),
@@ -880,7 +881,9 @@ namespace Binance.Api
                 jToken["volume"].Value<decimal>(),
                 jToken["openTime"].Value<long>(),
                 jToken["closeTime"].Value<long>(),
-                firstId, lastId, lastId - firstId + 1); // TODO
+                jToken["firstId"].Value<long>(),
+                jToken["lastId"].Value<long>(),
+                jToken["count"].Value<long>());
         }
 
         /// <summary>
