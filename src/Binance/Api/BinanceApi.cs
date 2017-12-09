@@ -235,15 +235,32 @@ namespace Binance.Api
             }
         }
 
+        public virtual async Task<SymbolPrice> GetPriceAsync(string symbol, CancellationToken token = default)
+        {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            var json = await HttpClient.GetPriceAsync(symbol, token)
+                .ConfigureAwait(false);
+
+            try
+            {
+                return ConvertToSymbolPrice(JObject.Parse(json));
+            }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetPricesAsync), json, e);
+            }
+        }
+
         public virtual async Task<IEnumerable<SymbolPrice>> GetPricesAsync(CancellationToken token = default)
         {
-            var json = await HttpClient.GetPricesAsync(token)
+            var json = await HttpClient.GetPriceAsync(token: token)
                 .ConfigureAwait(false);
 
             try
             {
                 return JArray.Parse(json)
-                    .Select(item => new SymbolPrice(item["symbol"].Value<string>(), item["price"].Value<decimal>()))
+                    .Select(item => ConvertToSymbolPrice(item))
                     .Where(_ => _.Symbol != "123456") // HACK
                     .ToList();
             }
@@ -884,6 +901,18 @@ namespace Binance.Api
                 jToken["firstId"].Value<long>(),
                 jToken["lastId"].Value<long>(),
                 jToken["count"].Value<long>());
+        }
+
+        /// <summary>
+        /// Convert to symbol price.
+        /// </summary>
+        /// <param name="jToken"></param>
+        /// <returns></returns>
+        private SymbolPrice ConvertToSymbolPrice(JToken jToken)
+        {
+            return new SymbolPrice(
+                jToken["symbol"].Value<string>(),
+                jToken["price"].Value<decimal>());
         }
 
         /// <summary>

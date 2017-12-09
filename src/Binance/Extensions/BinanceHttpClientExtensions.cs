@@ -322,16 +322,24 @@ namespace Binance.Api
         }
 
         /// <summary>
-        /// Get latest price for all symbols.
+        /// Get latest price for a symbol or all symbols.
         /// </summary>
         /// <param name="client"></param>
+        /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task<string> GetPricesAsync(this IBinanceHttpClient client, CancellationToken token = default)
+        public static Task<string> GetPriceAsync(this IBinanceHttpClient client, string symbol = null, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
 
-            return client.GetAsync("/api/v1/ticker/allPrices", token);
+            var request = new BinanceHttpRequest("/api/v3/ticker/price");
+
+            if (!string.IsNullOrWhiteSpace(symbol))
+            {
+                request.AddParameter("symbol", symbol.FormatSymbol());
+            }
+
+            return client.GetAsync(request, token);
         }
 
         /// <summary>

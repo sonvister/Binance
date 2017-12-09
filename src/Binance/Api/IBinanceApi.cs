@@ -124,6 +124,14 @@ namespace Binance.Api
         Task<IEnumerable<SymbolStatistics>> Get24HourStatisticsAsync(CancellationToken token = default);
 
         /// <summary>
+        /// Get latest price for a symbol.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<SymbolPrice> GetPriceAsync(string symbol, CancellationToken token = default);
+
+        /// <summary>
         /// Get latest price for all symbols.
         /// </summary>
         /// <param name="token"></param>
