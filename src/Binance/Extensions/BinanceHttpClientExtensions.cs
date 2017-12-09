@@ -13,13 +13,17 @@ namespace Binance.Api
     {
         #region Private Fields
 
-        private static long _timestampOffset;
-
         private static DateTime _timestampOffsetUpdatedAt;
 
         private static readonly SemaphoreSlim _timestampOffsetSync = new SemaphoreSlim(1, 1);
 
         #endregion Private Fields
+
+        #region Internal Fields
+
+        internal static long _timestampOffset;
+
+        #endregion Internal Fields
 
         /// <summary>
         /// Test connectivity to the server.
@@ -85,15 +89,15 @@ namespace Binance.Api
                     var count = N;
                     do
                     {
-                        var systemTimeBefore = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                        var systemTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
                         var json = await GetServerTimeAsync(client, token)
                             .ConfigureAwait(false);
 
-                        var systemTimeAfter = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                        systemTime = (systemTime + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) / 2;
 
                         // Calculate timestamp offset to account for time differences and delays.
-                        sum += systemTimeAfter - JObject.Parse(json)["serverTime"].Value<long>() + (systemTimeAfter - systemTimeBefore) / 2;
+                        sum += JObject.Parse(json)["serverTime"].Value<long>() - systemTime;
                     } while (--count > 0);
 
                     // Calculate average offset.
@@ -189,7 +193,6 @@ namespace Binance.Api
 
             return client.GetAsync(request, token);
         }
-
 
         /// <summary>
         /// Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.

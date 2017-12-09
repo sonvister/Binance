@@ -17,7 +17,7 @@ namespace Binance
         public static readonly int OrderRateLimitBurstCountDefault = 10;
         public static readonly int OrderRateLimitBurstDurationSecondsDefault = 1;
 
-        public const int TimestampOffsetRefreshPeriodMinutesDefault = 60;
+        public const int TimestampOffsetRefreshPeriodMinutesDefault = 30;
 
         #endregion Public Constants
 

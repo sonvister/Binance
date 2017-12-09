@@ -17,6 +17,12 @@ namespace Binance.Api
 
         #endregion Public Constants
 
+        #region Public Static Properties
+
+        public static long TimestampOffset => BinanceHttpClientExtensions._timestampOffset;
+
+        #endregion Public Static Properties
+
         #region Public Properties
 
         public IApiRateLimiter RateLimiter { get; }
