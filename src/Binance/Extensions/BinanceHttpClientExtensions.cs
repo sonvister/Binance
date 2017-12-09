@@ -323,6 +323,25 @@ namespace Binance.Api
         }
 
         /// <summary>
+        /// Get best price/quantity on the order book for a symbol.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="symbol"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<string> GetOrderBookTopAsync(this IBinanceHttpClient client, string symbol, CancellationToken token = default)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            var request = new BinanceHttpRequest("/api/v1/ticker/bookTicker");
+
+            request.AddParameter("symbol", symbol.FormatSymbol());
+
+            return client.GetAsync(request, token);
+        }
+
+        /// <summary>
         /// Get best price/quantity on the order book for all symbols.
         /// </summary>
         /// <param name="client"></param>
@@ -332,7 +351,7 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
-            return client.GetAsync("/api/v1/ticker/allBookTickers", token);
+            return client.GetAsync("/api/v1/ticker/bookTicker", token);
         }
 
         #endregion Market Data

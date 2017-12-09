@@ -122,6 +122,14 @@ namespace Binance.Api
         Task<IEnumerable<SymbolPrice>> GetPricesAsync(CancellationToken token = default);
 
         /// <summary>
+        /// Get best price/quantity on the order book for a symbol.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<OrderBookTop> GetOrderBookTopAsync(string symbol, CancellationToken token = default);
+
+        /// <summary>
         /// Get best price/quantity on the order book for all symbols.
         /// </summary>
         /// <param name="token"></param>

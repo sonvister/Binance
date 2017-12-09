@@ -165,6 +165,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  candlesIn|kLinesIn <symbol> <interval> <start> <end> display candlesticks for a symbol in time interval.");
                 Console.WriteLine("  symbols|pairs                                        display all symbols (currency pairs).");
                 Console.WriteLine("  prices                                               display current price for all symbols.");
+                Console.WriteLine("  top <symbol>                                         display order book top price and quantity for a symbol.");
                 Console.WriteLine("  tops                                                 display order book top price and quantity for all symbols.");
                 Console.WriteLine("  live depth|book <symbol>                             enable order book live feed for a symbol.");
                 Console.WriteLine("  live candles|kLines <symbol> <interval>              enable candlestick live feed for a symbol and interval.");
@@ -348,6 +349,14 @@ namespace BinanceConsoleApp
 
             LiveTokenSource = null;
             LiveTask = null;
+        }
+
+        internal static void Display(OrderBookTop top)
+        {
+            lock (ConsoleSync)
+            {
+                Console.WriteLine($"  {top.Symbol.PadLeft(8)}  -  Bid: {top.Bid.Price.ToString("0.00000000").PadLeft(13)} (qty: {top.Bid.Quantity})   |   Ask: {top.Ask.Price.ToString("0.00000000").PadLeft(13)} (qty: {top.Ask.Quantity})");
+            }
         }
 
         internal static void Display(Trade trade)

@@ -236,6 +236,21 @@ namespace Binance.Api
             }
         }
 
+        public virtual async Task<OrderBookTop> GetOrderBookTopAsync(string symbol, CancellationToken token = default)
+        {
+            var json = await HttpClient.GetOrderBookTopAsync(symbol, token)
+                .ConfigureAwait(false);
+
+            try
+            {
+                return ConvertToOrderBookTop(JObject.Parse(json));
+            }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetOrderBookTopAsync), json, e);
+            }
+        }
+
         public virtual async Task<IEnumerable<OrderBookTop>> GetOrderBookTopsAsync(CancellationToken token = default)
         {
             var json = await HttpClient.GetOrderBookTopsAsync(token)
@@ -243,14 +258,7 @@ namespace Binance.Api
 
             try
             {
-                var jArray = JArray.Parse(json);
-
-                return jArray.Select(item => new OrderBookTop(
-                    item["symbol"].Value<string>(),
-                    item["bidPrice"].Value<decimal>(),
-                    item["bidQty"].Value<decimal>(),
-                    item["askPrice"].Value<decimal>(),
-                    item["askQty"].Value<decimal>())).ToList();
+                return JArray.Parse(json).Select(item => ConvertToOrderBookTop(item)).ToList();
             }
             catch (Exception e)
             {
@@ -815,6 +823,27 @@ namespace Binance.Api
             )).ToList();
         }
 
+        /// <summary>
+        /// Convert to order book top.
+        /// </summary>
+        /// <param name="jToken"></param>
+        /// <returns></returns>
+        private OrderBookTop ConvertToOrderBookTop(JToken jToken)
+        {
+            return new OrderBookTop(
+                jToken["symbol"].Value<string>(),
+                jToken["bidPrice"].Value<decimal>(),
+                jToken["bidQty"].Value<decimal>(),
+                jToken["askPrice"].Value<decimal>(),
+                jToken["askQty"].Value<decimal>());
+        }
+
+        /// <summary>
+        /// Convert to 24-hour statistics.
+        /// </summary>
+        /// <param name="jToken"></param>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
         private SymbolStatistics ConvertTo24HourStatistics(JToken jToken, string symbol = null)
         {
             var firstId = jToken["firstId"].Value<long>();
