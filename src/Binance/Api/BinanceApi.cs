@@ -100,9 +100,9 @@ namespace Binance.Api
                 var lastUpdateId = jObject["lastUpdateId"].Value<long>();
 
                 var bids = jObject["bids"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>()))
-                    .ToList();
+                    .ToArray();
                 var asks = jObject["asks"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>()))
-                    .ToList();
+                    .ToArray();
 
                 return new OrderBook(symbol.FormatSymbol(), lastUpdateId, bids, asks);
             }
@@ -221,13 +221,11 @@ namespace Binance.Api
             var json = await HttpClient.Get24HourStatisticsAsync(token: token)
                 .ConfigureAwait(false);
 
-            var list = new List<SymbolStatistics>();
-
             try
             {
                 return JArray.Parse(json)
                     .Select(item => ConvertTo24HourStatistics(item))
-                    .ToList();
+                    .ToArray();
             }
             catch (Exception e)
             {
@@ -262,7 +260,7 @@ namespace Binance.Api
                 return JArray.Parse(json)
                     .Select(item => ConvertToSymbolPrice(item))
                     .Where(_ => _.Symbol != "123456") // HACK
-                    .ToList();
+                    .ToArray();
             }
             catch (Exception e)
             {
@@ -376,7 +374,7 @@ namespace Binance.Api
             // Place the order.
             var json = await HttpClient.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
                 clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce,
-                clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, false, token);
+                clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, false, PlaceOrderResponseType.Result, token);
 
             try
             {
@@ -400,10 +398,10 @@ namespace Binance.Api
 
             var limitOrder = clientOrder as LimitOrder;
 
-            // Place the order.
+            // Place the TEST order.
             var json = await HttpClient.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
                 clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce,
-                clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, true, token);
+                clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, true, token: token);
 
             if (json != SuccessfulTestResponse)
             {
@@ -497,25 +495,20 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<IEnumerable<Order>> GetOpenOrdersAsync(IBinanceApiUser user, string symbol, long recvWindow = default, CancellationToken token = default)
+        public virtual async Task<IEnumerable<Order>> GetOpenOrdersAsync(IBinanceApiUser user, string symbol = null, long recvWindow = default, CancellationToken token = default)
         {
             var json = await HttpClient.GetOpenOrdersAsync(user, symbol, recvWindow, token)
                 .ConfigureAwait(false);
 
             try
             {
-                var jArray = JArray.Parse(json);
-
-                var orders = new List<Order>();
-                foreach (var jToken in jArray)
-                {
-                    var order = new Order(user);
-
-                    FillOrder(order, jToken);
-
-                    orders.Add(order);
-                }
-                return orders;
+                return JArray.Parse(json)
+                    .Select(item =>
+                    {
+                        var order = new Order(user);
+                        FillOrder(order, item);
+                        return order;
+                    }).ToArray();
             }
             catch (Exception e)
             {
@@ -530,18 +523,13 @@ namespace Binance.Api
 
             try
             {
-                var jArray = JArray.Parse(json);
-
-                var orders = new List<Order>();
-                foreach (var jToken in jArray)
-                {
-                    var order = new Order(user);
-
-                    FillOrder(order, jToken);
-
-                    orders.Add(order);
-                }
-                return orders;
+                return JArray.Parse(json)
+                    .Select(item =>
+                    {
+                        var order = new Order(user);
+                        FillOrder(order, item);
+                        return order;
+                    }).ToArray();
             }
             catch (Exception e)
             {
@@ -925,9 +913,7 @@ namespace Binance.Api
             order.Symbol = jToken["symbol"].Value<string>();
             order.Id = jToken["orderId"].Value<long>();
             order.ClientOrderId = jToken["clientOrderId"].Value<string>();
-
             order.Timestamp = (jToken["time"] ?? jToken["transactTime"]).Value<long>();
-
             order.Price = jToken["price"].Value<decimal>();
             order.OriginalQuantity = jToken["origQty"].Value<decimal>();
             order.ExecutedQuantity = jToken["executedQty"].Value<decimal>();
@@ -935,8 +921,8 @@ namespace Binance.Api
             order.TimeInForce = jToken["timeInForce"].Value<string>().ConvertTimeInForce();
             order.Type = jToken["type"].Value<string>().ConvertOrderType();
             order.Side = jToken["side"].Value<string>().ConvertOrderSide();
-            order.StopPrice = jToken["stopPrice"]?.Value<decimal>() ?? 0;
-            order.IcebergQuantity = jToken["icebergQty"]?.Value<decimal>() ?? 0;
+            order.StopPrice = jToken["stopPrice"]?.Value<decimal>() ?? order.StopPrice;
+            order.IcebergQuantity = jToken["icebergQty"]?.Value<decimal>() ?? order.IcebergQuantity;
         }
 
         /// <summary>
@@ -949,7 +935,9 @@ namespace Binance.Api
         private BinanceApiException NewFailedToParseJsonException(string methodName, string json, Exception e)
         {
             var message = $"{nameof(BinanceApi)}.{methodName} failed to parse JSON api response: \"{json}\"";
+
             _logger?.LogError(e, message);
+
             return new BinanceApiException(message, e);
         }
 

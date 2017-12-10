@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -24,7 +23,7 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string symbol = Symbol.BTC_USDT;
+            string symbol = null;
             var openOrders = false;
             var limit = 10;
 
@@ -32,7 +31,11 @@ namespace BinanceConsoleApp.Controllers
             {
                 if (!int.TryParse(args[1], out limit))
                 {
-                    symbol = args[1];
+                    if (args[1].Equals("open", StringComparison.OrdinalIgnoreCase))
+                        openOrders = true;
+                    else
+                        symbol = args[1];
+
                     limit = 10;
                 }
             }

@@ -239,14 +239,14 @@ namespace Binance.Api
         Task<string> CancelOrderAsync(IBinanceApiUser user, string symbol, string origClientOrderId, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
-        /// Get all open orders on a symbol.
+        /// Get all open orders on a symbol or all symbols.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="symbol"></param>
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<Order>> GetOpenOrdersAsync(IBinanceApiUser user, string symbol, long recvWindow = default, CancellationToken token = default);
+        Task<IEnumerable<Order>> GetOpenOrdersAsync(IBinanceApiUser user, string symbol = null, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get all account orders; active, canceled, or filled.

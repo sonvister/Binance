@@ -394,9 +394,10 @@ namespace Binance.Api
         /// <param name="icebergQty">Used with iceberg orders.</param>
         /// <param name="recvWindow"></param>
         /// <param name="isTestOnly">If true, test new order creation and signature/recvWindow; creates and validates a new order but does not send it into the matching engine.</param>
+        /// <param name="newOrderResponseType">Set the response JSON.</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> PlaceOrderAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol, OrderSide side, OrderType type, decimal quantity, decimal price, string newClientOrderId = null, TimeInForce? timeInForce = null, decimal stopPrice = 0, decimal icebergQty = 0, long recvWindow = default, bool isTestOnly = false, CancellationToken token = default)
+        public static async Task<string> PlaceOrderAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol, OrderSide side, OrderType type, decimal quantity, decimal price, string newClientOrderId = null, TimeInForce? timeInForce = null, decimal stopPrice = 0, decimal icebergQty = 0, long recvWindow = default, bool isTestOnly = false, PlaceOrderResponseType newOrderRespType = PlaceOrderResponseType.Result, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(user, nameof(user));
@@ -416,6 +417,7 @@ namespace Binance.Api
             request.AddParameter("symbol", symbol.FormatSymbol());
             request.AddParameter("side", side.ToString().ToUpper());
             request.AddParameter("type", type.ToString().ToUpper());
+            request.AddParameter("newOrderRespType", newOrderRespType.ToString().ToUpper());
             request.AddParameter("quantity", quantity);
 
             if (price > 0)
@@ -575,11 +577,10 @@ namespace Binance.Api
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> GetOpenOrdersAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol, long recvWindow = default, CancellationToken token = default)
+        public static async Task<string> GetOpenOrdersAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol = null, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(user, nameof(user));
-            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
@@ -589,7 +590,8 @@ namespace Binance.Api
                 ApiKey = user.ApiKey
             };
 
-            request.AddParameter("symbol", symbol.FormatSymbol());
+            if (!string.IsNullOrWhiteSpace(symbol))
+                request.AddParameter("symbol", symbol.FormatSymbol());
 
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
