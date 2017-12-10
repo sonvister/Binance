@@ -752,12 +752,13 @@ namespace Binance.Api
         /// <param name="user"></param>
         /// <param name="asset"></param>
         /// <param name="address"></param>
+        /// <param name="addressTag"></param>
         /// <param name="amount"></param>
         /// <param name="name">A description of the address (optional).</param>
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> WithdrawAsync(this IBinanceHttpClient client, IBinanceApiUser user, string asset, string address, decimal amount, string name = null, long recvWindow = default, CancellationToken token = default)
+        public static async Task<string> WithdrawAsync(this IBinanceHttpClient client, IBinanceApiUser user, string asset, string address, string addressTag, decimal amount, string name = null, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(user, nameof(user));
@@ -778,6 +779,9 @@ namespace Binance.Api
             request.AddParameter("asset", asset.FormatSymbol());
             request.AddParameter("address", address);
             request.AddParameter("amount", amount);
+
+            if (!string.IsNullOrWhiteSpace(addressTag))
+                request.AddParameter("addressTag", addressTag);
 
             if (!string.IsNullOrWhiteSpace(name))
                 request.AddParameter("name", name);
@@ -897,6 +901,8 @@ namespace Binance.Api
                 request.AddParameter("recvWindow", recvWindow);
 
             var signature = user.Sign(request.QueryString);
+
+            request.AddParameter("signature", signature);
 
             return await client.PostAsync(request, token)
                 .ConfigureAwait(false);

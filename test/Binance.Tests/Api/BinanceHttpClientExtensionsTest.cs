@@ -96,7 +96,6 @@ namespace Binance.Tests.Api
             var symbol = Symbol.BTC_USDT;
 
             await Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.GetOpenOrdersAsync(null, symbol));
-            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _client.GetOpenOrdersAsync(user, null));
         }
 
         [Fact]
@@ -129,14 +128,15 @@ namespace Binance.Tests.Api
             var user = new BinanceApiUser("api-key");
             var asset = Asset.BTC;
             const string address = "12345678901234567890";
+            const string addressTag = "ABCDEF";
             const decimal amount = 1;
 
-            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.WithdrawAsync(null, asset, address, amount));
-            await Assert.ThrowsAsync<ArgumentNullException>("asset", () => _client.WithdrawAsync(user, null, address, amount));
-            await Assert.ThrowsAsync<ArgumentNullException>("address", () => _client.WithdrawAsync(user, asset, null, amount));
-            await Assert.ThrowsAsync<ArgumentNullException>("address", () => _client.WithdrawAsync(user, asset, string.Empty, amount));
-            await Assert.ThrowsAsync<ArgumentException>("amount", () => _client.WithdrawAsync(user, asset, address, -1));
-            await Assert.ThrowsAsync<ArgumentException>("amount", () => _client.WithdrawAsync(user, asset, address, 0));
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.WithdrawAsync(null, asset, address, addressTag, amount));
+            await Assert.ThrowsAsync<ArgumentNullException>("asset", () => _client.WithdrawAsync(user, null, address, addressTag, amount));
+            await Assert.ThrowsAsync<ArgumentNullException>("address", () => _client.WithdrawAsync(user, asset, null, addressTag, amount));
+            await Assert.ThrowsAsync<ArgumentNullException>("address", () => _client.WithdrawAsync(user, asset, string.Empty, addressTag, amount));
+            await Assert.ThrowsAsync<ArgumentException>("amount", () => _client.WithdrawAsync(user, asset, address, addressTag, -1));
+            await Assert.ThrowsAsync<ArgumentException>("amount", () => _client.WithdrawAsync(user, asset, address, addressTag, 0));
         }
 
         [Fact]
