@@ -22,6 +22,16 @@ namespace Binance.Account
         public long Timestamp { get; }
 
         /// <summary>
+        /// Get the address.
+        /// </summary>
+        public string Address { get; }
+
+        /// <summary>
+        /// Get the transaction ID.
+        /// </summary>
+        public string TxId { get; }
+
+        /// <summary>
         /// Get the status.
         /// </summary>
         public DepositStatus Status { get; }
@@ -37,9 +47,12 @@ namespace Binance.Account
         /// <param name="amount">The amount.</param>
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="status">The status.</param>
-        public Deposit(string asset, decimal amount, long timestamp, DepositStatus status)
+        /// <param name="address">The address.</param>
+        /// <param name="txId">The transaction ID.</param>
+        public Deposit(string asset, decimal amount, long timestamp, DepositStatus status, string address, string txId = null)
         {
             Throw.IfNullOrWhiteSpace(asset, nameof(asset));
+            Throw.IfNullOrWhiteSpace(address, nameof(address));
 
             if (amount <= 0)
                 throw new ArgumentException($"{nameof(Deposit)} amount must be greater than 0.", nameof(amount));
@@ -50,6 +63,8 @@ namespace Binance.Account
             Amount = amount;
             Timestamp = timestamp;
             Status = status;
+            Address = address;
+            TxId = txId;
         }
 
         #endregion Constructors

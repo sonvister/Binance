@@ -22,6 +22,11 @@ namespace Binance.Account
         public string Address { get; set; }
 
         /// <summary>
+        /// Get or set the secondary address identifier.
+        /// </summary>
+        public string AddressTag { get; set; }
+
+        /// <summary>
         /// Get or set the amount.
         /// </summary>
         public decimal Amount { get; set; }

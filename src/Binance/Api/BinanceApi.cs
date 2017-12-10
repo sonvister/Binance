@@ -606,7 +606,7 @@ namespace Binance.Api
         {
             Throw.IfNull(withdrawRequest, nameof(withdrawRequest));
 
-            var json = await HttpClient.WithdrawAsync(withdrawRequest.User, withdrawRequest.Asset, withdrawRequest.Address, withdrawRequest.Amount, withdrawRequest.Name, recvWindow, token)
+            var json = await HttpClient.WithdrawAsync(withdrawRequest.User, withdrawRequest.Asset, withdrawRequest.Address, withdrawRequest.AddressTag, withdrawRequest.Amount, withdrawRequest.Name, recvWindow, token)
                 .ConfigureAwait(false);
 
             bool success;
@@ -658,7 +658,9 @@ namespace Binance.Api
                                 jToken["asset"].Value<string>(),
                                 jToken["amount"].Value<decimal>(),
                                 jToken["insertTime"].Value<long>(),
-                                (DepositStatus) jToken["status"].Value<int>())));
+                                (DepositStatus)jToken["status"].Value<int>(),
+                                jToken["address"]?.Value<string>(),
+                                jToken["txId"]?.Value<string>())));
                     }
                 }
             }
@@ -700,10 +702,11 @@ namespace Binance.Api
                     {
                         withdrawals.AddRange(
                             withdrawList.Select(jToken => new Withdrawal(
+                                jToken["id"].Value<string>(),
                                 jToken["asset"].Value<string>(),
                                 jToken["amount"].Value<decimal>(),
                                 jToken["applyTime"].Value<long>(),
-                                (WithdrawalStatus) jToken["status"].Value<int>(),
+                                (WithdrawalStatus)jToken["status"].Value<int>(),
                                 jToken["address"].Value<string>(),
                                 jToken["txId"]?.Value<string>())));
                     }
