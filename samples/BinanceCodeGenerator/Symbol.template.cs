@@ -139,7 +139,7 @@ namespace Binance
         {
             Throw.IfNull(symbols, nameof(symbols));
 
-            if (symbols.Any())
+            if (!symbols.Any())
                 throw new ArgumentException("Enumerable must not be empty.", nameof(symbols));
 
             lock (_sync)

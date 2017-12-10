@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1512688771928;
+        public static readonly long LastUpdateAt = 1512872073164;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Symbol BCH_USDT = BCC_USDT;
@@ -96,6 +96,7 @@ namespace Binance
         public static readonly Symbol VEN_BTC = new Symbol(Asset.VEN, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol VIB_BTC = new Symbol(Asset.VIB, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol WTC_BTC = new Symbol(Asset.WTC, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
+        public static readonly Symbol XLM_BTC = new Symbol(Asset.XLM, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol XMR_BTC = new Symbol(Asset.XMR, Asset.BTC, 0.00100000m, 10000000.00000000m, 0.00000100m);
         public static readonly Symbol XRP_BTC = new Symbol(Asset.XRP, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol XVG_BTC = new Symbol(Asset.XVG, Asset.BTC, 1.00000000m, 10000000.00000000m, 0.00000001m);
@@ -174,6 +175,7 @@ namespace Binance
         public static readonly Symbol VEN_ETH = new Symbol(Asset.VEN, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol VIB_ETH = new Symbol(Asset.VIB, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol WTC_ETH = new Symbol(Asset.WTC, Asset.ETH, 0.01000000m, 10000000.00000000m, 0.00000100m);
+        public static readonly Symbol XLM_ETH = new Symbol(Asset.XLM, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol XMR_ETH = new Symbol(Asset.XMR, Asset.ETH, 0.00100000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol XRP_ETH = new Symbol(Asset.XRP, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
         public static readonly Symbol XVG_ETH = new Symbol(Asset.XVG, Asset.ETH, 1.00000000m, 10000000.00000000m, 0.00000001m);
@@ -201,6 +203,7 @@ namespace Binance
         public static readonly Symbol RDN_BNB = new Symbol(Asset.RDN, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol VEN_BNB = new Symbol(Asset.VEN, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00010000m);
         public static readonly Symbol WTC_BNB = new Symbol(Asset.WTC, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00010000m);
+        public static readonly Symbol XLM_BNB = new Symbol(Asset.XLM, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol XZC_BNB = new Symbol(Asset.XZC, Asset.BNB, 0.00100000m, 10000000.00000000m, 0.00100000m);
         public static readonly Symbol YOYO_BNB = new Symbol(Asset.YOYO, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
 
@@ -406,6 +409,9 @@ namespace Binance
             { "WTCBNB", WTC_BNB },
             { "WTCBTC", WTC_BTC },
             { "WTCETH", WTC_ETH },
+            { "XLMBNB", XLM_BNB },
+            { "XLMBTC", XLM_BTC },
+            { "XLMETH", XLM_ETH },
             { "XMRBTC", XMR_BTC },
             { "XMRETH", XMR_ETH },
             { "XRPBTC", XRP_BTC },
