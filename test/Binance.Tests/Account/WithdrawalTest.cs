@@ -35,9 +35,10 @@ namespace Binance.Tests.Account
             const long timestamp = 1234567890;
             const WithdrawalStatus status = WithdrawalStatus.Completed;
             const string address = "0x12345678901234567890";
+            const string addressTag = "ABCDEF";
             const string txId = "21436587092143658709";
 
-            var withdrawal = new Withdrawal(id, asset, amount, timestamp, status, address, txId);
+            var withdrawal = new Withdrawal(id, asset, amount, timestamp, status, address, addressTag, txId);
 
             Assert.Equal(id, withdrawal.Id);
             Assert.Equal(asset, withdrawal.Asset);
@@ -45,6 +46,7 @@ namespace Binance.Tests.Account
             Assert.Equal(timestamp, withdrawal.Timestamp);
             Assert.Equal(status, withdrawal.Status);
             Assert.Equal(address, withdrawal.Address);
+            Assert.Equal(addressTag, withdrawal.AddressTag);
             Assert.Equal(txId, withdrawal.TxId);
         }
     }

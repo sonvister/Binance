@@ -18,6 +18,7 @@ namespace BinanceConsoleApp.Controllers
             {
                 lock (Program.ConsoleSync)
                     Console.WriteLine("An asset, address, and amount are required.");
+
                 return true;
             }
 
@@ -29,14 +30,20 @@ namespace BinanceConsoleApp.Controllers
             {
                 lock (Program.ConsoleSync)
                     Console.WriteLine("An amount greater than 0 is required.");
+
                 return true;
             }
+
+            string name = null;
+            if (args.Length > 5)
+                name = args[4];
 
             await Program.Api.WithdrawAsync(new WithdrawRequest(Program.User)
             {
                 Asset = asset,
                 Address = address,
-                Amount = amount
+                Amount = amount,
+                Name = name
             }, token: token);
 
             lock (Program.ConsoleSync)

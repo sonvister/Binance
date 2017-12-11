@@ -183,9 +183,10 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  account|balances                                      display user account information (including balances).");
                 Console.WriteLine("  myTrades <symbol> [limit]                             display user trades of a symbol.");
                 Console.WriteLine("  myTrades order <symbol> <orderId>                     display user trades of a symbol by order ID.");
+                Console.WriteLine("  address <asset>                                       display user deposit address for an asset.");
                 Console.WriteLine("  deposits [asset]                                      display user deposits of an asset or all deposits.");
                 Console.WriteLine("  withdrawals [asset]                                   display user withdrawals of an asset or all withdrawals.");
-                Console.WriteLine("  withdraw <asset> <address> <amount>                   submit a withdraw request (NOTE: 'test only' does NOT apply).");
+                Console.WriteLine("  withdraw <asset> <address> <amount> [description]     submit a withdraw request (NOTE: 'test only' does NOT apply).");
                 Console.WriteLine("  test <on|off>                                         determines if orders are test only (default: on).");
                 Console.WriteLine();
                 Console.WriteLine("  quit | exit                                           terminate the application.");
@@ -348,6 +349,14 @@ namespace BinanceConsoleApp
 
             LiveTokenSource = null;
             LiveTask = null;
+        }
+
+        internal static void Display(DepositAddress address)
+        {
+            lock (ConsoleSync)
+            {
+                Console.WriteLine($"  {address.Asset}: {address.Address} - {(!string.IsNullOrWhiteSpace(address.AddressTag) ? address.AddressTag : "[No Address Tag]")}");
+            }
         }
 
         internal static void Display(SymbolPrice price)

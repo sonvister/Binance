@@ -288,8 +288,8 @@ namespace Binance.Api
         /// <param name="withdrawRequest"></param>
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
-        /// <returns></returns>
-        Task WithdrawAsync(WithdrawRequest withdrawRequest, long recvWindow = default, CancellationToken token = default);
+        /// <returns>The withdrawal ID if successful.</returns>
+        Task<string> WithdrawAsync(WithdrawRequest withdrawRequest, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get the deposit history.
@@ -316,6 +316,15 @@ namespace Binance.Api
         /// <param name="token"></param>
         /// <returns></returns>
         Task<IEnumerable<Withdrawal>> GetWithdrawalsAsync(IBinanceApiUser user, string asset, WithdrawalStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = 0, CancellationToken token = default);
+
+        /// <summary>
+        /// Get the deposit address for an asset.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="asset"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<DepositAddress> GetDepositAddressAsync(IBinanceApiUser user, string asset, CancellationToken token = default);
 
         #endregion Account
 
