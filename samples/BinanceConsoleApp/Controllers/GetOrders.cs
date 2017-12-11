@@ -23,6 +23,12 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
+            if (args.Length < 2)
+            {
+                Console.WriteLine("A symbol is required.");
+                return true;
+            }
+
             string symbol = null;
             var openOrders = false;
             var limit = 10;

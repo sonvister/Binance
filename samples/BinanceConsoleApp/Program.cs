@@ -356,7 +356,7 @@ namespace BinanceConsoleApp
         {
             lock (ConsoleSync)
             {
-                Console.WriteLine($"  {address.Asset}: {address.Address} - {(!string.IsNullOrWhiteSpace(address.AddressTag) ? address.AddressTag : "[No Address Tag]")}");
+                Console.WriteLine($"  {address.Asset} => {address.Address} - {(!string.IsNullOrWhiteSpace(address.AddressTag) ? address.AddressTag : "[No Address Tag]")}");
             }
         }
 
