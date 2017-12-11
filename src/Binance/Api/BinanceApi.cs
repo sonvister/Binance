@@ -754,6 +754,21 @@ namespace Binance.Api
             }
         }
 
+        public virtual async Task<string> GetAccountStatusAsync(IBinanceApiUser user, CancellationToken token = default)
+        {
+            var json = await HttpClient.GetAccountStatusAsync(user, token)
+                .ConfigureAwait(false);
+
+            try
+            {
+                return JObject.Parse(json)["msg"].Value<string>();
+            }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetAccountStatusAsync), json, e);
+            }
+        }
+
         #endregion Account
 
         #region User Data Stream

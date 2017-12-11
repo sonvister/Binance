@@ -326,6 +326,14 @@ namespace Binance.Api
         /// <returns></returns>
         Task<DepositAddress> GetDepositAddressAsync(IBinanceApiUser user, string asset, CancellationToken token = default);
 
+        /// <summary>
+        /// Get account status.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<string> GetAccountStatusAsync(IBinanceApiUser user, CancellationToken token = default);
+
         #endregion Account
 
         #region User Stream

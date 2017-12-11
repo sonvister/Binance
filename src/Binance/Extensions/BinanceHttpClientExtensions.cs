@@ -941,6 +941,35 @@ namespace Binance.Api
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Get the account status.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="user"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task<string> GetAccountStatusAsync(this IBinanceHttpClient client, IBinanceApiUser user, CancellationToken token = default)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            var request = new BinanceHttpRequest($"/wapi/v3/accountStatus.html")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            var timestamp = await client.GetTimestampAsync(token)
+                .ConfigureAwait(false);
+
+            request.AddParameter("timestamp", timestamp);
+
+            var signature = user.Sign(request.QueryString);
+
+            request.AddParameter("signature", signature);
+
+            return await client.GetAsync(request, token)
+                .ConfigureAwait(false);
+        }
+
         #endregion Account
 
         #region User Stream
