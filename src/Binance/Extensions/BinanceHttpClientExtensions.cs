@@ -771,7 +771,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/wapi/v1/withdraw.html")
+            var request = new BinanceHttpRequest($"/wapi/v3/withdraw.html")
             {
                 ApiKey = user.ApiKey
             };
@@ -822,7 +822,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/wapi/v1/getDepositHistory.html")
+            var request = new BinanceHttpRequest($"/wapi/v3/depositHistory.html")
             {
                 ApiKey = user.ApiKey
             };
@@ -851,7 +851,7 @@ namespace Binance.Api
 
             request.AddParameter("signature", signature);
 
-            return await client.PostAsync(request, token)
+            return await client.GetAsync(request, token)
                 .ConfigureAwait(false);
         }
 
@@ -875,7 +875,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/wapi/v1/getWithdrawHistory.html")
+            var request = new BinanceHttpRequest($"/wapi/v3/withdrawHistory.html")
             {
                 ApiKey = user.ApiKey
             };
@@ -904,7 +904,40 @@ namespace Binance.Api
 
             request.AddParameter("signature", signature);
 
-            return await client.PostAsync(request, token)
+            return await client.GetAsync(request, token)
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get the deposit address for an asset.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="user"></param>
+        /// <param name="asset"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task<string> GetDepositAddressAsync(this IBinanceHttpClient client, IBinanceApiUser user, string asset, CancellationToken token = default)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(asset, nameof(asset));
+
+            var request = new BinanceHttpRequest($"/wapi/v3/depositAddress.html")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            request.AddParameter("asset", asset.FormatSymbol());
+
+            var timestamp = await client.GetTimestampAsync(token)
+                .ConfigureAwait(false);
+
+            request.AddParameter("timestamp", timestamp);
+
+            var signature = user.Sign(request.QueryString);
+
+            request.AddParameter("signature", signature);
+
+            return await client.GetAsync(request, token)
                 .ConfigureAwait(false);
         }
 

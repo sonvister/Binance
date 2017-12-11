@@ -32,15 +32,17 @@ namespace Binance.Tests.Account
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             const DepositStatus status = DepositStatus.Success;
             const string address = "0x12345678901234567890";
+            const string addressTag = "ABCDEF";
             const string txId = "21436587092143658709";
 
-            var deposit = new Deposit(asset, amount, timestamp, status, address, txId);
+            var deposit = new Deposit(asset, amount, timestamp, status, address, addressTag, txId);
 
             Assert.Equal(asset, deposit.Asset);
             Assert.Equal(amount, deposit.Amount);
             Assert.Equal(timestamp, deposit.Timestamp);
             Assert.Equal(status, deposit.Status);
             Assert.Equal(address, deposit.Address);
+            Assert.Equal(addressTag, deposit.AddressTag);
             Assert.Equal(txId, deposit.TxId);
         }
     }

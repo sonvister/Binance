@@ -602,7 +602,7 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task WithdrawAsync(WithdrawRequest withdrawRequest, long recvWindow = default, CancellationToken token = default)
+        public virtual async Task<string> WithdrawAsync(WithdrawRequest withdrawRequest, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(withdrawRequest, nameof(withdrawRequest));
 
@@ -611,6 +611,7 @@ namespace Binance.Api
 
             bool success;
             string msg;
+            string id;
 
             try
             {
@@ -618,6 +619,7 @@ namespace Binance.Api
 
                 success = jObject["success"].Value<bool>();
                 msg = jObject["msg"]?.Value<string>();
+                id = jObject["id"]?.Value<string>();
             }
             catch (Exception e)
             {
@@ -631,6 +633,8 @@ namespace Binance.Api
                 _logger?.LogError(message);
                 throw new BinanceApiException(message);
             }
+
+            return id;
         }
 
         public virtual async Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceApiUser user, string asset, DepositStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default)
@@ -660,6 +664,7 @@ namespace Binance.Api
                                 jToken["insertTime"].Value<long>(),
                                 (DepositStatus)jToken["status"].Value<int>(),
                                 jToken["address"]?.Value<string>(),
+                                jToken["addressTag"]?.Value<string>(),
                                 jToken["txId"]?.Value<string>())));
                     }
                 }
@@ -708,6 +713,7 @@ namespace Binance.Api
                                 jToken["applyTime"].Value<long>(),
                                 (WithdrawalStatus)jToken["status"].Value<int>(),
                                 jToken["address"].Value<string>(),
+                                jToken["addressTag"]?.Value<string>(),
                                 jToken["txId"]?.Value<string>())));
                     }
                 }
@@ -726,6 +732,26 @@ namespace Binance.Api
             }
 
             return withdrawals;
+        }
+
+        public virtual async Task<DepositAddress> GetDepositAddressAsync(IBinanceApiUser user, string asset, CancellationToken token = default)
+        {
+            var json = await HttpClient.GetDepositAddressAsync(user, asset, token)
+                .ConfigureAwait(false);
+
+            try
+            {
+                var jObject = JObject.Parse(json);
+
+                return new DepositAddress(
+                    jObject["asset"].Value<string>(),
+                    jObject["address"].Value<string>(),
+                    jObject["addressTag"]?.Value<string>());
+            }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetDepositAddressAsync), json, e);
+            }
         }
 
         #endregion Account

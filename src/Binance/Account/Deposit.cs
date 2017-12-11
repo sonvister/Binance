@@ -27,6 +27,11 @@ namespace Binance.Account
         public string Address { get; }
 
         /// <summary>
+        /// Get the address tag.
+        /// </summary>
+        public string AddressTag { get; }
+
+        /// <summary>
         /// Get the transaction ID.
         /// </summary>
         public string TxId { get; }
@@ -48,8 +53,9 @@ namespace Binance.Account
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="status">The status.</param>
         /// <param name="address">The address.</param>
+        /// <param name="addressTag">The address tag.</param>
         /// <param name="txId">The transaction ID.</param>
-        public Deposit(string asset, decimal amount, long timestamp, DepositStatus status, string address, string txId = null)
+        public Deposit(string asset, decimal amount, long timestamp, DepositStatus status, string address, string addressTag = null, string txId = null)
         {
             Throw.IfNullOrWhiteSpace(asset, nameof(asset));
             Throw.IfNullOrWhiteSpace(address, nameof(address));
@@ -64,6 +70,7 @@ namespace Binance.Account
             Timestamp = timestamp;
             Status = status;
             Address = address;
+            AddressTag = addressTag;
             TxId = txId;
         }
 
