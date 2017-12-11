@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1512872073164;
+        public static readonly long LastUpdateAt = 1512953626305;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH = BCC;
@@ -113,7 +113,11 @@ namespace Binance
 
         public static implicit operator string(Asset asset) => asset.ToString();
 
-        public static implicit operator Asset(string s) => Cache.ContainsKey(s) ? Cache[s] : null;
+        public static implicit operator Asset(string s)
+        {
+            var _s = s.FormatSymbol();
+            return Cache.ContainsKey(_s)? Cache[_s] : null;
+        }
 
         #endregion Implicit Operators
 

@@ -32,7 +32,11 @@ namespace Binance
 
         public static implicit operator string(Asset asset) => asset.ToString();
 
-        public static implicit operator Asset(string s) => Cache.ContainsKey(s) ? Cache[s] : null;
+        public static implicit operator Asset(string s)
+        {
+            var _s = s.FormatSymbol();
+            return Cache.ContainsKey(_s)? Cache[_s] : null;
+        }
 
         #endregion Implicit Operators
 
