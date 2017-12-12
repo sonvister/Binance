@@ -17,9 +17,10 @@ namespace Binance.Tests.Api.WebSocket.Events
             var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);
+            long updateTime = 1234567890;
             var balances = new[] { new AccountBalance("BTC", 0.1m, 0.2m) };
 
-            var account = new AccountInfo(user, commissions, status, balances);
+            var account = new AccountInfo(user, commissions, status, updateTime, balances);
 
             using (var cts = new CancellationTokenSource())
             {
@@ -37,9 +38,10 @@ namespace Binance.Tests.Api.WebSocket.Events
             var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);
+            long updateTime = 1234567890;
             var balances = new[] { new AccountBalance("BTC", 0.1m, 0.2m) };
 
-            var account = new AccountInfo(user, commissions, status, balances);
+            var account = new AccountInfo(user, commissions, status, updateTime, balances);
 
             using (var cts = new CancellationTokenSource())
             {

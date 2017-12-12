@@ -168,7 +168,7 @@ namespace Binance.Api.WebSocket
                             entry["l"].Value<decimal>())) // locked amount
                         .ToList();
 
-                    var eventArgs = new AccountUpdateEventArgs(eventTime, token, new AccountInfo(User, commissions, status, balances));
+                    var eventArgs = new AccountUpdateEventArgs(eventTime, token, new AccountInfo(User, commissions, status, jObject["u"].Value<long>(), balances));
 
                     try
                     {
@@ -299,7 +299,7 @@ namespace Binance.Api.WebSocket
             order.TimeInForce = jToken["f"].Value<string>().ConvertTimeInForce();
             order.Type = jToken["o"].Value<string>().ConvertOrderType();
             order.Side = jToken["S"].Value<string>().ConvertOrderSide();
-            order.StopPrice = jToken["P"].Value<decimal>(); // TODO: verify.
+            order.StopPrice = jToken["P"].Value<decimal>();
             order.IcebergQuantity = jToken["F"].Value<decimal>();
             order.ClientOrderId = jToken["C"].Value<string>();
         }

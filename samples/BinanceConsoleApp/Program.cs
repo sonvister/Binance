@@ -173,8 +173,12 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  live off                                              disable the websocket live feed (only one supported by app).");
                 Console.WriteLine();
                 Console.WriteLine(" Account (authentication required):");
-                Console.WriteLine("  market <side> <symbol> <qty> [stop]                   create a market order.");
-                Console.WriteLine("  limit <side> <symbol> <qty> <price> [stop]            create a limit order.");
+                Console.WriteLine("  market <side> <symbol> <qty>                          create a market order.");
+                Console.WriteLine("  stopLoss <side> <symbol> <qty> <stop>                 create a stop loss market order.");
+                Console.WriteLine("  takeProfit <side> <symbol> <qty> <stop>               create a take profit market order.");
+                Console.WriteLine("  limit <side> <symbol> <qty> <price> [postonly]        create a limit order (postonly default: 'true').");
+                Console.WriteLine("  stopLossLimit <side> <symbol> <qty> <price> <stop>    create a stop loss limit order.");
+                Console.WriteLine("  takeProfitLimit <side> <symbol> <qty> <price> <stop>  create a take profit limit order.");
                 Console.WriteLine("  orders <symbol> [limit]                               display orders for a symbol, where limit: [1-500].");
                 Console.WriteLine("  orders [symbol] open                                  display all open orders for a symbol or all symbols.");
                 Console.WriteLine("  cancel [symbol]                                       cancel all open orders for a symbol (or all symbols...).");
@@ -188,7 +192,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  withdrawals [asset]                                   display user withdrawals of an asset or all withdrawals.");
                 Console.WriteLine("  withdraw <asset> <address> <amount> [description]     submit a withdraw request (NOTE: 'test only' does NOT apply).");
                 Console.WriteLine("  status                                                display account status.");
-                Console.WriteLine("  test <on|off>                                         determines if orders are test only (default: on).");
+                Console.WriteLine("  test <on|off>                                         determines if orders are test only (default: 'on').");
                 Console.WriteLine();
                 Console.WriteLine("  quit | exit                                           terminate the application.");
                 Console.WriteLine();

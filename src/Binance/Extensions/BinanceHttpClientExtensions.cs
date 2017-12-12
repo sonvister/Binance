@@ -390,7 +390,7 @@ namespace Binance.Api
         /// <param name="price"></param>
         /// <param name="newClientOrderId">A unique id for the order. Automatically generated if not sent.</param>
         /// <param name="timeInForce"></param>
-        /// <param name="stopPrice">Used with stop orders.</param>
+        /// <param name="stopPrice">Used with STOP_LOSS, STOP_LOSS_LIMIT, TAKE_PROFIT, and TAKE_PROFIT_LIMIT orders.</param>
         /// <param name="icebergQty">Used with iceberg orders.</param>
         /// <param name="recvWindow"></param>
         /// <param name="isTestOnly">If true, test new order creation and signature/recvWindow; creates and validates a new order but does not send it into the matching engine.</param>
@@ -416,7 +416,7 @@ namespace Binance.Api
 
             request.AddParameter("symbol", symbol.FormatSymbol());
             request.AddParameter("side", side.ToString().ToUpper());
-            request.AddParameter("type", type.ToString().ToUpper());
+            request.AddParameter("type", type.AsString());
             request.AddParameter("newOrderRespType", newOrderRespType.ToString().ToUpper());
             request.AddParameter("quantity", quantity);
 

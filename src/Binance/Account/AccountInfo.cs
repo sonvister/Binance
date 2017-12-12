@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Binance.Api;
 
 namespace Binance.Account
@@ -6,7 +7,7 @@ namespace Binance.Account
     /// <summary>
     /// Account information.
     /// </summary>
-    public sealed class AccountInfo
+    public sealed class AccountInfo : IChronological
     {
         #region Public Properties
 
@@ -26,6 +27,11 @@ namespace Binance.Account
         public AccountStatus Status { get; }
         
         /// <summary>
+        /// Get the account update time.
+        /// </summary>
+        public long Timestamp { get; }
+
+        /// <summary>
         /// Get the account balances.
         /// </summary>
         public IEnumerable<AccountBalance> Balances { get; }
@@ -40,16 +46,21 @@ namespace Binance.Account
         /// <param name="user">The user.</param>
         /// <param name="commissions">The account commissions.</param>
         /// <param name="status">The account status.</param>
+        /// <param name="updateTime">The update time.</param>
         /// <param name="balances">The account balances.</param>
-        public AccountInfo(IBinanceApiUser user, AccountCommissions commissions, AccountStatus status, IEnumerable<AccountBalance> balances = null)
+        public AccountInfo(IBinanceApiUser user, AccountCommissions commissions, AccountStatus status, long updateTime, IEnumerable<AccountBalance> balances = null)
         {
             Throw.IfNull(user, nameof(user));
             Throw.IfNull(commissions, nameof(commissions));
             Throw.IfNull(status, nameof(status));
 
+            if (updateTime <= 0)
+                throw new ArgumentException($"{nameof(AccountInfo)}: timestamp must be greater than 0.", nameof(updateTime));
+
             User = user;
             Commissions = commissions;
             Status = status;
+            Timestamp = updateTime;
 
             Balances = balances ?? new AccountBalance[] { };
         }

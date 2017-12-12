@@ -2,7 +2,7 @@
 
 namespace Binance.Account.Orders
 {
-    public sealed class LimitOrder : ClientOrder
+    public class LimitOrder : ClientOrder
     {
         #region Public Properties
 
@@ -15,6 +15,11 @@ namespace Binance.Account.Orders
         /// Get or set the price.
         /// </summary>
         public decimal Price { get; set; }
+
+        /// <summary>
+        /// Get or set the iceberg quantity.
+        /// </summary>
+        public decimal IcebergQuantity { get; set; }
 
         /// <summary>
         /// Get or set the time in force.

@@ -99,6 +99,11 @@ namespace Binance
             {
                 case "LIMIT": return OrderType.Limit;
                 case "MARKET": return OrderType.Market;
+                case "STOP_LOSS": return OrderType.StopLoss;
+                case "STOP_LOSS_LIMIT": return OrderType.StopLossLimit;
+                case "TAKE_PROFIT": return OrderType.TakeProfit;
+                case "TAKE_PROFIT_LIMIT": return OrderType.TakeProfitLimit;
+                case "LIMIT_MAKER": return OrderType.LimitMaker;
                 default:
                     throw new Exception($"Failed to convert order type: \"{type}\"");
             }

@@ -5,19 +5,19 @@ using Binance.Account.Orders;
 
 namespace BinanceConsoleApp.Controllers
 {
-    internal class PlaceMarketOrder : IHandleCommand
+    internal class PlaceStopLossLimitOrder : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
-            if (!command.StartsWith("market ", StringComparison.OrdinalIgnoreCase))
+            if (!command.StartsWith("stopLossLimit ", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             var args = command.Split(' ');
 
-            if (args.Length < 4)
+            if (args.Length < 6)
             {
                 lock (Program.ConsoleSync)
-                    Console.WriteLine("A side, symbol, and quantity are required.");
+                    Console.WriteLine("A side, symbol, quantity, price, and stop price are required.");
                 return true;
             }
 
@@ -37,11 +37,27 @@ namespace BinanceConsoleApp.Controllers
                 return true;
             }
 
-            var clientOrder = new MarketOrder(Program.User)
+            if (!decimal.TryParse(args[4], out var price) || price <= 0)
+            {
+                lock (Program.ConsoleSync)
+                    Console.WriteLine("A price greater than 0 is required.");
+                return true;
+            }
+
+            if (!decimal.TryParse(args[5], out var stopPrice) || stopPrice <= 0)
+            {
+                lock (Program.ConsoleSync)
+                    Console.WriteLine("A stop price greater than 0 is required.");
+                return true;
+            }
+
+            var clientOrder = new StopLossLimitOrder(Program.User)
             {
                 Symbol = symbol,
                 Side = (OrderSide)side,
-                Quantity = quantity
+                Quantity = quantity,
+                Price = price,
+                StopPrice = stopPrice
             };
 
             if (Program.IsOrdersTestOnly)
@@ -50,7 +66,7 @@ namespace BinanceConsoleApp.Controllers
 
                 lock (Program.ConsoleSync)
                 {
-                    Console.WriteLine($"~ TEST ~ >> MARKET {clientOrder.Side} order (ID: {clientOrder.Id}) placed for {clientOrder.Quantity:0.00000000} {clientOrder.Symbol}");
+                    Console.WriteLine($"~ TEST ~ >> STOP LOSS LIMIT {clientOrder.Side} order (ID: {clientOrder.Id}) placed for {clientOrder.Quantity:0.00000000} {clientOrder.Symbol} @ {clientOrder.Price:0.00000000}");
                 }
             }
             else
@@ -62,7 +78,7 @@ namespace BinanceConsoleApp.Controllers
                 {
                     lock (Program.ConsoleSync)
                     {
-                        Console.WriteLine($">> MARKET {order.Side} order (ID: {order.Id}) placed for {order.OriginalQuantity:0.00000000} {order.Symbol} @ {order.Price:0.00000000}");
+                        Console.WriteLine($">> STOP LOSS LIMIT {order.Side} order (ID: {order.Id}) placed for {order.OriginalQuantity:0.00000000} {order.Symbol} @ {order.Price:0.00000000}");
                     }
                 }
             }

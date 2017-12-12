@@ -3,13 +3,38 @@
     public enum OrderType
     {
         /// <summary>
-        /// Limit order type.
+        /// Limit order.
         /// </summary>
         Limit,
 
         /// <summary>
-        /// Market order type.
+        /// Market order.
         /// </summary>
-        Market
+        Market,
+
+        /// <summary>
+        /// Stop loss market order.
+        /// </summary>
+        StopLoss,
+
+        /// <summary>
+        /// Stop loss limit order.
+        /// </summary>
+        StopLossLimit,
+
+        /// <summary>
+        /// Take profit market order.
+        /// </summary>
+        TakeProfit,
+
+        /// <summary>
+        /// Take profit limit order.
+        /// </summary>
+        TakeProfitLimit,
+
+        /// <summary>
+        /// Limit maker order.
+        /// </summary>
+        LimitMaker
     }
 }

@@ -44,25 +44,28 @@ namespace BinanceConsoleApp.Controllers
                 return true;
             }
 
-            decimal stopPrice = 0;
+            bool postOnly = true;
             if (args.Length > 5)
             {
-                if (!decimal.TryParse(args[5], out stopPrice) || stopPrice <= 0)
-                {
-                    lock (Program.ConsoleSync)
-                        Console.WriteLine("A stop price greater than 0 is required.");
-                    return true;
-                }
+                bool.TryParse(args[5], out postOnly);
             }
 
-            var clientOrder = new LimitOrder(Program.User)
-            {
-                Symbol = symbol,
-                Side = (OrderSide)side,
-                Quantity = quantity,
-                Price = price,
-                StopPrice = stopPrice
-            };
+            LimitOrder clientOrder = postOnly ?
+                new LimitMakerOrder(Program.User)
+                {
+                    Symbol = symbol,
+                    Side = (OrderSide)side,
+                    Quantity = quantity,
+                    Price = price
+                }
+                :
+                new LimitOrder(Program.User)
+                {
+                    Symbol = symbol,
+                    Side = (OrderSide)side,
+                    Quantity = quantity,
+                    Price = price
+                };
 
             if (Program.IsOrdersTestOnly)
             {
@@ -70,7 +73,7 @@ namespace BinanceConsoleApp.Controllers
 
                 lock (Program.ConsoleSync)
                 {
-                    Console.WriteLine($"~ TEST ~ >> MARKET {clientOrder.Side} order (ID: {clientOrder.Id}) placed for {clientOrder.Quantity:0.00000000} {clientOrder.Symbol} @ {clientOrder.Price:0.00000000}");
+                    Console.WriteLine($"~ TEST ~ >> LIMIT {clientOrder.Side} order (ID: {clientOrder.Id}) placed for {clientOrder.Quantity:0.00000000} {clientOrder.Symbol} @ {clientOrder.Price:0.00000000}");
                 }
             }
             else

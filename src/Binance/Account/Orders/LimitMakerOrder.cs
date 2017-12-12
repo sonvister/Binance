@@ -2,20 +2,17 @@
 
 namespace Binance.Account.Orders
 {
-    public class MarketOrder : ClientOrder
+    public sealed class LimitMakerOrder : LimitOrder
     {
         #region Public Properties
 
-        /// <summary>
-        /// Get the order type.
-        /// </summary>
-        public override OrderType Type => OrderType.Market;
+        public override OrderType Type => OrderType.LimitMaker;
 
         #endregion Public Properties
 
         #region Constructors
 
-        public MarketOrder(IBinanceApiUser user)
+        public LimitMakerOrder(IBinanceApiUser user)
             : base(user)
         { }
 

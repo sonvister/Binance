@@ -20,9 +20,10 @@ namespace Binance.Tests.Cache.Events
             var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);
+            long updateTime = 1234567890;
             var balances = new[] { new AccountBalance("BTC", 0.1m, 0.2m) };
 
-            var accountInfo = new AccountInfo(user, commissions, status, balances);
+            var accountInfo = new AccountInfo(user, commissions, status, updateTime, balances);
 
             var args = new AccountInfoCacheEventArgs(accountInfo);
 

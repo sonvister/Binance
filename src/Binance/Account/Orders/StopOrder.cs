@@ -2,20 +2,20 @@
 
 namespace Binance.Account.Orders
 {
-    public class MarketOrder : ClientOrder
+    public abstract class StopOrder : MarketOrder, IStopOrder
     {
         #region Public Properties
 
         /// <summary>
-        /// Get the order type.
+        /// Get or set the stop price.
         /// </summary>
-        public override OrderType Type => OrderType.Market;
+        public decimal StopPrice { get; set; }
 
         #endregion Public Properties
 
         #region Constructors
 
-        public MarketOrder(IBinanceApiUser user)
+        public StopOrder(IBinanceApiUser user)
             : base(user)
         { }
 

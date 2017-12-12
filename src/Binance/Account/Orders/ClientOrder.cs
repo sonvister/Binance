@@ -12,6 +12,11 @@ namespace Binance.Account.Orders
         public IBinanceApiUser User { get; }
 
         /// <summary>
+        /// Get or set the symbol.
+        /// </summary>
+        public string Symbol { get; set; }
+
+        /// <summary>
         /// Get the order type.
         /// </summary>
         public abstract OrderType Type { get; }
@@ -22,29 +27,14 @@ namespace Binance.Account.Orders
         public OrderSide Side { get; set; }
 
         /// <summary>
-        /// Get or set the client order ID.
-        /// </summary>
-        public string Id { get; set; }
-
-        /// <summary>
-        /// Get or set the symbol.
-        /// </summary>
-        public string Symbol { get; set; }
-
-        /// <summary>
-        /// Get or set the stop price.
-        /// </summary>
-        public decimal StopPrice { get; set; }
-
-        /// <summary>
         /// Get or set the quantity.
         /// </summary>
         public decimal Quantity { get; set; }
 
         /// <summary>
-        /// Get or set the iceberg quantity.
+        /// Get or set the client order ID.
         /// </summary>
-        public decimal IcebergQuantity { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Get the transact time.

@@ -35,7 +35,7 @@ namespace BinanceConsoleApp.Controllers
             }
 
             string name = null;
-            if (args.Length > 5)
+            if (args.Length > 4)
                 name = args[4];
 
             await Program.Api.WithdrawAsync(new WithdrawRequest(Program.User)

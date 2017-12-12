@@ -359,6 +359,7 @@ namespace Binance.Api
             Throw.IfNull(clientOrder, nameof(clientOrder));
 
             var limitOrder = clientOrder as LimitOrder;
+            var stopOrder = clientOrder as IStopOrder;
 
             var order = new Order(clientOrder.User)
             {
@@ -374,7 +375,7 @@ namespace Binance.Api
             // Place the order.
             var json = await HttpClient.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
                 clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce,
-                clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, false, PlaceOrderResponseType.Result, token);
+                stopOrder?.StopPrice ?? 0, limitOrder?.IcebergQuantity ?? 0, recvWindow, false, PlaceOrderResponseType.Result, token);
 
             try
             {
@@ -397,11 +398,12 @@ namespace Binance.Api
             Throw.IfNull(clientOrder, nameof(clientOrder));
 
             var limitOrder = clientOrder as LimitOrder;
+            var stopOrder = clientOrder as IStopOrder;
 
             // Place the TEST order.
             var json = await HttpClient.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
                 clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, limitOrder?.TimeInForce,
-                clientOrder.StopPrice, clientOrder.IcebergQuantity, recvWindow, true, token: token);
+                stopOrder?.StopPrice ?? 0, limitOrder?.IcebergQuantity ?? 0, recvWindow, true, token: token);
 
             if (json != SuccessfulTestResponse)
             {
@@ -564,7 +566,7 @@ namespace Binance.Api
                         entry["locked"].Value<decimal>()))
                     .ToArray();
 
-                return new AccountInfo(user, commissions, status, balances);
+                return new AccountInfo(user, commissions, status, jObject["updateTime"].Value<long>(), balances);
             }
             catch (Exception e)
             {
