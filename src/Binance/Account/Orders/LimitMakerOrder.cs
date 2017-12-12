@@ -1,4 +1,5 @@
-﻿using Binance.Api;
+﻿using System;
+using Binance.Api;
 
 namespace Binance.Account.Orders
 {
@@ -7,6 +8,16 @@ namespace Binance.Account.Orders
         #region Public Properties
 
         public override OrderType Type => OrderType.LimitMaker;
+
+        public override TimeInForce TimeInForce
+        {
+            get => TimeInForce.GTC;
+            set
+            {
+                if (value != TimeInForce.GTC)
+                    throw new ArgumentException($"{nameof(TimeInForce)} must be {TimeInForce.GTC}.");
+            }
+        }
 
         #endregion Public Properties
 

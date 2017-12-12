@@ -90,11 +90,15 @@ namespace Binance.Tests.Integration
         }
 
         [Fact]
-        public async Task GetPrices()
+        public async Task GetPrice()
         {
-            var json = await _api.GetPricesAsync();
+            var json = await _api.GetPriceAsync();
 
             Assert.True(IsJsonArray(json));
+
+            json = await _api.GetPriceAsync(Symbol.BTC_USDT);
+
+            Assert.True(IsJsonObject(json));
         }
 
         [Fact]

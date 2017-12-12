@@ -14,17 +14,17 @@ namespace Binance.Account.Orders
         /// <summary>
         /// Get or set the price.
         /// </summary>
-        public decimal Price { get; set; }
+        public virtual decimal Price { get; set; }
 
         /// <summary>
         /// Get or set the iceberg quantity.
         /// </summary>
-        public decimal IcebergQuantity { get; set; }
+        public virtual decimal IcebergQuantity { get; set; }
 
         /// <summary>
         /// Get or set the time in force.
         /// </summary>
-        public TimeInForce TimeInForce { get; set; }
+        public virtual TimeInForce TimeInForce { get; set; }
 
         #endregion Public Properties
 
