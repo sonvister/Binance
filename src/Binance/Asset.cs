@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1513053667803;
+        public static readonly long LastUpdateAt = 1513214269488;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH = BCC;
@@ -60,6 +60,7 @@ namespace Binance
         public static readonly Asset IOTA = new Asset("IOTA", 8);
         public static readonly Asset KMD = new Asset("KMD", 8);
         public static readonly Asset KNC = new Asset("KNC", 8);
+        public static readonly Asset LEND = new Asset("LEND", 8);
         public static readonly Asset LINK = new Asset("LINK", 8);
         public static readonly Asset LRC = new Asset("LRC", 8);
         public static readonly Asset LSK = new Asset("LSK", 8);
@@ -94,6 +95,7 @@ namespace Binance
         public static readonly Asset USDT = new Asset("USDT", 8);
         public static readonly Asset VEN = new Asset("VEN", 8);
         public static readonly Asset VIB = new Asset("VIB", 8);
+        public static readonly Asset WABI = new Asset("WABI", 8);
         public static readonly Asset WTC = new Asset("WTC", 8);
         public static readonly Asset XLM = new Asset("XLM", 8);
         public static readonly Asset XMR = new Asset("XMR", 8);
@@ -172,6 +174,7 @@ namespace Binance
             { "IOTA", IOTA },
             { "KMD", KMD },
             { "KNC", KNC },
+            { "LEND", LEND },
             { "LINK", LINK },
             { "LRC", LRC },
             { "LSK", LSK },
@@ -206,6 +209,7 @@ namespace Binance
             { "USDT", USDT },
             { "VEN", VEN },
             { "VIB", VIB },
+            { "WABI", WABI },
             { "WTC", WTC },
             { "XLM", XLM },
             { "XMR", XMR },
