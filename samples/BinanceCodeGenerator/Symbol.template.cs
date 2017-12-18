@@ -105,7 +105,8 @@ namespace Binance
         /// <param name="baseMaxQty">The base asset maximum quantity.</param>
         /// <param name="baseMinQty">The base asset minimum quantity.</param>
         /// <param name="quoteIncrement">The quote asset increment price.</param>
-        public Symbol(Asset baseAsset, Asset quoteAsset, decimal baseMinQty, decimal baseMaxQty, decimal quoteIncrement)
+        /// <param name="symbolName">Symbol name override if it does not match with concatenated name of base and quote assets.</param>
+        public Symbol(Asset baseAsset, Asset quoteAsset, decimal baseMinQty, decimal baseMaxQty, decimal quoteIncrement, string symbolName = null)
         {
             Throw.IfNull(baseAsset, nameof(baseAsset));
             Throw.IfNull(quoteAsset, nameof(quoteAsset));
@@ -123,7 +124,14 @@ namespace Binance
             BaseMaxQuantity = baseMaxQty;
             QuoteIncrement = quoteIncrement;
 
-            _symbol = $"{baseAsset}{quoteAsset}";
+            if (!String.IsNullOrWhiteSpace(symbolName))
+            {
+                _symbol = symbolName;
+            }
+            else
+            {
+                _symbol = $"{baseAsset}{quoteAsset}";
+            }
         }
 
         #endregion Constructors

@@ -57,8 +57,15 @@ namespace BinanceCodeGenerator
                 lines.Insert(index++, $"        // {group.First().QuoteAsset}");
 
                 foreach (var symbol in group)
-                { 
-                    lines.Insert(index++, $"        public static readonly Symbol {symbol.BaseAsset}_{symbol.QuoteAsset} = new Symbol(Asset.{symbol.BaseAsset}, Asset.{symbol.QuoteAsset}, {symbol.BaseMinQuantity}m, {symbol.BaseMaxQuantity}m, {symbol.QuoteIncrement}m);");
+                {
+                    if ($"{symbol.BaseAsset}{symbol.QuoteAsset}" == symbol.ToString())
+                    {
+                        lines.Insert(index++, $"        public static readonly Symbol {symbol.BaseAsset}_{symbol.QuoteAsset} = new Symbol(Asset.{symbol.BaseAsset}, Asset.{symbol.QuoteAsset}, {symbol.BaseMinQuantity}m, {symbol.BaseMaxQuantity}m, {symbol.QuoteIncrement}m);");
+                    }
+                    else
+                    {
+                        lines.Insert(index++, $"        public static readonly Symbol {symbol} = new Symbol(Asset.{symbol.BaseAsset}, Asset.{symbol.QuoteAsset}, {symbol.BaseMinQuantity}m, {symbol.BaseMaxQuantity}m, {symbol.QuoteIncrement}m, {symbol});");
+                    }
                 }
 
                 lines.Insert(index++, string.Empty);
@@ -70,7 +77,14 @@ namespace BinanceCodeGenerator
 
             foreach(var symbol in symbols)
             {
-                lines.Insert(index++, $"            {{ \"{symbol}\", {symbol.BaseAsset}_{symbol.QuoteAsset} }},");
+                if ($"{symbol.BaseAsset}{symbol.QuoteAsset}" == symbol.ToString())
+                {
+                    lines.Insert(index++, $"            {{ \"{symbol}\", {symbol.BaseAsset}_{symbol.QuoteAsset} }},");
+                }
+                else
+                {
+                    lines.Insert(index++, $"            {{ \"{symbol}\", {symbol}}},");
+                }
             }
 
             // Save the generated source code (replacing original).
