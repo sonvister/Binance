@@ -330,12 +330,9 @@ namespace Binance.Api
 
                             var quoteIncrement = filters[0]["minPrice"].Value<decimal>();
 
-                            var symbol = new Symbol(baseAsset, quoteAsset, baseMinQty, baseMaxQty, quoteIncrement);
+                            var symbolName = $"{baseAsset}{quoteAsset}" != jToken["symbol"].Value<string>() ? jToken["symbol"].Value<string>() : null;
 
-                            if (symbol.ToString() != jToken["symbol"].Value<string>())
-                            {
-                                throw new BinanceApiException($"Symbol does not match assets ({jToken["symbol"].Value<string>()} != {symbol}).");
-                            }
+                            var symbol = new Symbol(baseAsset, quoteAsset, baseMinQty, baseMaxQty, quoteIncrement, symbolName);
 
                             return symbol;
                         }));
