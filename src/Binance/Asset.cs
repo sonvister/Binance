@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1513214269488;
+        public static readonly long LastUpdateAt = 1513641175513;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH = BCC;
@@ -35,6 +35,7 @@ namespace Binance
         public static readonly Asset BQX = new Asset("BQX", 8);
         public static readonly Asset BTC = new Asset("BTC", 8);
         public static readonly Asset BTG = new Asset("BTG", 8);
+        public static readonly Asset BTM = new Asset("BTM", 8);
         public static readonly Asset BTS = new Asset("BTS", 8);
         public static readonly Asset CDT = new Asset("CDT", 8);
         public static readonly Asset CMT = new Asset("CMT", 8);
@@ -44,6 +45,7 @@ namespace Binance
         public static readonly Asset DGD = new Asset("DGD", 8);
         public static readonly Asset DLT = new Asset("DLT", 8);
         public static readonly Asset DNT = new Asset("DNT", 8);
+        public static readonly Asset ELC = new Asset("ELC", 8);
         public static readonly Asset ENG = new Asset("ENG", 8);
         public static readonly Asset ENJ = new Asset("ENJ", 8);
         public static readonly Asset EOS = new Asset("EOS", 8);
@@ -53,15 +55,19 @@ namespace Binance
         public static readonly Asset FUEL = new Asset("FUEL", 8);
         public static readonly Asset FUN = new Asset("FUN", 8);
         public static readonly Asset GAS = new Asset("GAS", 8);
+        public static readonly Asset GTO = new Asset("GTO", 8);
         public static readonly Asset GVT = new Asset("GVT", 8);
         public static readonly Asset GXS = new Asset("GXS", 8);
+        public static readonly Asset HCC = new Asset("HCC", 8);
         public static readonly Asset HSR = new Asset("HSR", 8);
         public static readonly Asset ICN = new Asset("ICN", 8);
+        public static readonly Asset ICX = new Asset("ICX", 8);
         public static readonly Asset IOTA = new Asset("IOTA", 8);
         public static readonly Asset KMD = new Asset("KMD", 8);
         public static readonly Asset KNC = new Asset("KNC", 8);
         public static readonly Asset LEND = new Asset("LEND", 8);
         public static readonly Asset LINK = new Asset("LINK", 8);
+        public static readonly Asset LLT = new Asset("LLT", 8);
         public static readonly Asset LRC = new Asset("LRC", 8);
         public static readonly Asset LSK = new Asset("LSK", 8);
         public static readonly Asset LTC = new Asset("LTC", 8);
@@ -90,12 +96,14 @@ namespace Binance
         public static readonly Asset STORJ = new Asset("STORJ", 8);
         public static readonly Asset STRAT = new Asset("STRAT", 8);
         public static readonly Asset SUB = new Asset("SUB", 8);
+        public static readonly Asset TNB = new Asset("TNB", 8);
         public static readonly Asset TNT = new Asset("TNT", 8);
         public static readonly Asset TRX = new Asset("TRX", 8);
         public static readonly Asset USDT = new Asset("USDT", 8);
         public static readonly Asset VEN = new Asset("VEN", 8);
         public static readonly Asset VIB = new Asset("VIB", 8);
         public static readonly Asset WABI = new Asset("WABI", 8);
+        public static readonly Asset WAVES = new Asset("WAVES", 8);
         public static readonly Asset WTC = new Asset("WTC", 8);
         public static readonly Asset XLM = new Asset("XLM", 8);
         public static readonly Asset XMR = new Asset("XMR", 8);
@@ -149,6 +157,7 @@ namespace Binance
             { "BQX", BQX },
             { "BTC", BTC },
             { "BTG", BTG },
+            { "BTM", BTM },
             { "BTS", BTS },
             { "CDT", CDT },
             { "CMT", CMT },
@@ -158,6 +167,7 @@ namespace Binance
             { "DGD", DGD },
             { "DLT", DLT },
             { "DNT", DNT },
+            { "ELC", ELC },
             { "ENG", ENG },
             { "ENJ", ENJ },
             { "EOS", EOS },
@@ -167,15 +177,19 @@ namespace Binance
             { "FUEL", FUEL },
             { "FUN", FUN },
             { "GAS", GAS },
+            { "GTO", GTO },
             { "GVT", GVT },
             { "GXS", GXS },
+            { "HCC", HCC },
             { "HSR", HSR },
             { "ICN", ICN },
+            { "ICX", ICX },
             { "IOTA", IOTA },
             { "KMD", KMD },
             { "KNC", KNC },
             { "LEND", LEND },
             { "LINK", LINK },
+            { "LLT", LLT },
             { "LRC", LRC },
             { "LSK", LSK },
             { "LTC", LTC },
@@ -204,12 +218,14 @@ namespace Binance
             { "STORJ", STORJ },
             { "STRAT", STRAT },
             { "SUB", SUB },
+            { "TNB", TNB },
             { "TNT", TNT },
             { "TRX", TRX },
             { "USDT", USDT },
             { "VEN", VEN },
             { "VIB", VIB },
             { "WABI", WABI },
+            { "WAVES", WAVES },
             { "WTC", WTC },
             { "XLM", XLM },
             { "XMR", XMR },

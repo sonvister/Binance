@@ -334,7 +334,8 @@ namespace Binance.Api
 
                             if (symbol.ToString() != jToken["symbol"].Value<string>())
                             {
-                                throw new BinanceApiException($"Symbol does not match assets ({jToken["symbol"].Value<string>()} != {symbol}).");
+                                _logger?.LogDebug($"Symbol does not match trading pair assets ({jToken["symbol"].Value<string>()} != {symbol}).");
+                                return null; // invalid symbol.
                             }
 
                             return symbol;
@@ -347,7 +348,7 @@ namespace Binance.Api
             }
 
             return symbols
-                .Where(_ => _.ToString() != "123456"); // HACK
+                .Where(_ => _ != null && _.ToString() != "123456"); // HACK
         }
 
         #endregion Market Data
