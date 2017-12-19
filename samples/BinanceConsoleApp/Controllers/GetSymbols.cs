@@ -14,6 +14,7 @@ namespace BinanceConsoleApp.Controllers
                 return false;
 
             var symbols = await Program.Api.GetSymbolsAsync(token);
+            //var symbols = await Program.Api.SymbolsAsync(token); // faster.
 
             lock (Program.ConsoleSync)
             {
