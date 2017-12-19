@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1513641175513;
+        public static readonly long LastUpdateAt = 1513699380420;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Symbol BCH_USDT = BCC_USDT;
@@ -83,6 +83,7 @@ namespace Binance
         public static readonly Symbol NULS_BTC = new Symbol(Asset.NULS, Asset.BTC, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol OAX_BTC = new Symbol(Asset.OAX, Asset.BTC, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol OMG_BTC = new Symbol(Asset.OMG, Asset.BTC, 0.01000000m, 10000000.00000000m, 0.00000100m);
+        public static readonly Symbol OST_BTC = new Symbol(Asset.OST, Asset.BTC, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol POE_BTC = new Symbol(Asset.POE, Asset.BTC, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol POWR_BTC = new Symbol(Asset.POWR, Asset.BTC, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol PPT_BTC = new Symbol(Asset.PPT, Asset.BTC, 0.01000000m, 90000000.00000000m, 0.00000010m);
@@ -171,6 +172,7 @@ namespace Binance
         public static readonly Symbol NULS_ETH = new Symbol(Asset.NULS, Asset.ETH, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol OAX_ETH = new Symbol(Asset.OAX, Asset.ETH, 1.00000000m, 90000000.00000000m, 0.00000010m);
         public static readonly Symbol OMG_ETH = new Symbol(Asset.OMG, Asset.ETH, 0.01000000m, 90000000.00000000m, 0.00000100m);
+        public static readonly Symbol OST_ETH = new Symbol(Asset.OST, Asset.ETH, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol POE_ETH = new Symbol(Asset.POE, Asset.ETH, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol POWR_ETH = new Symbol(Asset.POWR, Asset.ETH, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol PPT_ETH = new Symbol(Asset.PPT, Asset.ETH, 0.01000000m, 90000000.00000000m, 0.00000100m);
@@ -221,6 +223,7 @@ namespace Binance
         public static readonly Symbol LTC_BNB = new Symbol(Asset.LTC, Asset.BNB, 0.00001000m, 10000000.00000000m, 0.01000000m);
         public static readonly Symbol NEO_BNB = new Symbol(Asset.NEO, Asset.BNB, 0.00100000m, 10000000.00000000m, 0.00100000m);
         public static readonly Symbol NULS_BNB = new Symbol(Asset.NULS, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
+        public static readonly Symbol OST_BNB = new Symbol(Asset.OST, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol POWR_BNB = new Symbol(Asset.POWR, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol QSP_BNB = new Symbol(Asset.QSP, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
         public static readonly Symbol RCN_BNB = new Symbol(Asset.RCN, Asset.BNB, 0.01000000m, 10000000.00000000m, 0.00001000m);
@@ -409,6 +412,9 @@ namespace Binance
             { "OAXETH", OAX_ETH },
             { "OMGBTC", OMG_BTC },
             { "OMGETH", OMG_ETH },
+            { "OSTBNB", OST_BNB },
+            { "OSTBTC", OST_BTC },
+            { "OSTETH", OST_ETH },
             { "POEBTC", POE_BTC },
             { "POEETH", POE_ETH },
             { "POWRBNB", POWR_BNB },
