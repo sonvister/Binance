@@ -259,7 +259,7 @@ namespace Binance.Api
             {
                 return JArray.Parse(json)
                     .Select(item => ConvertToSymbolPrice(item))
-                    .Where(_ => _.Symbol != "123456") // HACK
+                    .Where(_ => _.Symbol != "123456" && _.Symbol != "ETC") // HACK
                     .ToArray();
             }
             catch (Exception e)
