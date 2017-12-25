@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
@@ -88,10 +87,14 @@ namespace Binance.Cache
             // If order book has not been initialized.
             if (_orderBook == null)
             {
-                Logger?.LogInformation($"{nameof(OrderBookCache)}: Synchronizing order book...");
-                _orderBook = await Api.GetOrderBookAsync(_symbol, token: Token)
+                // Synchronize.
+                await SynchronizeOrderBookAsync()
                     .ConfigureAwait(false);
             }
+
+            // Ignore events prior to order book snapshot.
+            if (@event.LastUpdateId <= _orderBook.LastUpdateId)
+                return null;
 
             // If there is a gap in events (order book out-of-sync).
             // ReSharper disable once InvertIf
@@ -103,8 +106,7 @@ namespace Binance.Cache
                     .ConfigureAwait(false); // wait a bit.
 
                 // Re-synchronize.
-                Logger?.LogInformation($"{nameof(OrderBookCache)}: Synchronizing order book...");
-                _orderBook = await Api.GetOrderBookAsync(_symbol, token: Token)
+                await SynchronizeOrderBookAsync()
                     .ConfigureAwait(false);
 
                 // If still out-of-sync.
@@ -119,30 +121,28 @@ namespace Binance.Cache
                 }
             }
 
-            return ModifyOrderBook(@event.LastUpdateId, @event.Bids, @event.Asks, _limit);
-        }
+            Logger?.LogDebug($"{nameof(OrderBookCache)}: Updating order book [last update ID: {@event.LastUpdateId}].");
 
-        /// <summary>
-        /// Update the order book.
-        /// </summary>
-        /// <param name="lastUpdateId"></param>
-        /// <param name="bids"></param>
-        /// <param name="asks"></param>
-        /// <param name="limit"></param>
-        private OrderBookCacheEventArgs ModifyOrderBook(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks, int limit)
-        {
-            if (lastUpdateId <= _orderBook.LastUpdateId)
-                return null;
+            _orderBook.Modify(@event.LastUpdateId, @event.Bids, @event.Asks);
 
-            Logger?.LogDebug($"{nameof(OrderBookCache)}: Updating order book [last update ID: {lastUpdateId}].");
-
-            _orderBook.Modify(lastUpdateId, bids, asks);
-
-            _orderBookClone = limit > 0 ? _orderBook.Clone(limit) : _orderBook.Clone();
+            _orderBookClone = _limit > 0 ? _orderBook.Clone(_limit) : _orderBook.Clone();
 
             return new OrderBookCacheEventArgs(_orderBookClone);
         }
 
         #endregion Protected Methods
+
+        #region Private Methods
+
+        private async Task SynchronizeOrderBookAsync()
+        {
+            Logger?.LogInformation($"{nameof(OrderBookCache)}: Synchronizing order book...");
+
+            // Get order book snapshot with the maximum limit.
+            _orderBook = await Api.GetOrderBookAsync(_symbol, 1000, Token)
+                .ConfigureAwait(false);
+        }
+
+        #endregion Private Methods
     }
 }
