@@ -37,8 +37,8 @@ namespace Binance.Tests.Api.WebSocket.Events
                 Assert.Throws<ArgumentException>("timestamp", () => new CandlestickEventArgs(-1, cts.Token, candlestick, firstTradeId, lastTradeId, isFinal));
                 Assert.Throws<ArgumentException>("timestamp", () => new CandlestickEventArgs(0, cts.Token, null, firstTradeId, lastTradeId, isFinal));
                 Assert.Throws<ArgumentNullException>("candlestick", () => new CandlestickEventArgs(timestamp, cts.Token, null, firstTradeId, lastTradeId, isFinal));
-                Assert.Throws<ArgumentException>("firstTradeId", () => new CandlestickEventArgs(timestamp, cts.Token, candlestick, -1, lastTradeId, isFinal));
-                Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(timestamp, cts.Token, candlestick, firstTradeId, -1, isFinal));
+                Assert.Throws<ArgumentException>("firstTradeId", () => new CandlestickEventArgs(timestamp, cts.Token, candlestick, -2, lastTradeId, isFinal));
+                Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(timestamp, cts.Token, candlestick, firstTradeId, -2, isFinal));
                 Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(timestamp, cts.Token, candlestick, firstTradeId, firstTradeId - 1, isFinal));
             }
         }
