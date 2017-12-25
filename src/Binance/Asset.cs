@@ -15,13 +15,14 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1513699380420;
+        public static readonly long LastUpdateAt = 1514226833240;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH = BCC;
 
         public static readonly Asset ADA = new Asset("ADA", 8);
         public static readonly Asset ADX = new Asset("ADX", 8);
+        public static readonly Asset AION = new Asset("AION", 8);
         public static readonly Asset AMB = new Asset("AMB", 8);
         public static readonly Asset ARK = new Asset("ARK", 8);
         public static readonly Asset ARN = new Asset("ARN", 8);
@@ -33,9 +34,9 @@ namespace Binance
         public static readonly Asset BNB = new Asset("BNB", 8);
         public static readonly Asset BNT = new Asset("BNT", 8);
         public static readonly Asset BQX = new Asset("BQX", 8);
+        public static readonly Asset BRD = new Asset("BRD", 8);
         public static readonly Asset BTC = new Asset("BTC", 8);
         public static readonly Asset BTG = new Asset("BTG", 8);
-        public static readonly Asset BTM = new Asset("BTM", 8);
         public static readonly Asset BTS = new Asset("BTS", 8);
         public static readonly Asset CDT = new Asset("CDT", 8);
         public static readonly Asset CMT = new Asset("CMT", 8);
@@ -45,7 +46,8 @@ namespace Binance
         public static readonly Asset DGD = new Asset("DGD", 8);
         public static readonly Asset DLT = new Asset("DLT", 8);
         public static readonly Asset DNT = new Asset("DNT", 8);
-        public static readonly Asset ELC = new Asset("ELC", 8);
+        public static readonly Asset EDO = new Asset("EDO", 8);
+        public static readonly Asset ELF = new Asset("ELF", 8);
         public static readonly Asset ENG = new Asset("ENG", 8);
         public static readonly Asset ENJ = new Asset("ENJ", 8);
         public static readonly Asset EOS = new Asset("EOS", 8);
@@ -58,7 +60,6 @@ namespace Binance
         public static readonly Asset GTO = new Asset("GTO", 8);
         public static readonly Asset GVT = new Asset("GVT", 8);
         public static readonly Asset GXS = new Asset("GXS", 8);
-        public static readonly Asset HCC = new Asset("HCC", 8);
         public static readonly Asset HSR = new Asset("HSR", 8);
         public static readonly Asset ICN = new Asset("ICN", 8);
         public static readonly Asset ICX = new Asset("ICX", 8);
@@ -67,7 +68,6 @@ namespace Binance
         public static readonly Asset KNC = new Asset("KNC", 8);
         public static readonly Asset LEND = new Asset("LEND", 8);
         public static readonly Asset LINK = new Asset("LINK", 8);
-        public static readonly Asset LLT = new Asset("LLT", 8);
         public static readonly Asset LRC = new Asset("LRC", 8);
         public static readonly Asset LSK = new Asset("LSK", 8);
         public static readonly Asset LTC = new Asset("LTC", 8);
@@ -77,6 +77,7 @@ namespace Binance
         public static readonly Asset MOD = new Asset("MOD", 8);
         public static readonly Asset MTH = new Asset("MTH", 8);
         public static readonly Asset MTL = new Asset("MTL", 8);
+        public static readonly Asset NEBL = new Asset("NEBL", 8);
         public static readonly Asset NEO = new Asset("NEO", 8);
         public static readonly Asset NULS = new Asset("NULS", 8);
         public static readonly Asset OAX = new Asset("OAX", 8);
@@ -145,6 +146,7 @@ namespace Binance
 
             { "ADA", ADA },
             { "ADX", ADX },
+            { "AION", AION },
             { "AMB", AMB },
             { "ARK", ARK },
             { "ARN", ARN },
@@ -156,9 +158,9 @@ namespace Binance
             { "BNB", BNB },
             { "BNT", BNT },
             { "BQX", BQX },
+            { "BRD", BRD },
             { "BTC", BTC },
             { "BTG", BTG },
-            { "BTM", BTM },
             { "BTS", BTS },
             { "CDT", CDT },
             { "CMT", CMT },
@@ -168,7 +170,8 @@ namespace Binance
             { "DGD", DGD },
             { "DLT", DLT },
             { "DNT", DNT },
-            { "ELC", ELC },
+            { "EDO", EDO },
+            { "ELF", ELF },
             { "ENG", ENG },
             { "ENJ", ENJ },
             { "EOS", EOS },
@@ -181,7 +184,6 @@ namespace Binance
             { "GTO", GTO },
             { "GVT", GVT },
             { "GXS", GXS },
-            { "HCC", HCC },
             { "HSR", HSR },
             { "ICN", ICN },
             { "ICX", ICX },
@@ -190,7 +192,6 @@ namespace Binance
             { "KNC", KNC },
             { "LEND", LEND },
             { "LINK", LINK },
-            { "LLT", LLT },
             { "LRC", LRC },
             { "LSK", LSK },
             { "LTC", LTC },
@@ -200,6 +201,7 @@ namespace Binance
             { "MOD", MOD },
             { "MTH", MTH },
             { "MTL", MTL },
+            { "NEBL", NEBL },
             { "NEO", NEO },
             { "NULS", NULS },
             { "OAX", OAX },
