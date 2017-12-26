@@ -5,12 +5,12 @@ using Xunit;
 
 namespace Binance.Tests.Cache.Events
 {
-    public class AggregateTradesCacheEventArgsTest
+    public class AggregateTradeCacheEventArgsTest
     {
         [Fact]
         public void Throws()
         {
-            Assert.Throws<ArgumentNullException>("trades", () => new AggregateTradesCacheEventArgs(null));
+            Assert.Throws<ArgumentNullException>("trades", () => new AggregateTradeCacheEventArgs(null));
         }
 
         [Fact]
@@ -31,7 +31,7 @@ namespace Binance.Tests.Cache.Events
 
             var trades = new[] { trade };
 
-            var args = new AggregateTradesCacheEventArgs(trades);
+            var args = new AggregateTradeCacheEventArgs(trades);
 
             Assert.Equal(trades, args.Trades);
         }

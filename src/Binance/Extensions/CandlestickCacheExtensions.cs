@@ -7,7 +7,7 @@ using Binance.Market;
 // ReSharper disable once CheckNamespace
 namespace Binance.Cache
 {
-    public static class CandlesticksCacheExtensions
+    public static class CandlestickCacheExtensions
     {
         /// <summary>
         /// 
@@ -17,7 +17,7 @@ namespace Binance.Cache
         /// <param name="interval"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this ICandlesticksCache cache, string symbol, CandlestickInterval interval, CancellationToken token)
+        public static Task SubscribeAsync(this ICandlestickCache cache, string symbol, CandlestickInterval interval, CancellationToken token)
             => cache.SubscribeAsync(symbol, interval, default, null, token);
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Binance.Cache
         /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this ICandlesticksCache cache, string symbol, CandlestickInterval interval, int limit, CancellationToken token)
+        public static Task SubscribeAsync(this ICandlestickCache cache, string symbol, CandlestickInterval interval, int limit, CancellationToken token)
             => cache.SubscribeAsync(symbol, interval, limit, null, token);
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this ICandlesticksCache cache, string symbol, CandlestickInterval interval, Action<CandlesticksCacheEventArgs> callback, CancellationToken token)
+        public static Task SubscribeAsync(this ICandlestickCache cache, string symbol, CandlestickInterval interval, Action<CandlestickCacheEventArgs> callback, CancellationToken token)
             => cache.SubscribeAsync(symbol, interval, default, callback, token);
     }
 }

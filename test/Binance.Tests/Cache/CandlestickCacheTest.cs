@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace Binance.Tests.Cache
 {
-    public class CandlesticksCacheTest
+    public class CandlestickCacheTest
     {
         [Fact]
         public async Task SubscribeThrows()
@@ -18,7 +18,7 @@ namespace Binance.Tests.Cache
             var api = new Mock<IBinanceApi>().Object;
             var client = new Mock<ICandlestickWebSocketClient>().Object;
 
-            var cache = new CandlesticksCache(api, client);
+            var cache = new CandlestickCache(api, client);
 
             await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.SubscribeAsync(null, CandlestickInterval.Day, new CancellationToken()));
             await Assert.ThrowsAsync<ArgumentException>("token", () => cache.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Day, CancellationToken.None));

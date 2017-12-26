@@ -5,12 +5,12 @@ using Xunit;
 
 namespace Binance.Tests.Cache.Events
 {
-    public class CandlesticksCacheEventArgsTest
+    public class CandlestickCacheEventArgsTest
     {
         [Fact]
         public void Throws()
         {
-            Assert.Throws<ArgumentNullException>("candlesticks", () => new CandlesticksCacheEventArgs(null));
+            Assert.Throws<ArgumentNullException>("candlesticks", () => new CandlestickCacheEventArgs(null));
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace Binance.Tests.Cache.Events
 
             var candlesticks = new[] { candlestick };
 
-            var args = new CandlesticksCacheEventArgs(candlesticks);
+            var args = new CandlestickCacheEventArgs(candlesticks);
 
             Assert.Equal(candlesticks, args.Candlesticks);
         }

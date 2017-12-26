@@ -4,7 +4,7 @@ using Binance.Market;
 
 namespace Binance.Cache.Events
 {
-    public sealed class AggregateTradesCacheEventArgs : EventArgs
+    public sealed class AggregateTradeCacheEventArgs : EventArgs
     {
         #region Public Properties
 
@@ -21,7 +21,7 @@ namespace Binance.Cache.Events
         /// Constructor.
         /// </summary>
         /// <param name="trades">The latest trades.</param>
-        public AggregateTradesCacheEventArgs(IEnumerable<AggregateTrade> trades)
+        public AggregateTradeCacheEventArgs(IEnumerable<AggregateTrade> trades)
         {
             Throw.IfNull(trades, nameof(trades));
 

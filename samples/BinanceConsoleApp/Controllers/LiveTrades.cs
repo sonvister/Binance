@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers
 {
-    internal class LiveAggregateTrades : IHandleCommand
+    internal class LiveTrades : IHandleCommand
     {
         public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
@@ -29,7 +29,7 @@ namespace BinanceConsoleApp.Controllers
                 symbol = args[2];
             }
 
-            if (!endpoint.Equals("aggTrades", StringComparison.OrdinalIgnoreCase))
+            if (!endpoint.Equals("trades", StringComparison.OrdinalIgnoreCase))
                 return Task.FromResult(false);
 
             if (Program.LiveTask != null)
@@ -43,17 +43,17 @@ namespace BinanceConsoleApp.Controllers
 
             Program.LiveTokenSource = new CancellationTokenSource();
 
-            Program.AggregateTradeCache = Program.ServiceProvider.GetService<IAggregateTradeCache>();
+            Program.TradeCache = Program.ServiceProvider.GetService<ITradeCache>();
 
             Program.LiveTask = Task.Run(() =>
             {
-                Program.AggregateTradeCache.SubscribeAsync(symbol, e => { Program.Display(e.LatestTrade()); }, Program.LiveTokenSource.Token);
+                Program.TradeCache.SubscribeAsync(symbol, e => { Program.Display(e.LatestTrade()); }, Program.LiveTokenSource.Token);
             }, token);
 
             lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
-                Console.WriteLine($"  ...live aggregate trades feed enabled for symbol: {symbol} ...use 'live off' to disable.");
+                Console.WriteLine($"  ...live trades feed enabled for symbol: {symbol} ...use 'live off' to disable.");
             }
 
             return Task.FromResult(true);

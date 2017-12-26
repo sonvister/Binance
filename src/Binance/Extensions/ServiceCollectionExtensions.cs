@@ -13,9 +13,6 @@ namespace Binance
     {
         public static IServiceCollection AddBinance(this IServiceCollection services)
         {
-            // Accounts
-            services.AddTransient<IAccountInfoCache, AccountInfoCache>();
-
             // API
             services.AddSingleton<IBinanceApiUserProvider, BinanceApiUserProvider>();
             services.AddSingleton<IBinanceHttpClient>(s =>
@@ -41,16 +38,15 @@ namespace Binance
             // WebSocket
             services.AddTransient<IWebSocketClient, WebSocketClient>();
 
-            // Candlesticks
-            services.AddTransient<ICandlesticksCache, CandlesticksCache>();
-
-            // Orders
+            // Cache
+            services.AddTransient<ITradeCache, TradeCache>();
             services.AddTransient<IOrderBookCache, OrderBookCache>();
-
-            // Trades
-            services.AddTransient<IAggregateTradesCache, AggregateTradesCache>();
+            services.AddTransient<IAccountInfoCache, AccountInfoCache>();
+            services.AddTransient<ICandlestickCache, CandlestickCache>();
+            services.AddTransient<IAggregateTradeCache, AggregateTradeCache>();
 
             // WebSockets
+            services.AddTransient<ITradeWebSocketClient, TradeWebSocketClient>();
             services.AddTransient<IDepthWebSocketClient, DepthWebSocketClient>();
             services.AddTransient<ICandlestickWebSocketClient, CandlestickWebSocketClient>();
             services.AddTransient<IAggregateTradeWebSocketClient, AggregateTradeWebSocketClient>();

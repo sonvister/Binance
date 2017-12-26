@@ -8,14 +8,14 @@ using Binance.Market;
 
 namespace Binance.Cache
 {
-    public interface ICandlesticksCache
+    public interface ICandlestickCache
     {
         #region Public Events
 
         /// <summary>
         /// Candlesticks update event.
         /// </summary>
-        event EventHandler<CandlesticksCacheEventArgs> Update;
+        event EventHandler<CandlestickCacheEventArgs> Update;
 
         #endregion Public Events
 
@@ -44,14 +44,14 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit, Action<CandlesticksCacheEventArgs> callback, CancellationToken token);
+        Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit, Action<CandlestickCacheEventArgs> callback, CancellationToken token);
 
         /// <summary>
         /// Link to a subscribed <see cref="ICandlestickWebSocketClient"/>.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="callback"></param>
-        void LinkTo(ICandlestickWebSocketClient client, Action<CandlesticksCacheEventArgs> callback = null);
+        void LinkTo(ICandlestickWebSocketClient client, Action<CandlestickCacheEventArgs> callback = null);
 
         /// <summary>
         /// Unlink from client.

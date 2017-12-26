@@ -4,7 +4,7 @@ using Binance.Market;
 
 namespace Binance.Cache.Events
 {
-    public sealed class CandlesticksCacheEventArgs : EventArgs
+    public sealed class CandlestickCacheEventArgs : EventArgs
     {
         #region Public Properties
 
@@ -21,7 +21,7 @@ namespace Binance.Cache.Events
         /// Constructor.
         /// </summary>
         /// <param name="candlesticks">The candlesticks.</param>
-        public CandlesticksCacheEventArgs(IEnumerable<Candlestick> candlesticks)
+        public CandlestickCacheEventArgs(IEnumerable<Candlestick> candlesticks)
         {
             Throw.IfNull(candlesticks, nameof(candlesticks));
 

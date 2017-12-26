@@ -52,7 +52,7 @@ namespace BinanceConsoleApp.Controllers
 
             Program.LiveTokenSource = new CancellationTokenSource();
 
-            Program.CandlestickCache = Program.ServiceProvider.GetService<ICandlesticksCache>();
+            Program.CandlestickCache = Program.ServiceProvider.GetService<ICandlestickCache>();
             Program.CandlestickCache.Client.Candlestick += OnCandlestickEvent;
 
             Program.LiveTask = Task.Run(() =>

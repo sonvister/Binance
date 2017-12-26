@@ -8,14 +8,14 @@ using Binance.Market;
 
 namespace Binance.Cache
 {
-    public interface IAggregateTradesCache
+    public interface IAggregateTradeCache
     {
         #region Public Events
 
         /// <summary>
         /// Aggregate trades update event.
         /// </summary>
-        event EventHandler<AggregateTradesCacheEventArgs> Update;
+        event EventHandler<AggregateTradeCacheEventArgs> Update;
 
         #endregion Public Events
 
@@ -43,14 +43,14 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task SubscribeAsync(string symbol, int limit, Action<AggregateTradesCacheEventArgs> callback, CancellationToken token);
+        Task SubscribeAsync(string symbol, int limit, Action<AggregateTradeCacheEventArgs> callback, CancellationToken token);
         
         /// <summary>
         /// Link to a subscribed <see cref="IAggregateTradeWebSocketClient"/>.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="callback"></param>
-        void LinkTo(IAggregateTradeWebSocketClient client, Action<AggregateTradesCacheEventArgs> callback = null);
+        void LinkTo(IAggregateTradeWebSocketClient client, Action<AggregateTradeCacheEventArgs> callback = null);
 
         /// <summary>
         /// Unlink from client.

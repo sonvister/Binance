@@ -6,7 +6,7 @@ using Binance.Cache.Events;
 // ReSharper disable once CheckNamespace
 namespace Binance.Cache
 {
-    public static class AggregateTradesCacheExtensions
+    public static class TradeCacheExtensions
     {
         /// <summary>
         /// 
@@ -15,7 +15,7 @@ namespace Binance.Cache
         /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this IAggregateTradesCache cache, string symbol, CancellationToken token)
+        public static Task SubscribeAsync(this ITradeCache cache, string symbol, CancellationToken token)
             => cache.SubscribeAsync(symbol, default, null, token);
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Binance.Cache
         /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this IAggregateTradesCache cache, string symbol, int limit, CancellationToken token)
+        public static Task SubscribeAsync(this ITradeCache cache, string symbol, int limit, CancellationToken token)
             => cache.SubscribeAsync(symbol, limit, null, token);
 
         /// <summary>
@@ -37,8 +37,7 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this IAggregateTradesCache cache, string symbol, Action<AggregateTradesCacheEventArgs> callback, CancellationToken token)
+        public static Task SubscribeAsync(this ITradeCache cache, string symbol, Action<TradeCacheEventArgs> callback, CancellationToken token)
             => cache.SubscribeAsync(symbol, default, callback, token);
-
     }
 }

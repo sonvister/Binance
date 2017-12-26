@@ -54,7 +54,7 @@ namespace BinancePriceChart
                 try { limit = Convert.ToInt32(configuration.GetSection("PriceChart")?["Limit"] ?? "25"); }
                 catch { /* ignored */ }
 
-                var cache = services.GetService<ICandlesticksCache>();
+                var cache = services.GetService<ICandlestickCache>();
 
                 using (var controller = new RetryTaskController())
                 {

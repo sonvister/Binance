@@ -49,7 +49,7 @@ namespace BinanceTradeHistory
                 try { limit = Convert.ToInt32(configuration.GetSection("TradeHistory")?["Limit"]); }
                 catch { /* ignored */ }
 
-                var cache = services.GetService<IAggregateTradesCache>();
+                var cache = services.GetService<IAggregateTradeCache>();
 
                 using (var controller = new RetryTaskController())
                 {

@@ -9,15 +9,15 @@ using System.Threading;
 
 namespace Binance.Tests.Cache
 {
-    public class AggregateTradesCacheTest
+    public class TradeCacheTest
     {
         [Fact]
         public async Task SubscribeThrows()
         {
             var api = new Mock<IBinanceApi>().Object;
-            var client = new Mock<IAggregateTradeWebSocketClient>().Object;
+            var client = new Mock<ITradeWebSocketClient>().Object;
 
-            var cache = new AggregateTradesCache(api, client);
+            var cache = new TradeCache(api, client);
 
             await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.SubscribeAsync(null, new CancellationToken()));
             await Assert.ThrowsAsync<ArgumentException>("token", () => cache.SubscribeAsync(Symbol.BTC_USDT, CancellationToken.None));

@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public sealed class CandlesticksCache : WebSocketClientCache<ICandlestickWebSocketClient, CandlestickEventArgs, CandlesticksCacheEventArgs>, ICandlesticksCache
+    public sealed class CandlestickCache : WebSocketClientCache<ICandlestickWebSocketClient, CandlestickEventArgs, CandlestickCacheEventArgs>, ICandlestickCache
     {
         #region Public Properties
 
@@ -39,7 +39,7 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public CandlesticksCache(IBinanceApi api, ICandlestickWebSocketClient client, ILogger<CandlesticksCache> logger = null)
+        public CandlestickCache(IBinanceApi api, ICandlestickWebSocketClient client, ILogger<CandlestickCache> logger = null)
             : base(api, client, logger)
         {
             _candlesticks = new List<Candlestick>();
@@ -49,7 +49,7 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public async Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit, Action<CandlesticksCacheEventArgs> callback, CancellationToken token)
+        public async Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit, Action<CandlestickCacheEventArgs> callback, CancellationToken token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -73,7 +73,7 @@ namespace Binance.Cache
             finally { UnLink(); }
         }
 
-        public override void LinkTo(ICandlestickWebSocketClient client, Action<CandlesticksCacheEventArgs> callback = null)
+        public override void LinkTo(ICandlestickWebSocketClient client, Action<CandlestickCacheEventArgs> callback = null)
         {
             base.LinkTo(client, callback);
             Client.Candlestick += OnClientEvent;
@@ -89,7 +89,7 @@ namespace Binance.Cache
 
         #region Protected Methods
 
-        protected override async Task<CandlesticksCacheEventArgs> OnAction(CandlestickEventArgs @event)
+        protected override async Task<CandlestickCacheEventArgs> OnAction(CandlestickEventArgs @event)
         {
             if (_candlesticks.Count == 0)
             {
@@ -97,7 +97,7 @@ namespace Binance.Cache
                     .ConfigureAwait(false);
             }
 
-            Logger?.LogDebug($"{nameof(CandlesticksCache)}: Updating candlestick [open time: {@event.Candlestick.OpenTime}].");
+            Logger?.LogDebug($"{nameof(CandlestickCache)}: Updating candlestick [open time: {@event.Candlestick.OpenTime}].");
 
             // Get the candlestick with matching open time.
             var candlestick = _candlesticks.FirstOrDefault(c => c.OpenTime == @event.Candlestick.OpenTime);
@@ -108,7 +108,7 @@ namespace Binance.Cache
                 _candlesticks.Add(@event.Candlestick);
             }
 
-            return new CandlesticksCacheEventArgs(_candlesticks.ToArray());
+            return new CandlestickCacheEventArgs(_candlesticks.ToArray());
         }
 
         #endregion Protected Methods
@@ -125,7 +125,7 @@ namespace Binance.Cache
         /// <returns></returns>
         private async Task SynchronizeCandlesticksAsync(string symbol, CandlestickInterval interval, int limit, CancellationToken token)
         {
-            Logger?.LogInformation($"{nameof(CandlesticksCache)}: Synchronizing candlesticks...");
+            Logger?.LogInformation($"{nameof(CandlestickCache)}: Synchronizing candlesticks...");
 
             var candlesticks = await Api.GetCandlesticksAsync(symbol, interval, limit, token: token)
                 .ConfigureAwait(false);

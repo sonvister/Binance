@@ -32,9 +32,10 @@ namespace BinanceConsoleApp
         public static IBinanceApi Api;
         public static IBinanceApiUser User;
 
+        public static ITradeCache TradeCache;
         public static IOrderBookCache OrderBookCache;
-        public static ICandlesticksCache CandlestickCache;
-        public static IAggregateTradesCache TradesCache;
+        public static ICandlestickCache CandlestickCache;
+        public static IAggregateTradeCache AggregateTradeCache;
         public static IUserDataWebSocketClient UserDataClient;
 
         public static Task LiveTask;
@@ -168,6 +169,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  top <symbol>                                          display order book top price/qty for a symbol or all symbols.");
                 Console.WriteLine("  live depth|book <symbol>                              enable order book live feed for a symbol.");
                 Console.WriteLine("  live candles|kLines <symbol> <interval>               enable candlestick live feed for a symbol and interval.");
+                Console.WriteLine("  live aggTrades <symbol>                               enable aggregate trades live feed for a symbol.");
                 Console.WriteLine("  live trades <symbol>                                  enable trades live feed for a symbol.");
                 Console.WriteLine("  live account|user                                     enable user data live feed (api key required).");
                 Console.WriteLine("  live off                                              disable the websocket live feed (only one supported by app).");
@@ -312,6 +314,16 @@ namespace BinanceConsoleApp
 
             LiveTokenSource?.Dispose();
 
+            if (TradeCache != null)
+            {
+                lock (ConsoleSync)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("  ...live trades feed disabled.");
+                }
+            }
+            TradeCache = null;
+
             if (OrderBookCache != null)
             {
                 lock (ConsoleSync) 
@@ -332,15 +344,15 @@ namespace BinanceConsoleApp
             }
             CandlestickCache = null;
 
-            if (TradesCache != null)
+            if (AggregateTradeCache != null)
             {
                 lock (ConsoleSync)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  ...live trades feed disabled.");
+                    Console.WriteLine("  ...live aggregate trades feed disabled.");
                 }
             }
-            TradesCache = null;
+            AggregateTradeCache = null;
 
             if (UserDataClient != null)
             {
