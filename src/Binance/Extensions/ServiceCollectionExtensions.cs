@@ -44,13 +44,15 @@ namespace Binance
             services.AddTransient<IAccountInfoCache, AccountInfoCache>();
             services.AddTransient<ICandlestickCache, CandlestickCache>();
             services.AddTransient<IAggregateTradeCache, AggregateTradeCache>();
+            services.AddTransient<ISymbolStatisticsCache, SymbolStatisticsCache>();
 
             // WebSockets
             services.AddTransient<ITradeWebSocketClient, TradeWebSocketClient>();
             services.AddTransient<IDepthWebSocketClient, DepthWebSocketClient>();
+            services.AddTransient<IUserDataWebSocketClient, UserDataWebSocketClient>();
             services.AddTransient<ICandlestickWebSocketClient, CandlestickWebSocketClient>();
             services.AddTransient<IAggregateTradeWebSocketClient, AggregateTradeWebSocketClient>();
-            services.AddTransient<IUserDataWebSocketClient, UserDataWebSocketClient>();
+            services.AddTransient<ISymbolStatisticsWebSocketClient, SymbolStatisticsWebSocketClient>();
 
             return services;
         }

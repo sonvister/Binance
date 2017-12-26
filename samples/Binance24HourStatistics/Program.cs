@@ -13,11 +13,11 @@ using Microsoft.Extensions.Logging;
 
 // ReSharper disable AccessToDisposedClosure
 
-namespace BinanceMarketDepth
+namespace Binance24HourStatistics
 {
     /// <summary>
-    /// Demonstrate how to maintain an order book cache for a symbol
-    /// and respond to real-time depth-of-market update events.
+    /// Demonstrate how to maintain a 24-hour statistics cache for a symbol
+    /// and respond to real-time 24-hour statistics update events.
     /// </summary>
     internal class Program
     {
@@ -42,24 +42,20 @@ namespace BinanceMarketDepth
                     .AddFile(configuration.GetSection("Logging").GetSection("File"));
 
                 // Get configuration settings.
-                var limit = 10;
-                var symbol = configuration.GetSection("OrderBook")?["Symbol"] ?? Symbol.BTC_USDT;
-                try { limit = Convert.ToInt32(configuration.GetSection("OrderBook")?["Limit"]); }
-                catch { /* ignored */ }
-                // NOTE: Currently the Depth WebSocket Endpoint/Client only supports maximum limit of 100. // TODO
+                var symbol = configuration.GetSection("Statistics")?["Symbol"] ?? Symbol.BTC_USDT;
 
-                var cache = services.GetService<IOrderBookCache>();
+                var cache = services.GetService<ISymbolStatisticsCache>();
 
                 using (var controller = new RetryTaskController())
                 {
                     var api = services.GetService<IBinanceApi>();
 
                     // Query and display the order book.
-                    Display(await api.GetOrderBookAsync(symbol, limit));
+                    Display(await api.Get24HourStatisticsAsync(symbol));
 
                     // Monitor order book and display updates in real-time.
                     controller.Begin(
-                        tkn => cache.SubscribeAsync(symbol, limit, evt => Display(evt.OrderBook), tkn),
+                        tkn => cache.SubscribeAsync(symbol, evt => Display(evt.Statistics), tkn),
                         err => Console.WriteLine(err.Message));
 
                     Console.ReadKey(true);
@@ -74,10 +70,13 @@ namespace BinanceMarketDepth
             }
         }
 
-        private static void Display(OrderBook orderBook)
+        private static void Display(SymbolStatistics stats)
         {
             Console.SetCursorPosition(0, 0);
-            orderBook.Print(Console.Out);
+
+            Console.WriteLine($"  24-hour statistics for {stats.Symbol}:");
+            Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
+            Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
 
             Console.WriteLine();
             Console.WriteLine("...press any key to exit.");

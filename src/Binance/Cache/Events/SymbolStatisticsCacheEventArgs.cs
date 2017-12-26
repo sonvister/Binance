@@ -1,0 +1,32 @@
+﻿using System;
+using Binance.Market;
+
+namespace Binance.Cache.Events
+{
+    public sealed class SymbolStatisticsCacheEventArgs : EventArgs
+    {
+        #region Public Properties
+
+        /// <summary>
+        /// Get the symbol statistics.
+        /// </summary>
+        public SymbolStatistics Statistics { get; }
+
+        #endregion Public Properties
+
+        #region Constructors
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="statistics">The symbol statistics.</param>
+        public SymbolStatisticsCacheEventArgs(SymbolStatistics statistics)
+        {
+            Throw.IfNull(statistics, nameof(statistics));
+
+            Statistics = statistics;
+        }
+
+        #endregion Constructors
+    }
+}

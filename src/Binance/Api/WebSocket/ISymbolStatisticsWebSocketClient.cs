@@ -12,7 +12,7 @@ namespace Binance.Api.WebSocket
         /// <summary>
         /// The symbol statistics event.
         /// </summary>
-        event EventHandler<SymbolStatisticsEventArgs> Statistics;
+        event EventHandler<SymbolStatisticsEventArgs> StatisticsUpdate;
 
         #endregion Public Events
 

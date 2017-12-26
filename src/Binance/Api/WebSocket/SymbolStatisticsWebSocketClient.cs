@@ -15,7 +15,7 @@ namespace Binance.Api.WebSocket
     {
         #region Public Events
 
-        public event EventHandler<SymbolStatisticsEventArgs> Statistics;
+        public event EventHandler<SymbolStatisticsEventArgs> StatisticsUpdate;
 
         #endregion Public Events
 
@@ -112,7 +112,7 @@ namespace Binance.Api.WebSocket
                     try
                     {
                         callback?.Invoke(eventArgs);
-                        Statistics?.Invoke(this, eventArgs);
+                        StatisticsUpdate?.Invoke(this, eventArgs);
                     }
                     catch (OperationCanceledException) { }
                     catch (Exception e)
