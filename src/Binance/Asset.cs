@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1514226833240;
+        public static readonly long LastUpdateAt = 1514327385397;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH = BCC;
@@ -106,6 +106,7 @@ namespace Binance
         public static readonly Asset VIB = new Asset("VIB", 8);
         public static readonly Asset WABI = new Asset("WABI", 8);
         public static readonly Asset WAVES = new Asset("WAVES", 8);
+        public static readonly Asset WINGS = new Asset("WINGS", 8);
         public static readonly Asset WTC = new Asset("WTC", 8);
         public static readonly Asset XLM = new Asset("XLM", 8);
         public static readonly Asset XMR = new Asset("XMR", 8);
@@ -230,6 +231,7 @@ namespace Binance
             { "VIB", VIB },
             { "WABI", WABI },
             { "WAVES", WAVES },
+            { "WINGS", WINGS },
             { "WTC", WTC },
             { "XLM", XLM },
             { "XMR", XMR },

@@ -51,7 +51,7 @@ namespace BinanceConsoleApp.Controllers
 
             Program.LiveTask = Task.Run(() =>
             {
-                Program.OrderBookCache.SubscribeAsync(symbol, Program.LiveTokenSource.Token);
+                Program.OrderBookCache.SubscribeAsync(symbol, 5, Program.LiveTokenSource.Token);
             }, token);
 
             lock (Program.ConsoleSync)

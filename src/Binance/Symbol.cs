@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1514226833240;
+        public static readonly long LastUpdateAt = 1514327385397;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Symbol BCH_USDT = BCC_USDT;
@@ -108,6 +108,7 @@ namespace Binance
         public static readonly Symbol VIB_BTC = new Symbol(Asset.VIB, Asset.BTC, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol WABI_BTC = new Symbol(Asset.WABI, Asset.BTC, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol WAVES_BTC = new Symbol(Asset.WAVES, Asset.BTC, 0.01000000m, 90000000.00000000m, 0.00000010m);
+        public static readonly Symbol WINGS_BTC = new Symbol(Asset.WINGS, Asset.BTC, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol WTC_BTC = new Symbol(Asset.WTC, Asset.BTC, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol XLM_BTC = new Symbol(Asset.XLM, Asset.BTC, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol XMR_BTC = new Symbol(Asset.XMR, Asset.BTC, 0.00100000m, 10000000.00000000m, 0.00000100m);
@@ -201,6 +202,7 @@ namespace Binance
         public static readonly Symbol VIB_ETH = new Symbol(Asset.VIB, Asset.ETH, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol WABI_ETH = new Symbol(Asset.WABI, Asset.ETH, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol WAVES_ETH = new Symbol(Asset.WAVES, Asset.ETH, 0.01000000m, 90000000.00000000m, 0.00000100m);
+        public static readonly Symbol WINGS_ETH = new Symbol(Asset.WINGS, Asset.ETH, 1.00000000m, 90000000.00000000m, 0.00000010m);
         public static readonly Symbol WTC_ETH = new Symbol(Asset.WTC, Asset.ETH, 0.01000000m, 90000000.00000000m, 0.00000100m);
         public static readonly Symbol XLM_ETH = new Symbol(Asset.XLM, Asset.ETH, 1.00000000m, 90000000.00000000m, 0.00000001m);
         public static readonly Symbol XMR_ETH = new Symbol(Asset.XMR, Asset.ETH, 0.00100000m, 10000000.00000000m, 0.00001000m);
@@ -486,6 +488,8 @@ namespace Binance
             { "WAVESBNB", WAVES_BNB },
             { "WAVESBTC", WAVES_BTC },
             { "WAVESETH", WAVES_ETH },
+            { "WINGSBTC", WINGS_BTC },
+            { "WINGSETH", WINGS_ETH },
             { "WTCBNB", WTC_BNB },
             { "WTCBTC", WTC_BTC },
             { "WTCETH", WTC_ETH },
