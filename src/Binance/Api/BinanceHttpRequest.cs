@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Text;
 
@@ -95,7 +96,7 @@ namespace Binance.Api
         {
             Throw.IfNull(value, nameof(value));
 
-            _parameters[field] = value.ToString();
+            _parameters[field] = Convert.ToString(value, CultureInfo.InvariantCulture);
 
             _queryString = null;
         }
