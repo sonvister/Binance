@@ -915,9 +915,6 @@ namespace Binance.Api
         /// <returns></returns>
         private SymbolStatistics ConvertTo24HourStatistics(JToken jToken)
         {
-            var firstId = jToken["firstId"].Value<long>();
-            var lastId = jToken["lastId"].Value<long>();
-
             return new SymbolStatistics(
                 jToken["symbol"].Value<string>(),
                 TimeSpan.FromHours(24),
@@ -926,12 +923,16 @@ namespace Binance.Api
                 jToken["weightedAvgPrice"].Value<decimal>(),
                 jToken["prevClosePrice"].Value<decimal>(),
                 jToken["lastPrice"].Value<decimal>(),
+                jToken["lastQty"].Value<decimal>(),
                 jToken["bidPrice"].Value<decimal>(),
+                jToken["bidQty"].Value<decimal>(),
                 jToken["askPrice"].Value<decimal>(),
+                jToken["askQty"].Value<decimal>(),
                 jToken["openPrice"].Value<decimal>(),
                 jToken["highPrice"].Value<decimal>(),
                 jToken["lowPrice"].Value<decimal>(),
                 jToken["volume"].Value<decimal>(),
+                jToken["quoteVolume"].Value<decimal>(),
                 jToken["openTime"].Value<long>(),
                 jToken["closeTime"].Value<long>(),
                 jToken["firstId"].Value<long>(),

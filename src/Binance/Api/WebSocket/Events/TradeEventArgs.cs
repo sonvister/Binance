@@ -4,7 +4,7 @@ using Binance.Market;
 namespace Binance.Api.WebSocket.Events
 {
     /// <summary>
-    /// Depth web socket client event.
+    /// Trade web socket client event.
     /// </summary>
     public sealed class TradeEventArgs : WebSocketClientEventArgs
     {

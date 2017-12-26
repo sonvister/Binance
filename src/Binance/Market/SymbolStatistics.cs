@@ -10,92 +10,112 @@ namespace Binance.Market
         #region Public Properties
 
         /// <summary>
-        /// The symbol.
+        /// Get the symbol.
         /// </summary>
         public string Symbol { get; }
 
         /// <summary>
-        /// The time period.
+        /// Get the time period.
         /// </summary>
         public TimeSpan Period { get; }
 
         /// <summary>
-        /// The price change amount.
+        /// Get the price change amount.
         /// </summary>
         public decimal PriceChange { get; }
 
         /// <summary>
-        /// The price change percent
+        /// Get the price change percent
         /// </summary>
         public decimal PriceChangePercent { get; }
 
         /// <summary>
-        /// The weighted average price.
+        /// Get the weighted average price.
         /// </summary>
         public decimal WeightedAveragePrice { get; }
 
         /// <summary>
-        /// The previous close price.
+        /// Get the previous close price.
         /// </summary>
         public decimal PreviousClosePrice { get; }
 
         /// <summary>
-        /// The last price.
+        /// Get the last price.
         /// </summary>
         public decimal LastPrice { get; }
 
         /// <summary>
-        /// The bid price.
+        /// Get the last quantity.
+        /// </summary>
+        public decimal LastQuantity { get; }
+
+        /// <summary>
+        /// Get the bid price.
         /// </summary>
         public decimal BidPrice { get; }
 
         /// <summary>
-        /// The ask price
+        /// Get the bid quantity.
+        /// </summary>
+        public decimal BidQuantity { get; }
+
+        /// <summary>
+        /// Get the ask price.
         /// </summary>
         public decimal AskPrice { get; }
 
         /// <summary>
-        /// The open price.
+        /// Get the ask quantity.
+        /// </summary>
+        public decimal AskQuantity { get; }
+
+        /// <summary>
+        /// Get the open price.
         /// </summary>
         public decimal OpenPrice { get; }
 
         /// <summary>
-        /// The high price.
+        /// Get the high price.
         /// </summary>
         public decimal HighPrice { get; }
 
         /// <summary>
-        /// The low price.
+        /// Get the low price.
         /// </summary>
         public decimal LowPrice { get; }
 
         /// <summary>
-        /// The volume.
+        /// Get the base asset volume.
         /// </summary>
         public decimal Volume { get; }
 
         /// <summary>
-        /// The open time.
+        /// Get the quote asset volume.
+        /// </summary>
+        public decimal QuoteVolume { get; }
+
+        /// <summary>
+        /// Get the open time.
         /// </summary>
         public decimal OpenTime { get; }
 
         /// <summary>
-        /// The close time.
+        /// Get the close time.
         /// </summary>
         public decimal CloseTime { get; }
 
         /// <summary>
-        /// The first trade ID.
+        /// Get the first trade ID.
         /// </summary>
         public long FirstTradeId { get; }
 
         /// <summary>
-        /// The last trade ID.
+        /// Get the last trade ID.
         /// </summary>
         public long LastTradeId { get; }
 
         /// <summary>
-        /// The trade count.
+        /// Get the trade count.
         /// </summary>
         public long TradeCount { get; }
 
@@ -113,12 +133,16 @@ namespace Binance.Market
         /// <param name="weightedAveragePrice"></param>
         /// <param name="previousClosePrice"></param>
         /// <param name="lastPrice"></param>
+        /// <param name="lastQuantity"></param>
         /// <param name="bidPrice"></param>
+        /// <param name="bidQuantity"></param>
         /// <param name="askPrice"></param>
+        /// <param name="askQuantity"></param>
         /// <param name="openPrice"></param>
         /// <param name="highPrice"></param>
         /// <param name="lowPrice"></param>
         /// <param name="volume"></param>
+        /// <param name="quoteVolume"></param>
         /// <param name="openTime"></param>
         /// <param name="closeTime"></param>
         /// <param name="firstTradeId"></param>
@@ -132,12 +156,16 @@ namespace Binance.Market
             decimal weightedAveragePrice,
             decimal previousClosePrice,
             decimal lastPrice,
+            decimal lastQuantity,
             decimal bidPrice,
+            decimal bidQuantity,
             decimal askPrice,
+            decimal askQuantity,
             decimal openPrice,
             decimal highPrice,
             decimal lowPrice,
             decimal volume,
+            decimal quoteVolume,
             long openTime,
             long closeTime,
             long firstTradeId,
@@ -152,10 +180,16 @@ namespace Binance.Market
                 throw new ArgumentException($"{nameof(SymbolStatistics)} price must not be less than 0.", nameof(previousClosePrice));
             if (lastPrice < 0)
                 throw new ArgumentException($"{nameof(SymbolStatistics)} price must not be less than 0.", nameof(lastPrice));
+            if (lastQuantity < 0)
+                throw new ArgumentException($"{nameof(SymbolStatistics)} quantity must not be less than 0.", nameof(lastQuantity));
             if (bidPrice < 0)
                 throw new ArgumentException($"{nameof(SymbolStatistics)} price must not be less than 0.", nameof(bidPrice));
+            if (bidQuantity < 0)
+                throw new ArgumentException($"{nameof(SymbolStatistics)} quantity must not be less than 0.", nameof(bidQuantity));
             if (askPrice < 0)
                 throw new ArgumentException($"{nameof(SymbolStatistics)} price must not be less than 0.", nameof(askPrice));
+            if (askQuantity < 0)
+                throw new ArgumentException($"{nameof(SymbolStatistics)} quantity must not be less than 0.", nameof(askQuantity));
             if (openPrice < 0)
                 throw new ArgumentException($"{nameof(SymbolStatistics)} price must not be less than 0.", nameof(openPrice));
             if (highPrice < 0)
@@ -167,6 +201,8 @@ namespace Binance.Market
 
             if (volume < 0)
                 throw new ArgumentException($"{nameof(SymbolStatistics)} volume must be greater than or equal to 0.", nameof(volume));
+            if (quoteVolume < 0)
+                throw new ArgumentException($"{nameof(SymbolStatistics)} volume must be greater than or equal to 0.", nameof(quoteVolume));
 
             if (openTime <= 0)
                 throw new ArgumentException($"{nameof(SymbolStatistics)} time must be greater than 0.", nameof(openTime));
@@ -194,12 +230,16 @@ namespace Binance.Market
             WeightedAveragePrice = weightedAveragePrice;
             PreviousClosePrice = previousClosePrice;
             LastPrice = lastPrice;
+            LastQuantity = lastQuantity;
             BidPrice = bidPrice;
+            BidQuantity = bidQuantity;
             AskPrice = askPrice;
+            AskQuantity = askQuantity;
             OpenPrice = openPrice;
             HighPrice = highPrice;
             LowPrice = lowPrice;
             Volume = volume;
+            QuoteVolume = quoteVolume;
             OpenTime = openTime;
             CloseTime = closeTime;
             FirstTradeId = firstTradeId;
