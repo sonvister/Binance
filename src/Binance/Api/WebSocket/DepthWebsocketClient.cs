@@ -40,7 +40,7 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(string symbol, Action<DepthUpdateEventArgs> callback, CancellationToken token)
+        public virtual Task SubscribeAsync(string symbol, int limit, Action<DepthUpdateEventArgs> callback, CancellationToken token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -54,7 +54,10 @@ namespace Binance.Api.WebSocket
             if (IsSubscribed)
                 throw new InvalidOperationException($"{nameof(DepthWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");
 
-            return SubscribeToAsync($"{Symbol.ToLower()}@depth", callback, token);
+            if (limit > 0)
+                return SubscribeToAsync($"{Symbol.ToLower()}@depth{limit}", callback, token);
+            else
+                return SubscribeToAsync($"{Symbol.ToLower()}@depth", callback, token);
         }
 
         #endregion Public Methods
@@ -77,9 +80,23 @@ namespace Binance.Api.WebSocket
             {
                 var jObject = JObject.Parse(json);
 
-                var eventType = jObject["e"].Value<string>();
+                var eventType = jObject["e"]?.Value<string>();
 
-                if (eventType == "depthUpdate")
+                DepthUpdateEventArgs eventArgs = null;
+
+                if (eventType == null) // partial order book stream.
+                {
+                    // Simulate event time.
+                    var eventTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+                    var lastUpdateId = jObject["lastUpdateId"].Value<long>();
+
+                    var bids = jObject["bids"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
+                    var asks = jObject["asks"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
+
+                    eventArgs = new DepthUpdateEventArgs(eventTime, token, Symbol, lastUpdateId, lastUpdateId, bids, asks);
+                }
+                else if (eventType == "depthUpdate")
                 {
                     var symbol = jObject["s"].Value<string>();
                     var eventTime = jObject["E"].Value<long>();
@@ -90,25 +107,26 @@ namespace Binance.Api.WebSocket
                     var bids = jObject["b"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
                     var asks = jObject["a"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
 
-                    var eventArgs = new DepthUpdateEventArgs(eventTime, token, symbol, firstUpdateId, lastUpdateId, bids, asks);
-
-                    try
-                    {
-                        callback?.Invoke(eventArgs);
-                        DepthUpdate?.Invoke(this, eventArgs);
-                    }
-                    catch (OperationCanceledException) { }
-                    catch (Exception e)
-                    {
-                        if (!token.IsCancellationRequested)
-                        {
-                            Logger?.LogError(e, $"{nameof(DepthWebSocketClient)}: Unhandled depth update event handler exception.");
-                        }
-                    }
+                    eventArgs = new DepthUpdateEventArgs(eventTime, token, symbol, firstUpdateId, lastUpdateId, bids, asks);
                 }
                 else
                 {
                     Logger?.LogWarning($"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                    return;
+                }
+
+                try
+                {
+                    callback?.Invoke(eventArgs);
+                    DepthUpdate?.Invoke(this, eventArgs);
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e)
+                {
+                    if (!token.IsCancellationRequested)
+                    {
+                        Logger?.LogError(e, $"{nameof(DepthWebSocketClient)}: Unhandled depth update event handler exception.");
+                    }
                 }
             }
             catch (OperationCanceledException) { }

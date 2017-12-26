@@ -28,10 +28,11 @@ namespace Binance.Api.WebSocket
         /// an exception occurs.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
+        /// <param name="limit">The limit (optional, uses partial depth stream). Valid values are: 5, 10, or 20.</param>
         /// <param name="callback">An event callback.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(string symbol, Action<DepthUpdateEventArgs> callback, CancellationToken token);
+        Task SubscribeAsync(string symbol, int limit, Action<DepthUpdateEventArgs> callback, CancellationToken token);
 
         #endregion Public Methods
     }

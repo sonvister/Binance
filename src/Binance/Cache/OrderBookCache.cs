@@ -42,6 +42,9 @@ namespace Binance.Cache
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
+            if (limit < 0)
+                throw new ArgumentException($"{nameof(OrderBookCache)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
+
             if (!token.CanBeCanceled)
                 throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
 
@@ -55,7 +58,7 @@ namespace Binance.Cache
 
             try
             {
-                await Client.SubscribeAsync(symbol, token)
+                await Client.SubscribeAsync(symbol, limit, token)
                     .ConfigureAwait(false);
             }
             finally { UnLink(); }
@@ -84,48 +87,61 @@ namespace Binance.Cache
         /// <returns></returns>
         protected override async Task<OrderBookCacheEventArgs> OnAction(DepthUpdateEventArgs @event)
         {
-            // If order book has not been initialized.
-            if (_orderBook == null)
+            if (_limit > 0)
             {
-                // Synchronize.
-                await SynchronizeOrderBookAsync()
-                    .ConfigureAwait(false);
+                // Ignore events with same or earlier order book update.
+                if (_orderBookClone != null && @event.LastUpdateId <= _orderBookClone.LastUpdateId)
+                    return null;
+
+                // Top <level> bids and asks, pushed every second.
+                // NOTE: LastUpdateId is not contiguous between events when using partial depth stream.
+                _orderBookClone = new OrderBook(_symbol, @event.LastUpdateId, @event.Bids, @event.Asks);
             }
-
-            // Ignore events prior to order book snapshot.
-            if (@event.LastUpdateId <= _orderBook.LastUpdateId)
-                return null;
-
-            // If there is a gap in events (order book out-of-sync).
-            // ReSharper disable once InvertIf
-            if (@event.FirstUpdateId > _orderBook.LastUpdateId + 1)
+            else
             {
-                Logger?.LogError($"{nameof(OrderBookCache)}: Synchronization failure (first update ID > last update ID + 1).");
+                // If order book has not been initialized.
+                if (_orderBook == null)
+                {
+                    // Synchronize.
+                    await SynchronizeOrderBookAsync()
+                        .ConfigureAwait(false);
+                }
 
-                await Task.Delay(1000, Token)
-                    .ConfigureAwait(false); // wait a bit.
+                // Ignore events prior to order book snapshot.
+                if (@event.LastUpdateId <= _orderBook.LastUpdateId)
+                    return null;
 
-                // Re-synchronize.
-                await SynchronizeOrderBookAsync()
-                    .ConfigureAwait(false);
-
-                // If still out-of-sync.
+                // If there is a gap in events (order book out-of-sync).
                 // ReSharper disable once InvertIf
                 if (@event.FirstUpdateId > _orderBook.LastUpdateId + 1)
                 {
-                    Logger?.LogError($"{nameof(OrderBookCache)}: Re-Synchronization failure (first update ID > last update ID + 1).");
+                    Logger?.LogError($"{nameof(OrderBookCache)}: Synchronization failure (first update ID > last update ID + 1).");
 
-                    // Reset and wait for next event.
-                    _orderBook = null;
-                    return null;
+                    await Task.Delay(1000, Token)
+                        .ConfigureAwait(false); // wait a bit.
+
+                    // Re-synchronize.
+                    await SynchronizeOrderBookAsync()
+                        .ConfigureAwait(false);
+
+                    // If still out-of-sync.
+                    // ReSharper disable once InvertIf
+                    if (@event.FirstUpdateId > _orderBook.LastUpdateId + 1)
+                    {
+                        Logger?.LogError($"{nameof(OrderBookCache)}: Re-Synchronization failure (first update ID > last update ID + 1).");
+
+                        // Reset and wait for next event.
+                        _orderBook = null;
+                        return null;
+                    }
                 }
+
+                Logger?.LogDebug($"{nameof(OrderBookCache)}: Updating order book [last update ID: {@event.LastUpdateId}].");
+
+                _orderBook.Modify(@event.LastUpdateId, @event.Bids, @event.Asks);
+
+                _orderBookClone = _orderBook.Clone();
             }
-
-            Logger?.LogDebug($"{nameof(OrderBookCache)}: Updating order book [last update ID: {@event.LastUpdateId}].");
-
-            _orderBook.Modify(@event.LastUpdateId, @event.Bids, @event.Asks);
-
-            _orderBookClone = _limit > 0 ? _orderBook.Clone(_limit) : _orderBook.Clone();
 
             return new OrderBookCacheEventArgs(_orderBookClone);
         }

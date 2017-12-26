@@ -53,6 +53,9 @@ namespace Binance.Cache
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
+            if (limit < 0)
+                throw new ArgumentException($"{nameof(CandlestickCache)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
+
             if (!token.CanBeCanceled)
                 throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
 
