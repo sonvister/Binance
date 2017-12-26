@@ -30,7 +30,7 @@ namespace Binance.Api.WebSocket
 
         public event EventHandler<OrderUpdateEventArgs> OrderUpdate;
 
-        public event EventHandler<TradeUpdateEventArgs> TradeUpdate;
+        public event EventHandler<AccountTradeUpdateEventArgs> TradeUpdate;
 
         #endregion Public Events
 
@@ -211,7 +211,7 @@ namespace Binance.Api.WebSocket
                         
                         var quantityOfLastFilledTrade = jObject["l"].Value<decimal>();
 
-                        var eventArgs = new TradeUpdateEventArgs(eventTime, token, order, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
+                        var eventArgs = new AccountTradeUpdateEventArgs(eventTime, token, order, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
 
                         try
                         {

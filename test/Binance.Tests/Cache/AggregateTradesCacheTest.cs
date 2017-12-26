@@ -15,7 +15,7 @@ namespace Binance.Tests.Cache
         public async Task SubscribeThrows()
         {
             var api = new Mock<IBinanceApi>().Object;
-            var client = new Mock<ITradesWebSocketClient>().Object;
+            var client = new Mock<IAggregateTradeWebSocketClient>().Object;
 
             var cache = new AggregateTradesCache(api, client);
 

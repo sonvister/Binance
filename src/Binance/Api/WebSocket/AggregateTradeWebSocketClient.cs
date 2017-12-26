@@ -9,9 +9,9 @@ using Newtonsoft.Json.Linq;
 namespace Binance.Api.WebSocket
 {
     /// <summary>
-    /// A <see cref="ITradesWebSocketClient"/> implementation.
+    /// A <see cref="IAggregateTradeWebSocketClient"/> implementation.
     /// </summary>
-    public class TradesWebSocketClient : BinanceWebSocketClient<AggregateTradeEventArgs>, ITradesWebSocketClient
+    public class AggregateTradeWebSocketClient : BinanceWebSocketClient<AggregateTradeEventArgs>, IAggregateTradeWebSocketClient
     {
         #region Public Events
 
@@ -32,7 +32,7 @@ namespace Binance.Api.WebSocket
         /// </summary>
         /// <param name="client"></param>
         /// <param name="logger"></param>
-        public TradesWebSocketClient(IWebSocketClient client, ILogger<TradesWebSocketClient> logger = null)
+        public AggregateTradeWebSocketClient(IWebSocketClient client, ILogger<AggregateTradeWebSocketClient> logger = null)
             : base(client, logger)
         { }
 
@@ -52,7 +52,7 @@ namespace Binance.Api.WebSocket
             Symbol = symbol.FormatSymbol();
 
             if (IsSubscribed)
-                throw new InvalidOperationException($"{nameof(TradesWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");
+                throw new InvalidOperationException($"{nameof(AggregateTradeWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");
 
             return SubscribeToAsync($"{Symbol.ToLower()}@aggTrade", callback, token);
         }
@@ -71,7 +71,7 @@ namespace Binance.Api.WebSocket
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
-            Logger?.LogDebug($"{nameof(TradesWebSocketClient)}: \"{json}\"");
+            Logger?.LogDebug($"{nameof(AggregateTradeWebSocketClient)}: \"{json}\"");
 
             try
             {
@@ -84,15 +84,15 @@ namespace Binance.Api.WebSocket
                     var eventTime = jObject["E"].Value<long>();
 
                     var trade = new AggregateTrade(
-                        jObject["s"].Value<string>(),
-                        jObject["a"].Value<long>(),    // ID
+                        jObject["s"].Value<string>(),  // symbol
+                        jObject["a"].Value<long>(),    // aggregate trade ID
                         jObject["p"].Value<decimal>(), // price
                         jObject["q"].Value<decimal>(), // quantity
                         jObject["f"].Value<long>(),    // first trade ID
                         jObject["l"].Value<long>(),    // last trade ID
-                        jObject["T"].Value<long>(),    // timestamp
-                        jObject["m"].Value<bool>(),    // is buyer maker
-                        jObject["M"].Value<bool>());   // is best price
+                        jObject["T"].Value<long>(),    // trade time (timestamp)
+                        jObject["m"].Value<bool>(),    // is buyer the market maker?
+                        jObject["M"].Value<bool>());   // is best price match?
 
                     var eventArgs = new AggregateTradeEventArgs(eventTime, token, trade);
 
@@ -106,13 +106,13 @@ namespace Binance.Api.WebSocket
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            Logger?.LogError(e, $"{nameof(TradesWebSocketClient)}: Unhandled aggregate trade event handler exception.");
+                            Logger?.LogError(e, $"{nameof(AggregateTradeWebSocketClient)}: Unhandled aggregate trade event handler exception.");
                         }
                     }
                 }
                 else
                 {
-                    Logger?.LogWarning($"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                    Logger?.LogWarning($"{nameof(AggregateTradeWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
                 }
             }
             catch (OperationCanceledException) { }
@@ -120,7 +120,7 @@ namespace Binance.Api.WebSocket
             {
                 if (!token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{nameof(TradesWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
+                    Logger?.LogError(e, $"{nameof(AggregateTradeWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
                 }
             }
         }

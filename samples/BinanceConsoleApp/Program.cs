@@ -391,6 +391,14 @@ namespace BinanceConsoleApp
             }
         }
 
+        internal static void Display(AggregateTrade trade)
+        {
+            lock (ConsoleSync)
+            {
+                Console.WriteLine($"  {trade.Time().ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Timestamp}");
+            }
+        }
+
         internal static void Display(Trade trade)
         {
             lock (ConsoleSync)

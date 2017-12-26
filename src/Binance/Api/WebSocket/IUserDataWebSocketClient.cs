@@ -22,7 +22,7 @@ namespace Binance.Api.WebSocket
         /// <summary>
         /// The trade update event.
         /// </summary>
-        event EventHandler<TradeUpdateEventArgs> TradeUpdate;
+        event EventHandler<AccountTradeUpdateEventArgs> TradeUpdate;
 
         #endregion Public Events
 

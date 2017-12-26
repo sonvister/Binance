@@ -78,7 +78,7 @@ namespace BinanceConsoleApp.Controllers
             }
         }
 
-        private static void OnTradeUpdateEvent(object sender, TradeUpdateEventArgs e)
+        private static void OnTradeUpdateEvent(object sender, AccountTradeUpdateEventArgs e)
         {
             lock (Program.ConsoleSync)
             {

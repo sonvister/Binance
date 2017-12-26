@@ -13,7 +13,7 @@ namespace Binance.Api.WebSocket
         /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this ITradesWebSocketClient client, string symbol, CancellationToken token)
+        public static Task SubscribeAsync(this IAggregateTradeWebSocketClient client, string symbol, CancellationToken token)
             => client.SubscribeAsync(symbol, null, token);
     }
 }

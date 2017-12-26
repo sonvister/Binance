@@ -1,4 +1,5 @@
 ﻿using System;
+using Binance.Api;
 using Binance.Market;
 
 namespace Binance.Account
@@ -65,7 +66,7 @@ namespace Binance.Account
             bool isBuyer,
             bool isMaker,
             bool isBestPriceMatch)
-            : base(symbol, id, price, quantity, timestamp, !(isBuyer ^ isMaker), isBestPriceMatch)
+            : base(symbol, id, price, quantity, BinanceApi.NullId, BinanceApi.NullId, timestamp, !(isBuyer ^ isMaker), isBestPriceMatch)
         {
             if (orderId < 0)
                 throw new ArgumentException($"{nameof(Trade)}: ID must not be less than 0.", nameof(orderId));

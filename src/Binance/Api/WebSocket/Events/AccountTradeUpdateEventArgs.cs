@@ -4,7 +4,7 @@ using Binance.Account.Orders;
 
 namespace Binance.Api.WebSocket.Events
 {
-    public sealed class TradeUpdateEventArgs : OrderExecutionEventArgs
+    public sealed class AccountTradeUpdateEventArgs : OrderExecutionEventArgs
     {
         #region Public Properties
 
@@ -32,7 +32,7 @@ namespace Binance.Api.WebSocket.Events
         /// <param name="newClientOrderId">The new client order ID.</param>
         /// <param name="trade">The trade.</param>
         /// <param name="quantityOfLastFilledTrade">The quantity of last filled trade.</param>
-        public TradeUpdateEventArgs(long timestamp, CancellationToken token, Order order, OrderRejectedReason rejectedReason, string newClientOrderId, AccountTrade trade, decimal quantityOfLastFilledTrade)
+        public AccountTradeUpdateEventArgs(long timestamp, CancellationToken token, Order order, OrderRejectedReason rejectedReason, string newClientOrderId, AccountTrade trade, decimal quantityOfLastFilledTrade)
             : base(timestamp, token, order, OrderExecutionType.Trade, rejectedReason, newClientOrderId)
         {
             Throw.IfNull(trade, nameof(trade));

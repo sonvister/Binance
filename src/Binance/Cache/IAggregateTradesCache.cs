@@ -29,7 +29,7 @@ namespace Binance.Cache
         /// <summary>
         /// The client that provides trade information.
         /// </summary>
-        ITradesWebSocketClient Client { get; }
+        IAggregateTradeWebSocketClient Client { get; }
 
         #endregion Public Properties
 
@@ -46,11 +46,11 @@ namespace Binance.Cache
         Task SubscribeAsync(string symbol, int limit, Action<AggregateTradesCacheEventArgs> callback, CancellationToken token);
         
         /// <summary>
-        /// Link to a subscribed <see cref="ITradesWebSocketClient"/>.
+        /// Link to a subscribed <see cref="IAggregateTradeWebSocketClient"/>.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="callback"></param>
-        void LinkTo(ITradesWebSocketClient client, Action<AggregateTradesCacheEventArgs> callback = null);
+        void LinkTo(IAggregateTradeWebSocketClient client, Action<AggregateTradesCacheEventArgs> callback = null);
 
         /// <summary>
         /// Unlink from client.

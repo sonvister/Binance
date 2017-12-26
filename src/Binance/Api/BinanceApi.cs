@@ -835,6 +835,7 @@ namespace Binance.Api
                     item["id"].Value<long>(), // ID
                     item["price"].Value<decimal>(), // price
                     item["qty"].Value<decimal>(), // quantity
+                    NullId, NullId, // buyer/seller order ID
                     item["time"].Value<long>(), // timestamp
                     item["isBuyerMaker"].Value<bool>(), // is buyer maker
                     item["isBestMatch"].Value<bool>())) // is best price match

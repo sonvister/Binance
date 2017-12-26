@@ -49,9 +49,9 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             using (var cts = new CancellationTokenSource())
             {
-                Assert.Throws<ArgumentException>("timestamp", () => new TradeUpdateEventArgs(-1, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
-                Assert.Throws<ArgumentException>("timestamp", () => new TradeUpdateEventArgs(0, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
-                Assert.Throws<ArgumentNullException>("order", () => new TradeUpdateEventArgs(timestamp, cts.Token, null, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+                Assert.Throws<ArgumentException>("timestamp", () => new AccountTradeUpdateEventArgs(-1, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+                Assert.Throws<ArgumentException>("timestamp", () => new AccountTradeUpdateEventArgs(0, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+                Assert.Throws<ArgumentNullException>("order", () => new AccountTradeUpdateEventArgs(timestamp, cts.Token, null, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
             }
         }
 
@@ -94,7 +94,7 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             using (var cts = new CancellationTokenSource())
             {
-                var args = new TradeUpdateEventArgs(timestamp, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
+                var args = new AccountTradeUpdateEventArgs(timestamp, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
 
                 Assert.Equal(timestamp, args.Timestamp);
                 Assert.Equal(order, args.Order);

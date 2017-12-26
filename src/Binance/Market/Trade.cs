@@ -30,6 +30,16 @@ namespace Binance.Market
         public decimal Quantity { get; }
 
         /// <summary>
+        /// Get the buyer order ID.
+        /// </summary>
+        public long BuyerOrderId { get; }
+
+        /// <summary>
+        /// Get the seller order ID.
+        /// </summary>
+        public long SellerOrderId { get; }
+
+        /// <summary>
         /// Get the trade timestamp.
         /// </summary>
         public long Timestamp { get; }
@@ -55,6 +65,8 @@ namespace Binance.Market
         /// <param name="id">The trade ID.</param>
         /// <param name="price">The price.</param>
         /// <param name="quantity">The quantity.</param>
+        /// <param name="buyerOrderId">The buyer order ID.</param>
+        /// <param name="sellerOrderId">The seller order ID.</param>
         /// <param name="timestamp">The timestamp.</param>
         /// <param name="isBuyerMaker">Is buyer maker.</param>
         /// <param name="isBestPriceMatch">Flag indicating if the trade was the best price match.</param>
@@ -63,6 +75,8 @@ namespace Binance.Market
             long id,
             decimal price,
             decimal quantity,
+            long buyerOrderId,
+            long sellerOrderId,
             long timestamp,
             bool isBuyerMaker,
             bool isBestPriceMatch)
@@ -82,6 +96,8 @@ namespace Binance.Market
             Id = id;
             Price = price;
             Quantity = quantity;
+            BuyerOrderId = buyerOrderId;
+            SellerOrderId = sellerOrderId;
             Timestamp = timestamp;
             IsBuyerMaker = isBuyerMaker;
             IsBestPriceMatch = isBestPriceMatch;

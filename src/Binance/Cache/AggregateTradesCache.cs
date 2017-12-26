@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public sealed class AggregateTradesCache : WebSocketClientCache<ITradesWebSocketClient, AggregateTradeEventArgs, AggregateTradesCacheEventArgs>, IAggregateTradesCache
+    public sealed class AggregateTradesCache : WebSocketClientCache<IAggregateTradeWebSocketClient, AggregateTradeEventArgs, AggregateTradesCacheEventArgs>, IAggregateTradesCache
     {
         #region Public Properties
 
@@ -38,7 +38,7 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public AggregateTradesCache(IBinanceApi api, ITradesWebSocketClient client, ILogger<AggregateTradesCache> logger = null)
+        public AggregateTradesCache(IBinanceApi api, IAggregateTradeWebSocketClient client, ILogger<AggregateTradesCache> logger = null)
             : base(api, client, logger)
         {
             _trades = new Queue<AggregateTrade>();
@@ -71,7 +71,7 @@ namespace Binance.Cache
             finally { UnLink(); }
         }
 
-        public override void LinkTo(ITradesWebSocketClient client, Action<AggregateTradesCacheEventArgs> callback = null)
+        public override void LinkTo(IAggregateTradeWebSocketClient client, Action<AggregateTradesCacheEventArgs> callback = null)
         {
             base.LinkTo(client, callback);
             Client.AggregateTrade += OnClientEvent;
