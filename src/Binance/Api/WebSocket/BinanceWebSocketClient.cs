@@ -131,6 +131,8 @@ namespace Binance.Api.WebSocket
 
                 BufferBlock?.Complete();
                 ActionBlock?.Complete();
+
+                IsSubscribed = false;
             }
         }
 

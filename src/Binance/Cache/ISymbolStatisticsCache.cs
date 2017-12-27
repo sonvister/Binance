@@ -23,7 +23,7 @@ namespace Binance.Cache
         /// <summary>
         /// The symbol statistics. Can be null if not yet synchronized or out-of-sync.
         /// </summary>
-        SymbolStatistics Statistics { get; }
+        SymbolStatistics[] Statistics { get; }
 
         /// <summary>
         /// The client that provides symbol statistics synchronization.
@@ -35,7 +35,15 @@ namespace Binance.Cache
         #region Public Methods
 
         /// <summary>
-        /// 
+        /// Subscribe to all symbols.
+        /// </summary>
+        /// <param name="callback"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task SubscribeAsync(Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token);
+
+        /// <summary>
+        /// Subscribe to a symbol.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="callback"></param>

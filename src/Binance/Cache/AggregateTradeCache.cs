@@ -57,7 +57,7 @@ namespace Binance.Cache
 
             token.ThrowIfCancellationRequested();
 
-            _symbol = symbol;
+            _symbol = symbol.FormatSymbol();
             _limit = limit;
             Token = token;
 
@@ -65,7 +65,7 @@ namespace Binance.Cache
 
             try
             {
-                await Client.SubscribeAsync(symbol, token)
+                await Client.SubscribeAsync(_symbol, token)
                     .ConfigureAwait(false);
             }
             finally { UnLink(); }

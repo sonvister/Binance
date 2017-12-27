@@ -10,7 +10,7 @@ namespace Binance.Cache.Events
         /// <summary>
         /// Get the symbol statistics.
         /// </summary>
-        public SymbolStatistics Statistics { get; }
+        public SymbolStatistics[] Statistics { get; }
 
         #endregion Public Properties
 
@@ -20,7 +20,7 @@ namespace Binance.Cache.Events
         /// Constructor.
         /// </summary>
         /// <param name="statistics">The symbol statistics.</param>
-        public SymbolStatisticsCacheEventArgs(SymbolStatistics statistics)
+        public SymbolStatisticsCacheEventArgs(params SymbolStatistics[] statistics)
         {
             Throw.IfNull(statistics, nameof(statistics));
 

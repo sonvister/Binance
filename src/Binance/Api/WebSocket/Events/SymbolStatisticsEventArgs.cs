@@ -13,7 +13,7 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// Get the symbol statistics.
         /// </summary>
-        public SymbolStatistics Statistics { get; }
+        public SymbolStatistics[] Statistics { get; }
 
         #endregion Public Properties
 
@@ -25,7 +25,7 @@ namespace Binance.Api.WebSocket.Events
         /// <param name="timestamp">The event time.</param>
         /// <param name="token">The cancellation token.</param>
         /// <param name="statistics">The symbol statistics.</param>
-        public SymbolStatisticsEventArgs(long timestamp, CancellationToken token, SymbolStatistics statistics)
+        public SymbolStatisticsEventArgs(long timestamp, CancellationToken token, params SymbolStatistics[] statistics)
             : base(timestamp, token)
         {
             Throw.IfNull(statistics, nameof(statistics));

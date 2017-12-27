@@ -14,15 +14,9 @@ namespace Binance.Cache
     {
         #region Public Properties
 
-        public SymbolStatistics Statistics { get; private set; }
+        public SymbolStatistics[] Statistics { get; private set; }
 
         #endregion Public Properties
-
-        #region Private Fields
-
-        private string _symbol;
-
-        #endregion Private Fields
 
         #region Constructors
 
@@ -34,6 +28,25 @@ namespace Binance.Cache
 
         #region Public Methods
 
+        public async Task SubscribeAsync(Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token)
+        {
+            if (!token.CanBeCanceled)
+                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
+
+            token.ThrowIfCancellationRequested();
+
+            Token = token;
+
+            LinkTo(Client, callback);
+
+            try
+            {
+                await Client.SubscribeAsync(token)
+                    .ConfigureAwait(false);
+            }
+            finally { UnLink(); }
+        }
+
         public async Task SubscribeAsync(string symbol, Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
@@ -43,7 +56,6 @@ namespace Binance.Cache
 
             token.ThrowIfCancellationRequested();
 
-            _symbol = symbol;
             Token = token;
 
             LinkTo(Client, callback);

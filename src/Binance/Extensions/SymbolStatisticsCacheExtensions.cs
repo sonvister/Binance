@@ -10,6 +10,15 @@ namespace Binance.Cache
         /// 
         /// </summary>
         /// <param name="cache"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task SubscribeAsync(this ISymbolStatisticsCache cache, CancellationToken token)
+            => cache.SubscribeAsync(null, token);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cache"></param>
         /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>

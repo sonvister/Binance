@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api.WebSocket.Events;
@@ -40,6 +41,19 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
+        public virtual Task SubscribeAsync(Action<SymbolStatisticsEventArgs> callback, CancellationToken token)
+        {
+            if (!token.CanBeCanceled)
+                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
+
+            token.ThrowIfCancellationRequested();
+
+            if (IsSubscribed)
+                throw new InvalidOperationException($"{nameof(SymbolStatisticsWebSocketClient)} is already subscribed to all symbols.");
+
+            return SubscribeToAsync("!ticker@arr", callback, token);
+        }
+
         public virtual Task SubscribeAsync(string symbol, Action<SymbolStatisticsEventArgs> callback, CancellationToken token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
@@ -75,57 +89,50 @@ namespace Binance.Api.WebSocket
 
             try
             {
-                var jObject = JObject.Parse(json);
+                SymbolStatisticsEventArgs eventArgs;
 
-                var eventType = jObject["e"].Value<string>();
-
-                if (eventType == "24hrTicker")
+                if (json.IsJsonArray())
                 {
-                    var eventTime = jObject["E"].Value<long>();
+                    // Simulate a single event time.
+                    var eventTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                    var statistics = new SymbolStatistics(
-                        jObject["s"].Value<string>(),  // symbol
-                        TimeSpan.FromHours(24),        // period
-                        jObject["p"].Value<decimal>(), // price change
-                        jObject["P"].Value<decimal>(), // price change percent
-                        jObject["w"].Value<decimal>(), // weighted average price
-                        jObject["x"].Value<decimal>(), // previous day's close price
-                        jObject["c"].Value<decimal>(), // current day's close price (last price)
-                        jObject["Q"].Value<decimal>(), // close trade's quantity (last quantity)
-                        jObject["b"].Value<decimal>(), // bid price
-                        jObject["B"].Value<decimal>(), // bid quantity
-                        jObject["a"].Value<decimal>(), // ask price
-                        jObject["A"].Value<decimal>(), // ask quantity
-                        jObject["o"].Value<decimal>(), // open price
-                        jObject["h"].Value<decimal>(), // high price
-                        jObject["l"].Value<decimal>(), // low price
-                        jObject["v"].Value<decimal>(), // base asset volume
-                        jObject["q"].Value<decimal>(), // quote asset volume
-                        jObject["O"].Value<long>(),    // open time
-                        jObject["C"].Value<long>(),    // close time
-                        jObject["F"].Value<long>(),    // first trade ID
-                        jObject["L"].Value<long>(),    // last trade ID
-                        jObject["n"].Value<long>());   // trade count
+                    var statistics = JArray.Parse(json).Select(jToken => DeserializeSymbolStatistics(jToken)).ToArray();
 
-                    var eventArgs = new SymbolStatisticsEventArgs(eventTime, token, statistics);
-
-                    try
-                    {
-                        callback?.Invoke(eventArgs);
-                        StatisticsUpdate?.Invoke(this, eventArgs);
-                    }
-                    catch (OperationCanceledException) { }
-                    catch (Exception e)
-                    {
-                        if (!token.IsCancellationRequested)
-                        {
-                            Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClient)}: Unhandled aggregate trade event handler exception.");
-                        }
-                    }
+                    eventArgs = new SymbolStatisticsEventArgs(eventTime, token, statistics);
                 }
                 else
                 {
-                    Logger?.LogWarning($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                    var jObject = JObject.Parse(json);
+
+                    var eventType = jObject["e"].Value<string>();
+
+                    if (eventType == "24hrTicker")
+                    {
+                        var eventTime = jObject["E"].Value<long>();
+
+                        var statistics = DeserializeSymbolStatistics(jObject);
+
+                        eventArgs = new SymbolStatisticsEventArgs(eventTime, token, statistics);
+                    }
+                    else
+                    {
+                        Logger?.LogWarning($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                        return;
+                    }
+                }
+
+                try
+                {
+                    callback?.Invoke(eventArgs);
+                    StatisticsUpdate?.Invoke(this, eventArgs);
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e)
+                {
+                    if (!token.IsCancellationRequested)
+                    {
+                        Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClient)}: Unhandled aggregate trade event handler exception.");
+                    }
                 }
             }
             catch (OperationCanceledException) { }
@@ -139,5 +146,36 @@ namespace Binance.Api.WebSocket
         }
 
         #endregion Protected Methods
+
+        #region Private Methods
+
+        private static SymbolStatistics DeserializeSymbolStatistics(JToken jToken)
+        {
+            return new SymbolStatistics(
+                jToken["s"].Value<string>(),  // symbol
+                TimeSpan.FromHours(24),       // period
+                jToken["p"].Value<decimal>(), // price change
+                jToken["P"].Value<decimal>(), // price change percent
+                jToken["w"].Value<decimal>(), // weighted average price
+                jToken["x"].Value<decimal>(), // previous day's close price
+                jToken["c"].Value<decimal>(), // current day's close price (last price)
+                jToken["Q"].Value<decimal>(), // close trade's quantity (last quantity)
+                jToken["b"].Value<decimal>(), // bid price
+                jToken["B"].Value<decimal>(), // bid quantity
+                jToken["a"].Value<decimal>(), // ask price
+                jToken["A"].Value<decimal>(), // ask quantity
+                jToken["o"].Value<decimal>(), // open price
+                jToken["h"].Value<decimal>(), // high price
+                jToken["l"].Value<decimal>(), // low price
+                jToken["v"].Value<decimal>(), // base asset volume
+                jToken["q"].Value<decimal>(), // quote asset volume
+                jToken["O"].Value<long>(),    // open time
+                jToken["C"].Value<long>(),    // close time
+                jToken["F"].Value<long>(),    // first trade ID
+                jToken["L"].Value<long>(),    // last trade ID
+                jToken["n"].Value<long>());   // trade count
+        }
+
+        #endregion Private Methods
     }
 }

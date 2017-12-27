@@ -68,6 +68,17 @@ namespace Binance
         }
 
         /// <summary>
+        /// Return true if string is a JSON array.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        internal static bool IsJsonArray(this string s)
+        {
+            return !string.IsNullOrWhiteSpace(s)
+                && s.StartsWith("[") && s.EndsWith("]");
+        }
+
+        /// <summary>
         /// Deserialize order status.
         /// </summary>
         /// <param name="status"></param>

@@ -50,10 +50,10 @@ namespace Binance24HourStatistics
                 {
                     var api = services.GetService<IBinanceApi>();
 
-                    // Query and display the order book.
+                    // Query and display the 24-hour statistics.
                     Display(await api.Get24HourStatisticsAsync(symbol));
 
-                    // Monitor order book and display updates in real-time.
+                    // Monitor 24-hour statistics and display updates in real-time.
                     controller.Begin(
                         tkn => cache.SubscribeAsync(symbol, evt => Display(evt.Statistics), tkn),
                         err => Console.WriteLine(err.Message));
@@ -70,15 +70,18 @@ namespace Binance24HourStatistics
             }
         }
 
-        private static void Display(SymbolStatistics stats)
+        private static void Display(params SymbolStatistics[] statistics)
         {
             Console.SetCursorPosition(0, 0);
 
-            Console.WriteLine($"  24-hour statistics for {stats.Symbol}:");
-            Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
-            Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
+            foreach (var stats in statistics)
+            {
+                Console.WriteLine($"  24-hour statistics for {stats.Symbol}:");
+                Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
+                Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
+                Console.WriteLine();
+            }
 
-            Console.WriteLine();
             Console.WriteLine("...press any key to exit.");
         }
     }
