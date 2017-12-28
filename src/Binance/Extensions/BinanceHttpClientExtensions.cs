@@ -353,16 +353,16 @@ namespace Binance.Api
             };
 
             request.AddParameter("symbol", symbol.FormatSymbol());
-            request.AddParameter("side", side.ToString().ToUpper());
+            request.AddParameter("side", side.ToString().ToUpperInvariant());
             request.AddParameter("type", type.AsString());
-            request.AddParameter("newOrderRespType", newOrderRespType.ToString().ToUpper());
+            request.AddParameter("newOrderRespType", newOrderRespType.ToString().ToUpperInvariant());
             request.AddParameter("quantity", quantity);
 
             if (price > 0)
                 request.AddParameter("price", price);
 
             if (timeInForce.HasValue)
-                request.AddParameter("timeInForce", timeInForce.ToString().ToUpper());
+                request.AddParameter("timeInForce", timeInForce.ToString().ToUpperInvariant());
 
             if (!string.IsNullOrWhiteSpace(newClientOrderId))
                 request.AddParameter("newClientOrderId", newClientOrderId);

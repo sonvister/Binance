@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Binance.Account.Orders;
 
 namespace Binance
 {
@@ -60,6 +61,11 @@ namespace Binance
         };
 
         /// <summary>
+        /// Get the symbol status.
+        /// </summary>
+        public SymbolStatus Status { get; }
+
+        /// <summary>
         /// Get the base asset symbol.
         /// </summary>
         public Asset BaseAsset { get; }
@@ -70,20 +76,29 @@ namespace Binance
         public Asset QuoteAsset { get; }
 
         /// <summary>
-        /// Get the minimum order quantity.
+        /// Get base asset range.
         /// </summary>
-        public decimal BaseMinQuantity { get; }
+        public InclusiveRange Quantity { get; }
 
         /// <summary>
-        /// Get the maximum order quantity.
+        /// Get the quote asset range.
         /// </summary>
-        public decimal BaseMaxQuantity { get; }
+        public InclusiveRange Price { get; }
 
         /// <summary>
-        /// Get the minimum order price as well as the price increment.
-        /// NOTE: The order price must be a multiple of this increment.
+        /// Get the minimum notional value.
         /// </summary>
-        public decimal QuoteIncrement { get; }
+        public decimal NotionalMinimumValue { get; }
+
+        /// <summary>
+        /// Get the allowed order types.
+        /// </summary>
+        public IEnumerable<OrderType> OrderTypes { get; }
+
+        /// <summary>
+        /// Get the flag indicating if iceberg orders are allowed.
+        /// </summary>
+        public bool IsIcebergAllowed { get; }
 
         #endregion Public Properties
 
@@ -102,26 +117,30 @@ namespace Binance
         /// </summary>
         /// <param name="baseAsset">The symbol base asset.</param>
         /// <param name="quoteAsset">The symbol quote asset.</param>
-        /// <param name="baseMaxQty">The base asset maximum quantity.</param>
-        /// <param name="baseMinQty">The base asset minimum quantity.</param>
-        /// <param name="quoteIncrement">The quote asset increment price.</param>
-        public Symbol(Asset baseAsset, Asset quoteAsset, decimal baseMinQty, decimal baseMaxQty, decimal quoteIncrement)
+        /// <param name="quantity">The minimum, maximum, and incremental quantity values.</param>
+        /// <param name="price">The minimum, maximum, and incremental price values.</param>
+        /// <param name="notionalMinimumValue">The minimum notional value.</param>
+        /// <param name="isIcebergAllowed">The flag indicating if iceberg orders are allowed.</param>
+        /// <param name="orderTypes">The list of allowed order types.</param>
+        public Symbol(SymbolStatus status, Asset baseAsset, Asset quoteAsset, InclusiveRange quantity, InclusiveRange price, decimal notionalMinimumValue, bool isIcebergAllowed, IEnumerable<OrderType> orderTypes)
         {
             Throw.IfNull(baseAsset, nameof(baseAsset));
             Throw.IfNull(quoteAsset, nameof(quoteAsset));
+            Throw.IfNull(quantity, nameof(quantity));
+            Throw.IfNull(price, nameof(price));
+            Throw.IfNull(orderTypes, nameof(orderTypes));
 
-            if (baseMinQty <= 0)
-                throw new ArgumentException($"{nameof(Symbol)} quantity must be greater than 0.", nameof(baseMinQty));
-            if (baseMaxQty <= 0)
-                throw new ArgumentException($"{nameof(Symbol)} quantity must be greater than 0.", nameof(baseMaxQty));
-            if (quoteIncrement <= 0)
-                throw new ArgumentException($"{nameof(Symbol)} increment must be greater than 0.", nameof(quoteIncrement));
+            Status = status;
 
             BaseAsset = baseAsset;
             QuoteAsset = quoteAsset;
-            BaseMinQuantity = baseMinQty;
-            BaseMaxQuantity = baseMaxQty;
-            QuoteIncrement = quoteIncrement;
+
+            Quantity = quantity;
+            Price = price;
+
+            NotionalMinimumValue = notionalMinimumValue;
+            IsIcebergAllowed = isIcebergAllowed;
+            OrderTypes = orderTypes;
 
             _symbol = $"{baseAsset}{quoteAsset}";
         }

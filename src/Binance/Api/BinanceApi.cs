@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -316,6 +317,9 @@ namespace Binance.Api
                     symbols.AddRange(
                         jArray.Select(jToken =>
                         {
+                            var status = jToken["status"].Value<string>().ConvertSymbolStatus();
+                            var icebergAllowed = jToken["icebergAllowed"].Value<bool>();
+
                             // HACK: Support inconsistent precision naming and possible future changes.
                             var baseAssetPrecision = jToken["baseAssetPrecision"]?.Value<int>() ?? jToken["basePrecision"]?.Value<int>() ?? 0;
                             var quoteAssetPrecision = jToken["quoteAssetPrecision"]?.Value<int>() ?? jToken["quotePrecision"]?.Value<int>() ?? 0;
@@ -323,19 +327,30 @@ namespace Binance.Api
                             var baseAsset = new Asset(jToken["baseAsset"].Value<string>(), baseAssetPrecision);
                             var quoteAsset = new Asset(jToken["quoteAsset"].Value<string>(), quoteAssetPrecision);
 
+                            var orderTypes = new List<OrderType>();
+                            foreach (var orderType in jToken["orderTypes"])
+                            {
+                                orderTypes.Add(orderType.Value<string>().ConvertOrderType());
+                            }
+
                             var filters = jToken["filters"];
+
+                            var quoteMinPrice = filters[0]["minPrice"].Value<decimal>();
+                            var quoteMaxPrice = filters[0]["maxPrice"].Value<decimal>();
+                            var quoteIncrement = filters[0]["tickSize"].Value<decimal>();
 
                             var baseMinQty = filters[1]["minQty"].Value<decimal>();
                             var baseMaxQty = filters[1]["maxQty"].Value<decimal>();
+                            var baseIncrement = filters[1]["stepSize"].Value<decimal>();
 
-                            var quoteIncrement = filters[0]["minPrice"].Value<decimal>();
+                            var minNotional = filters[2]["minNotional"].Value<decimal>();
 
-                            var symbol = new Symbol(baseAsset, quoteAsset, baseMinQty, baseMaxQty, quoteIncrement);
+                            var symbol = new Symbol(status, baseAsset, quoteAsset, (baseMinQty, baseMaxQty, baseIncrement), (quoteMinPrice, quoteMaxPrice, quoteIncrement), minNotional, icebergAllowed, orderTypes);
 
                             if (symbol.ToString() != jToken["symbol"].Value<string>())
                             {
                                 _logger?.LogDebug($"Symbol does not match trading pair assets ({jToken["symbol"].Value<string>()} != {symbol}).");
-                                return null; // invalid symbol.
+                                return null; // invalid symbol (e.g. 'ETC').
                             }
 
                             return symbol;

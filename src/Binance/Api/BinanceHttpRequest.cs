@@ -49,6 +49,11 @@ namespace Binance.Api
         }
 
         /// <summary>
+        /// Get the total parameters string.
+        /// </summary>
+        public string TotalParams => QueryString + Body ?? string.Empty;
+
+        /// <summary>
         /// Get the rate limit weight.
         /// </summary>
         public int RateLimitWeight { get; private set; }

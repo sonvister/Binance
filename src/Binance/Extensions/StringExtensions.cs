@@ -81,7 +81,28 @@ namespace Binance
                 .Replace("-", string.Empty)
                 .Replace("_", string.Empty)
                 .Replace("/", string.Empty)
-                .ToUpper();
+                .ToUpperInvariant();
+        }
+
+        /// <summary>
+        /// Deserialize symbol status.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        internal static SymbolStatus ConvertSymbolStatus(this string status)
+        {
+            switch (status)
+            {
+                case "AUCTION_MATCH": return SymbolStatus.AuctionMatch;
+                case "BREAK": return SymbolStatus.Break;
+                case "END_OF_DAY": return SymbolStatus.EndOfDay;
+                case "HALT": return SymbolStatus.Halt;
+                case "POST_TRADING": return SymbolStatus.PostTrading;
+                case "PRE_TRADING": return SymbolStatus.PreTrading;
+                case "TRADING": return SymbolStatus.Trading;
+                default:
+                    throw new Exception($"Failed to convert symbol status: \"{status}\"");
+            }
         }
 
         /// <summary>

@@ -17,7 +17,7 @@ namespace BinanceConsoleApp.Controllers
 
             lock (Program.ConsoleSync)
             {
-                Console.WriteLine($"  {time.Kind.ToString().ToUpper()} Time: {time}  [Local: {time.ToLocalTime()}]  Timestamp: {timestamp} [offset: {Program.Api.HttpClient.TimestampProvider.TimestampOffset}]");
+                Console.WriteLine($"  {time.Kind.ToString().ToUpperInvariant()} Time: {time}  [Local: {time.ToLocalTime()}]  Timestamp: {timestamp} [offset: {Program.Api.HttpClient.TimestampProvider.TimestampOffset}]");
                 Console.WriteLine();
             }
 

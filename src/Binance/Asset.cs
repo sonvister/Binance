@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1514327385397;
+        public static readonly long LastUpdateAt = 1514500256690;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH = BCC;
@@ -71,12 +71,14 @@ namespace Binance
         public static readonly Asset LRC = new Asset("LRC", 8);
         public static readonly Asset LSK = new Asset("LSK", 8);
         public static readonly Asset LTC = new Asset("LTC", 8);
+        public static readonly Asset LUN = new Asset("LUN", 8);
         public static readonly Asset MANA = new Asset("MANA", 8);
         public static readonly Asset MCO = new Asset("MCO", 8);
         public static readonly Asset MDA = new Asset("MDA", 8);
         public static readonly Asset MOD = new Asset("MOD", 8);
         public static readonly Asset MTH = new Asset("MTH", 8);
         public static readonly Asset MTL = new Asset("MTL", 8);
+        public static readonly Asset NAV = new Asset("NAV", 8);
         public static readonly Asset NEBL = new Asset("NEBL", 8);
         public static readonly Asset NEO = new Asset("NEO", 8);
         public static readonly Asset NULS = new Asset("NULS", 8);
@@ -196,12 +198,14 @@ namespace Binance
             { "LRC", LRC },
             { "LSK", LSK },
             { "LTC", LTC },
+            { "LUN", LUN },
             { "MANA", MANA },
             { "MCO", MCO },
             { "MDA", MDA },
             { "MOD", MOD },
             { "MTH", MTH },
             { "MTL", MTL },
+            { "NAV", NAV },
             { "NEBL", NEBL },
             { "NEO", NEO },
             { "NULS", NULS },

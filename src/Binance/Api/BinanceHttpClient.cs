@@ -104,7 +104,7 @@ namespace Binance.Api
 
             request.AddParameter("timestamp", timestamp);
 
-            var signature = user.Sign(request.QueryString);
+            var signature = user.Sign(request.TotalParams);
 
             request.AddParameter("signature", signature);
         }
