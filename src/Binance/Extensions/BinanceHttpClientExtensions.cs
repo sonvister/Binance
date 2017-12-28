@@ -4,26 +4,17 @@ using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Market;
-using Newtonsoft.Json.Linq;
 
 // ReSharper disable once CheckNamespace
 namespace Binance.Api
 {
+    /// <summary>
+    /// C# adapter for Binance Rest API using <see cref="IBinanceHttpClient"/>.
+    /// All return values are either a JSON object or array.
+    /// </summary>
     public static class BinanceHttpClientExtensions
     {
-        #region Private Fields
-
-        private static DateTime _timestampOffsetUpdatedAt;
-
-        private static readonly SemaphoreSlim _timestampOffsetSync = new SemaphoreSlim(1, 1);
-
-        #endregion Private Fields
-
-        #region Internal Fields
-
-        internal static long _timestampOffset;
-
-        #endregion Internal Fields
+        #region General
 
         /// <summary>
         /// Test connectivity to the server.
@@ -51,8 +42,6 @@ namespace Binance.Api
             return client.GetAsync("/api/v1/exchangeInfo", token);
         }
 
-        #region Time
-
         /// <summary>
         /// Test connectivity to the server and get the current time.
         /// </summary>
@@ -66,58 +55,7 @@ namespace Binance.Api
             return client.GetAsync("/api/v1/time", token);
         }
 
-        /// <summary>
-        /// Get local system timestamp synchronized with server time.
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static async Task<long> GetTimestampAsync(this IBinanceHttpClient client, CancellationToken token = default)
-        {
-            Throw.IfNull(client, nameof(client));
-
-            // Acquire synchronization lock.
-            await _timestampOffsetSync.WaitAsync(token)
-                .ConfigureAwait(false);
-
-            try
-            {
-                if (DateTime.UtcNow - _timestampOffsetUpdatedAt > TimeSpan.FromMinutes(client.Options.TimestampOffsetRefreshPeriodMinutes))
-                {
-                    const long N = 3;
-
-                    long sum = 0;
-                    var count = N;
-                    do
-                    {
-                        var systemTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-                        var json = await GetServerTimeAsync(client, token)
-                            .ConfigureAwait(false);
-
-                        systemTime = (systemTime + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) / 2;
-
-                        // Calculate timestamp offset to account for time differences and delays.
-                        sum += JObject.Parse(json)["serverTime"].Value<long>() - systemTime;
-                    } while (--count > 0);
-
-                    // Calculate average offset.
-                    _timestampOffset = sum / N;
-
-                    // Record the current system time to determine when to refresh offset.
-                    _timestampOffsetUpdatedAt = DateTime.UtcNow;
-                }
-            }
-            catch (Exception) { /* ignore */ }
-            finally
-            {
-                // Release synchronization lock.
-                _timestampOffsetSync.Release();
-            }
-
-            return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + _timestampOffset;
-        }
-
-        #endregion Time
+        #endregion General
 
         #region Market Data
 
@@ -447,14 +385,8 @@ namespace Binance.Api
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
 
-            var timestamp = await client.GetTimestampAsync(token)
+            await client.SignAsync(request, user, token)
                 .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
 
             return await client.PostAsync(request, token, user.RateLimiter)
                 .ConfigureAwait(false);
@@ -499,14 +431,8 @@ namespace Binance.Api
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
 
-            var timestamp = await client.GetTimestampAsync(token)
+            await client.SignAsync(request, user, token)
                 .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
 
             return await client.GetAsync(request, token, user.RateLimiter)
                 .ConfigureAwait(false);
@@ -555,14 +481,8 @@ namespace Binance.Api
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
 
-            var timestamp = await client.GetTimestampAsync(token)
+            await client.SignAsync(request, user, token)
                 .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
 
             return await client.DeleteAsync(request, token, user.RateLimiter)
                 .ConfigureAwait(false);
@@ -596,14 +516,8 @@ namespace Binance.Api
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
 
-            var timestamp = await client.GetTimestampAsync(token)
+            await client.SignAsync(request, user, token)
                 .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
 
             return await client.GetAsync(request, token)
                 .ConfigureAwait(false);
@@ -646,14 +560,8 @@ namespace Binance.Api
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
 
-            var timestamp = await client.GetTimestampAsync(token)
+            await client.SignAsync(request, user, token)
                 .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
 
             return await client.GetAsync(request, token)
                 .ConfigureAwait(false);
@@ -680,17 +588,11 @@ namespace Binance.Api
                 ApiKey = user.ApiKey
             };
 
-            var timestamp = await client.GetTimestampAsync(token)
-                .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
 
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
+            await client.SignAsync(request, user, token)
+                .ConfigureAwait(false);
 
             return await client.GetAsync(request, token)
                 .ConfigureAwait(false);
@@ -732,14 +634,8 @@ namespace Binance.Api
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
 
-            var timestamp = await client.GetTimestampAsync(token)
+            await client.SignAsync(request, user, token)
                 .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
 
             return await client.GetAsync(request, token)
                 .ConfigureAwait(false);
@@ -789,14 +685,8 @@ namespace Binance.Api
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
 
-            var timestamp = await client.GetTimestampAsync(token)
+            await client.SignAsync(request, user, token)
                 .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
 
             return await client.PostAsync(request, token)
                 .ConfigureAwait(false);
@@ -827,11 +717,6 @@ namespace Binance.Api
                 ApiKey = user.ApiKey
             };
 
-            var timestamp = await client.GetTimestampAsync(token)
-                .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
             if (!string.IsNullOrWhiteSpace(asset))
                 request.AddParameter("asset", asset.FormatSymbol());
 
@@ -847,9 +732,8 @@ namespace Binance.Api
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
 
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
+            await client.SignAsync(request, user, token)
+                .ConfigureAwait(false);
 
             return await client.GetAsync(request, token)
                 .ConfigureAwait(false);
@@ -880,11 +764,6 @@ namespace Binance.Api
                 ApiKey = user.ApiKey
             };
 
-            var timestamp = await client.GetTimestampAsync(token)
-                .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
             if (!string.IsNullOrWhiteSpace(asset))
                 request.AddParameter("asset", asset.FormatSymbol());
 
@@ -900,9 +779,8 @@ namespace Binance.Api
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
 
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
+            await client.SignAsync(request, user, token)
+                .ConfigureAwait(false);
 
             return await client.GetAsync(request, token)
                 .ConfigureAwait(false);
@@ -928,14 +806,8 @@ namespace Binance.Api
 
             request.AddParameter("asset", asset.FormatSymbol());
 
-            var timestamp = await client.GetTimestampAsync(token)
+            await client.SignAsync(request, user, token)
                 .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
 
             return await client.GetAsync(request, token)
                 .ConfigureAwait(false);
@@ -957,14 +829,8 @@ namespace Binance.Api
                 ApiKey = user.ApiKey
             };
 
-            var timestamp = await client.GetTimestampAsync(token)
+            await client.SignAsync(request, user, token)
                 .ConfigureAwait(false);
-
-            request.AddParameter("timestamp", timestamp);
-
-            var signature = user.Sign(request.QueryString);
-
-            request.AddParameter("signature", signature);
 
             return await client.GetAsync(request, token)
                 .ConfigureAwait(false);

@@ -17,13 +17,9 @@ namespace Binance.Api
 
         #endregion Public Constants
 
-        #region Public Static Properties
-
-        public static long TimestampOffset => BinanceHttpClientExtensions._timestampOffset;
-
-        #endregion Public Static Properties
-
         #region Public Properties
+
+        public ITimestampProvider TimestampProvider { get; }
 
         public IApiRateLimiter RateLimiter { get; }
 
@@ -65,11 +61,13 @@ namespace Binance.Api
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="timestampProvider">The timestamp provider.</param>
         /// <param name="rateLimiter">The rate limiter (auto configured).</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        internal BinanceHttpClient(IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
+        internal BinanceHttpClient(ITimestampProvider timestampProvider = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
         {
+            TimestampProvider = timestampProvider ?? new TimestampProvider();
             RateLimiter = rateLimiter ?? new ApiRateLimiter();
             Options = options?.Value ?? new BinanceApiOptions();
             _logger = logger;
@@ -94,6 +92,22 @@ namespace Binance.Api
         #endregion Constructors
 
         #region Public Methods
+
+        public async Task SignAsync(BinanceHttpRequest request, IBinanceApiUser user, CancellationToken token = default)
+        {
+            Throw.IfNull(request, nameof(request));
+            Throw.IfNull(user, nameof(user));
+
+            var timestamp =
+                await TimestampProvider.GetTimestampAsync(this, token)
+                    .ConfigureAwait(false);
+
+            request.AddParameter("timestamp", timestamp);
+
+            var signature = user.Sign(request.QueryString);
+
+            request.AddParameter("signature", signature);
+        }
 
         public Task<string> GetAsync(string path, CancellationToken token = default)
             => GetAsync(new BinanceHttpRequest(path), token);

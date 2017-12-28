@@ -7,6 +7,30 @@ namespace Binance
 {
     public static class StringExtensions
     {
+        #region Public Extensions
+
+        /// <summary>
+        /// Return true if string is a JSON object.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static bool IsJsonObject(this string s)
+        {
+            return !string.IsNullOrWhiteSpace(s)
+                && s.StartsWith("{") && s.EndsWith("}");
+        }
+
+        /// <summary>
+        /// Return true if string is a JSON array.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static bool IsJsonArray(this string s)
+        {
+            return !string.IsNullOrWhiteSpace(s)
+                && s.StartsWith("[") && s.EndsWith("]");
+        }
+
         /// <summary>
         /// Convert string to <see cref="CandlestickInterval"/>.
         /// </summary>
@@ -39,6 +63,10 @@ namespace Binance
             }
         }
 
+        #endregion Public Extensions
+
+        #region Internal Extensions
+
         /// <summary>
         /// Attempt to transform a symbol string to an acceptable format.
         /// </summary>
@@ -54,28 +82,6 @@ namespace Binance
                 .Replace("_", string.Empty)
                 .Replace("/", string.Empty)
                 .ToUpper();
-        }
-
-        /// <summary>
-        /// Return true if string is a JSON object.
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        internal static bool IsJsonObject(this string s)
-        {
-            return !string.IsNullOrWhiteSpace(s)
-                && s.StartsWith("{") && s.EndsWith("}");
-        }
-
-        /// <summary>
-        /// Return true if string is a JSON array.
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        internal static bool IsJsonArray(this string s)
-        {
-            return !string.IsNullOrWhiteSpace(s)
-                && s.StartsWith("[") && s.EndsWith("]");
         }
 
         /// <summary>
@@ -152,5 +158,7 @@ namespace Binance
                     throw new Exception($"Failed to convert time in force: \"{timeInForce}\"");
             }
         }
+
+        #endregion Internal Extensions
     }
 }

@@ -15,6 +15,7 @@ namespace Binance
         {
             // API
             services.AddSingleton<IBinanceApiUserProvider, BinanceApiUserProvider>();
+            services.AddSingleton<ITimestampProvider, TimestampProvider>();
             services.AddSingleton<IBinanceHttpClient>(s =>
             {
                 if (!BinanceHttpClient.Initializer.IsValueCreated)
@@ -23,6 +24,7 @@ namespace Binance
                     BinanceHttpClient.Initializer = new Lazy<BinanceHttpClient>(() =>
                     {
                         return new BinanceHttpClient(
+                            s.GetService<ITimestampProvider>(),
                             s.GetService<IApiRateLimiter>(),
                             s.GetService<IOptions<BinanceApiOptions>>(),
                             s.GetService<ILogger<BinanceHttpClient>>());

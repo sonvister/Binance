@@ -7,6 +7,11 @@ namespace Binance.Api
     public interface IBinanceHttpClient : IDisposable
     {
         /// <summary>
+        /// Get the timestamp provider.
+        /// </summary>
+        ITimestampProvider TimestampProvider { get; }
+
+        /// <summary>
         /// Get the API request (default) rate limiter.
         /// </summary>
         IApiRateLimiter RateLimiter { get; }
@@ -15,6 +20,15 @@ namespace Binance.Api
         /// Get the options.
         /// </summary>
         BinanceApiOptions Options { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="user"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task SignAsync(BinanceHttpRequest request, IBinanceApiUser user, CancellationToken token = default);
 
         /// <summary>
         /// Get request.

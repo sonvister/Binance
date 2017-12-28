@@ -96,9 +96,15 @@ namespace Binance.Api
         {
             Throw.IfNull(value, nameof(value));
 
+            if (_parameters.ContainsKey(field))
+                throw new InvalidOperationException($"{nameof(BinanceHttpRequest)}: request already has a '{field}' parameter.");
+
+            if (_parameters.ContainsKey("signature"))
+                throw new InvalidOperationException($"{nameof(BinanceHttpRequest)}: all parameters must be added before request is signed.");
+
             _parameters[field] = Convert.ToString(value, CultureInfo.InvariantCulture);
 
-            _queryString = null;
+            _queryString = null; // reset query string.
         }
 
         public HttpRequestMessage CreateMessage(HttpMethod method)
@@ -111,7 +117,7 @@ namespace Binance.Api
             }
 
             if (method == HttpMethod.Get && Body != null)
-                throw new Exception($"{nameof(BinanceHttpRequest)}: parameters must be sent in query string for GET requests ({nameof(Body)} must be null).");
+                throw new InvalidOperationException($"{nameof(BinanceHttpRequest)}: parameters must be sent in query string for GET requests ({nameof(Body)} must be null).");
 
             if (Body != null)
             {
