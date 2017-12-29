@@ -25,8 +25,6 @@ namespace Binance.Api
 
         private readonly object _sync = new object();
 
-        private readonly BinanceApiOptions _options;
-
         #endregion Private Fields
 
         #region Constructors
@@ -52,12 +50,12 @@ namespace Binance.Api
             }
 
             RateLimiter = rateLimiter;
-            _options = options?.Value ?? new BinanceApiOptions();
+            var opt = options?.Value ?? new BinanceApiOptions();
 
             // Configure order rate limiter.
-            RateLimiter?.Configure(TimeSpan.FromDays(_options.OrderRateLimit.DurationDays), _options.OrderRateLimit.Count);
+            RateLimiter?.Configure(TimeSpan.FromDays(opt.OrderRateLimit.DurationDays), opt.OrderRateLimit.Count);
             // Configure order burst rate limiter.
-            RateLimiter?.Configure(TimeSpan.FromSeconds(_options.OrderRateLimit.BurstDurationSeconds), _options.OrderRateLimit.BurstCount);
+            RateLimiter?.Configure(TimeSpan.FromSeconds(opt.OrderRateLimit.BurstDurationSeconds), opt.OrderRateLimit.BurstCount);
         }
 
         #endregion Constructors
@@ -98,6 +96,7 @@ namespace Binance.Api
 
             if (disposing)
             {
+                // ReSharper disable once InconsistentlySynchronizedField
                 _hmac?.Dispose();
             }
 

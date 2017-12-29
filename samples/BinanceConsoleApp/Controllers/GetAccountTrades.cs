@@ -39,11 +39,11 @@ namespace BinanceConsoleApp.Controllers
                 }
             }
 
-            long orderId = BinanceApi.NullId;
+            var orderId = BinanceApi.NullId;
 
             if (args.Length > 2)
             {
-                if (symbol.ToString().Equals("order", StringComparison.OrdinalIgnoreCase))
+                if (symbol.Equals("order", StringComparison.OrdinalIgnoreCase))
                 {
                     symbol = Symbol.BTC_USDT;
 

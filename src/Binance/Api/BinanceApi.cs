@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -225,7 +224,7 @@ namespace Binance.Api
             try
             {
                 return JArray.Parse(json)
-                    .Select(item => ConvertTo24HourStatistics(item))
+                    .Select(ConvertTo24HourStatistics)
                     .ToArray();
             }
             catch (Exception e)
@@ -259,7 +258,7 @@ namespace Binance.Api
             try
             {
                 return JArray.Parse(json)
-                    .Select(item => ConvertToSymbolPrice(item))
+                    .Select(ConvertToSymbolPrice)
                     .Where(_ => _.Symbol != "123456" && _.Symbol != "ETC") // HACK
                     .ToArray();
             }
@@ -291,7 +290,7 @@ namespace Binance.Api
 
             try
             {
-                return JArray.Parse(json).Select(item => ConvertToOrderBookTop(item)).ToList();
+                return JArray.Parse(json).Select(ConvertToOrderBookTop).ToArray();
             }
             catch (Exception e)
             {
@@ -327,11 +326,9 @@ namespace Binance.Api
                             var baseAsset = new Asset(jToken["baseAsset"].Value<string>(), baseAssetPrecision);
                             var quoteAsset = new Asset(jToken["quoteAsset"].Value<string>(), quoteAssetPrecision);
 
-                            var orderTypes = new List<OrderType>();
-                            foreach (var orderType in jToken["orderTypes"])
-                            {
-                                orderTypes.Add(orderType.Value<string>().ConvertOrderType());
-                            }
+                            var orderTypes = jToken["orderTypes"]
+                                .Select(orderType => orderType.Value<string>().ConvertOrderType())
+                                .ToArray();
 
                             var filters = jToken["filters"];
 
@@ -347,13 +344,11 @@ namespace Binance.Api
 
                             var symbol = new Symbol(status, baseAsset, quoteAsset, (baseMinQty, baseMaxQty, baseIncrement), (quoteMinPrice, quoteMaxPrice, quoteIncrement), minNotional, icebergAllowed, orderTypes);
 
-                            if (symbol.ToString() != jToken["symbol"].Value<string>())
-                            {
-                                _logger?.LogDebug($"Symbol does not match trading pair assets ({jToken["symbol"].Value<string>()} != {symbol}).");
-                                return null; // invalid symbol (e.g. 'ETC').
-                            }
+                            if (symbol.ToString() == jToken["symbol"].Value<string>())
+                                return symbol;
 
-                            return symbol;
+                            _logger?.LogDebug($"Symbol does not match trading pair assets ({jToken["symbol"].Value<string>()} != {symbol}).");
+                            return null; // invalid symbol (e.g. 'ETC').
                         }));
                 }
             }
@@ -854,7 +849,7 @@ namespace Binance.Api
                     item["time"].Value<long>(), // timestamp
                     item["isBuyerMaker"].Value<bool>(), // is buyer maker
                     item["isBestMatch"].Value<bool>())) // is best price match
-                .ToList();
+                .ToArray();
         }
 
         /// <summary>
@@ -877,7 +872,7 @@ namespace Binance.Api
                     item["T"].Value<long>(), // timestamp
                     item["m"].Value<bool>(), // is buyer maker
                     item["M"].Value<bool>())) // is best price match
-                .ToList();
+                .ToArray();
         }
 
         /// <summary>
@@ -905,7 +900,7 @@ namespace Binance.Api
                 item[8].Value<long>(), // number of trades
                 item[9].Value<decimal>(), // taker buy base asset volume
                 item[10].Value<decimal>() // taker buy quote asset volume
-            )).ToList();
+            )).ToArray();
         }
 
         /// <summary>

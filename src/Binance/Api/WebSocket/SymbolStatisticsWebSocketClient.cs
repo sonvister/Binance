@@ -76,7 +76,7 @@ namespace Binance.Api.WebSocket
         #region Protected Methods
 
         /// <summary>
-        /// Deserialize JSON and raise <see cref="SymbolStatisticsTradeEventArgs"/> event.
+        /// Deserialize JSON and raise <see cref="SymbolStatisticsEventArgs"/> event.
         /// </summary>
         /// <param name="json"></param>
         /// <param name="token"></param>
@@ -96,7 +96,7 @@ namespace Binance.Api.WebSocket
                     // Simulate a single event time.
                     var eventTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                    var statistics = JArray.Parse(json).Select(jToken => DeserializeSymbolStatistics(jToken)).ToArray();
+                    var statistics = JArray.Parse(json).Select(DeserializeSymbolStatistics).ToArray();
 
                     eventArgs = new SymbolStatisticsEventArgs(eventTime, token, statistics);
                 }

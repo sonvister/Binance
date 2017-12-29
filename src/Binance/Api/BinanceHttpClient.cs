@@ -42,12 +42,6 @@ namespace Binance.Api
 
         #endregion Internal
 
-        #region Private Constants
-
-        private const string RequestHeaderKeyName = "X-MBX-APIKEY";
-
-        #endregion Private Constants
-
         #region Private Fields
 
         private readonly HttpClient _httpClient;
@@ -188,16 +182,15 @@ namespace Binance.Api
                     }
                 }
 
-                if (response.StatusCode == (HttpStatusCode)429)
+                switch (response.StatusCode)
                 {
-                    throw new BinanceRequestRateLimitExceededException(response.ReasonPhrase, errorCode, errorMessage);
+                    case (HttpStatusCode)429:
+                        throw new BinanceRequestRateLimitExceededException(response.ReasonPhrase, errorCode, errorMessage);
+                    case (HttpStatusCode)418:
+                        throw new BinanceRequestRateLimitIpBanException(response.ReasonPhrase, errorCode, errorMessage);
+                    default:
+                        throw new BinanceHttpException(response.StatusCode, response.ReasonPhrase, errorCode, errorMessage);
                 }
-                else if (response.StatusCode == (HttpStatusCode)418)
-                {
-                    throw new BinanceRequestRateLimitIpBanException(response.ReasonPhrase, errorCode, errorMessage);
-                }
-
-                throw new BinanceHttpException(response.StatusCode, response.ReasonPhrase, errorCode, errorMessage);
             }
         }
 

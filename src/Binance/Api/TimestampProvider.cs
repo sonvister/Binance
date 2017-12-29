@@ -35,10 +35,10 @@ namespace Binance.Api
             {
                 if (DateTime.UtcNow - _offsetLastUpdate > TimeSpan.FromMinutes(client.Options.TimestampOffsetRefreshPeriodMinutes))
                 {
-                    const long N = 3;
+                    const long n = 3;
 
                     long sum = 0;
-                    var count = N;
+                    var count = n;
                     do
                     {
                         var systemTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -53,7 +53,7 @@ namespace Binance.Api
                     } while (--count > 0);
 
                     // Calculate average offset.
-                    TimestampOffset = sum / N;
+                    TimestampOffset = sum / n;
 
                     // Record the current system time to determine when to refresh offset.
                     _offsetLastUpdate = DateTime.UtcNow;

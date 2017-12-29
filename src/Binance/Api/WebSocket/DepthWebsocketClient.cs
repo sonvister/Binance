@@ -54,10 +54,7 @@ namespace Binance.Api.WebSocket
             if (IsSubscribed)
                 throw new InvalidOperationException($"{nameof(DepthWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");
 
-            if (limit > 0)
-                return SubscribeToAsync($"{Symbol.ToLower()}@depth{limit}", callback, token);
-            else
-                return SubscribeToAsync($"{Symbol.ToLower()}@depth", callback, token);
+            return SubscribeToAsync(limit > 0 ? $"{Symbol.ToLowerInvariant()}@depth{limit}" : $"{Symbol.ToLowerInvariant()}@depth", callback, token);
         }
 
         #endregion Public Methods
@@ -82,37 +79,40 @@ namespace Binance.Api.WebSocket
 
                 var eventType = jObject["e"]?.Value<string>();
 
-                DepthUpdateEventArgs eventArgs = null;
+                DepthUpdateEventArgs eventArgs;
 
-                if (eventType == null) // partial order book stream.
+                switch (eventType)
                 {
-                    // Simulate event time.
-                    var eventTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    case null:
+                    {
+                        // Simulate event time.
+                        var eventTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                    var lastUpdateId = jObject["lastUpdateId"].Value<long>();
+                        var lastUpdateId = jObject["lastUpdateId"].Value<long>();
 
-                    var bids = jObject["bids"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
-                    var asks = jObject["asks"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
+                        var bids = jObject["bids"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
+                        var asks = jObject["asks"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
 
-                    eventArgs = new DepthUpdateEventArgs(eventTime, token, Symbol, lastUpdateId, lastUpdateId, bids, asks);
-                }
-                else if (eventType == "depthUpdate")
-                {
-                    var symbol = jObject["s"].Value<string>();
-                    var eventTime = jObject["E"].Value<long>();
+                        eventArgs = new DepthUpdateEventArgs(eventTime, token, Symbol, lastUpdateId, lastUpdateId, bids, asks);
+                        break;
+                    }
+                    case "depthUpdate":
+                    {
+                        var symbol = jObject["s"].Value<string>();
+                        var eventTime = jObject["E"].Value<long>();
 
-                    var firstUpdateId = jObject["U"].Value<long>();
-                    var lastUpdateId = jObject["u"].Value<long>();
+                        var firstUpdateId = jObject["U"].Value<long>();
+                        var lastUpdateId = jObject["u"].Value<long>();
 
-                    var bids = jObject["b"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
-                    var asks = jObject["a"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToList();
+                        var bids = jObject["b"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
+                        var asks = jObject["a"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
 
-                    eventArgs = new DepthUpdateEventArgs(eventTime, token, symbol, firstUpdateId, lastUpdateId, bids, asks);
-                }
-                else
-                {
-                    Logger?.LogWarning($"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
-                    return;
+                        eventArgs = new DepthUpdateEventArgs(eventTime, token, symbol, firstUpdateId, lastUpdateId, bids, asks);
+                        break;
+                    }
+                    default:
+                        Logger?.LogWarning($"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                        return;
                 }
 
                 try

@@ -101,17 +101,17 @@ namespace Binance.Api
                 _timestamps.Enqueue(now + millisecondsDelay);
 
                 // Delay if required.
-                if (millisecondsDelay > 0)
+                if (millisecondsDelay <= 0)
+                    continue;
+
+                _logger?.LogDebug($"{nameof(RateLimiter)} delaying for {millisecondsDelay} msec.");
+
+                await Task.Delay(millisecondsDelay, token)
+                    .ConfigureAwait(false);
+
+                if (count > 1)
                 {
-                    _logger?.LogDebug($"{nameof(RateLimiter)} delaying for {millisecondsDelay} msec.");
-
-                    await Task.Delay(millisecondsDelay, token)
-                        .ConfigureAwait(false);
-
-                    if (count > 1)
-                    {
-                        now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-                    }
+                    now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 }
             } while (--count > 0);
         }

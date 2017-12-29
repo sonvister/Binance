@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 namespace Binance.Api
 {
     /// <summary>
-    /// A <see cref="IBinanceApiUser"/> provider allowing for the application of <see cref="BinanceApiUserOptions"/>.
+    /// A <see cref="IBinanceApiUser"/> provider allowing for the application of <see cref="BinanceApiOptions"/>.
     /// </summary>
     public sealed class BinanceApiUserProvider : IBinanceApiUserProvider
     {

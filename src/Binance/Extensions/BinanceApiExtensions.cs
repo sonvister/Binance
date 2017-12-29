@@ -256,17 +256,21 @@ namespace Binance.Api
                     .ConfigureAwait(false);
 
                 // No more trades to sift through.
+                // ReSharper disable once PossibleMultipleEnumeration
                 if (!trades.Any())
                     break;
 
                 // Add trades with matching order ID.
+                // ReSharper disable once PossibleMultipleEnumeration
                 orderTrades.AddRange(trades.Where(t => t.OrderId == order.Id));
 
                 // No more trades to query.
+                // ReSharper disable once PossibleMultipleEnumeration
                 if (trades.Count() < limit)
                     break;
 
                 // Update trade ID for next query.
+                // ReSharper disable once PossibleMultipleEnumeration
                 fromId = trades.Last().Id;
             }
 

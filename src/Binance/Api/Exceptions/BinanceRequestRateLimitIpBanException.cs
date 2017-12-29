@@ -1,6 +1,7 @@
 ﻿// ReSharper disable once CheckNamespace
 using System.Net;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.Api
 {
     /// <summary>

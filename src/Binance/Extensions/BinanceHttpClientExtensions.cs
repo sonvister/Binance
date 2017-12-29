@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
@@ -248,8 +249,8 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
-            // HACK: When symbol is not provided estimate number of symbols that are TRADING for weight.
-            var request = new BinanceHttpRequest("/api/v1/ticker/24hr", string.IsNullOrWhiteSpace(symbol) ? 200 : 1);
+            // When symbol is not provided use number of symbols that are TRADING for weight.
+            var request = new BinanceHttpRequest("/api/v1/ticker/24hr", string.IsNullOrWhiteSpace(symbol) ? Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading) : 1);
 
             if (!string.IsNullOrWhiteSpace(symbol))
             {
@@ -332,7 +333,7 @@ namespace Binance.Api
         /// <param name="icebergQty">Used with iceberg orders.</param>
         /// <param name="recvWindow"></param>
         /// <param name="isTestOnly">If true, test new order creation and signature/recvWindow; creates and validates a new order but does not send it into the matching engine.</param>
-        /// <param name="newOrderResponseType">Set the response JSON.</param>
+        /// <param name="newOrderRespType">Set the response JSON.</param>
         /// <param name="token"></param>
         /// <returns></returns>
         public static async Task<string> PlaceOrderAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol, OrderSide side, OrderType type, decimal quantity, decimal price, string newClientOrderId = null, TimeInForce? timeInForce = null, decimal stopPrice = 0, decimal icebergQty = 0, long recvWindow = default, bool isTestOnly = false, PlaceOrderResponseType newOrderRespType = PlaceOrderResponseType.Result, CancellationToken token = default)
@@ -415,7 +416,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/api/v3/order")
+            var request = new BinanceHttpRequest("/api/v3/order")
             {
                 ApiKey = user.ApiKey
             };
@@ -462,7 +463,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/api/v3/order")
+            var request = new BinanceHttpRequest("/api/v3/order")
             {
                 ApiKey = user.ApiKey
             };
@@ -505,7 +506,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/api/v3/openOrders")
+            var request = new BinanceHttpRequest("/api/v3/openOrders")
             {
                 ApiKey = user.ApiKey
             };
@@ -544,7 +545,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/api/v3/allOrders")
+            var request = new BinanceHttpRequest("/api/v3/allOrders")
             {
                 ApiKey = user.ApiKey
             };
@@ -583,7 +584,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/api/v3/account")
+            var request = new BinanceHttpRequest("/api/v3/account")
             {
                 ApiKey = user.ApiKey
             };
@@ -618,7 +619,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/api/v3/myTrades")
+            var request = new BinanceHttpRequest("/api/v3/myTrades")
             {
                 ApiKey = user.ApiKey
             };
@@ -667,7 +668,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/wapi/v3/withdraw.html")
+            var request = new BinanceHttpRequest("/wapi/v3/withdraw.html")
             {
                 ApiKey = user.ApiKey
             };
@@ -712,7 +713,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/wapi/v3/depositHistory.html")
+            var request = new BinanceHttpRequest("/wapi/v3/depositHistory.html")
             {
                 ApiKey = user.ApiKey
             };
@@ -759,7 +760,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest($"/wapi/v3/withdrawHistory.html")
+            var request = new BinanceHttpRequest("/wapi/v3/withdrawHistory.html")
             {
                 ApiKey = user.ApiKey
             };
@@ -799,7 +800,7 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(asset, nameof(asset));
 
-            var request = new BinanceHttpRequest($"/wapi/v3/depositAddress.html")
+            var request = new BinanceHttpRequest("/wapi/v3/depositAddress.html")
             {
                 ApiKey = user.ApiKey
             };
@@ -824,7 +825,7 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
-            var request = new BinanceHttpRequest($"/wapi/v3/accountStatus.html")
+            var request = new BinanceHttpRequest("/wapi/v3/accountStatus.html")
             {
                 ApiKey = user.ApiKey
             };

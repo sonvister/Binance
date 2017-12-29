@@ -23,16 +23,7 @@ namespace Binance.Api
         /// <summary>
         /// Get the URI.
         /// </summary>
-        public string Uri
-        {
-            get
-            {
-                if (_parameters.Count == 0)
-                    return _path;
-
-                return $"{_path}?{QueryString}";
-            }
-        }
+        public string Uri => _parameters.Count == 0 ? _path : $"{_path}?{QueryString}";
 
         /// <summary>
         /// Get the request query string.
@@ -51,12 +42,12 @@ namespace Binance.Api
         /// <summary>
         /// Get the total parameters string.
         /// </summary>
-        public string TotalParams => QueryString + Body ?? string.Empty;
+        public string TotalParams => QueryString + Body;
 
         /// <summary>
         /// Get the rate limit weight.
         /// </summary>
-        public int RateLimitWeight { get; private set; }
+        public int RateLimitWeight { get; }
 
         #endregion Public Properties
 
@@ -73,7 +64,7 @@ namespace Binance.Api
 
         private string _queryString;
 
-        private string _path;
+        private readonly string _path;
 
         #endregion Private Fields
 

@@ -44,13 +44,13 @@ namespace BinanceConsoleApp.Controllers
                 return true;
             }
 
-            bool postOnly = true;
+            var postOnly = true;
             if (args.Length > 5)
             {
                 bool.TryParse(args[5], out postOnly);
             }
 
-            LimitOrder clientOrder = postOnly ?
+            var clientOrder = postOnly ?
                 new LimitMakerOrder(Program.User)
                 {
                     Symbol = symbol,

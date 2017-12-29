@@ -15,7 +15,7 @@ namespace Binance.Account.Orders
 
         #region Constructors
 
-        public StopLimitOrder(IBinanceApiUser user)
+        protected StopLimitOrder(IBinanceApiUser user)
             : base(user)
         { }
 

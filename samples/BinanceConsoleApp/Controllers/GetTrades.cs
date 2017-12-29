@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
-using Binance.Api;
-using Binance.Market;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -31,10 +28,7 @@ namespace BinanceConsoleApp.Controllers
                 int.TryParse(args[2], out limit);
             }
 
-            IEnumerable<Trade> trades = null;
-
-            if (trades == null)
-                trades = (await Program.Api.GetTradesAsync(symbol, limit, token))
+            var trades = (await Program.Api.GetTradesAsync(symbol, limit, token))
                     .Reverse().ToArray();
 
             lock (Program.ConsoleSync)

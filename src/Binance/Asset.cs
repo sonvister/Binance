@@ -15,10 +15,10 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1514500256690;
+        public static readonly long LastUpdateAt = 1514515988195;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-        public static readonly Asset BCH = BCC;
+        public static readonly Asset BCH;
 
         public static readonly Asset ADA = new Asset("ADA", 8);
         public static readonly Asset ADX = new Asset("ADX", 8);
@@ -132,7 +132,10 @@ namespace Binance
         public static implicit operator Asset(string s)
         {
             var _s = s.FormatSymbol();
-            return Cache.ContainsKey(_s)? Cache[_s] : null;
+            lock (_sync)
+            {
+                return Cache.ContainsKey(_s) ? Cache[_s] : null;
+            }
         }
 
         #endregion Implicit Operators
@@ -142,11 +145,8 @@ namespace Binance
         /// <summary>
         /// Asset cache.
         /// </summary>
-        public static readonly IDictionary<string, Asset> Cache = new Dictionary<string, Asset>()
+        public static readonly IDictionary<string, Asset> Cache = new Dictionary<string, Asset>
         {
-            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-            { "BCH", BCC },
-
             { "ADA", ADA },
             { "ADX", ADX },
             { "AION", AION },
@@ -245,6 +245,9 @@ namespace Binance
             { "YOYO", YOYO },
             { "ZEC", ZEC },
             { "ZRX", ZRX },
+            
+            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
+            { "BCH", BCC }
         };
 
         /// <summary>
@@ -267,6 +270,12 @@ namespace Binance
 
         #region Constructors
 
+        static Asset()
+        {
+            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
+            BCH = BCC;
+        }
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -278,9 +287,9 @@ namespace Binance
                 throw new ArgumentNullException(nameof(symbol));
 
             if (precision <= 0)
-                throw new ArgumentException($"Asset precision must be greater than 0.", nameof(precision));
+                throw new ArgumentException("Asset precision must be greater than 0.", nameof(precision));
 
-            Symbol = symbol;
+            Symbol = symbol.ToUpperInvariant();
             Precision = precision;
         }
 
@@ -297,11 +306,13 @@ namespace Binance
         {
             Throw.IfNull(symbols, nameof(symbols));
 
+            // ReSharper disable once PossibleMultipleEnumeration
             if (!symbols.Any())
                 throw new ArgumentException("Enumerable must not be empty.", nameof(symbols));
 
             var assets = new List<Asset>();
 
+            // ReSharper disable once PossibleMultipleEnumeration
             foreach (var symbol in symbols)
             {
                 if (!assets.Contains(symbol.BaseAsset))
@@ -351,10 +362,7 @@ namespace Binance
 
         public int CompareTo(Asset other)
         {
-            if (other == null)
-                return 1;
-
-            return Symbol.CompareTo(other.Symbol);
+            return other == null ? 1 : string.Compare(Symbol, other.Symbol, StringComparison.Ordinal);
         }
 
         #endregion IComparable<Asset>

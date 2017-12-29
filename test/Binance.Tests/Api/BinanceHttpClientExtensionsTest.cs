@@ -92,7 +92,6 @@ namespace Binance.Tests.Api
         [Fact]
         public async Task GetOpenOrdersThrows()
         {
-            var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
 
             await Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.GetOpenOrdersAsync(null, symbol));
@@ -158,8 +157,8 @@ namespace Binance.Tests.Api
         [Fact]
         public async Task UserStreamStartThrows()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.UserStreamStartAsync(((IBinanceApiUser)null)));
-            await Assert.ThrowsAsync<ArgumentNullException>("apiKey", () => _client.UserStreamStartAsync(((string)null)));
+            await Assert.ThrowsAsync<ArgumentNullException>("user", () => _client.UserStreamStartAsync((IBinanceApiUser)null));
+            await Assert.ThrowsAsync<ArgumentNullException>("apiKey", () => _client.UserStreamStartAsync((string)null));
         }
 
         [Fact]

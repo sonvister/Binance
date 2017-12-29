@@ -22,13 +22,11 @@ namespace Binance
                 {
                     // Replace initializer.
                     BinanceHttpClient.Initializer = new Lazy<BinanceHttpClient>(() =>
-                    {
-                        return new BinanceHttpClient(
+                        new BinanceHttpClient(
                             s.GetService<ITimestampProvider>(),
                             s.GetService<IApiRateLimiter>(),
                             s.GetService<IOptions<BinanceApiOptions>>(),
-                            s.GetService<ILogger<BinanceHttpClient>>());
-                    }, true);
+                            s.GetService<ILogger<BinanceHttpClient>>()), true);
                 }
 
                 return BinanceHttpClient.Instance;

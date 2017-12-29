@@ -19,10 +19,10 @@ namespace Binance
         // <<insert timestamp>>
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-        public static readonly Symbol BCH_USDT = BCC_USDT;
-        public static readonly Symbol BCH_BNB = BCC_BNB;
-        public static readonly Symbol BCH_BTC = BCC_BTC;
-        public static readonly Symbol BCH_ETH = BCC_ETH;
+        public static readonly Symbol BCH_USDT;
+        public static readonly Symbol BCH_BNB;
+        public static readonly Symbol BCH_BTC;
+        public static readonly Symbol BCH_ETH;
 
         // <<insert symbols>>
 
@@ -39,7 +39,10 @@ namespace Binance
         public static implicit operator Symbol(string s)
         {
             var _s = s.FormatSymbol();
-            return Cache.ContainsKey(_s) ? Cache[_s] : null;
+            lock (_sync)
+            {
+                return Cache.ContainsKey(_s) ? Cache[_s] : null;
+            }
         }
 
         #endregion Implicit Operators
@@ -49,15 +52,15 @@ namespace Binance
         /// <summary>
         /// Symbol cache.
         /// </summary>
-        public static readonly IDictionary<string, Symbol> Cache = new Dictionary<string, Symbol>()
+        public static readonly IDictionary<string, Symbol> Cache = new Dictionary<string, Symbol>
         {
+            // <<insert symbol definitions>>
+
             // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
             { "BCHUSDT", BCC_USDT },
             { "BCHBNB", BCC_BNB },
             { "BCHBTC", BCC_BTC },
-            { "BCHETH", BCC_ETH },
-
-            // <<insert symbol definitions>>
+            { "BCHETH", BCC_ETH }
         };
 
         /// <summary>
@@ -112,9 +115,19 @@ namespace Binance
 
         #region Constructors
 
+        static Symbol()
+        {
+            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
+            BCH_USDT = BCC_USDT;
+            BCH_BNB = BCC_BNB;
+            BCH_BTC = BCC_BTC;
+            BCH_ETH = BCC_ETH;
+        }
+
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="status">The symbol status.</param>
         /// <param name="baseAsset">The symbol base asset.</param>
         /// <param name="quoteAsset">The symbol quote asset.</param>
         /// <param name="quantity">The minimum, maximum, and incremental quantity values.</param>
@@ -158,12 +171,14 @@ namespace Binance
         {
             Throw.IfNull(symbols, nameof(symbols));
 
+            // ReSharper disable once PossibleMultipleEnumeration
             if (!symbols.Any())
                 throw new ArgumentException("Enumerable must not be empty.", nameof(symbols));
 
             lock (_sync)
             {
                 // Remove any old symbols (preserves redirections).
+                // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var symbol in Cache.Values.ToArray())
                 {
                     if (!symbols.Contains(symbol))
@@ -173,6 +188,7 @@ namespace Binance
                 }
 
                 // Update existing and add any new symbols.
+                // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var symbol in symbols)
                 {
                     Cache[symbol] = symbol;
@@ -201,10 +217,7 @@ namespace Binance
 
         public int CompareTo(Symbol other)
         {
-            if (other == null)
-                return 1;
-
-            return _symbol.CompareTo(other._symbol);
+            return other == null ? 1 : string.Compare(_symbol, other._symbol, StringComparison.Ordinal);
         }
 
         #endregion IComparable<Symbol>
