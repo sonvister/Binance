@@ -11,10 +11,10 @@ namespace BinanceConsoleApp.Controllers
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
-            if (!command.StartsWith("candlesIn ", StringComparison.OrdinalIgnoreCase)
-                && !command.Equals("candlesIn", StringComparison.OrdinalIgnoreCase)
-                && !command.StartsWith("kLinesIn ", StringComparison.OrdinalIgnoreCase)
-                && !command.Equals("kLinesIn", StringComparison.OrdinalIgnoreCase))
+            if (!command.StartsWith("candlesIn ", StringComparison.OrdinalIgnoreCase) &&
+                !command.Equals("candlesIn", StringComparison.OrdinalIgnoreCase) &&
+                !command.StartsWith("kLinesIn ", StringComparison.OrdinalIgnoreCase) &&
+                !command.Equals("kLinesIn", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             var args = command.Split(' ');

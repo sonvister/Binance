@@ -8,8 +8,8 @@ namespace BinanceConsoleApp.Controllers
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
-            if (!command.Equals("account", StringComparison.OrdinalIgnoreCase)
-                && !command.Equals("balances", StringComparison.OrdinalIgnoreCase))
+            if (!command.Equals("account", StringComparison.OrdinalIgnoreCase) &&
+                !command.Equals("balances", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             if (Program.User == null)

@@ -12,8 +12,8 @@ namespace BinanceConsoleApp.Controllers
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
-            if (!command.StartsWith("withdrawals ", StringComparison.OrdinalIgnoreCase)
-                && !command.Equals("withdrawals", StringComparison.OrdinalIgnoreCase))
+            if (!command.StartsWith("withdrawals ", StringComparison.OrdinalIgnoreCase) &&
+                !command.Equals("withdrawals", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             if (Program.User == null)

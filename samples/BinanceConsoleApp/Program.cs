@@ -164,7 +164,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  tradesFrom <symbol> <tradeId> [limit]                 display trades beginning with trade ID.");
                 Console.WriteLine("  candles|kLines <symbol> <interval> [limit]            display candlesticks for a symbol.");
                 Console.WriteLine("  candlesIn|kLinesIn <symbol> <interval> <start> <end>  display candlesticks for a symbol in time interval.");
-                Console.WriteLine("  symbols|pairs                                         display all symbols (currency pairs).");
+                Console.WriteLine("  symbols|pairs [refresh]                               display all symbols (currency pairs).");
                 Console.WriteLine("  price <symbol>                                        display current price for a symbol or all symbols.");
                 Console.WriteLine("  top <symbol>                                          display order book top price/qty for a symbol or all symbols.");
                 Console.WriteLine("  live depth|book <symbol>                              enable order book live feed for a symbol.");

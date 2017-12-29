@@ -13,8 +13,8 @@ namespace BinanceConsoleApp.Controllers
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
-            if (!command.StartsWith("trades ", StringComparison.OrdinalIgnoreCase)
-                && !command.Equals("trades", StringComparison.OrdinalIgnoreCase))
+            if (!command.StartsWith("trades ", StringComparison.OrdinalIgnoreCase) &&
+                !command.Equals("trades", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             var args = command.Split(' ');
