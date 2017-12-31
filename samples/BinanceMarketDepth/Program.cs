@@ -46,7 +46,11 @@ namespace BinanceMarketDepth
                 var symbol = configuration.GetSection("OrderBook")?["Symbol"] ?? Symbol.BTC_USDT;
                 try { limit = Convert.ToInt32(configuration.GetSection("OrderBook")?["Limit"]); }
                 catch { /* ignored */ }
-                // NOTE: Currently the Depth WebSocket Endpoint/Client only supports maximum limit of 100. // TODO
+
+                // NOTE: Currently the Partial Book Depth Stream only supports limits of: 5, 10, or 20.
+                if (limit > 10) limit = 20;
+                else if (limit > 5) limit = 10;
+                else if (limit > 0) limit = 5;
 
                 var cache = services.GetService<IOrderBookCache>();
 
@@ -55,9 +59,11 @@ namespace BinanceMarketDepth
                     var api = services.GetService<IBinanceApi>();
 
                     // Query and display the order book.
-                    Display(await api.GetOrderBookAsync(symbol, limit));
+                    Display(await api.GetOrderBookAsync(symbol, limit == 0 ? 1000 : limit));
 
                     // Monitor order book and display updates in real-time.
+                    // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
+                    //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
                     controller.Begin(
                         tkn => cache.SubscribeAsync(symbol, limit, evt => Display(evt.OrderBook), tkn),
                         err => Console.WriteLine(err.Message));
