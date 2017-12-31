@@ -7,7 +7,7 @@ using Binance.Account.Orders;
 namespace Binance
 {
     /// <summary>
-    /// Defined symbols (for convienience/reference only).
+    /// Defined symbols (for convenience/reference only).
     /// </summary>
     public sealed class Symbol : IComparable<Symbol>, IEquatable<Symbol>
     {
