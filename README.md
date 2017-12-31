@@ -12,7 +12,7 @@ A full-featured .NET Standard 2.0 **[Binance API](https://www.binance.com/restap
 * Unique implementation supports **multiple users** and requires user authentication only where necessary.
 * Web API interface includes automatic **rate limiting** and system-to-server **time synchronization** for reliability.
 * Easy-to-use **WebSocket endpoint clients** and various ready-to-use **caching** implementations (*w/ events*).
-* Low-level API utilizes a single, cached HttpClient for performance (*when used as singleton as in DI framework*).
+* Low-level `BinanceHttpClient` API utilizes a single, cached HttpClient for performance (*and implemented as singleton*).
 * **Limited dependencies** and use of Microsoft extensions for **dependency injection**, **logging**, and **options**.
 * .NET Core **sample applications** including live displays of market depth, trades, and candlesticks for a symbol.
 
@@ -28,6 +28,8 @@ PM> Install-Package Binance
 [![](https://img.shields.io/nuget/v/Binance.svg)](https://www.nuget.org/packages/Binance)\
 [![](https://img.shields.io/nuget/dt/Binance.svg)](https://www.nuget.org/packages/Binance)
 
+## Build Environment
+[Microsoft Visual Studio Community 2017](https://www.visualstudio.com/vs/community/)
 
 ## Documentation
 See [**Wiki**](https://github.com/sonvister/Binance/wiki)
