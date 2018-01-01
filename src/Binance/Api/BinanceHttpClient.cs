@@ -13,7 +13,15 @@ namespace Binance.Api
     {
         #region Public Constants
 
+        /// <summary>
+        /// Get the base endpoint URL.
+        /// </summary>
         public static readonly string EndpointUrl = "https://www.binance.com";
+
+        /// <summary>
+        /// Get the successful test response string.
+        /// </summary>
+        public static readonly string SuccessfulTestResponse = "{}";
 
         #endregion Public Constants
 

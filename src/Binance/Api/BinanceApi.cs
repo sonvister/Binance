@@ -18,8 +18,10 @@ namespace Binance.Api
     {
         #region Public Constants
 
-        public static readonly string SuccessfulTestResponse = "{}";
-
+        /// <summary>
+        /// Constant used to represent an invalid/null identifier of:
+        /// orders, account trades, aggregate trades, etc.
+        /// </summary>
         public const long NullId = -1;
 
         #endregion Public Constants
@@ -66,7 +68,7 @@ namespace Binance.Api
         public virtual async Task<bool> PingAsync(CancellationToken token = default)
         {
             return await HttpClient.PingAsync(token).ConfigureAwait(false)
-                   == SuccessfulTestResponse;
+                   == BinanceHttpClient.SuccessfulTestResponse;
         }
 
         public virtual async Task<long> GetTimestampAsync(CancellationToken token = default)
@@ -416,7 +418,7 @@ namespace Binance.Api
                 clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, clientOrder.Type == OrderType.LimitMaker ? null : limitOrder?.TimeInForce,
                 stopOrder?.StopPrice ?? 0, limitOrder?.IcebergQuantity ?? 0, recvWindow, true, token: token);
 
-            if (json != SuccessfulTestResponse)
+            if (json != BinanceHttpClient.SuccessfulTestResponse)
             {
                 var message = $"{nameof(BinanceApi)}.{nameof(TestPlaceAsync)} failed order placement test.";
                 _logger?.LogError(message);
@@ -806,7 +808,7 @@ namespace Binance.Api
             var json = await HttpClient.UserStreamKeepAliveAsync(apiKey, listenKey, token)
                 .ConfigureAwait(false);
 
-            if (json != SuccessfulTestResponse)
+            if (json != BinanceHttpClient.SuccessfulTestResponse)
             {
                 var message = $"{nameof(BinanceApi)}.{nameof(UserStreamKeepAliveAsync)} failed.";
                 _logger?.LogError(message);
@@ -819,7 +821,7 @@ namespace Binance.Api
             var json = await HttpClient.UserStreamCloseAsync(apiKey, listenKey, token)
                 .ConfigureAwait(false);
 
-            if (json != SuccessfulTestResponse)
+            if (json != BinanceHttpClient.SuccessfulTestResponse)
             {
                 var message = $"{nameof(BinanceApi)}.{nameof(UserStreamCloseAsync)} failed.";
                 throw new BinanceApiException(message);
