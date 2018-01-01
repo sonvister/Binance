@@ -56,14 +56,5 @@ namespace Binance
         }
 
         #endregion Constructors
-
-        #region Public Methods
-
-        public bool IsValid(decimal value)
-        {
-            return value >= Minimum && value <= Maximum && (value - Minimum) % Increment == 0;
-        }
-
-        #endregion Public Methods
     }
 }
