@@ -50,7 +50,7 @@ namespace BinanceConsoleApp
 
         public static async Task Main(string[] args)
         {
-            // Un-comment (and add using Binance.Examples) to run...
+            // Un-comment (and add using BinanceConsoleApp.Examples) to run...
             //await AccountBalancesExample.ExampleMain(args);
             //await MinimalWithDependencyInjection.ExampleMain(args);
             //await MinimalWithoutDependencyInjection.ExampleMain(args);
