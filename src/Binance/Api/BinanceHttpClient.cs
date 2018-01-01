@@ -40,7 +40,7 @@ namespace Binance.Api
         /// <summary>
         /// Singleton.
         /// </summary>
-        internal static BinanceHttpClient Instance => Initializer.Value;
+        public static BinanceHttpClient Instance => Initializer.Value;
 
         /// <summary>
         /// Lazy initializer.

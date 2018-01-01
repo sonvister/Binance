@@ -28,6 +28,9 @@ namespace Binance.Api
 
         #region Public Properties
 
+        /// <summary>
+        /// Get the low-level <see cref="IBinanceHttpClient"/> singleton.
+        /// </summary>
         public IBinanceHttpClient HttpClient { get; }
 
         #endregion Public Properties
