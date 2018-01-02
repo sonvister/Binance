@@ -3,22 +3,22 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.2.0-alpha.9</Version>
+    <Version>0.2.0-alpha.10</Version>
     <PackageId>Binance</PackageId>
     <Authors>sonvister</Authors>
     <Company>sonvister</Company>
     <Product>Binance</Product>
-    <AssemblyVersion>0.2.0.9</AssemblyVersion>
+    <AssemblyVersion>0.2.0.10</AssemblyVersion>
     <Description>A full-featured .NET Standard 2.0 Binance API facade designed for ease of use.</Description>
     <Copyright>Copyright © 2017 sonvister</Copyright>
     <PackageTags>binance binance-api cryptocurrency exchange api api-client api-wrapper</PackageTags>
-    <PackageReleaseNotes>https://github.com/sonvister/Binance/releases/tag/v0.2.0-alpha.9</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/sonvister/Binance/releases/tag/v0.2.0-alpha.10</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/sonvister/Binance</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseUrl>https://raw.githubusercontent.com/sonvister/Binance/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://github.com/sonvister/Binance/blob/master/images/logo.png?raw=true</PackageIconUrl>
     <PackageProjectUrl>https://github.com/sonvister/Binance</PackageProjectUrl>
-    <FileVersion>0.2.0.9</FileVersion>
+    <FileVersion>0.2.0.10</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
