@@ -16,21 +16,43 @@ namespace Binance.Cache
     {
         #region Public Properties
 
-        public IDictionary<string, SymbolStatistics> Statistics { get; private set; }
+        public IEnumerable<SymbolStatistics> Statistics
+        {
+            get { lock (_sync) { return _statistics.Values.ToArray(); } }
+        }
 
         #endregion Public Properties
+
+        #region Private Fields
+
+        private readonly IDictionary<string, SymbolStatistics> _statistics
+            = new Dictionary<string, SymbolStatistics>();
+
+        private readonly object _sync = new object();
+
+        #endregion Private Fields
 
         #region Constructors
 
         public SymbolStatisticsCache(IBinanceApi api, ISymbolStatisticsWebSocketClient client, ILogger<SymbolStatisticsCache> logger = null)
             : base(api, client, logger)
-        {
-            Statistics = new Dictionary<string, SymbolStatistics>();
-        }
+        { }
 
         #endregion Constructors
 
         #region Public Methods
+
+        public SymbolStatistics GetStatistics(string symbol)
+        {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            symbol = symbol.FormatSymbol();
+
+            lock (_sync)
+            {
+                return _statistics.ContainsKey(symbol) ? _statistics[symbol] : null;
+            }
+        }
 
         public async Task SubscribeAsync(Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token)
         {
@@ -90,26 +112,31 @@ namespace Binance.Cache
 
         protected override async Task<SymbolStatisticsCacheEventArgs> OnAction(SymbolStatisticsEventArgs @event)
         {
-            // Initialize all symbol statistics.
-            if (Statistics.Count == 0)
+            if (_statistics.Count == 0)
             {
-                Logger?.LogInformation($"{nameof(SymbolStatisticsCache)}: Getting all symbol statistics...");
+                Logger?.LogInformation($"{nameof(SymbolStatisticsCache)}: Initializing symbol statistics...");
 
                 var statistics = await Api.Get24HourStatisticsAsync(Token)
                     .ConfigureAwait(false);
 
-                foreach (var stats in statistics)
+                lock (_sync)
                 {
-                    Statistics[stats.Symbol] = stats;
+                    foreach (var stats in statistics)
+                    {
+                        _statistics[stats.Symbol] = stats;
+                    }
                 }
             }
 
-            foreach (var stats in @event.Statistics)
+            lock (_sync)
             {
-                Statistics[stats.Symbol] = stats;
-            }
+                foreach (var stats in @event.Statistics)
+                {
+                    _statistics[stats.Symbol] = stats;
+                }
 
-            return new SymbolStatisticsCacheEventArgs(Statistics.Values.ToArray());
+                return new SymbolStatisticsCacheEventArgs(_statistics.Values.ToArray());
+            }
         }
 
         #endregion Protected Methods

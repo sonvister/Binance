@@ -22,9 +22,9 @@ namespace Binance.Cache
         #region Public Properties
 
         /// <summary>
-        /// The symbol statistics. Can be null if not yet synchronized or out-of-sync.
+        /// The symbol statistics. Can be empty if not yet synchronized.
         /// </summary>
-        IDictionary<string, SymbolStatistics> Statistics { get; }
+        IEnumerable<SymbolStatistics> Statistics { get; }
 
         /// <summary>
         /// The client that provides symbol statistics synchronization.
@@ -34,6 +34,13 @@ namespace Binance.Cache
         #endregion Public Properties
 
         #region Public Methods
+
+        /// <summary>
+        /// Get statistics for a symbol.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
+        SymbolStatistics GetStatistics(string symbol);
 
         /// <summary>
         /// Subscribe to all symbols.
