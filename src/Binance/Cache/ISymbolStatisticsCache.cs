@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api.WebSocket;
@@ -23,7 +24,7 @@ namespace Binance.Cache
         /// <summary>
         /// The symbol statistics. Can be null if not yet synchronized or out-of-sync.
         /// </summary>
-        SymbolStatistics[] Statistics { get; }
+        IDictionary<string, SymbolStatistics> Statistics { get; }
 
         /// <summary>
         /// The client that provides symbol statistics synchronization.

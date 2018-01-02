@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
@@ -14,7 +16,7 @@ namespace Binance.Cache
     {
         #region Public Properties
 
-        public SymbolStatistics[] Statistics { get; private set; }
+        public IDictionary<string, SymbolStatistics> Statistics { get; private set; }
 
         #endregion Public Properties
 
@@ -22,7 +24,9 @@ namespace Binance.Cache
 
         public SymbolStatisticsCache(IBinanceApi api, ISymbolStatisticsWebSocketClient client, ILogger<SymbolStatisticsCache> logger = null)
             : base(api, client, logger)
-        { }
+        {
+            Statistics = new Dictionary<string, SymbolStatistics>();
+        }
 
         #endregion Constructors
 
@@ -84,11 +88,28 @@ namespace Binance.Cache
 
         #region Protected Methods
 
-        protected override Task<SymbolStatisticsCacheEventArgs> OnAction(SymbolStatisticsEventArgs @event)
+        protected override async Task<SymbolStatisticsCacheEventArgs> OnAction(SymbolStatisticsEventArgs @event)
         {
-            Statistics = @event.Statistics;
+            // Initialize all symbol statistics.
+            if (Statistics.Count == 0)
+            {
+                Logger?.LogInformation($"{nameof(SymbolStatisticsCache)}: Getting all symbol statistics...");
 
-            return Task.FromResult(new SymbolStatisticsCacheEventArgs(Statistics));
+                var statistics = await Api.Get24HourStatisticsAsync(Token)
+                    .ConfigureAwait(false);
+
+                foreach (var stats in statistics)
+                {
+                    Statistics[stats.Symbol] = stats;
+                }
+            }
+
+            foreach (var stats in @event.Statistics)
+            {
+                Statistics[stats.Symbol] = stats;
+            }
+
+            return new SymbolStatisticsCacheEventArgs(Statistics.Values.ToArray());
         }
 
         #endregion Protected Methods
