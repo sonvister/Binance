@@ -30,6 +30,8 @@ namespace Binance.Cache
 
         private readonly object _sync = new object();
 
+        private string _symbol;
+
         #endregion Private Fields
 
         #region Constructors
@@ -82,13 +84,15 @@ namespace Binance.Cache
 
             token.ThrowIfCancellationRequested();
 
+            _symbol = symbol.FormatSymbol();
+
             Token = token;
 
             LinkTo(Client, callback);
 
             try
             {
-                await Client.SubscribeAsync(symbol, token)
+                await Client.SubscribeAsync(_symbol, token)
                     .ConfigureAwait(false);
             }
             finally { UnLink(); }
@@ -116,14 +120,17 @@ namespace Binance.Cache
             {
                 Logger?.LogInformation($"{nameof(SymbolStatisticsCache)}: Initializing symbol statistics...");
 
-                var statistics = await Api.Get24HourStatisticsAsync(Token)
-                    .ConfigureAwait(false);
-
-                lock (_sync)
+                if (_symbol == null)
                 {
-                    foreach (var stats in statistics)
+                    var statistics = await Api.Get24HourStatisticsAsync(Token)
+                        .ConfigureAwait(false);
+
+                    lock (_sync)
                     {
-                        _statistics[stats.Symbol] = stats;
+                        foreach (var stats in statistics)
+                        {
+                            _statistics[stats.Symbol] = stats;
+                        }
                     }
                 }
             }
