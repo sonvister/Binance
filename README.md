@@ -1,10 +1,11 @@
 # Binance ![](https://github.com/sonvister/Binance/blob/master/images/logo.png?raw=true)
-A full-featured .NET Standard 2.0 **[Binance API](https://www.binance.com/restapipub.html)** facade designed for ease of use.
+A full-featured .NET **[Binance API](https://www.binance.com/restapipub.html)** facade designed for ease of use.
 
 [![](https://img.shields.io/github/last-commit/sonvister/Binance.svg)](https://github.com/sonvister/Binance)
 
 ## Features
-* **Complete** implementation of the [Binance API](https://www.binance.com/restapipub.html) including deposit/withdrawal features and WebSocket endpoints.
+* Compatible with **.NET Standard 2.0** and **.NET Framework 4.7.1**.
+* **Complete** implementation of the [Binance API](https://www.binance.com/restapipub.html) including all public/private REST and WebSocket endpoints.
 * A **simple** API abstraction using domain/value objects that do not expose underlying (*HTTP/REST*) behavior.
 * Consistent use of **domain models** whether you're querying the API or using real-time WebSocket client events.
 * Customizable **dual-layer API** with access to JSON responses (*low-level*) or deserialized domain/value objects.

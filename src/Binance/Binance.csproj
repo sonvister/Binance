@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net471</TargetFrameworks>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>0.2.0-alpha.11</Version>
     <PackageId>Binance</PackageId>
@@ -9,8 +9,8 @@
     <Company>sonvister</Company>
     <Product>Binance</Product>
     <AssemblyVersion>0.2.0.11</AssemblyVersion>
-    <Description>A full-featured .NET Standard 2.0 Binance API facade designed for ease of use.</Description>
-    <Copyright>Copyright © 2017 sonvister</Copyright>
+    <Description>A full-featured .NET Binance API facade designed for ease of use.</Description>
+    <Copyright>Copyright © 2017-2018 sonvister</Copyright>
     <PackageTags>binance binance-api cryptocurrency exchange api api-client api-wrapper</PackageTags>
     <PackageReleaseNotes>https://github.com/sonvister/Binance/releases/tag/v0.2.0-alpha.11</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/sonvister/Binance</RepositoryUrl>
@@ -34,12 +34,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Threading.Tasks.Dataflow">
-      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\System.Threading.Tasks.Dataflow.dll</HintPath>
-    </Reference>
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.8.0" />
   </ItemGroup>
 
 </Project>

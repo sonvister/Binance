@@ -439,7 +439,7 @@ namespace BinanceConsoleApp
         {
             lock (ConsoleSync)
             {
-                Console.WriteLine($"  {trade.Time().ToLocalTime().ToString(CultureInfo.CurrentCulture).PadLeft(22)} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyer ? "Buy" : "Sell").PadLeft(4)} - {(trade.IsMaker ? "Maker" : "Taker")} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - Fee: {trade.Commission:0.00000000} {trade.CommissionAsset.PadLeft(5)} [ID: {trade.Id}]");
+                Console.WriteLine($"  {trade.Time().ToLocalTime().ToString(CultureInfo.CurrentCulture).PadLeft(22)} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyer ? "Buy" : "Sell").PadLeft(4)} - {(trade.IsMaker ? "Maker" : "Taker")} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - Fee: {trade.Commission:0.00000000} {trade.CommissionAsset.PadRight(5)} [ID: {trade.Id}]");
             }
         }
 
