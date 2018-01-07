@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1514924504970;
+        public static readonly long LastUpdateAt = 1515284579873;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH;
@@ -24,6 +24,7 @@ namespace Binance
         public static readonly Asset ADX = new Asset("ADX", 8);
         public static readonly Asset AION = new Asset("AION", 8);
         public static readonly Asset AMB = new Asset("AMB", 8);
+        public static readonly Asset APPC = new Asset("APPC", 8);
         public static readonly Asset ARK = new Asset("ARK", 8);
         public static readonly Asset ARN = new Asset("ARN", 8);
         public static readonly Asset AST = new Asset("AST", 8);
@@ -152,6 +153,7 @@ namespace Binance
             { "ADX", ADX },
             { "AION", AION },
             { "AMB", AMB },
+            { "APPC", APPC },
             { "ARK", ARK },
             { "ARN", ARN },
             { "AST", AST },
