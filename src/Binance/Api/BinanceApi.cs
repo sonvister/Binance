@@ -44,8 +44,8 @@ namespace Binance.Api
         #region Constructors
 
         /// <summary>
-        /// Default constructor provides no rate limiter implementation,
-        /// no configuration options, and no logging functionality.
+        /// Default constructor provides default timestamp provider, default
+        /// rate limiter, and default options, but no logging functionality.
         /// </summary>
         public BinanceApi()
             : this(BinanceHttpClient.Instance)

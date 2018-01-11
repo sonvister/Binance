@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Binance.Market
 {
@@ -49,7 +50,7 @@ namespace Binance.Market
         /// <returns></returns>
         public override string ToString()
         {
-            return Value.ToString("0.00000000");
+            return Value.ToString("0.00000000", CultureInfo.InvariantCulture);
         }
 
         #endregion Public Methods
