@@ -11,7 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable AccessToDisposedClosure
 
-namespace BinanceConsoleApp.Examples
+// ReSharper disable once CheckNamespace
+namespace BinanceConsoleApp
 {
     /// <summary>
     /// Demonstrate how to get current account balances, maintain a local cache

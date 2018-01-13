@@ -50,10 +50,11 @@ namespace BinanceConsoleApp
 
         public static async Task Main(string[] args)
         {
-            // Un-comment (and add using BinanceConsoleApp.Examples) to run...
+            // Un-comment to run...
             //await AccountBalancesExample.ExampleMain(args);
             //await MinimalWithDependencyInjection.ExampleMain(args);
             //await MinimalWithoutDependencyInjection.ExampleMain(args);
+            //await SerializationExample.ExampleMain(args);
 
             var cts = new CancellationTokenSource();
 

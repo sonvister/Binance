@@ -93,11 +93,11 @@ namespace Binance.Market
             if (timestamp <= 0)
                 throw new ArgumentException($"{nameof(AggregateTrade)}: timestamp must be greater than 0.", nameof(timestamp));
             if (firstTradeId < 0)
-                throw new ArgumentException($"{nameof(AggregateTrade)} ID must not be less than 0.", nameof(firstTradeId));
+                throw new ArgumentException($"{nameof(AggregateTrade)}: ID must not be less than 0.", nameof(firstTradeId));
             if (lastTradeId < 0)
-                throw new ArgumentException($"{nameof(AggregateTrade)} ID must not be less than 0.", nameof(lastTradeId));
+                throw new ArgumentException($"{nameof(AggregateTrade)}: ID must not be less than 0.", nameof(lastTradeId));
             if (lastTradeId < firstTradeId)
-                throw new ArgumentException($"{nameof(AggregateTrade)} last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
+                throw new ArgumentException($"{nameof(AggregateTrade)}: last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
 
             Symbol = symbol;
             Id = id;
