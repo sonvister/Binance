@@ -121,24 +121,24 @@ namespace Binance.Account.Orders
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (id < 0)
-                throw new ArgumentException($"{nameof(Order)} ID must not be less than 0.", nameof(id));
+                throw new ArgumentException($"{nameof(Order)}: ID must not be less than 0.", nameof(id));
 
             if (price < 0)
-                throw new ArgumentException($"{nameof(Order)} price must not be less than 0.", nameof(price));
+                throw new ArgumentException($"{nameof(Order)}: price must not be less than 0.", nameof(price));
             if (stopPrice < 0)
-                throw new ArgumentException($"{nameof(Order)} price must not be less than 0.", nameof(stopPrice));
+                throw new ArgumentException($"{nameof(Order)}: price must not be less than 0.", nameof(stopPrice));
 
             if (originalQuantity < 0)
-                throw new ArgumentException($"{nameof(Order)} quantity must not be less than 0.", nameof(originalQuantity));
+                throw new ArgumentException($"{nameof(Order)}: quantity must not be less than 0.", nameof(originalQuantity));
             if (executedQuantity < 0)
-                throw new ArgumentException($"{nameof(Order)} quantity must not be less than 0.", nameof(executedQuantity));
+                throw new ArgumentException($"{nameof(Order)}: quantity must not be less than 0.", nameof(executedQuantity));
             if (icebergQuantity < 0)
-                throw new ArgumentException($"{nameof(Order)} quantity must not be less than 0.", nameof(icebergQuantity));
+                throw new ArgumentException($"{nameof(Order)}: quantity must not be less than 0.", nameof(icebergQuantity));
 
             if (timestamp <= 0)
                 throw new ArgumentException($"{nameof(Order)}: timestamp must be greater than 0.", nameof(timestamp));
 
-            Symbol = symbol;
+            Symbol = symbol.FormatSymbol();
             Id = id;
             ClientOrderId = clientOrderId;
             Price = price;

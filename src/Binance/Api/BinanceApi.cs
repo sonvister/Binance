@@ -40,6 +40,8 @@ namespace Binance.Api
 
         private readonly IOrderBookSerializer _orderBookSerializer;
 
+        private readonly IOrderSerializer _orderSerializer;
+
         private readonly ILogger<BinanceApi> _logger;
 
         #endregion Private Fields
@@ -63,6 +65,7 @@ namespace Binance.Api
         public BinanceApi(
             IBinanceHttpClient client,
             IOrderBookSerializer orderBookSerializer = null,
+            IOrderSerializer orderSerializer = null,
             ILogger<BinanceApi> logger = null)
         {
             Throw.IfNull(client, nameof(client));
@@ -70,7 +73,8 @@ namespace Binance.Api
             HttpClient = client;
 
             _orderBookSerializer = orderBookSerializer ?? new OrderBookSerializer();
-            
+            _orderSerializer = orderSerializer ?? new OrderSerializer();
+
             _logger = logger;
         }
 
@@ -396,7 +400,8 @@ namespace Binance.Api
 
             try
             {
-                FillOrder(order, JObject.Parse(json));
+                // Update existing order properties.
+                _orderSerializer.Deserialize(json, order);
 
                 // Update client order properties.
                 clientOrder.Id = order.ClientOrderId;
@@ -436,15 +441,11 @@ namespace Binance.Api
             var json = await HttpClient.GetOrderAsync(user, symbol, orderId, null, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var order = new Order(user);
-
-            try { FillOrder(order, JObject.Parse(json)); }
+            try { return _orderSerializer.Deserialize(json, user); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetOrderAsync), json, e);
             }
-
-            return order;
         }
 
         public virtual async Task<Order> GetOrderAsync(IBinanceApiUser user, string symbol, string origClientOrderId, long recvWindow = default, CancellationToken token = default)
@@ -453,15 +454,11 @@ namespace Binance.Api
             var json = await HttpClient.GetOrderAsync(user, symbol, NullId, origClientOrderId, recvWindow, token)
                 .ConfigureAwait(false);
 
-            var order = new Order(user);
-
-            try { FillOrder(order, JObject.Parse(json)); }
+            try { return _orderSerializer.Deserialize(json, user); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetOrderAsync), json, e);
             }
-
-            return order;
         }
 
         public virtual async Task<Order> GetAsync(Order order, long recvWindow = default, CancellationToken token = default)
@@ -473,13 +470,11 @@ namespace Binance.Api
                 .ConfigureAwait(false);
 
             // Update existing order properties.
-            try { FillOrder(order, JObject.Parse(json)); }
+            try { return _orderSerializer.Deserialize(json, order); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException($"{nameof(GetAsync)}({nameof(Order)})", json, e);
             }
-
-            return order;
         }
 
         public virtual async Task<string> CancelOrderAsync(IBinanceApiUser user, string symbol, long orderId, string newClientOrderId = null, long recvWindow = default, CancellationToken token = default)
@@ -519,16 +514,7 @@ namespace Binance.Api
             var json = await HttpClient.GetOpenOrdersAsync(user, symbol, recvWindow, token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                return JArray.Parse(json)
-                    .Select(item =>
-                    {
-                        var order = new Order(user);
-                        FillOrder(order, item);
-                        return order;
-                    }).ToArray();
-            }
+            try { return _orderSerializer.DeserializeMany(json, user); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetOpenOrdersAsync), json, e);
@@ -540,16 +526,7 @@ namespace Binance.Api
             var json = await HttpClient.GetOrdersAsync(user, symbol, orderId, limit, recvWindow, token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                return JArray.Parse(json)
-                    .Select(item =>
-                    {
-                        var order = new Order(user);
-                        FillOrder(order, item);
-                        return order;
-                    }).ToArray();
-            }
+            try { return _orderSerializer.DeserializeMany(json, user); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetOrdersAsync), json, e);
@@ -966,28 +943,6 @@ namespace Binance.Api
             return new SymbolPrice(
                 jToken["symbol"].Value<string>(),
                 jToken["price"].Value<decimal>());
-        }
-
-        /// <summary>
-        /// Deserialize order.
-        /// </summary>
-        /// <param name="order"></param>
-        /// <param name="jToken"></param>
-        private static void FillOrder(Order order, JToken jToken)
-        {
-            order.Symbol = jToken["symbol"].Value<string>();
-            order.Id = jToken["orderId"].Value<long>();
-            order.ClientOrderId = jToken["clientOrderId"].Value<string>();
-            order.Timestamp = (jToken["time"] ?? jToken["transactTime"]).Value<long>();
-            order.Price = jToken["price"].Value<decimal>();
-            order.OriginalQuantity = jToken["origQty"].Value<decimal>();
-            order.ExecutedQuantity = jToken["executedQty"].Value<decimal>();
-            order.Status = jToken["status"].Value<string>().ConvertOrderStatus();
-            order.TimeInForce = jToken["timeInForce"].Value<string>().ConvertTimeInForce();
-            order.Type = jToken["type"].Value<string>().ConvertOrderType();
-            order.Side = jToken["side"].Value<string>().ConvertOrderSide();
-            order.StopPrice = jToken["stopPrice"]?.Value<decimal>() ?? order.StopPrice;
-            order.IcebergQuantity = jToken["icebergQty"]?.Value<decimal>() ?? order.IcebergQuantity;
         }
 
         /// <summary>
