@@ -5,15 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Binance" Version="0.2.0-alpha.11" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Binance\Binance.csproj" />
   </ItemGroup>
 
 </Project>
