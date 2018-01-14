@@ -7,14 +7,14 @@ namespace Binance.Api
     public interface IBinanceHttpClient : IDisposable
     {
         /// <summary>
-        /// Get the timestamp provider.
+        /// Get or set the timestamp provider.
         /// </summary>
-        ITimestampProvider TimestampProvider { get; }
+        ITimestampProvider TimestampProvider { get; set; }
 
         /// <summary>
-        /// Get the API request (default) rate limiter.
+        /// Get or set the API request (default) rate limiter.
         /// </summary>
-        IApiRateLimiter RateLimiter { get; }
+        IApiRateLimiter RateLimiter { get; set; }
 
         /// <summary>
         /// Get the options.

@@ -27,9 +27,9 @@ namespace Binance.Api
 
         #region Public Properties
 
-        public ITimestampProvider TimestampProvider { get; }
+        public ITimestampProvider TimestampProvider { get; set; }
 
-        public IApiRateLimiter RateLimiter { get; }
+        public IApiRateLimiter RateLimiter { get; set; }
 
         public BinanceApiOptions Options { get; }
 
@@ -100,9 +100,9 @@ namespace Binance.Api
             Throw.IfNull(request, nameof(request));
             Throw.IfNull(user, nameof(user));
 
-            var timestamp =
-                await TimestampProvider.GetTimestampAsync(this, token)
-                    .ConfigureAwait(false);
+            var timestamp = TimestampProvider != null
+                ? await TimestampProvider.GetTimestampAsync(this, token).ConfigureAwait(false)
+                : DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             request.AddParameter("timestamp", timestamp);
 
@@ -116,29 +116,29 @@ namespace Binance.Api
 
         public Task<string> GetAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null)
         {
-            return RequestAsync(HttpMethod.Get, request, token, rateLimiter);
+            return RequestAsync(HttpMethod.Get, request, rateLimiter ?? RateLimiter, token);
         }
 
         public Task<string> PostAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null)
         {
-            return RequestAsync(HttpMethod.Post, request, token, rateLimiter);
+            return RequestAsync(HttpMethod.Post, request, rateLimiter ?? RateLimiter, token);
         }
 
         public Task<string> PutAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null)
         {
-            return RequestAsync(HttpMethod.Put, request, token, rateLimiter);
+            return RequestAsync(HttpMethod.Put, request, rateLimiter ?? RateLimiter, token);
         }
 
         public Task<string> DeleteAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null)
         {
-            return RequestAsync(HttpMethod.Delete, request, token, rateLimiter);
+            return RequestAsync(HttpMethod.Delete, request, rateLimiter ?? RateLimiter, token);
         }
 
         #endregion Public Methods
 
         #region Private Methods
 
-        private async Task<string> RequestAsync(HttpMethod method, BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null)
+        private async Task<string> RequestAsync(HttpMethod method, BinanceHttpRequest request, IApiRateLimiter rateLimiter, CancellationToken token = default)
         {
             Throw.IfNull(request, nameof(request));
 
@@ -148,8 +148,11 @@ namespace Binance.Api
 
             _logger?.LogDebug($"{nameof(BinanceHttpClient)}.{nameof(RequestAsync)}: [{method.Method}] \"{requestMessage.RequestUri}\"");
 
-            await (rateLimiter ?? RateLimiter).DelayAsync(request.RateLimitWeight, token)
-                .ConfigureAwait(false);
+            if (rateLimiter != null)
+            {
+                await rateLimiter.DelayAsync(request.RateLimitWeight, token)
+                    .ConfigureAwait(false);
+            }
 
             using (var response = await _httpClient.SendAsync(requestMessage, token).ConfigureAwait(false))
             {
