@@ -2,6 +2,7 @@
 using Binance.Api;
 using Binance.Api.WebSocket;
 using Binance.Cache;
+using Binance.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -53,6 +54,9 @@ namespace Binance
             services.AddTransient<ICandlestickWebSocketClient, CandlestickWebSocketClient>();
             services.AddTransient<IAggregateTradeWebSocketClient, AggregateTradeWebSocketClient>();
             services.AddTransient<ISymbolStatisticsWebSocketClient, SymbolStatisticsWebSocketClient>();
+
+            // Serialization
+            services.AddSingleton<IOrderBookSerializer, OrderBookSerializer>();
 
             return services;
         }

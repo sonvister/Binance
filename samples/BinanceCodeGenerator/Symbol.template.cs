@@ -79,12 +79,12 @@ namespace Binance
         public Asset QuoteAsset { get; }
 
         /// <summary>
-        /// Get base asset range.
+        /// Get base asset range (min/max quantity and step size).
         /// </summary>
         public InclusiveRange Quantity { get; }
 
         /// <summary>
-        /// Get the quote asset range.
+        /// Get the quote asset range (min/max price and tick size).
         /// </summary>
         public InclusiveRange Price { get; }
 

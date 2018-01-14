@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Market;
+using Binance.Serialization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
@@ -37,6 +38,8 @@ namespace Binance.Api
 
         #region Private Fields
 
+        private readonly IOrderBookSerializer _orderBookSerializer;
+
         private readonly ILogger<BinanceApi> _logger;
 
         #endregion Private Fields
@@ -55,12 +58,19 @@ namespace Binance.Api
         /// Constructor.
         /// </summary>
         /// <param name="client"></param>
+        /// <param name="orderBookSerializer"></param>
         /// <param name="logger"></param>
-        public BinanceApi(IBinanceHttpClient client, ILogger<BinanceApi> logger = null)
+        public BinanceApi(
+            IBinanceHttpClient client,
+            IOrderBookSerializer orderBookSerializer = null,
+            ILogger<BinanceApi> logger = null)
         {
             Throw.IfNull(client, nameof(client));
 
             HttpClient = client;
+
+            _orderBookSerializer = orderBookSerializer ?? new OrderBookSerializer();
+            
             _logger = logger;
         }
 
@@ -100,16 +110,7 @@ namespace Binance.Api
 
             try
             {
-                var jObject = JObject.Parse(json);
-
-                var lastUpdateId = jObject["lastUpdateId"].Value<long>();
-
-                var bids = jObject["bids"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>()))
-                    .ToArray();
-                var asks = jObject["asks"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>()))
-                    .ToArray();
-
-                return new OrderBook(symbol.FormatSymbol(), lastUpdateId, bids, asks);
+                return _orderBookSerializer.Deserialize(OrderBookJsonConverter.InsertSymbol(json, symbol));
             }
             catch (Exception e)
             {
