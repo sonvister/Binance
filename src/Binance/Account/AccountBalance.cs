@@ -43,7 +43,7 @@ namespace Binance.Account
             if (locked < 0)
                 throw new ArgumentException($"{nameof(AccountBalance)} amount must not be less than 0.", nameof(locked));
 
-            Asset = asset;
+            Asset = asset.FormatSymbol();
             Free = free;
             Locked = locked;
         }

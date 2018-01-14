@@ -92,7 +92,7 @@ namespace Binance.Market
             if (timestamp <= 0)
                 throw new ArgumentException($"{nameof(Trade)}: timestamp must be greater than 0.", nameof(timestamp));
 
-            Symbol = symbol;
+            Symbol = symbol.FormatSymbol();
             Id = id;
             Price = price;
             Quantity = quantity;

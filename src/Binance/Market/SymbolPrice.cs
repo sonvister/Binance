@@ -36,7 +36,7 @@ namespace Binance.Market
             if (value < 0)
                 throw new ArgumentException($"{nameof(SymbolPrice)} price must not be less than 0.", nameof(value));
 
-            Symbol = symbol;
+            Symbol = symbol.FormatSymbol();
             Value = value;
         }
 

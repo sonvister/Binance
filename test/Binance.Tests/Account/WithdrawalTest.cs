@@ -1,5 +1,6 @@
 ﻿using System;
 using Binance.Account;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Binance.Tests.Account
@@ -39,6 +40,34 @@ namespace Binance.Tests.Account
             const string txId = "21436587092143658709";
 
             var withdrawal = new Withdrawal(id, asset, amount, timestamp, status, address, addressTag, txId);
+
+            Assert.Equal(id, withdrawal.Id);
+            Assert.Equal(asset, withdrawal.Asset);
+            Assert.Equal(amount, withdrawal.Amount);
+            Assert.Equal(timestamp, withdrawal.Timestamp);
+            Assert.Equal(status, withdrawal.Status);
+            Assert.Equal(address, withdrawal.Address);
+            Assert.Equal(addressTag, withdrawal.AddressTag);
+            Assert.Equal(txId, withdrawal.TxId);
+        }
+
+        [Fact]
+        public void Serialization()
+        {
+            const string id = "1234567890";
+            var asset = Asset.BTC;
+            const decimal amount = 1.23m;
+            const long timestamp = 1234567890;
+            const WithdrawalStatus status = WithdrawalStatus.Completed;
+            const string address = "0x12345678901234567890";
+            const string addressTag = "ABCDEF";
+            const string txId = "21436587092143658709";
+
+            var withdrawal = new Withdrawal(id, asset, amount, timestamp, status, address, addressTag, txId);
+
+            var json = JsonConvert.SerializeObject(withdrawal);
+
+            withdrawal = JsonConvert.DeserializeObject<Withdrawal>(json);
 
             Assert.Equal(id, withdrawal.Id);
             Assert.Equal(asset, withdrawal.Asset);

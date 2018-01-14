@@ -32,8 +32,43 @@ namespace Binance.Market
         /// <summary>
         /// Construct order book top.
         /// </summary>
+        /// <param name="symbol">The symbol.</param> 
+        /// <param name="bidPrice">The best bid price.</param> 
+        /// <param name="bidQuantity">The best bid quantity.</param> 
+        /// <param name="askPrice">The best ask price.</param> 
+        /// <param name="askQuantity">The best ask quantity.</param> 
+        /// <returns></returns>
+        public static OrderBookTop Create(string symbol, decimal bidPrice, decimal bidQuantity, decimal askPrice, decimal askQuantity)
+        {
+            return new OrderBookTop(symbol, new OrderBookPriceLevel(bidPrice, bidQuantity), new OrderBookPriceLevel(askPrice, askQuantity));
+        }
+
+        /// <summary>
+        /// Construct order book top.
+        /// </summary>
+        /// <param name="symbol">The symbol.</param>
+        /// <param name="bid">The bid price and quantity.</param>
+        /// <param name="ask">The ask price and quantity.</param>
+        public OrderBookTop(string symbol, OrderBookPriceLevel bid, OrderBookPriceLevel ask)
+        {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+            Throw.IfNull(bid, nameof(bid));
+            Throw.IfNull(ask, nameof(ask));
+
+            if (bid.Price > ask.Price)
+                throw new ArgumentException($"{nameof(OrderBookTop)} ask price must be greater than the bid price.", nameof(ask.Price));
+
+            Symbol = symbol.FormatSymbol();
+
+            Bid = bid;
+            Ask = ask;
+        }
+
+        /// <summary>
+        /// Construct order book top.
+        /// </summary>
         /// <param name="orderBook">The order book.</param>
-        public OrderBookTop(OrderBook orderBook)
+        internal OrderBookTop(OrderBook orderBook)
         {
             Throw.IfNull(orderBook, nameof(orderBook));
 
@@ -41,27 +76,6 @@ namespace Binance.Market
 
             Bid = orderBook.Bids.First();
             Ask = orderBook.Asks.First();
-        }
-
-        /// <summary>
-        /// Construct order book top.
-        /// </summary>
-        /// <param name="symbol">The symbol.</param>
-        /// <param name="bidPrice">The best bid price.</param>
-        /// <param name="bidQuantity">The best bid quantity.</param>
-        /// <param name="askPrice">The best ask price.</param>
-        /// <param name="askQuantity">The best ask quantity.</param>
-        public OrderBookTop(string symbol, decimal bidPrice, decimal bidQuantity, decimal askPrice, decimal askQuantity)
-        {
-            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
-
-            if (bidPrice > askPrice)
-                throw new ArgumentException($"{nameof(OrderBookTop)} ask price must be greater than the bid price.", nameof(askPrice));
-
-            Symbol = symbol;
-
-            Bid = new OrderBookPriceLevel(bidPrice, bidQuantity);
-            Ask = new OrderBookPriceLevel(askPrice, askQuantity);
         }
 
         #endregion Constructors

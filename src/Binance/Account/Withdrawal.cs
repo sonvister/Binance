@@ -73,7 +73,7 @@ namespace Binance.Account
                 throw new ArgumentException($"{nameof(Withdrawal)} timestamp must be greater than 0.", nameof(timestamp));
 
             Id = id;
-            Asset = asset;
+            Asset = asset.FormatSymbol();
             Amount = amount;
             Timestamp = timestamp;
             Status = status;

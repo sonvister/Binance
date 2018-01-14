@@ -39,15 +39,16 @@ namespace Binance.Serialization
             if (orderBook == null)
                 return;
 
-            var jObject = new JObject();
+            var jObject = new JObject
+            {
+                new JProperty(nameof(OrderBook.Symbol), orderBook.Symbol),
 
-            jObject.Add(new JProperty(nameof(OrderBook.Symbol), orderBook.Symbol));
+                new JProperty(nameof(OrderBook.LastUpdateId), orderBook.LastUpdateId),
 
-            jObject.Add(new JProperty(nameof(OrderBook.LastUpdateId), orderBook.LastUpdateId));
+                new JProperty(nameof(OrderBook.Bids), orderBook.Bids.Select(_ => new JArray { _.Price, _.Quantity })),
 
-            jObject.Add(new JProperty(nameof(OrderBook.Bids), orderBook.Bids.Select(_ => new JArray { _.Price, _.Quantity })));
-
-            jObject.Add(new JProperty(nameof(OrderBook.Asks), orderBook.Asks.Select(_ => new JArray { _.Price, _.Quantity })));
+                new JProperty(nameof(OrderBook.Asks), orderBook.Asks.Select(_ => new JArray { _.Price, _.Quantity }))
+            };
 
             jObject.WriteTo(writer);
         }

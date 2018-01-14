@@ -225,7 +225,7 @@ namespace Binance.Market
             //if (tradeCount != 0 && tradeCount != lastTradeId - firstTradeId + 1)
             //    throw new ArgumentException($"{nameof(SymbolStatistics)}: trade count must be equal to last trade ID - first trade ID + 1.", nameof(tradeCount));
 
-            Symbol = symbol;
+            Symbol = symbol.FormatSymbol();
             Period = period;
             PriceChange = priceChange;
             PriceChangePercent = priceChangePercent;

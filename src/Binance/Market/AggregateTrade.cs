@@ -99,7 +99,7 @@ namespace Binance.Market
             if (lastTradeId < firstTradeId)
                 throw new ArgumentException($"{nameof(AggregateTrade)}: last trade ID must be greater than or equal to first trade ID.", nameof(lastTradeId));
 
-            Symbol = symbol;
+            Symbol = symbol.FormatSymbol();
             Id = id;
             Price = price;
             Quantity = quantity;

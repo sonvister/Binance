@@ -915,7 +915,7 @@ namespace Binance.Api
         /// <returns></returns>
         private OrderBookTop ConvertToOrderBookTop(JToken jToken)
         {
-            return new OrderBookTop(
+            return OrderBookTop.Create(
                 jToken["symbol"].Value<string>(),
                 jToken["bidPrice"].Value<decimal>(),
                 jToken["bidQty"].Value<decimal>(),

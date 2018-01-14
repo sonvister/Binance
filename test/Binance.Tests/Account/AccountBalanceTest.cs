@@ -1,5 +1,6 @@
 ﻿using System;
 using Binance.Account;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Binance.Tests.Account
@@ -26,6 +27,24 @@ namespace Binance.Tests.Account
             const decimal locked = 0.456m;
 
             var balance = new AccountBalance(asset, free, locked);
+
+            Assert.Equal(asset, balance.Asset);
+            Assert.Equal(free, balance.Free);
+            Assert.Equal(locked, balance.Locked);
+        }
+
+        [Fact]
+        public void Serialization()
+        {
+            var asset = Asset.BTC;
+            const decimal free = 0.123m;
+            const decimal locked = 0.456m;
+
+            var balance = new AccountBalance(asset, free, locked);
+
+            var json = JsonConvert.SerializeObject(balance);
+
+            balance = JsonConvert.DeserializeObject<AccountBalance>(json);
 
             Assert.Equal(asset, balance.Asset);
             Assert.Equal(free, balance.Free);

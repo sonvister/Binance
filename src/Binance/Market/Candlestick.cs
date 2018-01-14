@@ -138,7 +138,7 @@ namespace Binance.Market
             if (takerBuyQuoteAssetVolume < 0)
                 throw new ArgumentException($"{nameof(Candlestick)}: volume must not be less than 0.", nameof(takerBuyQuoteAssetVolume));
 
-            Symbol = symbol;
+            Symbol = symbol.FormatSymbol();
             Interval = interval;
             OpenTime = openTime;
             Open = open;

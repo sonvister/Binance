@@ -1,5 +1,7 @@
 ﻿using System;
 using Binance.Market;
+using Binance.Serialization;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Binance.Tests.Market
@@ -33,6 +35,36 @@ namespace Binance.Tests.Market
             var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
 
             var orderBook = new OrderBook(symbol, lastUpdateId, bids, asks);
+
+            Assert.Equal(symbol, orderBook.Symbol);
+            Assert.Equal(lastUpdateId, orderBook.LastUpdateId);
+
+            Assert.NotEmpty(orderBook.Bids);
+            Assert.NotEmpty(orderBook.Asks);
+
+            Assert.Equal(3, orderBook.Top.Bid.Price);
+            Assert.Equal(30, orderBook.Top.Bid.Quantity);
+
+            Assert.Equal(4, orderBook.Top.Ask.Price);
+            Assert.Equal(40, orderBook.Top.Ask.Quantity);
+        }
+
+        [Fact]
+        public void Serialization()
+        {
+            var symbol = Symbol.BTC_USDT;
+            const long lastUpdateId = 1234567890;
+            var bids = new(decimal, decimal)[] { (2, 20), (1, 10), (3, 30) };
+            var asks = new(decimal, decimal)[] { (6, 60), (4, 40), (5, 50) };
+
+            var orderBook = new OrderBook(symbol, lastUpdateId, bids, asks);
+
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new OrderBookJsonConverter());
+
+            var json = JsonConvert.SerializeObject(orderBook, settings);
+
+            orderBook = JsonConvert.DeserializeObject<OrderBook>(json, settings);
 
             Assert.Equal(symbol, orderBook.Symbol);
             Assert.Equal(lastUpdateId, orderBook.LastUpdateId);

@@ -1,5 +1,6 @@
 ﻿using System;
 using Binance.Market;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Binance.Tests.Market
@@ -62,6 +63,44 @@ namespace Binance.Tests.Market
             const decimal takerBuyQuoteAssetVolume = 333;
 
             var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
+
+            Assert.Equal(symbol, candlestick.Symbol);
+            Assert.Equal(interval, candlestick.Interval);
+            Assert.Equal(openTime, candlestick.OpenTime);
+            Assert.Equal(open, candlestick.Open);
+            Assert.Equal(high, candlestick.High);
+            Assert.Equal(low, candlestick.Low);
+            Assert.Equal(close, candlestick.Close);
+            Assert.Equal(volume, candlestick.Volume);
+            Assert.Equal(closeTime, candlestick.CloseTime);
+            Assert.Equal(quoteAssetVolume, candlestick.QuoteAssetVolume);
+            Assert.Equal(numberOfTrades, candlestick.NumberOfTrades);
+            Assert.Equal(takerBuyBaseAssetVolume, candlestick.TakerBuyBaseAssetVolume);
+            Assert.Equal(takerBuyQuoteAssetVolume, candlestick.TakerBuyQuoteAssetVolume);
+        }
+
+        [Fact]
+        public void Serialization()
+        {
+            var symbol = Symbol.BTC_USDT;
+            const CandlestickInterval interval = CandlestickInterval.Hour;
+            var openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            const decimal open = 4950;
+            const decimal high = 5100;
+            const decimal low = 4900;
+            const decimal close = 5050;
+            const decimal volume = 1000;
+            var closeTime = DateTimeOffset.FromUnixTimeMilliseconds(openTime).AddHours(1).ToUnixTimeMilliseconds();
+            const long quoteAssetVolume = 5000000;
+            const int numberOfTrades = 555555;
+            const decimal takerBuyBaseAssetVolume = 4444;
+            const decimal takerBuyQuoteAssetVolume = 333;
+
+            var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
+
+            var json = JsonConvert.SerializeObject(candlestick);
+
+            candlestick = JsonConvert.DeserializeObject<Candlestick>(json);
 
             Assert.Equal(symbol, candlestick.Symbol);
             Assert.Equal(interval, candlestick.Interval);

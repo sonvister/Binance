@@ -65,7 +65,7 @@ namespace Binance.Account
             if (timestamp <= 0)
                 throw new ArgumentException($"{nameof(Deposit)} timestamp must be greater than 0.", nameof(timestamp));
 
-            Asset = asset;
+            Asset = asset.FormatSymbol();
             Amount = amount;
             Timestamp = timestamp;
             Status = status;

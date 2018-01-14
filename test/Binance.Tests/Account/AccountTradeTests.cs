@@ -1,5 +1,6 @@
 ﻿using System;
 using Binance.Account;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Binance.Tests.Account
@@ -51,6 +52,40 @@ namespace Binance.Tests.Account
             const bool isBestPriceMatch = true;
 
             var trade = new AccountTrade(symbol, id, orderId, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch);
+
+            Assert.Equal(symbol, trade.Symbol);
+            Assert.Equal(id, trade.Id);
+            Assert.Equal(orderId, trade.OrderId);
+            Assert.Equal(price, trade.Price);
+            Assert.Equal(quantity, trade.Quantity);
+            Assert.Equal(commission, trade.Commission);
+            Assert.Equal(commissionAsset, trade.CommissionAsset);
+            Assert.Equal(timestamp, trade.Timestamp);
+            Assert.Equal(isBuyer, trade.IsBuyer);
+            Assert.Equal(isMaker, trade.IsMaker);
+            Assert.Equal(isBestPriceMatch, trade.IsBestPriceMatch);
+        }
+
+        [Fact]
+        public void Serialization()
+        {
+            var symbol = Symbol.BTC_USDT;
+            const long id = 12345;
+            const long orderId = 54321;
+            const decimal price = 5000;
+            const decimal quantity = 1;
+            const decimal commission = 10;
+            var commissionAsset = Asset.BNB;
+            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            const bool isBuyer = true;
+            const bool isMaker = true;
+            const bool isBestPriceMatch = true;
+
+            var trade = new AccountTrade(symbol, id, orderId, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch);
+
+            var json = JsonConvert.SerializeObject(trade);
+
+            trade = JsonConvert.DeserializeObject<AccountTrade>(json);
 
             Assert.Equal(symbol, trade.Symbol);
             Assert.Equal(id, trade.Id);

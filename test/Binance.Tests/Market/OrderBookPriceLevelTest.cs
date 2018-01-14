@@ -1,5 +1,6 @@
 ﻿using System;
 using Binance.Market;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Binance.Tests.Market
@@ -32,6 +33,22 @@ namespace Binance.Tests.Market
             const decimal quantity = 0.987654321m;
 
             var level = new OrderBookPriceLevel(price, quantity);
+
+            Assert.Equal(price, level.Price);
+            Assert.Equal(quantity, level.Quantity);
+        }
+
+        [Fact]
+        public void Serialization()
+        {
+            const decimal price = 0.123456789m;
+            const decimal quantity = 0.987654321m;
+
+            var level = new OrderBookPriceLevel(price, quantity);
+
+            var json = JsonConvert.SerializeObject(level);
+
+            level = JsonConvert.DeserializeObject<OrderBookPriceLevel>(json);
 
             Assert.Equal(price, level.Price);
             Assert.Equal(quantity, level.Quantity);

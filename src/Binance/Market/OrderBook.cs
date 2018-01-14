@@ -65,7 +65,7 @@ namespace Binance.Market
             if (lastUpdateId <= 0)
                 throw new ArgumentException($"{nameof(OrderBook)} last update ID must be greater than 0.", nameof(lastUpdateId));
 
-            Symbol = symbol;
+            Symbol = symbol.FormatSymbol();
             LastUpdateId = lastUpdateId;
 
             _bids = new SortedDictionary<decimal, OrderBookPriceLevel>(new ReverseComparer<decimal>());

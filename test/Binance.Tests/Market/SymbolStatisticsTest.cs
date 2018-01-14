@@ -1,5 +1,6 @@
 ﻿using System;
 using Binance.Market;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Binance.Tests.Market
@@ -93,6 +94,61 @@ namespace Binance.Tests.Market
             const long tradeCount = lastTradeId - firstTradeId + 1;
 
             var stats = new SymbolStatistics(symbol, period, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, lastQuantity, bidPrice, bidQuantity, askPrice, askQuantity, openPrice, highPrice, lowPrice, volume, quoteVolume, openTime, closeTime, firstTradeId, lastTradeId, tradeCount);
+
+            Assert.Equal(symbol, stats.Symbol);
+            Assert.Equal(priceChange, stats.PriceChange);
+            Assert.Equal(priceChangePercent, stats.PriceChangePercent);
+            Assert.Equal(weightedAveragePrice, stats.WeightedAveragePrice);
+            Assert.Equal(previousClosePrice, stats.PreviousClosePrice);
+            Assert.Equal(lastPrice, stats.LastPrice);
+            Assert.Equal(lastQuantity, stats.LastQuantity);
+            Assert.Equal(bidPrice, stats.BidPrice);
+            Assert.Equal(bidQuantity, stats.BidQuantity);
+            Assert.Equal(askPrice, stats.AskPrice);
+            Assert.Equal(askQuantity, stats.AskQuantity);
+            Assert.Equal(openPrice, stats.OpenPrice);
+            Assert.Equal(highPrice, stats.HighPrice);
+            Assert.Equal(lowPrice, stats.LowPrice);
+            Assert.Equal(volume, stats.Volume);
+            Assert.Equal(quoteVolume, stats.QuoteVolume);
+            Assert.Equal(openTime, stats.OpenTime);
+            Assert.Equal(closeTime, stats.CloseTime);
+            Assert.Equal(firstTradeId, stats.FirstTradeId);
+            Assert.Equal(lastTradeId, stats.LastTradeId);
+            Assert.Equal(tradeCount, stats.TradeCount);
+        }
+
+        [Fact]
+        public void Serialization()
+        {
+            var symbol = Symbol.BTC_USDT;
+            var period = TimeSpan.FromHours(24);
+            const decimal priceChange = 50;
+            const decimal priceChangePercent = 1;
+            const decimal weightedAveragePrice = 5001;
+            const decimal previousClosePrice = 4900;
+            const decimal lastPrice = 5000;
+            const decimal lastQuantity = 1;
+            const decimal bidPrice = 4995;
+            const decimal bidQuantity = 2;
+            const decimal askPrice = 5005;
+            const decimal askQuantity = 3;
+            const decimal openPrice = 4950;
+            const decimal highPrice = 5025;
+            const decimal lowPrice = 4925;
+            const decimal volume = 100000;
+            const decimal quoteVolume = 200000;
+            var openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var closeTime = DateTimeOffset.FromUnixTimeMilliseconds(openTime).AddHours(24).ToUnixTimeMilliseconds();
+            const long firstTradeId = 123456;
+            const long lastTradeId = 234567;
+            const long tradeCount = lastTradeId - firstTradeId + 1;
+
+            var stats = new SymbolStatistics(symbol, period, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, lastQuantity, bidPrice, bidQuantity, askPrice, askQuantity, openPrice, highPrice, lowPrice, volume, quoteVolume, openTime, closeTime, firstTradeId, lastTradeId, tradeCount);
+
+            var json = JsonConvert.SerializeObject(stats);
+
+            stats = JsonConvert.DeserializeObject<SymbolStatistics>(json);
 
             Assert.Equal(symbol, stats.Symbol);
             Assert.Equal(priceChange, stats.PriceChange);
