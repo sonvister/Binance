@@ -32,7 +32,7 @@ namespace Binance.Serialization
             return FillOrder(order, JObject.Parse(json));
         }
 
-        public Order Deserialize(string json, IBinanceApiUser user)
+        public virtual Order Deserialize(string json, IBinanceApiUser user)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
             Throw.IfNull(user, nameof(user));
@@ -40,7 +40,7 @@ namespace Binance.Serialization
             return FillOrder(new Order(user), JObject.Parse(json));
         }
 
-        public IEnumerable<Order> DeserializeMany(string json, IBinanceApiUser user)
+        public virtual IEnumerable<Order> DeserializeMany(string json, IBinanceApiUser user)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
             Throw.IfNull(user, nameof(user));
@@ -50,7 +50,7 @@ namespace Binance.Serialization
                 .ToArray();
         }
 
-        public string Serialize(Order order)
+        public virtual string Serialize(Order order)
         {
             var jObject = new JObject
             {

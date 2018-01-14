@@ -40,6 +40,8 @@ namespace Binance.Api
 
         private readonly IOrderBookSerializer _orderBookSerializer;
 
+        private readonly ITradeSerializer _tradeSerializer;
+
         private readonly IOrderSerializer _orderSerializer;
 
         private readonly ILogger<BinanceApi> _logger;
@@ -65,6 +67,7 @@ namespace Binance.Api
         public BinanceApi(
             IBinanceHttpClient client,
             IOrderBookSerializer orderBookSerializer = null,
+            ITradeSerializer tradeSerializer = null,
             IOrderSerializer orderSerializer = null,
             ILogger<BinanceApi> logger = null)
         {
@@ -73,6 +76,7 @@ namespace Binance.Api
             HttpClient = client;
 
             _orderBookSerializer = orderBookSerializer ?? new OrderBookSerializer();
+            _tradeSerializer = tradeSerializer ?? new TradeSerializer();
             _orderSerializer = orderSerializer ?? new OrderSerializer();
 
             _logger = logger;
@@ -127,7 +131,7 @@ namespace Binance.Api
             var json = await HttpClient.GetTradesAsync(symbol, limit, token)
                 .ConfigureAwait(false);
 
-            try { return DeserializeTrades(symbol, json); }
+            try { return _tradeSerializer.DeserializeMany(json, symbol); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetTradesAsync), json, e);
@@ -142,7 +146,7 @@ namespace Binance.Api
             var json = await HttpClient.GetTradesAsync(apiKey, symbol, fromId, limit, token)
                 .ConfigureAwait(false);
 
-            try { return DeserializeTrades(symbol, json); }
+            try { return _tradeSerializer.DeserializeMany(json, symbol); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetTradesFromAsync), json, e);
@@ -812,28 +816,6 @@ namespace Binance.Api
         #endregion User Data Stream
 
         #region Private Methods
-
-        /// <summary>
-        /// Deserialize trades.
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        private static IEnumerable<Trade> DeserializeTrades(string symbol, string json)
-        {
-            var jArray = JArray.Parse(json);
-
-            return jArray.Select(item => new Trade(
-                    symbol.FormatSymbol(),
-                    item["id"].Value<long>(), // ID
-                    item["price"].Value<decimal>(), // price
-                    item["qty"].Value<decimal>(), // quantity
-                    NullId, NullId, // buyer/seller order ID
-                    item["time"].Value<long>(), // timestamp
-                    item["isBuyerMaker"].Value<bool>(), // is buyer maker
-                    item["isBestMatch"].Value<bool>())) // is best price match
-                .ToArray();
-        }
 
         /// <summary>
         /// Deserialize aggregate trades.
