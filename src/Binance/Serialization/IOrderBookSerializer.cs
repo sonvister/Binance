@@ -5,6 +5,11 @@ namespace Binance.Serialization
     public interface IOrderBookSerializer
     {
         /// <summary>
+        /// Get the <see cref="OrderBookJsonConverter"/>.
+        /// </summary>
+        OrderBookJsonConverter JsonConverter { get; }
+
+        /// <summary>
         /// Deserialize JSON to an <see cref="OrderBook"/>.
         /// </summary>
         /// <param name="json"></param>

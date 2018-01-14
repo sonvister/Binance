@@ -5,12 +5,16 @@ namespace Binance.Serialization
 {
     public class OrderBookSerializer : IOrderBookSerializer
     {
+        public OrderBookJsonConverter JsonConverter { get; }
+
         private JsonSerializerSettings _settings;
 
         public OrderBookSerializer()
         {
+            JsonConverter = new OrderBookJsonConverter();
+
             _settings = new JsonSerializerSettings();
-            _settings.Converters.Add(new OrderBookJsonConverter());
+            _settings.Converters.Add(JsonConverter);
         }
 
         public virtual OrderBook Deserialize(string json)
