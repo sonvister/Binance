@@ -46,6 +46,8 @@ namespace Binance.Api
 
         private readonly ISymbolPriceSerializer _symbolPriceSerializer;
 
+        private readonly ISymbolStatisticsSerializer _symbolStatisticsSerializer;
+
         private readonly ITradeSerializer _tradeSerializer;
 
         private readonly IOrderSerializer _orderSerializer;
@@ -76,6 +78,7 @@ namespace Binance.Api
             IOrderBookTopSerializer orderBookTopSerializer = null,
             IAggregateTradeSerializer aggregateTradeSerializer = null,
             ISymbolPriceSerializer symbolPriceSerializer = null,
+            ISymbolStatisticsSerializer symbolStatisticsSerializer = null,
             ITradeSerializer tradeSerializer = null,
             IOrderSerializer orderSerializer = null,
             ILogger<BinanceApi> logger = null)
@@ -88,6 +91,7 @@ namespace Binance.Api
             _orderBookTopSerializer = orderBookTopSerializer ?? new OrderBookTopSerializer();
             _aggregateTradeSerializer = aggregateTradeSerializer ?? new AggregateTradeSerializer();
             _symbolPriceSerializer = symbolPriceSerializer ?? new SymbolPriceSerializer();
+            _symbolStatisticsSerializer = symbolStatisticsSerializer ?? new SymbolStatisticsSerializer();
             _tradeSerializer = tradeSerializer ?? new TradeSerializer();
             _orderSerializer = orderSerializer ?? new OrderSerializer();
 
@@ -226,7 +230,7 @@ namespace Binance.Api
             var json = await HttpClient.Get24HourStatisticsAsync(symbol, token)
                 .ConfigureAwait(false);
 
-            try { return ConvertTo24HourStatistics(JObject.Parse(json)); }
+            try { return _symbolStatisticsSerializer.Deserialize(json); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(Get24HourStatisticsAsync), json, e);
@@ -238,12 +242,7 @@ namespace Binance.Api
             var json = await HttpClient.Get24HourStatisticsAsync(token: token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                return JArray.Parse(json)
-                    .Select(ConvertTo24HourStatistics)
-                    .ToArray();
-            }
+            try { return _symbolStatisticsSerializer.DeserializeMany(json); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(Get24HourStatisticsAsync), json, e);
@@ -747,10 +746,7 @@ namespace Binance.Api
             var json = await HttpClient.GetAccountStatusAsync(user, token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                return JObject.Parse(json)["msg"].Value<string>();
-            }
+            try { return JObject.Parse(json)["msg"].Value<string>(); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetAccountStatusAsync), json, e);
@@ -831,38 +827,6 @@ namespace Binance.Api
                 item[9].Value<decimal>(), // taker buy base asset volume
                 item[10].Value<decimal>() // taker buy quote asset volume
             )).ToArray();
-        }
-
-        /// <summary>
-        /// Convert to 24-hour statistics.
-        /// </summary>
-        /// <param name="jToken"></param>
-        /// <returns></returns>
-        private SymbolStatistics ConvertTo24HourStatistics(JToken jToken)
-        {
-            return new SymbolStatistics(
-                jToken["symbol"].Value<string>(),
-                TimeSpan.FromHours(24),
-                jToken["priceChange"].Value<decimal>(),
-                jToken["priceChangePercent"].Value<decimal>(),
-                jToken["weightedAvgPrice"].Value<decimal>(),
-                jToken["prevClosePrice"].Value<decimal>(),
-                jToken["lastPrice"].Value<decimal>(),
-                jToken["lastQty"].Value<decimal>(),
-                jToken["bidPrice"].Value<decimal>(),
-                jToken["bidQty"].Value<decimal>(),
-                jToken["askPrice"].Value<decimal>(),
-                jToken["askQty"].Value<decimal>(),
-                jToken["openPrice"].Value<decimal>(),
-                jToken["highPrice"].Value<decimal>(),
-                jToken["lowPrice"].Value<decimal>(),
-                jToken["volume"].Value<decimal>(),
-                jToken["quoteVolume"].Value<decimal>(),
-                jToken["openTime"].Value<long>(),
-                jToken["closeTime"].Value<long>(),
-                jToken["firstId"].Value<long>(),
-                jToken["lastId"].Value<long>(),
-                jToken["count"].Value<long>());
         }
 
         /// <summary>
