@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1515284579873;
+        public static readonly long LastUpdateAt = 1516052328797;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH;
@@ -64,6 +64,7 @@ namespace Binance
         public static readonly Asset HSR = new Asset("HSR", 8);
         public static readonly Asset ICN = new Asset("ICN", 8);
         public static readonly Asset ICX = new Asset("ICX", 8);
+        public static readonly Asset INS = new Asset("INS", 8);
         public static readonly Asset IOTA = new Asset("IOTA", 8);
         public static readonly Asset KMD = new Asset("KMD", 8);
         public static readonly Asset KNC = new Asset("KNC", 8);
@@ -94,6 +95,7 @@ namespace Binance
         public static readonly Asset RCN = new Asset("RCN", 8);
         public static readonly Asset RDN = new Asset("RDN", 8);
         public static readonly Asset REQ = new Asset("REQ", 8);
+        public static readonly Asset RLC = new Asset("RLC", 8);
         public static readonly Asset SALT = new Asset("SALT", 8);
         public static readonly Asset SNGLS = new Asset("SNGLS", 8);
         public static readonly Asset SNM = new Asset("SNM", 8);
@@ -108,6 +110,7 @@ namespace Binance
         public static readonly Asset USDT = new Asset("USDT", 8);
         public static readonly Asset VEN = new Asset("VEN", 8);
         public static readonly Asset VIB = new Asset("VIB", 8);
+        public static readonly Asset VIBE = new Asset("VIBE", 8);
         public static readonly Asset WABI = new Asset("WABI", 8);
         public static readonly Asset WAVES = new Asset("WAVES", 8);
         public static readonly Asset WINGS = new Asset("WINGS", 8);
@@ -193,6 +196,7 @@ namespace Binance
             { "HSR", HSR },
             { "ICN", ICN },
             { "ICX", ICX },
+            { "INS", INS },
             { "IOTA", IOTA },
             { "KMD", KMD },
             { "KNC", KNC },
@@ -223,6 +227,7 @@ namespace Binance
             { "RCN", RCN },
             { "RDN", RDN },
             { "REQ", REQ },
+            { "RLC", RLC },
             { "SALT", SALT },
             { "SNGLS", SNGLS },
             { "SNM", SNM },
@@ -237,6 +242,7 @@ namespace Binance
             { "USDT", USDT },
             { "VEN", VEN },
             { "VIB", VIB },
+            { "VIBE", VIBE },
             { "WABI", WABI },
             { "WAVES", WAVES },
             { "WINGS", WINGS },
