@@ -56,6 +56,7 @@ namespace Binance
             services.AddTransient<ISymbolStatisticsWebSocketClient, SymbolStatisticsWebSocketClient>();
 
             // Serialization
+            services.AddSingleton<IOrderBookTopSerializer, OrderBookTopSerializer>();
             services.AddSingleton<IOrderBookSerializer, OrderBookSerializer>();
             services.AddSingleton<ITradeSerializer, TradeSerializer>();
             services.AddSingleton<IOrderSerializer, OrderSerializer>();

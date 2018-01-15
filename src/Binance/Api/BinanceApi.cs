@@ -40,6 +40,8 @@ namespace Binance.Api
 
         private readonly IOrderBookSerializer _orderBookSerializer;
 
+        private readonly IOrderBookTopSerializer _orderBookTopSerializer;
+
         private readonly IAggregateTradeSerializer _aggregateTradeSerializer;
 
         private readonly ITradeSerializer _tradeSerializer;
@@ -69,6 +71,7 @@ namespace Binance.Api
         public BinanceApi(
             IBinanceHttpClient client,
             IOrderBookSerializer orderBookSerializer = null,
+            IOrderBookTopSerializer orderBookTopSerializer = null,
             IAggregateTradeSerializer aggregateTradeSerializer = null,
             ITradeSerializer tradeSerializer = null,
             IOrderSerializer orderSerializer = null,
@@ -79,6 +82,7 @@ namespace Binance.Api
             HttpClient = client;
 
             _orderBookSerializer = orderBookSerializer ?? new OrderBookSerializer();
+            _orderBookTopSerializer = orderBookTopSerializer ?? new OrderBookTopSerializer();
             _aggregateTradeSerializer = aggregateTradeSerializer ?? new AggregateTradeSerializer();
             _tradeSerializer = tradeSerializer ?? new TradeSerializer();
             _orderSerializer = orderSerializer ?? new OrderSerializer();
@@ -282,7 +286,7 @@ namespace Binance.Api
             var json = await HttpClient.GetOrderBookTopAsync(symbol, token)
                 .ConfigureAwait(false);
 
-            try { return ConvertToOrderBookTop(JObject.Parse(json)); }
+            try { return _orderBookTopSerializer.Deserialize(json); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetOrderBookTopAsync), json, e);
@@ -294,12 +298,7 @@ namespace Binance.Api
             var json = await HttpClient.GetOrderBookTopsAsync(token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                return JArray.Parse(json)
-                    .Select(ConvertToOrderBookTop)
-                    .ToArray();
-            }
+            try { return _orderBookTopSerializer.DeserializeMany(json); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetOrderBookTopsAsync), json, e);
@@ -837,21 +836,6 @@ namespace Binance.Api
                 item[9].Value<decimal>(), // taker buy base asset volume
                 item[10].Value<decimal>() // taker buy quote asset volume
             )).ToArray();
-        }
-
-        /// <summary>
-        /// Convert to order book top.
-        /// </summary>
-        /// <param name="jToken"></param>
-        /// <returns></returns>
-        private OrderBookTop ConvertToOrderBookTop(JToken jToken)
-        {
-            return OrderBookTop.Create(
-                jToken["symbol"].Value<string>(),
-                jToken["bidPrice"].Value<decimal>(),
-                jToken["bidQty"].Value<decimal>(),
-                jToken["askPrice"].Value<decimal>(),
-                jToken["askQty"].Value<decimal>());
         }
 
         /// <summary>
