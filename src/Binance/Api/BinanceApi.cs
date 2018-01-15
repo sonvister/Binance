@@ -44,6 +44,8 @@ namespace Binance.Api
 
         private readonly IAggregateTradeSerializer _aggregateTradeSerializer;
 
+        private readonly ISymbolPriceSerializer _symbolPriceSerializer;
+
         private readonly ITradeSerializer _tradeSerializer;
 
         private readonly IOrderSerializer _orderSerializer;
@@ -73,6 +75,7 @@ namespace Binance.Api
             IOrderBookSerializer orderBookSerializer = null,
             IOrderBookTopSerializer orderBookTopSerializer = null,
             IAggregateTradeSerializer aggregateTradeSerializer = null,
+            ISymbolPriceSerializer symbolPriceSerializer = null,
             ITradeSerializer tradeSerializer = null,
             IOrderSerializer orderSerializer = null,
             ILogger<BinanceApi> logger = null)
@@ -84,6 +87,7 @@ namespace Binance.Api
             _orderBookSerializer = orderBookSerializer ?? new OrderBookSerializer();
             _orderBookTopSerializer = orderBookTopSerializer ?? new OrderBookTopSerializer();
             _aggregateTradeSerializer = aggregateTradeSerializer ?? new AggregateTradeSerializer();
+            _symbolPriceSerializer = symbolPriceSerializer ?? new SymbolPriceSerializer();
             _tradeSerializer = tradeSerializer ?? new TradeSerializer();
             _orderSerializer = orderSerializer ?? new OrderSerializer();
 
@@ -124,10 +128,7 @@ namespace Binance.Api
             var json = await HttpClient.GetOrderBookAsync(symbol, limit, token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                return _orderBookSerializer.Deserialize(OrderBookJsonConverter.InsertSymbol(json, symbol));
-            }
+            try { return _orderBookSerializer.Deserialize(OrderBookJsonConverter.InsertSymbol(json, symbol)); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetOrderBookAsync), json, e);
@@ -256,7 +257,7 @@ namespace Binance.Api
             var json = await HttpClient.GetPriceAsync(symbol, token)
                 .ConfigureAwait(false);
 
-            try { return ConvertToSymbolPrice(JObject.Parse(json)); }
+            try { return _symbolPriceSerializer.Deserialize(json); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetPricesAsync), json, e);
@@ -268,13 +269,7 @@ namespace Binance.Api
             var json = await HttpClient.GetPriceAsync(token: token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                return JArray.Parse(json)
-                    .Select(ConvertToSymbolPrice)
-                    .Where(_ => _.Symbol != "123456" && _.Symbol != "ETC") // HACK
-                    .ToArray();
-            }
+            try { return _symbolPriceSerializer.DeserializeMany(json); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetPricesAsync), json, e);
@@ -868,18 +863,6 @@ namespace Binance.Api
                 jToken["firstId"].Value<long>(),
                 jToken["lastId"].Value<long>(),
                 jToken["count"].Value<long>());
-        }
-
-        /// <summary>
-        /// Convert to symbol price.
-        /// </summary>
-        /// <param name="jToken"></param>
-        /// <returns></returns>
-        private SymbolPrice ConvertToSymbolPrice(JToken jToken)
-        {
-            return new SymbolPrice(
-                jToken["symbol"].Value<string>(),
-                jToken["price"].Value<decimal>());
         }
 
         /// <summary>

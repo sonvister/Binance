@@ -52,6 +52,8 @@ namespace Binance.Serialization
 
         public virtual string Serialize(Order order)
         {
+            Throw.IfNull(order, nameof(order));
+
             var jObject = new JObject
             {
                 new JProperty(Key_Symbol, order.Symbol),

@@ -38,6 +38,8 @@ namespace Binance.Serialization
 
         public virtual string Serialize(AggregateTrade trade)
         {
+            Throw.IfNull(trade, nameof(trade));
+
             var jObject = new JObject
             {
                 new JProperty(Key_Symbol, trade.Symbol),

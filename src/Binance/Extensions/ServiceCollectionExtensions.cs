@@ -58,6 +58,7 @@ namespace Binance
             // Serialization
             services.AddSingleton<IOrderBookTopSerializer, OrderBookTopSerializer>();
             services.AddSingleton<IOrderBookSerializer, OrderBookSerializer>();
+            services.AddSingleton<ISymbolPriceSerializer, SymbolPriceSerializer>();
             services.AddSingleton<ITradeSerializer, TradeSerializer>();
             services.AddSingleton<IOrderSerializer, OrderSerializer>();
 

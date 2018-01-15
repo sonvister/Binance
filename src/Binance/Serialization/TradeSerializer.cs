@@ -22,6 +22,8 @@ namespace Binance.Serialization
 
         public virtual Trade Deserialize(string json)
         {
+            Throw.IfNullOrWhiteSpace(json, nameof(json));
+
             return DeserializeTrade(JObject.Parse(json));
         }
 
@@ -39,6 +41,8 @@ namespace Binance.Serialization
 
         public virtual string Serialize(Trade trade)
         {
+            Throw.IfNull(trade, nameof(trade));
+
             var jObject = new JObject
             {
                 new JProperty(Key_Symbol, trade.Symbol),

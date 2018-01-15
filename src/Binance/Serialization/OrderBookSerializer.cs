@@ -19,11 +19,15 @@ namespace Binance.Serialization
 
         public virtual OrderBook Deserialize(string json)
         {
+            Throw.IfNullOrWhiteSpace(json, nameof(json));
+
             return JsonConvert.DeserializeObject<OrderBook>(json, _settings);
         }
 
         public virtual string Serialize(OrderBook orderBook)
         {
+            Throw.IfNull(orderBook, nameof(orderBook));
+
             return JsonConvert.SerializeObject(orderBook, _settings);
         }
     }
