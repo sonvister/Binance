@@ -424,7 +424,7 @@ namespace BinanceConsoleApp
         {
             lock (ConsoleSync)
             {
-                Console.WriteLine($"  {candlestick.Symbol} - O: {candlestick.Open:0.00000000} | H: {candlestick.High:0.00000000} | L: {candlestick.Low:0.00000000} | C: {candlestick.Close:0.00000000} | V: {candlestick.Volume:0.00} - [{candlestick.OpenTime}]");
+                Console.WriteLine($"  {candlestick.Symbol} - O: {candlestick.Open:0.00000000}  H: {candlestick.High:0.00000000}  L: {candlestick.Low:0.00000000}  C: {candlestick.Close:0.00000000}  V: {candlestick.Volume:0.00}  [{candlestick.OpenTime}]");
             }
         }
 

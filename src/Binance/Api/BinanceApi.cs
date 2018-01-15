@@ -44,6 +44,8 @@ namespace Binance.Api
 
         private readonly IAggregateTradeSerializer _aggregateTradeSerializer;
 
+        private readonly ICandlestickSerializer _candlestickSerializer;
+
         private readonly ISymbolPriceSerializer _symbolPriceSerializer;
 
         private readonly ISymbolStatisticsSerializer _symbolStatisticsSerializer;
@@ -77,6 +79,7 @@ namespace Binance.Api
             IOrderBookSerializer orderBookSerializer = null,
             IOrderBookTopSerializer orderBookTopSerializer = null,
             IAggregateTradeSerializer aggregateTradeSerializer = null,
+            ICandlestickSerializer candlestickSerializer = null,
             ISymbolPriceSerializer symbolPriceSerializer = null,
             ISymbolStatisticsSerializer symbolStatisticsSerializer = null,
             ITradeSerializer tradeSerializer = null,
@@ -90,6 +93,7 @@ namespace Binance.Api
             _orderBookSerializer = orderBookSerializer ?? new OrderBookSerializer();
             _orderBookTopSerializer = orderBookTopSerializer ?? new OrderBookTopSerializer();
             _aggregateTradeSerializer = aggregateTradeSerializer ?? new AggregateTradeSerializer();
+            _candlestickSerializer = candlestickSerializer ?? new CandlestickSerializer();
             _symbolPriceSerializer = symbolPriceSerializer ?? new SymbolPriceSerializer();
             _symbolStatisticsSerializer = symbolStatisticsSerializer ?? new SymbolStatisticsSerializer();
             _tradeSerializer = tradeSerializer ?? new TradeSerializer();
@@ -216,7 +220,7 @@ namespace Binance.Api
             var json = await HttpClient.GetCandlesticksAsync(symbol, interval, limit, startTime, endTime, token)
                 .ConfigureAwait(false);
 
-            try { return DeserializeCandlesticks(symbol, interval, json); }
+            try { return _candlestickSerializer.DeserializeMany(json, symbol, interval); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetCandlesticksAsync), json, e);
@@ -800,34 +804,6 @@ namespace Binance.Api
         #endregion User Data Stream
 
         #region Private Methods
-
-        /// <summary>
-        /// Deserialize candlesticks.
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <param name="interval"></param>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        private static IEnumerable<Candlestick> DeserializeCandlesticks(string symbol, CandlestickInterval interval, string json)
-        {
-            var jArray = JArray.Parse(json);
-
-            return jArray.Select(item => new Candlestick(
-                symbol.FormatSymbol(), // symbol
-                interval, // interval
-                item[0].Value<long>(), // open time
-                item[1].Value<decimal>(), // open
-                item[2].Value<decimal>(), // high
-                item[3].Value<decimal>(), // low
-                item[4].Value<decimal>(), // close
-                item[5].Value<decimal>(), // volume
-                item[6].Value<long>(), // close time
-                item[7].Value<decimal>(), // quote asset volume
-                item[8].Value<long>(), // number of trades
-                item[9].Value<decimal>(), // taker buy base asset volume
-                item[10].Value<decimal>() // taker buy quote asset volume
-            )).ToArray();
-        }
 
         /// <summary>
         /// Throw exception when JSON parsing fails.

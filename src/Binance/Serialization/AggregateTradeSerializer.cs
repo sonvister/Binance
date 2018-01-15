@@ -21,6 +21,8 @@ namespace Binance.Serialization
 
         public virtual AggregateTrade Deserialize(string json)
         {
+            Throw.IfNullOrWhiteSpace(json, nameof(json));
+
             return DeserializeTrade(JObject.Parse(json));
         }
 
