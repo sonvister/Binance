@@ -50,6 +50,8 @@ namespace Binance.Api
 
         private readonly ISymbolStatisticsSerializer _symbolStatisticsSerializer;
 
+        private readonly IAccountTradeSerializer _accountTradeSerializer;
+
         private readonly ITradeSerializer _tradeSerializer;
 
         private readonly IOrderSerializer _orderSerializer;
@@ -82,6 +84,7 @@ namespace Binance.Api
             ICandlestickSerializer candlestickSerializer = null,
             ISymbolPriceSerializer symbolPriceSerializer = null,
             ISymbolStatisticsSerializer symbolStatisticsSerializer = null,
+            IAccountTradeSerializer accountTradeSerializer = null,
             ITradeSerializer tradeSerializer = null,
             IOrderSerializer orderSerializer = null,
             ILogger<BinanceApi> logger = null)
@@ -96,6 +99,7 @@ namespace Binance.Api
             _candlestickSerializer = candlestickSerializer ?? new CandlestickSerializer();
             _symbolPriceSerializer = symbolPriceSerializer ?? new SymbolPriceSerializer();
             _symbolStatisticsSerializer = symbolStatisticsSerializer ?? new SymbolStatisticsSerializer();
+            _accountTradeSerializer = accountTradeSerializer ?? new AccountTradeSerializer();
             _tradeSerializer = tradeSerializer ?? new TradeSerializer();
             _orderSerializer = orderSerializer ?? new OrderSerializer();
 
@@ -568,25 +572,7 @@ namespace Binance.Api
             var json = await HttpClient.GetAccountTradesAsync(user, symbol, fromId, limit, recvWindow, token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                var jArray = JArray.Parse(json);
-
-                return jArray
-                    .Select(jToken => new AccountTrade(
-                        symbol.FormatSymbol(),
-                        jToken["id"].Value<long>(),
-                        jToken["orderId"].Value<long>(),
-                        jToken["price"].Value<decimal>(),
-                        jToken["qty"].Value<decimal>(),
-                        jToken["commission"].Value<decimal>(),
-                        jToken["commissionAsset"].Value<string>(),
-                        jToken["time"].Value<long>(),
-                        jToken["isBuyer"].Value<bool>(),
-                        jToken["isMaker"].Value<bool>(),
-                        jToken["isBestMatch"].Value<bool>()))
-                    .ToArray();
-            }
+            try { return _accountTradeSerializer.DeserializeMany(json, symbol); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetAccountTradesAsync), json, e);

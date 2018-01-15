@@ -61,6 +61,8 @@ namespace Binance
             services.AddSingleton<ICandlestickSerializer, CandlestickSerializer>();
             services.AddSingleton<ISymbolPriceSerializer, SymbolPriceSerializer>();
             services.AddSingleton<ISymbolStatisticsSerializer, SymbolStatisticsSerializer>();
+            services.AddSingleton<IAggregateTradeSerializer, AggregateTradeSerializer>();
+            services.AddSingleton<IAccountTradeSerializer, AccountTradeSerializer>();
             services.AddSingleton<ITradeSerializer, TradeSerializer>();
             services.AddSingleton<IOrderSerializer, OrderSerializer>();
 

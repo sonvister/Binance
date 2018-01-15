@@ -75,7 +75,8 @@ namespace Binance.Serialization
             }
             else
             {
-                return new AggregateTrade(symbol,
+                return new AggregateTrade(
+                    symbol,
                     jToken["a"].Value<long>(), // ID
                     jToken["p"].Value<decimal>(), // price
                     jToken["q"].Value<decimal>(), // quantity

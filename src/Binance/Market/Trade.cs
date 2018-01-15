@@ -3,7 +3,7 @@
 namespace Binance.Market
 {
     /// <summary>
-    /// A abstract trade class.
+    /// An abstract trade class.
     /// </summary>
     public class Trade : IChronological
     {
