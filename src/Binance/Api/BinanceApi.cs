@@ -654,7 +654,7 @@ namespace Binance.Api
             // ReSharper disable once InvertIf
             if (!success)
             {
-                var message = $"{nameof(BinanceApi)}.{nameof(GetDepositsAsync)} unsuccessful.";
+                var message = $"{nameof(BinanceApi)}.{nameof(GetDepositsAsync)} unsuccessful (asset: \"{asset}\").";
                 _logger?.LogError(message);
                 throw new BinanceApiException(message);
             }
@@ -703,7 +703,7 @@ namespace Binance.Api
             // ReSharper disable once InvertIf
             if (!success)
             {
-                var message = $"{nameof(BinanceApi)}.{nameof(GetWithdrawalsAsync)} unsuccessful.";
+                var message = $"{nameof(BinanceApi)}.{nameof(GetWithdrawalsAsync)} unsuccessful (asset: \"{asset}\").";
                 _logger?.LogError(message);
                 throw new BinanceApiException(message);
             }
@@ -716,19 +716,36 @@ namespace Binance.Api
             var json = await HttpClient.GetDepositAddressAsync(user, asset, token)
                 .ConfigureAwait(false);
 
+            bool success;
+            DepositAddress depositAddress = null;
+
             try
             {
                 var jObject = JObject.Parse(json);
 
-                return new DepositAddress(
-                    jObject["asset"].Value<string>(),
-                    jObject["address"].Value<string>(),
-                    jObject["addressTag"]?.Value<string>());
+                success = jObject["success"].Value<bool>();
+
+                if (success)
+                {
+                    depositAddress = new DepositAddress(
+                        jObject["asset"].Value<string>(),
+                        jObject["address"].Value<string>(),
+                        jObject["addressTag"]?.Value<string>());
+                }
             }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetDepositAddressAsync), json, e);
             }
+
+            if (!success)
+            {
+                var message = $"{nameof(BinanceApi)}.{nameof(GetDepositAddressAsync)} unsuccessful (asset: \"{asset}\").";
+                _logger?.LogError(message);
+                throw new BinanceApiException(message);
+            }
+
+            return depositAddress;
         }
 
         public virtual async Task<string> GetAccountStatusAsync(IBinanceApiUser user, CancellationToken token = default)
