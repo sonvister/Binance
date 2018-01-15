@@ -40,6 +40,8 @@ namespace Binance.Api
 
         private readonly IOrderBookSerializer _orderBookSerializer;
 
+        private readonly IAggregateTradeSerializer _aggregateTradeSerializer;
+
         private readonly ITradeSerializer _tradeSerializer;
 
         private readonly IOrderSerializer _orderSerializer;
@@ -67,6 +69,7 @@ namespace Binance.Api
         public BinanceApi(
             IBinanceHttpClient client,
             IOrderBookSerializer orderBookSerializer = null,
+            IAggregateTradeSerializer aggregateTradeSerializer = null,
             ITradeSerializer tradeSerializer = null,
             IOrderSerializer orderSerializer = null,
             ILogger<BinanceApi> logger = null)
@@ -76,6 +79,7 @@ namespace Binance.Api
             HttpClient = client;
 
             _orderBookSerializer = orderBookSerializer ?? new OrderBookSerializer();
+            _aggregateTradeSerializer = aggregateTradeSerializer ?? new AggregateTradeSerializer();
             _tradeSerializer = tradeSerializer ?? new TradeSerializer();
             _orderSerializer = orderSerializer ?? new OrderSerializer();
 
@@ -158,7 +162,7 @@ namespace Binance.Api
             var json = await HttpClient.GetAggregateTradesAsync(symbol, NullId, limit, 0, 0, token)
                 .ConfigureAwait(false);
 
-            try { return DeserializeAggregateTrades(symbol, json); }
+            try { return _aggregateTradeSerializer.DeserializeMany(json, symbol); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetAggregateTradesAsync), json, e);
@@ -173,7 +177,7 @@ namespace Binance.Api
             var json = await HttpClient.GetAggregateTradesAsync(symbol, fromId, limit, 0, 0, token)
                 .ConfigureAwait(false);
 
-            try { return DeserializeAggregateTrades(symbol, json); }
+            try { return _aggregateTradeSerializer.DeserializeMany(json, symbol); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetAggregateTradesFromAsync), json, e);
@@ -191,7 +195,7 @@ namespace Binance.Api
             var json = await HttpClient.GetAggregateTradesAsync(symbol, NullId, default, startTime, endTime, token)
                 .ConfigureAwait(false);
 
-            try { return DeserializeAggregateTrades(symbol, json); }
+            try { return _aggregateTradeSerializer.DeserializeMany(json, symbol); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetAggregateTradesInAsync), json, e);
@@ -203,10 +207,7 @@ namespace Binance.Api
             var json = await HttpClient.GetCandlesticksAsync(symbol, interval, limit, startTime, endTime, token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                return DeserializeCandlesticks(symbol, interval, json);
-            }
+            try { return DeserializeCandlesticks(symbol, interval, json); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetCandlesticksAsync), json, e);
@@ -220,10 +221,7 @@ namespace Binance.Api
             var json = await HttpClient.Get24HourStatisticsAsync(symbol, token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                return ConvertTo24HourStatistics(JObject.Parse(json));
-            }
+            try { return ConvertTo24HourStatistics(JObject.Parse(json)); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(Get24HourStatisticsAsync), json, e);
@@ -254,10 +252,7 @@ namespace Binance.Api
             var json = await HttpClient.GetPriceAsync(symbol, token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                return ConvertToSymbolPrice(JObject.Parse(json));
-            }
+            try { return ConvertToSymbolPrice(JObject.Parse(json)); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetPricesAsync), json, e);
@@ -287,10 +282,7 @@ namespace Binance.Api
             var json = await HttpClient.GetOrderBookTopAsync(symbol, token)
                 .ConfigureAwait(false);
 
-            try
-            {
-                return ConvertToOrderBookTop(JObject.Parse(json));
-            }
+            try { return ConvertToOrderBookTop(JObject.Parse(json)); }
             catch (Exception e)
             {
                 throw NewFailedToParseJsonException(nameof(GetOrderBookTopAsync), json, e);
@@ -304,7 +296,9 @@ namespace Binance.Api
 
             try
             {
-                return JArray.Parse(json).Select(ConvertToOrderBookTop).ToArray();
+                return JArray.Parse(json)
+                    .Select(ConvertToOrderBookTop)
+                    .ToArray();
             }
             catch (Exception e)
             {
@@ -816,29 +810,6 @@ namespace Binance.Api
         #endregion User Data Stream
 
         #region Private Methods
-
-        /// <summary>
-        /// Deserialize aggregate trades.
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        private static IEnumerable<AggregateTrade> DeserializeAggregateTrades(string symbol, string json)
-        {
-            var jArray = JArray.Parse(json);
-
-            return jArray.Select(item => new AggregateTrade(
-                    symbol.FormatSymbol(),
-                    item["a"].Value<long>(), // ID
-                    item["p"].Value<decimal>(), // price
-                    item["q"].Value<decimal>(), // quantity
-                    item["f"].Value<long>(), // first trade ID
-                    item["l"].Value<long>(), // last trade ID
-                    item["T"].Value<long>(), // timestamp
-                    item["m"].Value<bool>(), // is buyer maker
-                    item["M"].Value<bool>())) // is best price match
-                .ToArray();
-        }
 
         /// <summary>
         /// Deserialize candlesticks.
