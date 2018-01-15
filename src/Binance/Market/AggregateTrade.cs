@@ -6,7 +6,7 @@ namespace Binance.Market
     /// Trades that fill at the same time, from the same order, with the same
     /// price will have an aggregate quantity.
     /// </summary>
-    public sealed class AggregateTrade : IChronological
+    public sealed class AggregateTrade : IChronological, IEquatable<AggregateTrade>
     {
         #region Public Properties
 
@@ -103,13 +103,33 @@ namespace Binance.Market
             Id = id;
             Price = price;
             Quantity = quantity;
+            FirstTradeId = firstTradeId;
+            LastTradeId = lastTradeId;
             Timestamp = timestamp;
             IsBuyerMaker = isBuyerMaker;
             IsBestPriceMatch = isBestPriceMatch;
-            FirstTradeId = firstTradeId;
-            LastTradeId = lastTradeId;
         }
 
         #endregion Constructors
+
+        #region IEquatable
+
+        public bool Equals(AggregateTrade other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Symbol == Symbol
+                && other.Id == Id
+                && other.Price == Price
+                && other.Quantity == Quantity
+                && other.FirstTradeId == FirstTradeId
+                && other.LastTradeId == LastTradeId
+                && other.Timestamp == Timestamp
+                && other.IsBuyerMaker == IsBuyerMaker
+                && other.IsBestPriceMatch == IsBestPriceMatch;
+        }
+
+        #endregion IEquatable
     }
 }

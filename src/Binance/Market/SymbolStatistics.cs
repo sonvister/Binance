@@ -5,7 +5,7 @@ namespace Binance.Market
     /// <summary>
     /// Symbol 24-hour statistics.
     /// </summary>
-    public sealed class SymbolStatistics
+    public sealed class SymbolStatistics : IEquatable<SymbolStatistics>
     {
         #region Public Properties
 
@@ -250,5 +250,38 @@ namespace Binance.Market
         }
 
         #endregion Constructors
+
+        #region IEquatable
+
+        public bool Equals(SymbolStatistics other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Symbol == Symbol
+                && other.Period == Period
+                && other.PriceChange == PriceChange
+                && other.PriceChangePercent == PriceChangePercent
+                && other.WeightedAveragePrice == WeightedAveragePrice
+                && other.PreviousClosePrice == PreviousClosePrice
+                && other.LastPrice == LastPrice
+                && other.LastQuantity == LastQuantity
+                && other.BidPrice == BidPrice
+                && other.BidQuantity == BidQuantity
+                && other.AskPrice == AskPrice
+                && other.AskQuantity == AskQuantity
+                && other.OpenPrice == OpenPrice
+                && other.HighPrice == HighPrice
+                && other.LowPrice == LowPrice
+                && other.Volume == Volume
+                && other.QuoteVolume == QuoteVolume
+                && other.OpenTime == OpenTime
+                && other.CloseTime == CloseTime
+                && other.FirstTradeId == FirstTradeId
+                && other.LastTradeId == LastTradeId
+                && other.TradeCount == TradeCount;
+        }
+
+        #endregion IEquatable
     }
 }

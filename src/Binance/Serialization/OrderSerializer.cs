@@ -63,7 +63,7 @@ namespace Binance.Serialization
                 new JProperty(Key_Price, order.Price.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(Key_OriginalQuantity, order.OriginalQuantity.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(Key_ExecutedQuantity, order.ExecutedQuantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_Status, order.Status.ToString().ToUpperInvariant()),
+                new JProperty(Key_Status, order.Status.AsString()),
                 new JProperty(Key_TimeInForce, order.TimeInForce.ToString().ToUpperInvariant()),
                 new JProperty(Key_Type, order.Type.AsString()),
                 new JProperty(Key_Side, order.Side.ToString().ToUpperInvariant()),

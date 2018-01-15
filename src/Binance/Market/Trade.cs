@@ -5,7 +5,7 @@ namespace Binance.Market
     /// <summary>
     /// An abstract trade class.
     /// </summary>
-    public class Trade : IChronological
+    public class Trade : IChronological, IEquatable<Trade>
     {
         #region Public Properties
 
@@ -104,5 +104,25 @@ namespace Binance.Market
         }
 
         #endregion Constructors
+
+        #region IEquatable
+
+        public bool Equals(Trade other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Symbol == Symbol
+                && other.Id == Id
+                && other.Price == Price
+                && other.Quantity == Quantity
+                && other.BuyerOrderId == BuyerOrderId
+                && other.SellerOrderId == SellerOrderId
+                && other.Timestamp == Timestamp
+                && other.IsBuyerMaker == IsBuyerMaker
+                && other.IsBestPriceMatch == IsBestPriceMatch;
+        }
+
+        #endregion IEquatable
     }
 }

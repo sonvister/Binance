@@ -6,7 +6,7 @@ namespace Binance.Account.Orders
     /// <summary>
     /// An order that has been sent to the matching engine.
     /// </summary>
-    public sealed class Order : IChronological
+    public sealed class Order : IChronological, IEquatable<Order>
     {
         #region Public Properties
 
@@ -164,5 +164,29 @@ namespace Binance.Account.Orders
         }
 
         #endregion Constructors
+
+        #region IEquatable
+
+        public bool Equals(Order other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Symbol == Symbol
+                && other.Id == Id
+                && other.ClientOrderId == ClientOrderId
+                && other.Price == Price
+                && other.OriginalQuantity == OriginalQuantity
+                && other.ExecutedQuantity == ExecutedQuantity
+                && other.Status == Status
+                && other.TimeInForce == TimeInForce
+                && other.Type == Type
+                && other.Side == Side
+                && other.StopPrice == StopPrice
+                && other.IcebergQuantity == IcebergQuantity
+                && other.Timestamp == Timestamp;
+        }
+
+        #endregion IEquatable
     }
 }

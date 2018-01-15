@@ -6,7 +6,7 @@ namespace Binance.Market
     /// Candlestick/K-Line which is uniquely identified by the symbol,
     /// interval, and open time.
     /// </summary>
-    public sealed class Candlestick
+    public sealed class Candlestick : IEquatable<Candlestick>
     {
         #region Public Properties
 
@@ -154,5 +154,29 @@ namespace Binance.Market
         }
 
         #endregion Constructors
+
+        #region IEquatable
+
+        public bool Equals(Candlestick other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Symbol == Symbol
+                && other.Interval == Interval
+                && other.OpenTime == OpenTime
+                && other.Open == Open
+                && other.High == High
+                && other.Low == Low
+                && other.Close == Close
+                && other.Volume == Volume
+                && other.CloseTime == CloseTime
+                && other.QuoteAssetVolume == QuoteAssetVolume
+                && other.NumberOfTrades == NumberOfTrades
+                && other.TakerBuyBaseAssetVolume == TakerBuyBaseAssetVolume
+                && other.TakerBuyQuoteAssetVolume == TakerBuyQuoteAssetVolume;
+        }
+
+        #endregion IEquatable
     }
 }

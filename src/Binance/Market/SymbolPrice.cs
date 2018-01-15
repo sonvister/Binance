@@ -6,7 +6,7 @@ namespace Binance.Market
     /// <summary>
     /// A symbol/price value object.
     /// </summary>
-    public sealed class SymbolPrice
+    public sealed class SymbolPrice : IEquatable<SymbolPrice>
     {
         #region Public Properties
 
@@ -54,5 +54,18 @@ namespace Binance.Market
         }
 
         #endregion Public Methods
+
+        #region IEquatable
+
+        public bool Equals(SymbolPrice other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Symbol == Symbol
+                && other.Value == Value;
+        }
+
+        #endregion IEquatable
     }
 }

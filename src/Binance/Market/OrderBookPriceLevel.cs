@@ -5,7 +5,7 @@ namespace Binance.Market
     /// <summary>
     /// Order book (depth of market) price and quantity.
     /// </summary>
-    public sealed class OrderBookPriceLevel
+    public sealed class OrderBookPriceLevel : IEquatable<OrderBookPriceLevel>
     {
         #region Public Properties
 
@@ -40,5 +40,18 @@ namespace Binance.Market
         }
 
         #endregion Constructors
+
+        #region IEquatable
+
+        public bool Equals(OrderBookPriceLevel other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Price == Price
+                && other.Quantity == Quantity;
+        }
+
+        #endregion IEquatable
     }
 }

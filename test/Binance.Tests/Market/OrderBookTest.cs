@@ -106,7 +106,7 @@ namespace Binance.Tests.Market
             Assert.Equal(4, orderBook.Top.Ask.Price);
             Assert.Equal(40, orderBook.Top.Ask.Quantity);
 
-            Assert.NotEqual(clone, orderBook);
+            Assert.Equal(orderBook, clone);
         }
 
         [Fact]

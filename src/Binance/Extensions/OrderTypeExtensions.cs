@@ -23,7 +23,7 @@ namespace Binance
                 case OrderType.TakeProfitLimit: return "TAKE_PROFIT_LIMIT";
                 case OrderType.LimitMaker: return "LIMIT_MAKER";
                 default:
-                    throw new ArgumentException($"{nameof(OrderTypeExtensions)}.{nameof(ToString)}: {nameof(OrderType)} not supported: {orderType}");
+                    throw new ArgumentException($"{nameof(OrderTypeExtensions)}.{nameof(AsString)}: {nameof(OrderType)} not supported: {orderType}");
             }
         }
     }

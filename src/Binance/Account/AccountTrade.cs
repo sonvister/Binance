@@ -7,7 +7,7 @@ namespace Binance.Account
     /// <summary>
     /// An account trade.
     /// </summary>
-    public sealed class AccountTrade : Trade
+    public sealed class AccountTrade : Trade, IEquatable<AccountTrade>
     {
         #region Public Properties
 
@@ -81,5 +81,22 @@ namespace Binance.Account
         }
 
         #endregion Constructors
+
+        #region IEquatable
+
+        public bool Equals(AccountTrade other)
+        {
+            if (other == null)
+                return false;
+
+            return base.Equals(other)
+                && other.OrderId == OrderId
+                && other.Commission == Commission
+                && other.CommissionAsset == CommissionAsset
+                && other.IsBuyer == IsBuyer
+                && other.IsMaker == IsMaker;
+        }
+
+        #endregion IEquatable
     }
 }

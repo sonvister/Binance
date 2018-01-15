@@ -8,7 +8,7 @@ namespace Binance.Market
     /// An snapshot of the depth of market (DOM) for a specific symbol with
     /// price levels and aggregate quantities.
     /// </summary>
-    public sealed class OrderBook : ICloneable
+    public sealed class OrderBook : ICloneable, IEquatable<OrderBook>
     {
         #region Public Properties
 
@@ -208,6 +208,21 @@ namespace Binance.Market
         object ICloneable.Clone() { return Clone(); }
 
         #endregion ICloneable
+
+        #region IEquatable
+
+        public bool Equals(OrderBook other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Symbol == Symbol
+                && other.LastUpdateId == LastUpdateId
+                && other.Bids.SequenceEqual(Bids)
+                && other.Asks.SequenceEqual(Asks);
+        }
+
+        #endregion IEquatable
 
         #region Private Classes
 

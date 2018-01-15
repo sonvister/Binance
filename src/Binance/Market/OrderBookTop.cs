@@ -6,7 +6,7 @@ namespace Binance.Market
     /// <summary>
     /// Best order book bid and ask price and quantity.
     /// </summary>
-    public sealed class OrderBookTop
+    public sealed class OrderBookTop : IEquatable<OrderBookTop>
     {
         #region Public Properties
 
@@ -79,5 +79,21 @@ namespace Binance.Market
         }
 
         #endregion Constructors
+
+        #region IEquatable
+
+        public bool Equals(OrderBookTop other)
+        {
+            if (other == null)
+                return false;
+
+            return other.Symbol == Symbol
+                && other.Bid.Price == Bid.Price
+                && other.Bid.Quantity == Bid.Quantity
+                && other.Ask.Price == Ask.Price
+                && other.Ask.Quantity == Ask.Quantity;
+        }
+
+        #endregion IEquatable
     }
 }
