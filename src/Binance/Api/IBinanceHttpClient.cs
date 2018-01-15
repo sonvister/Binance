@@ -18,6 +18,10 @@ namespace Binance.Api
 
         /// <summary>
         /// Get the options.
+        /// 
+        /// NOTE: The RequestRateLimit settings are applied at construction.
+        ///       To change the request rate limiter settings at runtime,
+        ///       use RateLimiter.Configure().
         /// </summary>
         BinanceApiOptions Options { get; }
 
