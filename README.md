@@ -30,8 +30,8 @@ PM> Install-Package Binance
 [![](https://img.shields.io/nuget/dt/Binance.svg)](https://www.nuget.org/packages/Binance)
 
 ## Development
-Currently, the master branch is used for development and may differ from the latest release.\
-To get the source code of a particular release, first select the corresponding **Tag**.
+The master branch is *currently* used for development and may differ from the latest release.\
+To get the source code for a particular release, first select the corresponding **Tag**.
 
 ### Build Environment
 [Microsoft Visual Studio Community 2017](https://www.visualstudio.com/vs/community/)
@@ -39,7 +39,7 @@ To get the source code of a particular release, first select the corresponding *
 ## Documentation
 See [**Wiki**](https://github.com/sonvister/Binance/wiki)
 
-*NOTE: Some information is out-of-date ...will be updated soon.*
+*NOTE: Some information is currently out-of-date ...will be updated soon.*
 
 ## Donate
 DCR: Dsog2jYLS65Y3N2jDQSxsiBYC3SRqq7TGd4\
