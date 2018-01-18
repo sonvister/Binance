@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public sealed class AccountInfoCache : WebSocketClientCache<IUserDataWebSocketClient, AccountUpdateEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
+    public sealed class AccountInfoCache : WebSocketClientCache<IUserDataWebSocketClient, UserDataEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
     {
         #region Public Properties
 
@@ -28,7 +28,7 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public async Task SubscribeAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token)
+        public async Task StreamAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token)
         {
             Throw.IfNull(user, nameof(user));
 
@@ -39,18 +39,18 @@ namespace Binance.Cache
 
             Token = token;
 
-            LinkTo(Client, callback);
+            base.LinkTo(Client, callback);
 
-            try
-            {
-                await Client.SubscribeAsync(user, token)
-                    .ConfigureAwait(false);
-            }
-            finally { UnLink(); }
+            await Client.StreamAsync(user, ClientCallback, token)
+                .ConfigureAwait(false);
         }
 
         public override void LinkTo(IUserDataWebSocketClient client, Action<AccountInfoCacheEventArgs> callback = null)
         {
+            // Confirm client is subscribed to only one stream.
+            if (client.WebSocket.IsCombined)
+                throw new InvalidOperationException($"{nameof(AccountInfoCache)} can only link to {nameof(IUserDataWebSocketClient)} events from a single stream (not combined streams).");
+
             base.LinkTo(client, callback);
             Client.AccountUpdate += OnClientEvent;
         }
@@ -65,9 +65,14 @@ namespace Binance.Cache
 
         #region Protected Methods
 
-        protected override Task<AccountInfoCacheEventArgs> OnAction(AccountUpdateEventArgs @event)
+        protected override Task<AccountInfoCacheEventArgs> OnAction(UserDataEventArgs @event)
         {
-            AccountInfo = @event.AccountInfo;
+            var accountInfoEvent = @event as AccountUpdateEventArgs;
+
+            if (accountInfoEvent == null)
+                return null;
+
+            AccountInfo = accountInfoEvent.AccountInfo;
 
             return Task.FromResult(new AccountInfoCacheEventArgs(AccountInfo));
         }

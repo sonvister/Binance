@@ -6,7 +6,7 @@ namespace Binance.Api.WebSocket.Events
     /// <summary>
     /// Aggregate trade web socket client event.
     /// </summary>
-    public sealed class AggregateTradeEventArgs : WebSocketClientEventArgs
+    public sealed class AggregateTradeEventArgs : ClientEventArgs
     {
         #region Public Properties
 

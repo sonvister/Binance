@@ -38,6 +38,7 @@ namespace Binance
 
             // WebSocket
             services.AddTransient<IWebSocketClient, WebSocketClient>();
+            services.AddTransient<IWebSocketStream, BinanceWebSocketStream>();
 
             // Cache
             services.AddTransient<ITradeCache, TradeCache>();

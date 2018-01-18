@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Binance.Api.WebSocket;
 using Binance.Cache.Events;
 using Binance.Market;
@@ -41,9 +39,7 @@ namespace Binance.Cache
         /// <param name="symbol"></param>
         /// <param name="limit"></param>
         /// <param name="callback"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task SubscribeAsync(string symbol, int limit, Action<TradeCacheEventArgs> callback, CancellationToken token);
+        void Subscribe(string symbol, int limit, Action<TradeCacheEventArgs> callback);
 
         /// <summary>
         /// Link to a subscribed <see cref="ITradeWebSocketClient"/>.

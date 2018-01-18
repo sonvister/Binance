@@ -11,12 +11,14 @@ namespace Binance.Tests.Api.WebSocket
     public class CandlesticksWebSocketClientTest
     {
         [Fact]
-        public async Task SubscribeThrows()
+        public async Task StreamThrows()
         {
-            var client = new CandlestickWebSocketClient(new Mock<IWebSocketClient>().Object);
+            var client = new CandlestickWebSocketClient(new Mock<IWebSocketStream>().Object);
 
-            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.SubscribeAsync(null, CandlestickInterval.Hour, new CancellationToken()));
-            await Assert.ThrowsAsync<ArgumentException>("token", () => client.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, CancellationToken.None));
+            using (var cts = new CancellationTokenSource())
+            {
+                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.StreamAsync(null, CandlestickInterval.Hour, cts.Token));
+            }
         }
     }
 }

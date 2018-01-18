@@ -12,15 +12,17 @@ namespace Binance.Tests.Cache
     public class AggregateTradeCacheTest
     {
         [Fact]
-        public async Task SubscribeThrows()
+        public async Task StreamThrows()
         {
             var api = new Mock<IBinanceApi>().Object;
             var client = new Mock<IAggregateTradeWebSocketClient>().Object;
 
             var cache = new AggregateTradeCache(api, client);
 
-            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.SubscribeAsync(null, new CancellationToken()));
-            await Assert.ThrowsAsync<ArgumentException>("token", () => cache.SubscribeAsync(Symbol.BTC_USDT, CancellationToken.None));
+            using (var cts = new CancellationTokenSource())
+            {
+                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.StreamAsync(null, cts.Token));
+            }
         }
     }
 }

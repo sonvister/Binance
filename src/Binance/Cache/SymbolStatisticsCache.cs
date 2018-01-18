@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Api.WebSocket;
@@ -18,19 +17,19 @@ namespace Binance.Cache
 
         public IEnumerable<SymbolStatistics> Statistics
         {
-            get { lock (_sync) { return _statistics.Values.ToArray(); } }
+            get { lock (_sync) { return _symbols.Select(s => _statistics[s]).ToArray(); } }
         }
 
         #endregion Public Properties
 
         #region Private Fields
 
+        private readonly IList<string> _symbols = new List<string>();
+
         private readonly IDictionary<string, SymbolStatistics> _statistics
             = new Dictionary<string, SymbolStatistics>();
 
         private readonly object _sync = new object();
-
-        private string _symbol;
 
         #endregion Private Fields
 
@@ -56,50 +55,49 @@ namespace Binance.Cache
             }
         }
 
-        public async Task SubscribeAsync(Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token)
+        public IEnumerable<SymbolStatistics> GetStatistics(params string[] symbols)
         {
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
+            Throw.IfNull(symbols, nameof(symbols));
 
-            token.ThrowIfCancellationRequested();
-
-            Token = token;
-
-            LinkTo(Client, callback);
-
-            try
+            lock (_sync)
             {
-                await Client.SubscribeAsync(token)
-                    .ConfigureAwait(false);
+                foreach (var symbol in symbols)
+                    yield return GetStatistics(symbol);
             }
-            finally { UnLink(); }
         }
 
-        public async Task SubscribeAsync(string symbol, Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token)
+        public void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback)
         {
-            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+            base.LinkTo(Client, callback);
 
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
+            Client.Subscribe(ClientCallback);
+        }
 
-            token.ThrowIfCancellationRequested();
+        public void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback, params string[] symbols)
+        {
+            Throw.IfNull(symbols, nameof(symbols));
 
-            _symbol = symbol.FormatSymbol();
+            base.LinkTo(Client, callback);
 
-            Token = token;
-
-            LinkTo(Client, callback);
-
-            try
+            foreach (var symbol in symbols)
             {
-                await Client.SubscribeAsync(_symbol, token)
-                    .ConfigureAwait(false);
+                Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+                if (!_symbols.Contains(symbol))
+                {
+                    _symbols.Add(symbol);
+
+                    Client.Subscribe(symbol, ClientCallback);
+                }
             }
-            finally { UnLink(); }
         }
 
         public override void LinkTo(ISymbolStatisticsWebSocketClient client, Action<SymbolStatisticsCacheEventArgs> callback = null)
         {
+            // Confirm client is subscribed to only one stream.
+            if (client.WebSocket.IsCombined)
+                throw new InvalidOperationException($"{nameof(SymbolStatisticsCache)} can only link to {nameof(ISymbolStatisticsWebSocketClient)} events from a single stream (not combined streams).");
+
             base.LinkTo(client, callback);
             Client.StatisticsUpdate += OnClientEvent;
         }
@@ -120,7 +118,7 @@ namespace Binance.Cache
             {
                 Logger?.LogInformation($"{nameof(SymbolStatisticsCache)}: Initializing symbol statistics...");
 
-                if (_symbol == null)
+                if (!_symbols.Any())
                 {
                     var statistics = await Api.Get24HourStatisticsAsync(Token)
                         .ConfigureAwait(false);
@@ -142,7 +140,7 @@ namespace Binance.Cache
                     _statistics[stats.Symbol] = stats;
                 }
 
-                return new SymbolStatisticsCacheEventArgs(_statistics.Values.ToArray());
+                return new SymbolStatisticsCacheEventArgs(_symbols.Select(s => _statistics[s]).ToArray());
             }
         }
 

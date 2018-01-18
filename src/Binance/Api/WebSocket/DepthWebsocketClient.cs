@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Binance.Api.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -28,46 +28,39 @@ namespace Binance.Api.WebSocket
         #region Constructors
 
         /// <summary>
+        /// Default constructor provides default web socket stream, but no logging.
+        /// </summary>
+        public DepthWebSocketClient()
+            : this(new BinanceWebSocketStream(), null)
+        { }
+
+        /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="client"></param>
+        /// <param name="stream"></param>
         /// <param name="logger"></param>
-        public DepthWebSocketClient(IWebSocketClient client, ILogger<DepthWebSocketClient> logger = null)
-            : base(client, logger)
+        public DepthWebSocketClient(IWebSocketStream stream, ILogger<DepthWebSocketClient> logger = null)
+            : base(stream, logger)
         { }
 
         #endregion Construtors
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(string symbol, int limit, Action<DepthUpdateEventArgs> callback, CancellationToken token)
+        public virtual void Subscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
-
-            token.ThrowIfCancellationRequested();
-
             Symbol = symbol.FormatSymbol();
 
-            if (IsSubscribed)
-                throw new InvalidOperationException($"{nameof(DepthWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");
-
-            return SubscribeToAsync(limit > 0 ? $"{Symbol.ToLowerInvariant()}@depth{limit}" : $"{Symbol.ToLowerInvariant()}@depth", callback, token);
+            SubscribeTo(limit > 0 ? $"{Symbol.ToLowerInvariant()}@depth{limit}" : $"{Symbol.ToLowerInvariant()}@depth", callback);
         }
 
         #endregion Public Methods
 
         #region Protected Methods
 
-        /// <summary>
-        /// Deserialize JSON and raise <see cref="DepthUpdateEventArgs"/> event.
-        /// </summary>
-        /// <param name="json"></param>
-        /// <param name="token"></param>
-        /// <param name="callback"></param>
-        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<DepthUpdateEventArgs> callback = null)
+        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<DepthUpdateEventArgs>> callbacks)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -117,7 +110,11 @@ namespace Binance.Api.WebSocket
 
                 try
                 {
-                    callback?.Invoke(eventArgs);
+                    if (callbacks != null)
+                    {
+                        foreach (var callback in callbacks)
+                            callback(eventArgs);
+                    }
                     DepthUpdate?.Invoke(this, eventArgs);
                 }
                 catch (OperationCanceledException) { }

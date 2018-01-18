@@ -3,8 +3,8 @@
     public interface IBinanceWebSocketClient
     {
         /// <summary>
-        /// The web socket client.
+        /// The web socket stream.
         /// </summary>
-        IWebSocketClient WebSocket { get; }
+        IWebSocketStream WebSocket { get; }
     }
 }

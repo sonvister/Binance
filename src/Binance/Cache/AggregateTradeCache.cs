@@ -48,31 +48,27 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public async Task SubscribeAsync(string symbol, int limit, Action<AggregateTradeCacheEventArgs> callback, CancellationToken token)
+        public void Subscribe(string symbol, int limit, Action<AggregateTradeCacheEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
-
-            token.ThrowIfCancellationRequested();
+            if (limit < 0)
+                throw new ArgumentException($"{nameof(AggregateTradeCache)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
 
             _symbol = symbol.FormatSymbol();
             _limit = limit;
-            Token = token;
 
-            LinkTo(Client, callback);
+            base.LinkTo(Client, callback);
 
-            try
-            {
-                await Client.SubscribeAsync(_symbol, token)
-                    .ConfigureAwait(false);
-            }
-            finally { UnLink(); }
+            Client.Subscribe(symbol, ClientCallback);
         }
 
         public override void LinkTo(IAggregateTradeWebSocketClient client, Action<AggregateTradeCacheEventArgs> callback = null)
         {
+            // Confirm client is subscribed to only one stream.
+            if (client.WebSocket.IsCombined)
+                throw new InvalidOperationException($"{nameof(AggregateTradeCache)} can only link to {nameof(IAggregateTradeWebSocketClient)} events from a single stream (not combined streams).");
+
             base.LinkTo(client, callback);
             Client.AggregateTrade += OnClientEvent;
         }

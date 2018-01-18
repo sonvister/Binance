@@ -18,7 +18,7 @@ namespace Binance.Api.WebSocket
         /// <summary>
         /// The message received event.
         /// </summary>
-        event EventHandler<WebSocketClientMessageEventArgs> Message;
+        event EventHandler<WebSocketClientEventArgs> Message;
 
         /// <summary>
         /// The close event.
@@ -26,11 +26,16 @@ namespace Binance.Api.WebSocket
         event EventHandler<EventArgs> Close;
 
         /// <summary>
+        /// Get the flag indicating if the client is streaming.
+        /// </summary>
+        bool IsStreaming { get; }
+
+        /// <summary>
         /// Connect web socket to URI and begin receiving messages.
         /// </summary>
         /// <param name="uri">The URI.</param>
         /// <param name="token">The cancellation token (required to cancel operation).</param>
         /// <returns></returns>
-        Task RunAsync(Uri uri, CancellationToken token);
+        Task StreamAsync(Uri uri, CancellationToken token);
     }
 }

@@ -3,12 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Binance.Api;
+using Binance.Api.WebSocket;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
     public abstract class WebSocketClientCache<TClient, TEventArgs, TCacheEventArgs>
-        where TClient : class 
+        where TClient : class, IBinanceWebSocketClient
         where TEventArgs : EventArgs
         where TCacheEventArgs : EventArgs
     {
@@ -123,6 +124,13 @@ namespace Binance.Cache
             });
 
             _bufferBlock.LinkTo(_actionBlock);
+
+            client.WebSocket.WebSocket.Close += OnWebSocketClose;
+        }
+
+        private void OnWebSocketClose(object sender, EventArgs e)
+        {
+            UnLink();
         }
 
         public virtual void UnLink()
@@ -140,22 +148,26 @@ namespace Binance.Cache
         #region Protected Methods
 
         /// <summary>
-        /// 
+        /// Abstract event action handler.
         /// </summary>
         /// <param name="event"></param>
         /// <returns></returns>
         protected abstract Task<TCacheEventArgs> OnAction(TEventArgs @event);
 
         /// <summary>
-        /// 
+        /// Route event handler to callback method.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="event"></param>
         protected void OnClientEvent(object sender, TEventArgs @event)
-        {
-            // Provides buffering and single-threaded execution.
-            _bufferBlock.Post(@event);
-        }
+            => ClientCallback(@event);
+
+        /// <summary>
+        /// Handle client event (provides buffering and single-threaded execution).
+        /// </summary>
+        /// <param name="event"></param>
+        protected void ClientCallback(TEventArgs @event)
+            => _bufferBlock.Post(@event);
 
         #endregion Protected Methods
     }

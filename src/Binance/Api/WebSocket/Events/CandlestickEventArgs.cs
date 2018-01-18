@@ -7,7 +7,7 @@ namespace Binance.Api.WebSocket.Events
     /// <summary>
     /// Candlestick/K-Line web socket client event.
     /// </summary>
-    public sealed class CandlestickEventArgs : WebSocketClientEventArgs
+    public sealed class CandlestickEventArgs : ClientEventArgs
     {
         #region Public Properties
 

@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Binance.Api.WebSocket.Events;
 
 // ReSharper disable once CheckNamespace
 namespace Binance.Api.WebSocket
@@ -11,9 +13,34 @@ namespace Binance.Api.WebSocket
         /// </summary>
         /// <param name="client"></param>
         /// <param name="symbol"></param>
+        public static void Subscribe(this IAggregateTradeWebSocketClient client, string symbol)
+            => client.Subscribe(symbol, null);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this IAggregateTradeWebSocketClient client, string symbol, CancellationToken token)
-            => client.SubscribeAsync(symbol, null, token);
+        public static Task StreamAsync(this IAggregateTradeWebSocketClient client, string symbol, CancellationToken token)
+            => StreamAsync(client, symbol, null, token);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="symbol"></param>
+        /// <param name="callback"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task StreamAsync(this IAggregateTradeWebSocketClient client, string symbol, Action<AggregateTradeEventArgs> callback, CancellationToken token)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            client.Subscribe(symbol, callback);
+
+            return client.WebSocket.StreamAsync(token);
+        }
     }
 }

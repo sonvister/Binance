@@ -7,7 +7,7 @@ namespace Binance.Api.WebSocket.Events
     /// <summary>
     /// Depth web socket client event.
     /// </summary>
-    public sealed class DepthUpdateEventArgs : WebSocketClientEventArgs
+    public sealed class DepthUpdateEventArgs : ClientEventArgs
     {
         #region Public Properties
 

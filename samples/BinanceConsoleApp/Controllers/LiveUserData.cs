@@ -50,7 +50,7 @@ namespace BinanceConsoleApp.Controllers
 
             Program.LiveTask = Task.Run(() =>
             {
-                Program.UserDataClient.SubscribeAsync(Program.User, Program.LiveTokenSource.Token);
+                Program.UserDataClient.StreamAsync(Program.User, Program.LiveTokenSource.Token);
             }, token);
 
             lock (Program.ConsoleSync)

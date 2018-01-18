@@ -5,7 +5,7 @@ namespace Binance.Api.WebSocket.Events
     /// <summary>
     /// User data web socket client event.
     /// </summary>
-    public abstract class UserDataEventArgs : WebSocketClientEventArgs
+    public abstract class UserDataEventArgs : ClientEventArgs
     {
         #region Constructors
 

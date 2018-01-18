@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Binance;
@@ -16,8 +17,8 @@ using Microsoft.Extensions.Logging;
 namespace Binance24HourStatistics
 {
     /// <summary>
-    /// Demonstrate how to maintain a 24-hour statistics cache for a symbol
-    /// and respond to real-time 24-hour statistics update events.
+    /// Demonstrate how to maintain a 24-hour statistics cache for multiple
+    /// symbols and respond to real-time 24-hour statistics update events.
     /// </summary>
     internal class Program
     {
@@ -28,7 +29,7 @@ namespace Binance24HourStatistics
                 // Load configuration.
                 var configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", true, false)
+                    .AddJsonFile("appsettings.json", false, false)
                     .Build();
 
                 // Configure services.
@@ -39,10 +40,10 @@ namespace Binance24HourStatistics
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging").GetSection("File"));
+                    .AddFile(configuration.GetSection("Logging:File"));
 
                 // Get configuration settings.
-                var symbol = configuration.GetSection("Statistics")?["Symbol"] ?? Symbol.BTC_USDT;
+                var symbols = configuration.GetSection("Statistics:Symbols").Get<string[]>() ?? new string[] { Symbol.BTC_USDT };
 
                 var cache = services.GetService<ISymbolStatisticsCache>();
 
@@ -51,11 +52,17 @@ namespace Binance24HourStatistics
                     var api = services.GetService<IBinanceApi>();
 
                     // Query and display the 24-hour statistics.
-                    Display(await api.Get24HourStatisticsAsync(symbol));
+                    Display(await Get24HourStatisticsAsync(api, symbols));
 
-                    // Monitor 24-hour statistics and display updates in real-time.
+                    // Monitor 24-hour statistics of a symbol and display updates in real-time.
+                    //controller.Begin(
+                    //    tkn => cache.StreamAsync(symbol, evt => Display(evt.Statistics), tkn),
+                    //    err => Console.WriteLine(err.Message));
+
+                    // Alternative usage (if sharing IBinanceWebSocket for combined streams).
+                    cache.Subscribe(evt => Display(evt.Statistics), symbols);
                     controller.Begin(
-                        tkn => cache.SubscribeAsync(symbol, evt => Display(evt.Statistics), tkn),
+                        tkn => cache.Client.WebSocket.StreamAsync(tkn),
                         err => Console.WriteLine(err.Message));
 
                     Console.ReadKey(true);
@@ -68,6 +75,18 @@ namespace Binance24HourStatistics
                 Console.WriteLine("  ...press any key to close window.");
                 Console.ReadKey(true);
             }
+        }
+
+        private static async Task<SymbolStatistics[]> Get24HourStatisticsAsync(IBinanceApi api, params string[] symbols)
+        {
+            var statistics = new List<SymbolStatistics>();
+
+            foreach (var symbol in symbols)
+            {
+                statistics.Add(await api.Get24HourStatisticsAsync(symbol));
+            }
+
+            return statistics.ToArray();
         }
 
         private static void Display(params SymbolStatistics[] statistics)

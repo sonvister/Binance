@@ -13,10 +13,39 @@ namespace Binance.Cache
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="symbol"></param>
+        /// <returns></returns>
+        public static void Subscribe(this ITradeCache cache, string symbol)
+            => cache.Subscribe(symbol, default, null);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cache"></param>
+        /// <param name="symbol"></param>
+        /// <param name="limit"></param>
+        /// <returns></returns>
+        public static void Subscribe(this ITradeCache cache, string symbol, int limit)
+            => cache.Subscribe(symbol, limit, null);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cache"></param>
+        /// <param name="symbol"></param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        public static void Subscribe(this ITradeCache cache, string symbol, Action<TradeCacheEventArgs> callback)
+            => cache.Subscribe(symbol, default, callback);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cache"></param>
+        /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this ITradeCache cache, string symbol, CancellationToken token)
-            => cache.SubscribeAsync(symbol, default, null, token);
+        public static Task StreamAsync(this ITradeCache cache, string symbol, CancellationToken token)
+            => StreamAsync(cache, symbol, default, null, token);
 
         /// <summary>
         /// 
@@ -26,8 +55,8 @@ namespace Binance.Cache
         /// <param name="limit"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this ITradeCache cache, string symbol, int limit, CancellationToken token)
-            => cache.SubscribeAsync(symbol, limit, null, token);
+        public static Task StreamAsync(this ITradeCache cache, string symbol, int limit, CancellationToken token)
+            => StreamAsync(cache, symbol, limit, null, token);
 
         /// <summary>
         /// 
@@ -37,7 +66,25 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this ITradeCache cache, string symbol, Action<TradeCacheEventArgs> callback, CancellationToken token)
-            => cache.SubscribeAsync(symbol, default, callback, token);
+        public static Task StreamAsync(this ITradeCache cache, string symbol, Action<TradeCacheEventArgs> callback, CancellationToken token)
+            => StreamAsync(cache, symbol, default, callback, token);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cache"></param>
+        /// <param name="symbol"></param>
+        /// <param name="limit"></param>
+        /// <param name="callback"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task StreamAsync(this ITradeCache cache, string symbol, int limit, Action<TradeCacheEventArgs> callback, CancellationToken token)
+        {
+            Throw.IfNull(cache, nameof(cache));
+
+            cache.Subscribe(symbol, limit, callback);
+
+            return cache.Client.WebSocket.StreamAsync(token);
+        }
     }
 }

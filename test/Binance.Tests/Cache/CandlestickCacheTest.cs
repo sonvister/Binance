@@ -13,15 +13,17 @@ namespace Binance.Tests.Cache
     public class CandlestickCacheTest
     {
         [Fact]
-        public async Task SubscribeThrows()
+        public async Task StreamThrows()
         {
             var api = new Mock<IBinanceApi>().Object;
             var client = new Mock<ICandlestickWebSocketClient>().Object;
 
             var cache = new CandlestickCache(api, client);
 
-            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.SubscribeAsync(null, CandlestickInterval.Day, new CancellationToken()));
-            await Assert.ThrowsAsync<ArgumentException>("token", () => cache.SubscribeAsync(Symbol.BTC_USDT, CandlestickInterval.Day, CancellationToken.None));
+            using (var cts = new CancellationTokenSource())
+            {
+                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.StreamAsync(null, CandlestickInterval.Day, cts.Token));
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Binance.Api.WebSocket.Events
     /// <summary>
     /// Symbol statistics web socket client event.
     /// </summary>
-    public sealed class SymbolStatisticsEventArgs : WebSocketClientEventArgs
+    public sealed class SymbolStatisticsEventArgs : ClientEventArgs
     {
         #region Public Properties
 

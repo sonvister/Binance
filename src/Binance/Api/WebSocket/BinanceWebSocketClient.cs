@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Binance.Api.WebSocket.Events;
 using Microsoft.Extensions.Logging;
@@ -8,14 +8,14 @@ using Microsoft.Extensions.Logging;
 namespace Binance.Api.WebSocket
 {
     /// <summary>
-    /// WebSocket client base class.
+    /// Abstract Binance web socket client base class.
     /// </summary>
     public abstract class BinanceWebSocketClient<TEventArgs> : IBinanceWebSocketClient
         where TEventArgs : EventArgs
     {
         #region Public Properties
 
-        public IWebSocketClient WebSocket { get; }
+        public IWebSocketStream WebSocket { get; }
 
         #endregion Public Properties
 
@@ -24,15 +24,15 @@ namespace Binance.Api.WebSocket
         protected BufferBlock<string> BufferBlock;
         protected ActionBlock<string> ActionBlock;
 
-        protected bool IsSubscribed;
+        protected readonly ILogger Logger;
 
-        protected ILogger Logger;
+        protected readonly IDictionary<string, IList<Action<TEventArgs>>> _subscribers;
 
         #endregion Protected Fields
 
         #region Private Constants
 
-        private const string BaseUri = "wss://stream.binance.com:9443/ws/";
+        private const string BaseUri = "wss://stream.binance.com:9443";
 
         #endregion Private Constants
 
@@ -47,92 +47,44 @@ namespace Binance.Api.WebSocket
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="client"></param>
+        /// <param name="webSocket"></param>
         /// <param name="logger"></param>
-        protected BinanceWebSocketClient(IWebSocketClient client, ILogger logger = null)
+        protected BinanceWebSocketClient(IWebSocketStream webSocket, ILogger logger = null)
         {
-            Throw.IfNull(client, nameof(client));
+            Throw.IfNull(webSocket, nameof(webSocket));
 
-            WebSocket = client;
+            WebSocket = webSocket;
             Logger = logger;
+
+            _subscribers = new Dictionary<string, IList<Action<TEventArgs>>>();
         }
 
         #endregion Constructors
 
         #region Protected Methods
 
-        protected abstract void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<TEventArgs> callback = null);
+        protected abstract void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<TEventArgs>> callbacks);
 
-        /// <summary>
-        /// Subscribe.
-        /// </summary>
-        /// <param name="uriPath"></param>
-        /// <param name="callback"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        protected async Task SubscribeToAsync(string uriPath, Action<TEventArgs> callback, CancellationToken token)
+        private void OnBinanceWebSocketEvent(WebSocketStreamEventArgs args)
         {
-            Logger?.LogInformation($"{GetType().Name}.{nameof(SubscribeToAsync)}: \"{BaseUri}{uriPath}\"");
+            DeserializeJsonAndRaiseEvent(args.Json, args.Token, _subscribers.ContainsKey(args.StreamName) ? _subscribers[args.StreamName] : null);
+        }
 
-            IsSubscribed = true;
+        protected void SubscribeTo(string stream, Action<TEventArgs> callback)
+        {
+            WebSocket.Subscribe(stream, OnBinanceWebSocketEvent);
 
-            try
+            if (callback == null)
+                return;
+
+            if (!_subscribers.ContainsKey(stream))
             {
-                BufferBlock = new BufferBlock<string>(new DataflowBlockOptions
-                {
-                    EnsureOrdered = true,
-                    CancellationToken = token,
-                    BoundedCapacity = DataflowBlockOptions.Unbounded,
-                    MaxMessagesPerTask = DataflowBlockOptions.Unbounded
-                });
-
-                ActionBlock = new ActionBlock<string>(json =>
-                    {
-                        try { DeserializeJsonAndRaiseEvent(json, token, callback); }
-                        catch (OperationCanceledException) { }
-                        catch (Exception e)
-                        {
-                            if (!token.IsCancellationRequested)
-                            {
-                                Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(DeserializeJsonAndRaiseEvent)} exception.");
-                            }
-                        }
-                    },
-                    new ExecutionDataflowBlockOptions
-                    {
-                        BoundedCapacity = 1,
-                        EnsureOrdered = true,
-                        MaxDegreeOfParallelism = 1,
-                        CancellationToken = token,
-                        SingleProducerConstrained = true
-                    });
-
-                BufferBlock.LinkTo(ActionBlock);
-
-                var uri = new Uri($"{BaseUri}{uriPath}");
-
-                WebSocket.Message += OnClientMessage;
-
-                await WebSocket.RunAsync(uri, token)
-                    .ConfigureAwait(false);
+                _subscribers[stream] = new List<Action<TEventArgs>>();
             }
-            catch (OperationCanceledException) { }
-            catch (Exception e)
-            {
-                if (!token.IsCancellationRequested)
-                {
-                    Logger?.LogError(e, $"{GetType().Name}.{nameof(SubscribeToAsync)}");
-                    throw;
-                }
-            }
-            finally
-            {
-                WebSocket.Message -= OnClientMessage;
 
-                BufferBlock?.Complete();
-                ActionBlock?.Complete();
-
-                IsSubscribed = false;
+            if (!_subscribers[stream].Contains(callback))
+            {
+                _subscribers[stream].Add(callback);
             }
         }
 
@@ -140,7 +92,7 @@ namespace Binance.Api.WebSocket
 
         #region Private Methods
 
-        private void OnClientMessage(object sender, WebSocketClientMessageEventArgs e)
+        private void OnClientMessage(object sender, WebSocketClientEventArgs e)
         {
             // Provides buffering and single-threaded execution.
             BufferBlock.Post(e.Message);

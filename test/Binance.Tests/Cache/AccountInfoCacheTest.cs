@@ -12,7 +12,7 @@ namespace Binance.Tests.Cache
     public class AccountInfoCacheTest
     {
         [Fact]
-        public async Task SubscribeThrows()
+        public async Task StreamThrows()
         {
             var user = new BinanceApiUser("api-key");
             var api = new Mock<IBinanceApi>().Object;
@@ -20,8 +20,11 @@ namespace Binance.Tests.Cache
 
             var cache = new AccountInfoCache(api, client);
 
-            await Assert.ThrowsAsync<ArgumentNullException>("user", () => cache.SubscribeAsync(null, new CancellationToken()));
-            await Assert.ThrowsAsync<ArgumentException>("token", () => cache.SubscribeAsync(user, CancellationToken.None));
+            using (var cts = new CancellationTokenSource())
+            {
+                await Assert.ThrowsAsync<ArgumentNullException>("user", () => cache.StreamAsync(null, cts.Token));
+                await Assert.ThrowsAsync<ArgumentException>("token", () => cache.StreamAsync(user, CancellationToken.None));
+            }
         }
     }
 }

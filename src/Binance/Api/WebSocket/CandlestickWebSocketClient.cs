@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using Binance.Api.WebSocket.Events;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
@@ -28,33 +28,32 @@ namespace Binance.Api.WebSocket
         #region Constructors
 
         /// <summary>
+        /// Default constructor provides default web socket stream, but no logging.
+        /// </summary>
+        public CandlestickWebSocketClient()
+            : this(new BinanceWebSocketStream(), null)
+        { }
+
+        /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="logger"></param>
-        public CandlestickWebSocketClient(IWebSocketClient client, ILogger<CandlestickWebSocketClient> logger = null)
-            : base(client, logger)
+        public CandlestickWebSocketClient(IWebSocketStream webSocket, ILogger<CandlestickWebSocketClient> logger = null)
+            : base(webSocket, logger)
         { }
 
         #endregion Construtors
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback, CancellationToken token)
+        public virtual void Subscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
-
-            token.ThrowIfCancellationRequested();
-
             Symbol = symbol.FormatSymbol();
 
-            if (IsSubscribed)
-                throw new InvalidOperationException($"{nameof(CandlestickWebSocketClient)} is already subscribed to symbol: \"{symbol}\"");
-
-            return SubscribeToAsync($"{Symbol.ToLower()}@kline_{interval.AsString()}", callback, token);
+            SubscribeTo($"{Symbol.ToLowerInvariant()}@kline_{interval.AsString()}", callback);
         }
 
         #endregion Public Methods
@@ -67,7 +66,7 @@ namespace Binance.Api.WebSocket
         /// <param name="json"></param>
         /// <param name="token"></param>
         /// <param name="callback"></param>
-        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<CandlestickEventArgs> callback = null)
+        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<CandlestickEventArgs>> callbacks)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -110,7 +109,11 @@ namespace Binance.Api.WebSocket
 
                     try
                     {
-                        callback?.Invoke(eventArgs);
+                        if (callbacks != null)
+                        {
+                            foreach (var callback in callbacks)
+                                callback(eventArgs);
+                        }
                         Candlestick?.Invoke(this, eventArgs);
                     }
                     catch (OperationCanceledException) { }

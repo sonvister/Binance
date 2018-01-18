@@ -80,6 +80,11 @@ namespace Binance.Account.Orders
         /// </summary>
         public long Timestamp { get; internal set; }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        //public bool IsWorking { get; internal set; }
+
         #endregion Public Properties
 
         #region Constructors

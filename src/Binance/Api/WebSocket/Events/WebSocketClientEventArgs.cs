@@ -1,24 +1,15 @@
 ﻿using System;
-using System.Threading;
 
 namespace Binance.Api.WebSocket.Events
 {
     /// <summary>
-    /// Web socket client event.
+    /// Low-level <see cref="IWebSocketClient"/> message event arguments.
     /// </summary>
-    public abstract class WebSocketClientEventArgs : EventArgs, IChronological
+    public class WebSocketClientEventArgs : EventArgs
     {
         #region Public Properties
 
-        /// <summary>
-        /// Get the event time.
-        /// </summary>
-        public long Timestamp { get; }
-
-        /// <summary>
-        /// Get the cancellation token.
-        /// </summary>
-        public CancellationToken Token { get; }
+        public string Message { get; }
 
         #endregion Public Properties
 
@@ -27,15 +18,12 @@ namespace Binance.Api.WebSocket.Events
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="timestamp">The event time.</param>
-        /// <param name="token"></param>
-        protected WebSocketClientEventArgs(long timestamp, CancellationToken token)
+        /// <param name="message"></param>
+        public WebSocketClientEventArgs(string message)
         {
-            if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(WebSocketClientEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
+            Throw.IfNullOrWhiteSpace(message, nameof(message));
 
-            Timestamp = timestamp;
-            Token = token;
+            Message = message;
         }
 
         #endregion Constructors

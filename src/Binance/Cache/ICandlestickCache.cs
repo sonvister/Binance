@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Binance.Api.WebSocket;
 using Binance.Cache.Events;
 using Binance.Market;
@@ -42,9 +40,7 @@ namespace Binance.Cache
         /// <param name="interval"></param>
         /// <param name="limit"></param>
         /// <param name="callback"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit, Action<CandlestickCacheEventArgs> callback, CancellationToken token);
+        void Subscribe(string symbol, CandlestickInterval interval, int limit, Action<CandlestickCacheEventArgs> callback);
 
         /// <summary>
         /// Link to a subscribed <see cref="ICandlestickWebSocketClient"/>.

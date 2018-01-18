@@ -10,12 +10,14 @@ namespace Binance.Tests.Api.WebSocket
     public class TradesWebSocketClientTest
     {
         [Fact]
-        public async Task SubscribeThrows()
+        public async Task StreamThrows()
         {
-            var client = new AggregateTradeWebSocketClient(new Mock<IWebSocketClient>().Object);
+            var client = new AggregateTradeWebSocketClient(new Mock<IWebSocketStream>().Object);
 
-            await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.SubscribeAsync(null, new CancellationToken()));
-            await Assert.ThrowsAsync<ArgumentException>("token", () => client.SubscribeAsync(Symbol.BTC_USDT, CancellationToken.None));
+            using (var cts = new CancellationTokenSource())
+            {
+                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.StreamAsync(null, cts.Token));
+            }
         }
     }
 }

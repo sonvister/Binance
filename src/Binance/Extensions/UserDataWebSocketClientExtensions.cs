@@ -13,7 +13,7 @@ namespace Binance.Api.WebSocket
         /// <param name="user"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this IUserDataWebSocketClient client, IBinanceApiUser user, CancellationToken token)
-            => client.SubscribeAsync(user, null, token);
+        public static Task StreamAsync(this IUserDataWebSocketClient client, IBinanceApiUser user, CancellationToken token)
+            => client.StreamAsync(user, null, token);
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Binance.Api.WebSocket;
 using Binance.Cache.Events;
 using Binance.Market;
@@ -38,18 +36,12 @@ namespace Binance.Cache
         #region Public Methods
 
         /// <summary>
-        /// Subscribe the client to the symbol and synchronize this depth of
-        /// market with updates processed by the current <see cref="Thread"/>
-        /// or <see cref="Task"/>. This method will not return until the token
-        /// is canceled, this <see cref="IOrderBookCache"/> is disposed, or an
-        /// internal exception occurs.
+        /// Subscribe the web socket client to the symbol and link this cache to client.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
         /// <param name="limit">The limit (optional, uses partial depth stream). Valid values are: 5, 10, or 20.</param>
         /// <param name="callback">An event callback (optional).</param>
-        /// <param name="token">The cancellation token.</param>
-        /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(string symbol, int limit, Action<OrderBookCacheEventArgs> callback, CancellationToken token);
+        void Subscribe(string symbol, int limit, Action<OrderBookCacheEventArgs> callback);
 
         /// <summary>
         /// Link to a subscribed <see cref="IDepthWebSocketClient"/>.

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Api.WebSocket;
@@ -38,34 +37,27 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public async Task SubscribeAsync(string symbol, int limit, Action<OrderBookCacheEventArgs> callback, CancellationToken token)
+        public void Subscribe(string symbol, int limit, Action<OrderBookCacheEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (limit < 0)
                 throw new ArgumentException($"{nameof(OrderBookCache)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
 
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
-
-            token.ThrowIfCancellationRequested();
-
             _symbol = symbol.FormatSymbol();
             _limit = limit;
-            Token = token;
 
-            LinkTo(Client, callback);
+            base.LinkTo(Client, callback);
 
-            try
-            {
-                await Client.SubscribeAsync(_symbol, limit, token)
-                    .ConfigureAwait(false);
-            }
-            finally { UnLink(); }
+            Client.Subscribe(symbol, limit, ClientCallback);
         }
 
         public override void LinkTo(IDepthWebSocketClient client, Action<OrderBookCacheEventArgs> callback = null)
         {
+            // Confirm client is subscribed to only one stream.
+            if (client.WebSocket.IsCombined)
+                throw new InvalidOperationException($"{nameof(OrderBookCache)} can only link to {nameof(IDepthWebSocketClient)} events from a single stream (not combined streams).");
+
             base.LinkTo(client, callback);
             Client.DepthUpdate += OnClientEvent;
         }
@@ -117,7 +109,7 @@ namespace Binance.Cache
                 {
                     Logger?.LogError($"{nameof(OrderBookCache)}: Synchronization failure (first update ID > last update ID + 1).");
 
-                    await Task.Delay(1000, Token)
+                    await Task.Delay(1000, @event.Token)
                         .ConfigureAwait(false); // wait a bit.
 
                     // Re-synchronize.

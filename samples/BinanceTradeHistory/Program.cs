@@ -60,8 +60,14 @@ namespace BinanceTradeHistory
 
                     // Monitor latest aggregate trades and display updates in real-time.
                     controller.Begin(
-                        tkn => cache.SubscribeAsync(symbol, limit, evt => Display(evt.Trades), tkn),
+                        tkn => cache.StreamAsync(symbol, limit, evt => Display(evt.Trades), tkn),
                         err => Console.WriteLine(err.Message));
+
+                    // Alternative usage (if sharing IBinanceWebSocket for combined streams).
+                    //cache.Subscribe(symbol, limit, evt => Display(evt.Trades));
+                    //controller.Begin(
+                    //    tkn => cache.Client.WebSocket.StreamAsync(tkn),
+                    //    err => Console.WriteLine(err.Message));
 
                     Console.ReadKey(true);
                 }

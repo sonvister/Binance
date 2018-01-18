@@ -61,7 +61,7 @@ namespace BinanceConsoleApp
                     var cache = services.GetService<IAccountInfoCache>();
 
                     // Display updated account balance.
-                    controller.Begin(tkn => cache.SubscribeAsync(user, 
+                    controller.Begin(tkn => cache.StreamAsync(user, 
                         evt => Display(evt.AccountInfo.GetBalance(asset)), tkn),
                         err => Console.WriteLine(err.Message));
 

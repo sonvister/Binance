@@ -49,35 +49,28 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public async Task SubscribeAsync(string symbol, CandlestickInterval interval, int limit, Action<CandlestickCacheEventArgs> callback, CancellationToken token)
+        public void Subscribe(string symbol, CandlestickInterval interval, int limit, Action<CandlestickCacheEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (limit < 0)
                 throw new ArgumentException($"{nameof(CandlestickCache)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
 
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
-
-            token.ThrowIfCancellationRequested();
-
             _symbol = symbol.FormatSymbol();
             _interval = interval;
             _limit = limit;
-            Token = token;
 
-            LinkTo(Client, callback);
+            base.LinkTo(Client, callback);
 
-            try
-            {
-                await Client.SubscribeAsync(_symbol, interval, token)
-                    .ConfigureAwait(false);
-            }
-            finally { UnLink(); }
+            Client.Subscribe(symbol, interval, ClientCallback);
         }
 
         public override void LinkTo(ICandlestickWebSocketClient client, Action<CandlestickCacheEventArgs> callback = null)
         {
+            // Confirm client is subscribed to only one stream.
+            if (client.WebSocket.IsCombined)
+                throw new InvalidOperationException($"{nameof(CandlestickCache)} can only link to {nameof(ICandlestickWebSocketClient)} events from a single stream (not combined streams).");
+
             base.LinkTo(client, callback);
             Client.Candlestick += OnClientEvent;
         }

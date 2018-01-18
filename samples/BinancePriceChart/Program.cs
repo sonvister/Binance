@@ -65,8 +65,14 @@ namespace BinancePriceChart
 
                     // Monitor latest aggregate trades and display updates in real-time.
                     controller.Begin(
-                        tkn => cache.SubscribeAsync(symbol, interval, limit, evt => Display(evt.Candlesticks), tkn),
+                        tkn => cache.StreamAsync(symbol, interval, limit, evt => Display(evt.Candlesticks), tkn),
                         err => Console.WriteLine(err.Message));
+
+                    // Alternative usage (if sharing IBinanceWebSocket for combined streams).
+                    //cache.Subscribe(symbol, interval, limit, evt => Display(evt.Candlesticks));
+                    //controller.Begin(
+                    //    tkn => cache.Client.WebSocket.StreamAsync(tkn),
+                    //    err => Console.WriteLine(err.Message));
 
                     Console.ReadKey(true);
                 }

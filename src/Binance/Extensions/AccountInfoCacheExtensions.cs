@@ -14,7 +14,7 @@ namespace Binance.Cache
         /// <param name="user"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAsync(this IAccountInfoCache cache, IBinanceApiUser user, CancellationToken token)
-            => cache.SubscribeAsync(user, null, token);
+        public static Task StreamAsync(this IAccountInfoCache cache, IBinanceApiUser user, CancellationToken token)
+            => cache.StreamAsync(user, null, token);
     }
 }

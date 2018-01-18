@@ -29,6 +29,13 @@ namespace Binance.Api.WebSocket
         #region Public Methods
 
         /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="callback"></param>
+        //void Subscribe(IBinanceApiUser user, Action<UserDataEventArgs> callback);
+
+        /// <summary>
         /// Subscribe to the specified user key and begin receiving account
         /// update events. Awaiting this method will not return until the token
         /// is canceled, this <see cref="IUserDataWebSocketClient"/> is disposed,
@@ -38,7 +45,7 @@ namespace Binance.Api.WebSocket
         /// <param name="callback">An event callback.</param>
         /// <param name="token">The cancellation token.</param>
         /// <returns><see cref="Task"/></returns>
-        Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token);
+        Task StreamAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token);
 
         #endregion Public Methods
     }

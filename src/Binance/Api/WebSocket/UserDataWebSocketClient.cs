@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,15 +56,25 @@ namespace Binance.Api.WebSocket
         #region Constructors
 
         /// <summary>
+        /// Default constructor provides default Binance API and web socket client,
+        /// but no options support or logging.
+        /// </summary>
+        public UserDataWebSocketClient()
+            : this(new BinanceApi(), new BinanceWebSocketStream(), null)
+        { }
+
+        /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="api">The Binance API.</param>
         /// <param name="client">The WebSocket client.</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public UserDataWebSocketClient(IBinanceApi api, IWebSocketClient client, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)
-            : base(client, logger)
+        public UserDataWebSocketClient(IBinanceApi api, IWebSocketStream webSocket, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)
+            : base(webSocket, logger)
         {
+            Throw.IfNull(api, nameof(api));
+
             _api = api;
             _options = options?.Value;
         }
@@ -72,19 +83,21 @@ namespace Binance.Api.WebSocket
 
         #region Public Methods
 
-        public virtual async Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token)
+        /// <summary>
+        /// TODO: Support multiple user data streams...
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="callback"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
-
-            token.ThrowIfCancellationRequested();
+            if (User != null)
+                throw new InvalidOperationException($"{nameof(UserDataWebSocketClient)}: Already subscribed to a user.");
 
             User = user;
-
-            if (IsSubscribed)
-                throw new InvalidOperationException($"{nameof(UserDataWebSocketClient)} is already subscribed to a user.");
 
             try
             {
@@ -94,23 +107,7 @@ namespace Binance.Api.WebSocket
                 if (string.IsNullOrWhiteSpace(_listenKey))
                     throw new Exception($"{nameof(IUserDataWebSocketClient)}: Failed to get listen key from API.");
 
-                var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
-                period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
-
-                _keepAliveTimer = new Timer(OnKeepAliveTimer, token, period, period);
-
-                try
-                {
-                    await SubscribeToAsync(_listenKey, callback, token)
-                        .ConfigureAwait(false);
-                }
-                finally
-                {
-                    _keepAliveTimer.Dispose();
-
-                    await _api.UserStreamCloseAsync(User, _listenKey, CancellationToken.None)
-                        .ConfigureAwait(false);
-                }
+                SubscribeTo(_listenKey, callback);
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
@@ -120,6 +117,30 @@ namespace Binance.Api.WebSocket
                     Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}.{nameof(SubscribeAsync)}");
                     throw;
                 }
+            }
+        }
+
+        public virtual async Task StreamAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token)
+        {
+            try
+            {
+                var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
+                period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
+
+                _keepAliveTimer = new Timer(OnKeepAliveTimer, token, period, period);
+
+                await SubscribeAsync(user, callback, token)
+                    .ConfigureAwait(false);
+
+                await WebSocket.StreamAsync(token)
+                    .ConfigureAwait(false);
+            }
+            finally
+            {
+                _keepAliveTimer.Dispose();
+
+                await _api.UserStreamCloseAsync(user, _listenKey, CancellationToken.None)
+                    .ConfigureAwait(false);
             }
         }
 
@@ -134,7 +155,7 @@ namespace Binance.Api.WebSocket
         /// <param name="token"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<UserDataEventArgs> callback = null)
+        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<UserDataEventArgs>> callbacks)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -172,7 +193,11 @@ namespace Binance.Api.WebSocket
 
                     try
                     {
-                        callback?.Invoke(eventArgs);
+                        if (callbacks != null)
+                        {
+                            foreach (var callback in callbacks)
+                                callback(eventArgs);
+                        }
                         AccountUpdate?.Invoke(this, eventArgs);
                     }
                     catch (OperationCanceledException) { }
@@ -215,7 +240,11 @@ namespace Binance.Api.WebSocket
 
                         try
                         {
-                            callback?.Invoke(eventArgs);
+                            if (callbacks != null)
+                            {
+                                foreach (var callback in callbacks)
+                                    callback(eventArgs);
+                            }
                             TradeUpdate?.Invoke(this, eventArgs);
                         }
                         catch (OperationCanceledException) { }
@@ -233,7 +262,11 @@ namespace Binance.Api.WebSocket
 
                         try
                         {
-                            callback?.Invoke(eventArgs);
+                            if (callbacks != null)
+                            {
+                                foreach (var callback in callbacks)
+                                    callback(eventArgs);
+                            }
                             OrderUpdate?.Invoke(this, eventArgs);
                         }
                         catch (OperationCanceledException) { }

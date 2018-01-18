@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Binance.Api.WebSocket;
 using Binance.Cache.Events;
 using Binance.Market;
@@ -39,25 +37,28 @@ namespace Binance.Cache
         /// Get statistics for a symbol.
         /// </summary>
         /// <param name="symbol"></param>
-        /// <returns></returns>
+        /// <returns><see cref="SymbolStatistics"> or null if not subscribed to symbol or cache is not initialized.</returns>
         SymbolStatistics GetStatistics(string symbol);
+
+        /// <summary>
+        /// Get statistics for multiple symbols.
+        /// </summary>
+        /// <param name="symbols"></param>
+        /// <returns><see cref="SymbolStatistics"> or null if not subscribed to a symbol or cache is not initialized.</returns>
+        IEnumerable<SymbolStatistics> GetStatistics(params string[] symbols);
 
         /// <summary>
         /// Subscribe to all symbols.
         /// </summary>
         /// <param name="callback"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task SubscribeAsync(Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token);
+        void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback);
 
         /// <summary>
-        /// Subscribe to a symbol.
+        /// Subscribe to one or more symbols.
         /// </summary>
-        /// <param name="symbol"></param>
         /// <param name="callback"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task SubscribeAsync(string symbol, Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token);
+        /// <param name="symbols"></param>
+        void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback, params string[] symbols);
 
         /// <summary>
         /// Link to a subscribed <see cref="ISymbolStatisticsWebSocketClient"/>.

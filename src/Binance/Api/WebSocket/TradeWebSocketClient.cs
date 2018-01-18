@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using Binance.Api.WebSocket.Events;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
@@ -28,33 +28,32 @@ namespace Binance.Api.WebSocket
         #region Constructors
 
         /// <summary>
+        /// Default constructor provides default web socket client, but no logging.
+        /// </summary>
+        public TradeWebSocketClient()
+            : this(new BinanceWebSocketStream(), null)
+        { }
+
+        /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="client"></param>
+        /// <param name="webSocket"></param>
         /// <param name="logger"></param>
-        public TradeWebSocketClient(IWebSocketClient client, ILogger<TradeWebSocketClient> logger = null)
-            : base(client, logger)
+        public TradeWebSocketClient(IWebSocketStream webSocket, ILogger<TradeWebSocketClient> logger = null)
+            : base(webSocket, logger)
         { }
 
         #endregion Construtors
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(string symbol, Action<TradeEventArgs> callback, CancellationToken token)
+        public virtual void Subscribe(string symbol, Action<TradeEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
-
-            token.ThrowIfCancellationRequested();
-
             Symbol = symbol.FormatSymbol();
 
-            if (IsSubscribed)
-                throw new InvalidOperationException($"{nameof(TradeWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");
-
-            return SubscribeToAsync($"{Symbol.ToLower()}@trade", callback, token);
+            base.SubscribeTo($"{Symbol.ToLowerInvariant()}@trade", callback);
         }
 
         #endregion Public Methods
@@ -67,7 +66,7 @@ namespace Binance.Api.WebSocket
         /// <param name="json"></param>
         /// <param name="token"></param>
         /// <param name="callback"></param>
-        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<TradeEventArgs> callback = null)
+        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<TradeEventArgs>> callbacks)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -98,7 +97,11 @@ namespace Binance.Api.WebSocket
 
                     try
                     {
-                        callback?.Invoke(eventArgs);
+                        if (callbacks != null)
+                        {
+                            foreach (var callback in callbacks)
+                                callback(eventArgs);
+                        }
                         Trade?.Invoke(this, eventArgs);
                     }
                     catch (OperationCanceledException) { }

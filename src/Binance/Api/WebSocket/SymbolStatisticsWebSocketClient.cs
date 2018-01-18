@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Binance.Api.WebSocket.Events;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
@@ -29,46 +29,37 @@ namespace Binance.Api.WebSocket
         #region Constructors
 
         /// <summary>
+        /// Default constructor provides default web socket stream, but no logging.
+        /// </summary>
+        public SymbolStatisticsWebSocketClient()
+            : this(new BinanceWebSocketStream(), null)
+        { }
+
+        /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="client"></param>
+        /// <param name="webSocket"></param>
         /// <param name="logger"></param>
-        public SymbolStatisticsWebSocketClient(IWebSocketClient client, ILogger<SymbolStatisticsWebSocketClient> logger = null)
-            : base(client, logger)
+        public SymbolStatisticsWebSocketClient(IWebSocketStream webSocket, ILogger<SymbolStatisticsWebSocketClient> logger = null)
+            : base(webSocket, logger)
         { }
 
         #endregion Construtors
 
         #region Public Methods
 
-        public virtual Task SubscribeAsync(Action<SymbolStatisticsEventArgs> callback, CancellationToken token)
+        public virtual void Subscribe(Action<SymbolStatisticsEventArgs> callback)
         {
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
-
-            token.ThrowIfCancellationRequested();
-
-            if (IsSubscribed)
-                throw new InvalidOperationException($"{nameof(SymbolStatisticsWebSocketClient)} is already subscribed to all symbols.");
-
-            return SubscribeToAsync("!ticker@arr", callback, token);
+            Subscribe("/ws/!ticker@arr", callback);
         }
 
-        public virtual Task SubscribeAsync(string symbol, Action<SymbolStatisticsEventArgs> callback, CancellationToken token)
+        public virtual void Subscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
-
-            token.ThrowIfCancellationRequested();
-
             Symbol = symbol.FormatSymbol();
 
-            if (IsSubscribed)
-                throw new InvalidOperationException($"{nameof(SymbolStatisticsWebSocketClient)} is already subscribed to symbol: \"{Symbol}\"");
-
-            return SubscribeToAsync($"{Symbol.ToLower()}@ticker", callback, token);
+            SubscribeTo($"{Symbol.ToLowerInvariant()}@ticker", callback);
         }
 
         #endregion Public Methods
@@ -81,7 +72,7 @@ namespace Binance.Api.WebSocket
         /// <param name="json"></param>
         /// <param name="token"></param>
         /// <param name="callback"></param>
-        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, Action<SymbolStatisticsEventArgs> callback = null)
+        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<SymbolStatisticsEventArgs>> callbacks)
         {
             Throw.IfNullOrWhiteSpace(json, nameof(json));
 
@@ -123,7 +114,11 @@ namespace Binance.Api.WebSocket
 
                 try
                 {
-                    callback?.Invoke(eventArgs);
+                    if (callbacks != null)
+                    {
+                        foreach (var callback in callbacks)
+                            callback(eventArgs);
+                    }
                     StatisticsUpdate?.Invoke(this, eventArgs);
                 }
                 catch (OperationCanceledException) { }
