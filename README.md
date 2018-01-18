@@ -34,3 +34,13 @@ PM> Install-Package Binance
 
 ## Documentation
 See [**Wiki**](https://github.com/sonvister/Binance/wiki)
+
+## Donate
+DCR: Dsog2jYLS65Y3N2jDQSxsiBYC3SRqq7TGd4
+LTC: MNhGkftcFDE7TsFFvtE6W9VVKhxH74T3eM
+DASH: XmFvpRgwfDRdN9wbrZjHZeH63Rt9CwHqUf
+ZEC: t1Ygz58dkcx2WXuGCjGiPo8w7Q1dcCSscGJ
+ETH: 0x3BFd7B3EAA6aE6BCF861B9B1803d67abe9360bca
+BTC: 3JjG3tRR1dx98UJyNdpzpkrxRjXmPfQHk9
+
+Thank you.
