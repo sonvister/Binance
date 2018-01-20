@@ -27,8 +27,9 @@ namespace Binance.Tests.Api.WebSocket.Events
             const OrderSide orderSide = OrderSide.Sell;
             const decimal stopPrice = 5000;
             const decimal icebergQuantity = 0.1m;
+            const bool isWorking = true;
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking);
 
             const OrderExecutionType orderExecutionType = OrderExecutionType.New;
             const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
@@ -60,8 +61,9 @@ namespace Binance.Tests.Api.WebSocket.Events
             const OrderSide orderSide = OrderSide.Sell;
             const decimal stopPrice = 5000;
             const decimal icebergQuantity = 0.1m;
+            const bool isWorking = true;
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking);
 
             const OrderExecutionType orderExecutionType = OrderExecutionType.New;
             const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;

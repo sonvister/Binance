@@ -24,17 +24,18 @@ namespace Binance.Tests.Account.Orders
             const decimal stopPrice = 5000;
             const decimal icebergQuantity = 0.1m;
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            const bool isWorking = true;
 
-            Assert.Throws<ArgumentNullException>("user", () => new Order(null, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp));
-            Assert.Throws<ArgumentNullException>("symbol", () => new Order(user, null, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp));
-            Assert.Throws<ArgumentException>("id", () => new Order(user, symbol, -1, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp));
-            Assert.Throws<ArgumentException>("price", () => new Order(user, symbol, id, clientOrderId, -1, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp));
-            Assert.Throws<ArgumentException>("stopPrice", () => new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, -1, icebergQuantity, timestamp));
-            Assert.Throws<ArgumentException>("originalQuantity", () => new Order(user, symbol, id, clientOrderId, price, -1, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp));
-            Assert.Throws<ArgumentException>("executedQuantity", () => new Order(user, symbol, id, clientOrderId, price, originalQuantity, -1, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp));
-            Assert.Throws<ArgumentException>("icebergQuantity", () => new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, -1, timestamp));
-            Assert.Throws<ArgumentException>("timestamp", () => new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, -1));
-            Assert.Throws<ArgumentException>("timestamp", () => new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, 0));
+            Assert.Throws<ArgumentNullException>("user", () => new Order(null, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking));
+            Assert.Throws<ArgumentNullException>("symbol", () => new Order(user, null, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking));
+            Assert.Throws<ArgumentException>("id", () => new Order(user, symbol, -1, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking));
+            Assert.Throws<ArgumentException>("price", () => new Order(user, symbol, id, clientOrderId, -1, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking));
+            Assert.Throws<ArgumentException>("stopPrice", () => new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, -1, icebergQuantity, timestamp, isWorking));
+            Assert.Throws<ArgumentException>("originalQuantity", () => new Order(user, symbol, id, clientOrderId, price, -1, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking));
+            Assert.Throws<ArgumentException>("executedQuantity", () => new Order(user, symbol, id, clientOrderId, price, originalQuantity, -1, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking));
+            Assert.Throws<ArgumentException>("icebergQuantity", () => new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, -1, timestamp, isWorking));
+            Assert.Throws<ArgumentException>("timestamp", () => new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, -1, isWorking));
+            Assert.Throws<ArgumentException>("timestamp", () => new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, 0, isWorking));
         }
 
         [Fact]
@@ -54,8 +55,9 @@ namespace Binance.Tests.Account.Orders
             const decimal stopPrice = 5000;
             const decimal icebergQuantity = 0.1m;
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            const bool isWorking = true;
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking);
 
             Assert.Equal(user, order.User);
             Assert.Equal(symbol, order.Symbol);
@@ -71,6 +73,7 @@ namespace Binance.Tests.Account.Orders
             Assert.Equal(stopPrice, order.StopPrice);
             Assert.Equal(icebergQuantity, order.IcebergQuantity);
             Assert.Equal(timestamp, order.Timestamp);
+            Assert.Equal(isWorking, order.IsWorking);
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Binance.Serialization
         private const string Key_Side = "side";
         private const string Key_StopPrice = "stopPrice";
         private const string Key_IcebergQuantity = "icebergQty";
+        private const string Key_IsWorking = "isWorking";
 
         public virtual Order Deserialize(string json, Order order)
         {
@@ -68,7 +69,8 @@ namespace Binance.Serialization
                 new JProperty(Key_Type, order.Type.AsString()),
                 new JProperty(Key_Side, order.Side.ToString().ToUpperInvariant()),
                 new JProperty(Key_StopPrice, order.StopPrice.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_IcebergQuantity, order.IcebergQuantity.ToString(CultureInfo.InvariantCulture))
+                new JProperty(Key_IcebergQuantity, order.IcebergQuantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(Key_IsWorking, order.IsWorking)
             };
 
             return jObject.ToString(Formatting.None);
@@ -89,6 +91,7 @@ namespace Binance.Serialization
             order.Side = jToken[Key_Side].Value<string>().ConvertOrderSide();
             order.StopPrice = jToken[Key_StopPrice]?.Value<decimal>() ?? order.StopPrice;
             order.IcebergQuantity = jToken[Key_IcebergQuantity]?.Value<decimal>() ?? order.IcebergQuantity;
+            order.IsWorking = jToken[Key_IsWorking]?.Value<bool>() ?? order.IsWorking;
 
             return order;
         }

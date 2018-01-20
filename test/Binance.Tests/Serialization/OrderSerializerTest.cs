@@ -25,8 +25,9 @@ namespace Binance.Tests.Serialization
             const decimal stopPrice = 5000;
             const decimal icebergQuantity = 0.1m;
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            const bool isWorking = true;
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking);
 
             var serializer = new OrderSerializer();
 

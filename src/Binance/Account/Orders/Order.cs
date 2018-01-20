@@ -81,9 +81,9 @@ namespace Binance.Account.Orders
         public long Timestamp { get; internal set; }
 
         /// <summary>
-        /// TODO
+        /// Get the is working flag.
         /// </summary>
-        //public bool IsWorking { get; internal set; }
+        public bool IsWorking { get; internal set; }
 
         #endregion Public Properties
 
@@ -106,6 +106,7 @@ namespace Binance.Account.Orders
         /// <param name="stopPrice"></param>
         /// <param name="icebergQuantity"></param>
         /// <param name="timestamp"></param>
+        /// <param name="isWorking"></param>
         public Order(
             IBinanceApiUser user,
             string symbol,
@@ -120,7 +121,8 @@ namespace Binance.Account.Orders
             OrderSide orderSide,
             decimal stopPrice,
             decimal icebergQuantity,
-            long timestamp)
+            long timestamp,
+            bool isWorking)
             : this(user)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
@@ -156,6 +158,7 @@ namespace Binance.Account.Orders
             StopPrice = stopPrice;
             IcebergQuantity = icebergQuantity;
             Timestamp = timestamp;
+            IsWorking = isWorking;
         }
 
         /// <summary>
