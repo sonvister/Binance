@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Binance.Api.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -60,15 +59,13 @@ namespace Binance.Api.WebSocket
 
         #region Protected Methods
 
-        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<DepthUpdateEventArgs>> callbacks)
+        protected override void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<DepthUpdateEventArgs>> callbacks)
         {
-            Throw.IfNullOrWhiteSpace(json, nameof(json));
-
-            Logger?.LogDebug($"{nameof(DepthWebSocketClient)}: \"{json}\"");
+            Logger?.LogDebug($"{nameof(DepthWebSocketClient)}: \"{args.Json}\"");
 
             try
             {
-                var jObject = JObject.Parse(json);
+                var jObject = JObject.Parse(args.Json);
 
                 var eventType = jObject["e"]?.Value<string>();
 
@@ -86,7 +83,7 @@ namespace Binance.Api.WebSocket
                         var bids = jObject["bids"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
                         var asks = jObject["asks"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
 
-                        eventArgs = new DepthUpdateEventArgs(eventTime, token, Symbol, lastUpdateId, lastUpdateId, bids, asks);
+                        eventArgs = new DepthUpdateEventArgs(eventTime, args.Token, Symbol, lastUpdateId, lastUpdateId, bids, asks);
                         break;
                     }
                     case "depthUpdate":
@@ -100,11 +97,11 @@ namespace Binance.Api.WebSocket
                         var bids = jObject["b"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
                         var asks = jObject["a"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
 
-                        eventArgs = new DepthUpdateEventArgs(eventTime, token, symbol, firstUpdateId, lastUpdateId, bids, asks);
+                        eventArgs = new DepthUpdateEventArgs(eventTime, args.Token, symbol, firstUpdateId, lastUpdateId, bids, asks);
                         break;
                     }
                     default:
-                        Logger?.LogWarning($"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                        Logger?.LogWarning($"{nameof(DepthWebSocketClient)}.{nameof(OnWebSocketEvent)}: Unexpected event type ({eventType}).");
                         return;
                 }
 
@@ -120,7 +117,7 @@ namespace Binance.Api.WebSocket
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    if (!token.IsCancellationRequested)
+                    if (!args.Token.IsCancellationRequested)
                     {
                         Logger?.LogError(e, $"{nameof(DepthWebSocketClient)}: Unhandled depth update event handler exception.");
                     }
@@ -129,9 +126,9 @@ namespace Binance.Api.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                if (!token.IsCancellationRequested)
+                if (!args.Token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{nameof(DepthWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
+                    Logger?.LogError(e, $"{nameof(DepthWebSocketClient)}.{nameof(OnWebSocketEvent)}");
                 }
             }
         }

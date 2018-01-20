@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using Binance.Api.WebSocket.Events;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
@@ -60,21 +59,13 @@ namespace Binance.Api.WebSocket
 
         #region Protected Methods
 
-        /// <summary>
-        /// Deserialize JSON and raise <see cref="CandlestickEventArgs"/> event.
-        /// </summary>
-        /// <param name="json"></param>
-        /// <param name="token"></param>
-        /// <param name="callback"></param>
-        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<CandlestickEventArgs>> callbacks)
+        protected override void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<CandlestickEventArgs>> callbacks)
         {
-            Throw.IfNullOrWhiteSpace(json, nameof(json));
-
-            Logger?.LogDebug($"{nameof(CandlestickWebSocketClient)}: \"{json}\"");
+            Logger?.LogDebug($"{nameof(CandlestickWebSocketClient)}: \"{args.Json}\"");
 
             try
             {
-                var jObject = JObject.Parse(json);
+                var jObject = JObject.Parse(args.Json);
 
                 var eventType = jObject["e"].Value<string>();
 
@@ -105,7 +96,7 @@ namespace Binance.Api.WebSocket
                         jObject["k"]["Q"].Value<decimal>()  // taker buy quote asset volume (quote volume of active buy)
                     );
 
-                    var eventArgs = new CandlestickEventArgs(eventTime, token, candlestick, firstTradeId, lastTradeId, isFinal);
+                    var eventArgs = new CandlestickEventArgs(eventTime, args.Token, candlestick, firstTradeId, lastTradeId, isFinal);
 
                     try
                     {
@@ -119,7 +110,7 @@ namespace Binance.Api.WebSocket
                     catch (OperationCanceledException) { }
                     catch (Exception e)
                     {
-                        if (!token.IsCancellationRequested)
+                        if (!args.Token.IsCancellationRequested)
                         {
                             Logger?.LogError(e, $"{nameof(CandlestickWebSocketClient)}: Unhandled candlestick event handler exception.");
                         }
@@ -127,15 +118,15 @@ namespace Binance.Api.WebSocket
                 }
                 else
                 {
-                    Logger?.LogWarning($"{nameof(CandlestickWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                    Logger?.LogWarning($"{nameof(CandlestickWebSocketClient)}.{nameof(OnWebSocketEvent)}: Unexpected event type ({eventType}).");
                 }
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                if (!token.IsCancellationRequested)
+                if (!args.Token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{nameof(CandlestickWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
+                    Logger?.LogError(e, $"{nameof(CandlestickWebSocketClient)}.{nameof(OnWebSocketEvent)}");
                 }
             }
         }

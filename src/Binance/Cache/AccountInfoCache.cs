@@ -28,21 +28,13 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public async Task StreamAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token)
+        public Task SubscribeAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
-            if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
-
-            token.ThrowIfCancellationRequested();
-
-            Token = token;
-
             base.LinkTo(Client, callback);
 
-            await Client.StreamAsync(user, ClientCallback, token)
-                .ConfigureAwait(false);
+            return Client.SubscribeAsync(user, ClientCallback, token);
         }
 
         public override void LinkTo(IUserDataWebSocketClient client, Action<AccountInfoCacheEventArgs> callback = null)

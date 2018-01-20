@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using Binance.Api.WebSocket.Events;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
@@ -60,21 +59,13 @@ namespace Binance.Api.WebSocket
 
         #region Protected Methods
 
-        /// <summary>
-        /// Deserialize JSON and raise <see cref="AggregateTradeEventArgs"/> event.
-        /// </summary>
-        /// <param name="json"></param>
-        /// <param name="token"></param>
-        /// <param name="callback"></param>
-        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<AggregateTradeEventArgs>> callbacks)
+        protected override void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<AggregateTradeEventArgs>> callbacks)
         {
-            Throw.IfNullOrWhiteSpace(json, nameof(json));
-
-            Logger?.LogDebug($"{nameof(AggregateTradeWebSocketClient)}: \"{json}\"");
+            Logger?.LogDebug($"{nameof(AggregateTradeWebSocketClient)}: \"{args.Json}\"");
 
             try
             {
-                var jObject = JObject.Parse(json);
+                var jObject = JObject.Parse(args.Json);
 
                 var eventType = jObject["e"].Value<string>();
 
@@ -93,7 +84,7 @@ namespace Binance.Api.WebSocket
                         jObject["m"].Value<bool>(),    // is buyer the market maker?
                         jObject["M"].Value<bool>());   // is best price match?
 
-                    var eventArgs = new AggregateTradeEventArgs(eventTime, token, trade);
+                    var eventArgs = new AggregateTradeEventArgs(eventTime, args.Token, trade);
 
                     try
                     {
@@ -107,7 +98,7 @@ namespace Binance.Api.WebSocket
                     catch (OperationCanceledException) { }
                     catch (Exception e)
                     {
-                        if (!token.IsCancellationRequested)
+                        if (!args.Token.IsCancellationRequested)
                         {
                             Logger?.LogError(e, $"{nameof(AggregateTradeWebSocketClient)}: Unhandled aggregate trade event handler exception.");
                         }
@@ -115,15 +106,15 @@ namespace Binance.Api.WebSocket
                 }
                 else
                 {
-                    Logger?.LogWarning($"{nameof(AggregateTradeWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                    Logger?.LogWarning($"{nameof(AggregateTradeWebSocketClient)}.{nameof(OnWebSocketEvent)}: Unexpected event type ({eventType}).");
                 }
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                if (!token.IsCancellationRequested)
+                if (!args.Token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{nameof(AggregateTradeWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
+                    Logger?.LogError(e, $"{nameof(AggregateTradeWebSocketClient)}.{nameof(OnWebSocketEvent)}");
                 }
             }
         }

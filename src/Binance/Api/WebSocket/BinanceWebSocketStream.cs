@@ -15,7 +15,7 @@ namespace Binance.Api.WebSocket
     {
         #region Public Properties
 
-        public IWebSocketClient WebSocket { get; }
+        public IWebSocketClient Client { get; }
 
         public bool IsCombined { get; private set; }
 
@@ -58,7 +58,7 @@ namespace Binance.Api.WebSocket
         {
             Throw.IfNull(client, nameof(client));
 
-            WebSocket = client;
+            Client = client;
             _logger = logger;
 
             _subscribers = new Dictionary<string, IList<Action<WebSocketStreamEventArgs>>>();
@@ -66,13 +66,13 @@ namespace Binance.Api.WebSocket
 
         #endregion Constructors
 
-        #region Public Properties
+        #region Public Methods
 
         public void Subscribe(string stream, Action<WebSocketStreamEventArgs> callback)
         {
             if (!_subscribers.ContainsKey(stream))
             {
-                if (WebSocket.IsStreaming)
+                if (Client.IsStreaming)
                     throw new InvalidOperationException($"{nameof(IWebSocketClient)} is already streaming.");
 
                 _subscribers[stream] = new List<Action<WebSocketStreamEventArgs>>();
@@ -104,7 +104,7 @@ namespace Binance.Api.WebSocket
 
             token.ThrowIfCancellationRequested();
 
-            if (WebSocket.IsStreaming)
+            if (Client.IsStreaming)
                 throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}: Already streaming.");
 
             try
@@ -172,11 +172,11 @@ namespace Binance.Api.WebSocket
                     ? new Uri($"{BaseUri}/stream?streams={string.Join("/", _subscribers.Keys)}")
                     : new Uri($"{BaseUri}/ws/{_subscribers.Keys.Single()}");
 
-                WebSocket.Message += OnClientMessage;
+                Client.Message += OnClientMessage;
 
                 _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: \"{uri.AbsoluteUri}\"");
 
-                await WebSocket.StreamAsync(uri, token)
+                await Client.StreamAsync(uri, token)
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException) { }
@@ -190,14 +190,14 @@ namespace Binance.Api.WebSocket
             }
             finally
             {
-                WebSocket.Message -= OnClientMessage;
+                Client.Message -= OnClientMessage;
 
                 _bufferBlock?.Complete();
                 _actionBlock?.Complete();
             }
         }
 
-        #endregion Public Properties
+        #endregion Public Methods
 
         #region Private Methods
 

@@ -16,14 +16,12 @@ namespace Binance.Tests.Cache
         {
             var user = new BinanceApiUser("api-key");
             var api = new Mock<IBinanceApi>().Object;
-            var client = new Mock<IUserDataWebSocketClient>().Object;
 
-            var cache = new AccountInfoCache(api, client);
+            var cache = new AccountInfoCache(api, new Mock<IUserDataWebSocketClient>().Object);
 
             using (var cts = new CancellationTokenSource())
             {
                 await Assert.ThrowsAsync<ArgumentNullException>("user", () => cache.StreamAsync(null, cts.Token));
-                await Assert.ThrowsAsync<ArgumentException>("token", () => cache.StreamAsync(user, CancellationToken.None));
             }
         }
     }

@@ -35,17 +35,12 @@ namespace Binance.Api.WebSocket
 
         #endregion Public Events
 
-        #region Public Properties
-
-        public IBinanceApiUser User { get; private set; }
-
-        #endregion Public Properties
-
         #region Private Fields
 
         private readonly IBinanceApi _api;
 
-        private string _listenKey;
+        private readonly IDictionary<IBinanceApiUser, string> _listenKeys
+            = new Dictionary<IBinanceApiUser, string>();
 
         private Timer _keepAliveTimer;
 
@@ -74,40 +69,51 @@ namespace Binance.Api.WebSocket
             : base(webSocket, logger)
         {
             Throw.IfNull(api, nameof(api));
+            Throw.IfNull(webSocket, nameof(webSocket));
 
             _api = api;
             _options = options?.Value;
+
+            webSocket.Client.Open += (s, e) =>
+            {
+                var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
+                period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
+
+                _keepAliveTimer = new Timer(OnKeepAliveTimer, CancellationToken.None, period, period);
+            };
+
+            webSocket.Client.Close += async (s, e) =>
+            {
+                _keepAliveTimer.Dispose();
+
+                foreach (var _ in _listenKeys)
+                {
+                    await _api.UserStreamCloseAsync(_.Key, _.Value, CancellationToken.None)
+                        .ConfigureAwait(false);
+                }
+            };
         }
 
         #endregion Construtors
 
         #region Public Methods
 
-        /// <summary>
-        /// TODO: Support multiple user data streams...
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="callback"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        private async Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token = default)
+        public async Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
-            if (User != null)
-                throw new InvalidOperationException($"{nameof(UserDataWebSocketClient)}: Already subscribed to a user.");
-
-            User = user;
+            if (_listenKeys.ContainsKey(user))
+                throw new InvalidOperationException($"{nameof(UserDataWebSocketClient)}: Already subscribed to user.");
 
             try
             {
-                _listenKey = await _api.UserStreamStartAsync(user, token)
+                _listenKeys[user] = await _api.UserStreamStartAsync(user, token)
                     .ConfigureAwait(false);
 
-                if (string.IsNullOrWhiteSpace(_listenKey))
+                if (string.IsNullOrWhiteSpace(_listenKeys[user]))
                     throw new Exception($"{nameof(IUserDataWebSocketClient)}: Failed to get listen key from API.");
 
-                SubscribeTo(_listenKey, callback);
+                SubscribeTo(_listenKeys[user], callback);
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
@@ -120,50 +126,19 @@ namespace Binance.Api.WebSocket
             }
         }
 
-        public virtual async Task StreamAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token)
-        {
-            try
-            {
-                var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
-                period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
-
-                _keepAliveTimer = new Timer(OnKeepAliveTimer, token, period, period);
-
-                await SubscribeAsync(user, callback, token)
-                    .ConfigureAwait(false);
-
-                await WebSocket.StreamAsync(token)
-                    .ConfigureAwait(false);
-            }
-            finally
-            {
-                _keepAliveTimer.Dispose();
-
-                await _api.UserStreamCloseAsync(user, _listenKey, CancellationToken.None)
-                    .ConfigureAwait(false);
-            }
-        }
-
         #endregion Public Methods
 
         #region Protected Methods
 
-        /// <summary>
-        /// Deserialize JSON and raise <see cref="UserDataEventArgs"/> event.
-        /// </summary>
-        /// <param name="json"></param>
-        /// <param name="token"></param>
-        /// <param name="callback"></param>
-        /// <returns></returns>
-        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<UserDataEventArgs>> callbacks)
+        protected override void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<UserDataEventArgs>> callbacks)
         {
-            Throw.IfNullOrWhiteSpace(json, nameof(json));
+            var user = _listenKeys.First(_ => _.Value == args.StreamName).Key;
 
-            Logger?.LogDebug($"{nameof(UserDataWebSocketClient)}: \"{json}\"");
+            Logger?.LogDebug($"{nameof(UserDataWebSocketClient)}: \"{args.Json}\"");
 
             try
             {
-                var jObject = JObject.Parse(json);
+                var jObject = JObject.Parse(args.Json);
 
                 var eventType = jObject["e"].Value<string>();
                 var eventTime = jObject["E"].Value<long>();
@@ -189,7 +164,7 @@ namespace Binance.Api.WebSocket
                             entry["l"].Value<decimal>())) // locked amount
                         .ToList();
 
-                    var eventArgs = new AccountUpdateEventArgs(eventTime, token, new AccountInfo(User, commissions, status, jObject["u"].Value<long>(), balances));
+                    var eventArgs = new AccountUpdateEventArgs(eventTime, args.Token, new AccountInfo(user, commissions, status, jObject["u"].Value<long>(), balances));
 
                     try
                     {
@@ -203,7 +178,7 @@ namespace Binance.Api.WebSocket
                     catch (OperationCanceledException) { }
                     catch (Exception e)
                     {
-                        if (!token.IsCancellationRequested)
+                        if (!args.Token.IsCancellationRequested)
                         {
                             Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}: Unhandled account update event handler exception.");
                         }
@@ -211,7 +186,7 @@ namespace Binance.Api.WebSocket
                 }
                 else if (eventType == "executionReport")
                 {
-                    var order = new Order(User);
+                    var order = new Order(user);
 
                     FillOrder(order, jObject);
 
@@ -236,7 +211,7 @@ namespace Binance.Api.WebSocket
                         
                         var quantityOfLastFilledTrade = jObject["l"].Value<decimal>();
 
-                        var eventArgs = new AccountTradeUpdateEventArgs(eventTime, token, order, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
+                        var eventArgs = new AccountTradeUpdateEventArgs(eventTime, args.Token, order, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
 
                         try
                         {
@@ -250,7 +225,7 @@ namespace Binance.Api.WebSocket
                         catch (OperationCanceledException) { }
                         catch (Exception e)
                         {
-                            if (!token.IsCancellationRequested)
+                            if (!args.Token.IsCancellationRequested)
                             {
                                 Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}: Unhandled trade update event handler exception.");
                             }
@@ -258,7 +233,7 @@ namespace Binance.Api.WebSocket
                     }
                     else // order update event.
                     {
-                        var eventArgs = new OrderUpdateEventArgs(eventTime, token, order, executionType, rejectedReason, newClientOrderId);
+                        var eventArgs = new OrderUpdateEventArgs(eventTime, args.Token, order, executionType, rejectedReason, newClientOrderId);
 
                         try
                         {
@@ -272,7 +247,7 @@ namespace Binance.Api.WebSocket
                         catch (OperationCanceledException) { }
                         catch (Exception e)
                         {
-                            if (!token.IsCancellationRequested)
+                            if (!args.Token.IsCancellationRequested)
                             {
                                 Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}: Unhandled order update event handler exception.");
                             }
@@ -281,15 +256,15 @@ namespace Binance.Api.WebSocket
                 }
                 else
                 {
-                    Logger?.LogWarning($"{nameof(UserDataWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}) - \"{json}\"");
+                    Logger?.LogWarning($"{nameof(UserDataWebSocketClient)}.{nameof(OnWebSocketEvent)}: Unexpected event type ({eventType}) - \"{args.Json}\"");
                 }
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                if (!token.IsCancellationRequested)
+                if (!args.Token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
+                    Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}.{nameof(OnWebSocketEvent)}");
                 }
             }
         }
@@ -306,8 +281,11 @@ namespace Binance.Api.WebSocket
         {
             try
             {
-                await _api.UserStreamKeepAliveAsync(User, _listenKey, (CancellationToken)state)
-                    .ConfigureAwait(false);
+                foreach (var _ in _listenKeys)
+                {
+                    await _api.UserStreamKeepAliveAsync(_.Key, _.Value, (CancellationToken)state)
+                        .ConfigureAwait(false);
+                }
             }
             catch (Exception e)
             {

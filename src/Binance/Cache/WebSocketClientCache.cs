@@ -125,7 +125,7 @@ namespace Binance.Cache
 
             _bufferBlock.LinkTo(_actionBlock);
 
-            client.WebSocket.WebSocket.Close += OnWebSocketClose;
+            client.WebSocket.Client.Close += OnWebSocketClose;
         }
 
         private void OnWebSocketClose(object sender, EventArgs e)

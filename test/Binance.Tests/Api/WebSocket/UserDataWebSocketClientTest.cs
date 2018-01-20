@@ -14,7 +14,11 @@ namespace Binance.Tests.Api.WebSocket
         public async Task StreamThrows()
         {
             var user = new BinanceApiUser("api-key");
-            var client = new UserDataWebSocketClient(new Mock<IBinanceApi>().Object, new Mock<IWebSocketStream>().Object);
+
+            var webSocket = new Mock<IWebSocketStream>();
+            webSocket.SetupGet(_ => _.Client).Returns(new Mock<IWebSocketClient>().Object);
+
+            var client = new UserDataWebSocketClient(new Mock<IBinanceApi>().Object, webSocket.Object);
 
             using (var cts = new CancellationTokenSource())
             {

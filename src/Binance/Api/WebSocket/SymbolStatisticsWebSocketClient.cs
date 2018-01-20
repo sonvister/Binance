@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Binance.Api.WebSocket.Events;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
@@ -66,34 +65,26 @@ namespace Binance.Api.WebSocket
 
         #region Protected Methods
 
-        /// <summary>
-        /// Deserialize JSON and raise <see cref="SymbolStatisticsEventArgs"/> event.
-        /// </summary>
-        /// <param name="json"></param>
-        /// <param name="token"></param>
-        /// <param name="callback"></param>
-        protected override void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<SymbolStatisticsEventArgs>> callbacks)
+        protected override void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<SymbolStatisticsEventArgs>> callbacks)
         {
-            Throw.IfNullOrWhiteSpace(json, nameof(json));
-
-            Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClient)}: \"{json}\"");
+            Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClient)}: \"{args.Json}\"");
 
             try
             {
                 SymbolStatisticsEventArgs eventArgs;
 
-                if (json.IsJsonArray())
+                if (args.Json.IsJsonArray())
                 {
                     // Simulate a single event time.
                     var eventTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-                    var statistics = JArray.Parse(json).Select(DeserializeSymbolStatistics).ToArray();
+                    var statistics = JArray.Parse(args.Json).Select(DeserializeSymbolStatistics).ToArray();
 
-                    eventArgs = new SymbolStatisticsEventArgs(eventTime, token, statistics);
+                    eventArgs = new SymbolStatisticsEventArgs(eventTime, args.Token, statistics);
                 }
                 else
                 {
-                    var jObject = JObject.Parse(json);
+                    var jObject = JObject.Parse(args.Json);
 
                     var eventType = jObject["e"].Value<string>();
 
@@ -103,11 +94,11 @@ namespace Binance.Api.WebSocket
 
                         var statistics = DeserializeSymbolStatistics(jObject);
 
-                        eventArgs = new SymbolStatisticsEventArgs(eventTime, token, statistics);
+                        eventArgs = new SymbolStatisticsEventArgs(eventTime, args.Token, statistics);
                     }
                     else
                     {
-                        Logger?.LogWarning($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}: Unexpected event type ({eventType}).");
+                        Logger?.LogWarning($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(OnWebSocketEvent)}: Unexpected event type ({eventType}).");
                         return;
                     }
                 }
@@ -124,7 +115,7 @@ namespace Binance.Api.WebSocket
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    if (!token.IsCancellationRequested)
+                    if (!args.Token.IsCancellationRequested)
                     {
                         Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClient)}: Unhandled aggregate trade event handler exception.");
                     }
@@ -133,9 +124,9 @@ namespace Binance.Api.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                if (!token.IsCancellationRequested)
+                if (!args.Token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(DeserializeJsonAndRaiseEvent)}");
+                    Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(OnWebSocketEvent)}");
                 }
             }
         }

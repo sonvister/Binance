@@ -63,16 +63,16 @@ namespace Binance.Api.WebSocket
 
         #region Protected Methods
 
-        protected abstract void DeserializeJsonAndRaiseEvent(string json, CancellationToken token, IEnumerable<Action<TEventArgs>> callbacks);
+        protected abstract void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<TEventArgs>> callbacks);
 
-        private void OnBinanceWebSocketEvent(WebSocketStreamEventArgs args)
+        private void WebSocketCallback(WebSocketStreamEventArgs args)
         {
-            DeserializeJsonAndRaiseEvent(args.Json, args.Token, _subscribers.ContainsKey(args.StreamName) ? _subscribers[args.StreamName] : null);
+            OnWebSocketEvent(args, _subscribers.ContainsKey(args.StreamName) ? _subscribers[args.StreamName] : null);
         }
 
         protected void SubscribeTo(string stream, Action<TEventArgs> callback)
         {
-            WebSocket.Subscribe(stream, OnBinanceWebSocketEvent);
+            WebSocket.Subscribe(stream, WebSocketCallback);
 
             if (callback == null)
                 return;

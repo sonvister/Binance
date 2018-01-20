@@ -9,7 +9,7 @@ namespace Binance.Api
     /// <summary>
     /// Binance API user <see cref="IBinanceApiUser"/> implementation.
     /// </summary>
-    public sealed class BinanceApiUser : IBinanceApiUser
+    public sealed class BinanceApiUser : IBinanceApiUser, IEquatable<IBinanceApiUser>
     {
         #region Public Properties
 
@@ -76,6 +76,25 @@ namespace Binance.Api
             }
 
             return BitConverter.ToString(hash).Replace("-", string.Empty);
+        }
+
+        public bool Equals(IBinanceApiUser user)
+        {
+            if (user == null)
+                return false;
+
+            if (ReferenceEquals(this, user))
+                return true;
+
+            return user.ApiKey == ApiKey;
+        }
+
+        public override bool Equals(object obj)
+            => Equals(obj as IBinanceApiUser);
+
+        public override int GetHashCode()
+        {
+            return ApiKey.GetHashCode();
         }
 
         public override string ToString()

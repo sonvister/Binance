@@ -13,7 +13,7 @@ namespace Binance.Api.WebSocket
         /// <summary>
         /// The low-level web socket client.
         /// </summary>
-        IWebSocketClient WebSocket { get; }
+        IWebSocketClient Client { get; }
 
         /// <summary>
         /// Get flag indicating if using combined streams.
