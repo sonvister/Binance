@@ -189,6 +189,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  order <symbol> <ID> cancel                            cancel an order by symbol and ID.");
                 Console.WriteLine("  account|balances                                      display user account information (including balances).");
                 Console.WriteLine("  myTrades <symbol> [limit]                             display user trades of a symbol.");
+                Console.WriteLine("  myTradesFrom <symbol> <tradeId> [limit]               display user trades of a symbol beginning with trade ID.");
                 Console.WriteLine("  myTrades order <symbol> <orderId>                     display user trades of a symbol by order ID.");
                 Console.WriteLine("  address <asset>                                       display user deposit address for an asset.");
                 Console.WriteLine("  deposits [asset]                                      display user deposits of an asset or all deposits.");

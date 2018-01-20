@@ -23,15 +23,15 @@ namespace Binance.Api.WebSocket
         /// <summary>
         /// Subscribe a callback to a stream.
         /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="callback"></param>
+        /// <param name="stream">The stream name.</param>
+        /// <param name="callback">The callback.</param>
         void Subscribe(string stream, Action<WebSocketStreamEventArgs> callback);
 
         /// <summary>
         /// Unsubscribe a callback from a stream.
         /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="callback"></param>
+        /// <param name="stream">The stream name.</param>
+        /// <param name="callback">The callback.</param>
         void Unsubscribe(string stream, Action<WebSocketStreamEventArgs> callback);
 
         /// <summary>
