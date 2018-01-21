@@ -1,12 +1,12 @@
-﻿using Binance.Api;
-using Binance.Api.WebSocket;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance.Api;
 using Binance.Cache;
 using Binance.Market;
+using Binance.WebSocket;
 using Moq;
-using System;
 using Xunit;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Binance.Tests.Cache
 {

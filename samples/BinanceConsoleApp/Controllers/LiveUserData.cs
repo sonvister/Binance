@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Api.WebSocket;
-using Binance.Api.WebSocket.Events;
+using Binance.WebSocket;
+using Binance.WebSocket.Events;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers

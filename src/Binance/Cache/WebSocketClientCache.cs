@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Binance.Api;
-using Binance.Api.WebSocket;
+using Binance.WebSocket;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache

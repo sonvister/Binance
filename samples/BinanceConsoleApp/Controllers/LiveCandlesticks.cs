@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
-using Binance.Api.WebSocket.Events;
 using Binance.Cache;
 using Binance.Market;
+using Binance.WebSocket.Events;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers

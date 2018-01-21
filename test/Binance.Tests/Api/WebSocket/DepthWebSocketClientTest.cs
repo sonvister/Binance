@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Api.WebSocket;
+using Binance.WebSocket;
 using Moq;
 using Xunit;
 

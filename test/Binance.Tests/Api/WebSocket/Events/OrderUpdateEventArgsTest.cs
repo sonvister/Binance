@@ -2,7 +2,7 @@
 using System.Threading;
 using Binance.Account.Orders;
 using Binance.Api;
-using Binance.Api.WebSocket.Events;
+using Binance.WebSocket.Events;
 using Xunit;
 
 namespace Binance.Tests.Api.WebSocket.Events

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Binance.Api.WebSocket;
 using Binance.Cache.Events;
 using Binance.Market;
+using Binance.WebSocket;
 
 namespace Binance.Cache
 {

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Api.WebSocket.Events;
+using Binance.Api;
+using Binance.WebSocket.Events;
 
 // ReSharper disable once CheckNamespace
-namespace Binance.Api.WebSocket
+namespace Binance.WebSocket
 {
     public static class UserDataWebSocketClientExtensions
     {

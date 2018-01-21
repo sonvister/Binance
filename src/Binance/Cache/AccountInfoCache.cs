@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Api;
-using Binance.Api.WebSocket;
-using Binance.Api.WebSocket.Events;
 using Binance.Cache.Events;
+using Binance.WebSocket;
+using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache

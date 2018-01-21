@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Binance.Api;
-using Binance.Api.WebSocket;
-using Binance.Api.WebSocket.Events;
 using Binance.Cache.Events;
 using Binance.Market;
+using Binance.WebSocket;
+using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
