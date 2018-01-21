@@ -46,7 +46,7 @@ namespace Binance.WebSocket
         /// Default constructor provides default web socket client, but no logging.
         /// </summary>
         public BinanceWebSocketStream()
-            : this(new WebSocketClient(), null)
+            : this(new DefaultWebSocketClient(), null)
         { }
 
         /// <summary>

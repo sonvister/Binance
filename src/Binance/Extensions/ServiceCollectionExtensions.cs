@@ -37,7 +37,7 @@ namespace Binance
             services.AddSingleton<IBinanceApi, BinanceApi>();
 
             // WebSocket
-            services.AddTransient<IWebSocketClient, WebSocketClient>();
+            services.AddTransient<IWebSocketClient, DefaultWebSocketClient>();
             services.AddTransient<IWebSocketStream, BinanceWebSocketStream>();
 
             // Cache

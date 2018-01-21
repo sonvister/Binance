@@ -1,0 +1,121 @@
+﻿using System;
+using System.Security.Authentication;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance.WebSocket.Events;
+using Microsoft.Extensions.Logging;
+using WebSocketSharp;
+
+namespace Binance.WebSocket
+{
+    public class WebSocketSharpClient : WebSocketClient
+    {
+        public WebSocketSharpClient(ILogger<WebSocketSharpClient> logger)
+            : base(logger)
+        { }
+
+        public override async Task StreamAsync(Uri uri, CancellationToken token)
+        {
+            if (uri == null)
+                throw new ArgumentNullException(nameof(uri));
+
+            if (!token.CanBeCanceled)
+                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
+
+            token.ThrowIfCancellationRequested();
+
+            IsStreaming = true;
+
+            var tcs = new TaskCompletionSource<object>();
+            token.Register(() => tcs.TrySetCanceled());
+
+            var webSocket = new WebSocketSharp.WebSocket(uri.AbsoluteUri);
+            webSocket.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
+            webSocket.Log.Output = (d, s) => { /* ignore */ };
+
+            webSocket.OnOpen += (s, e) =>
+            {
+                RaiseOpenEvent();
+            };
+
+            webSocket.OnClose += (s, e) =>
+            {
+                tcs.TrySetCanceled();
+            };
+
+            webSocket.OnMessage += (s, evt) =>
+            {
+                try
+                {
+                    if (evt.IsText)
+                    {
+                        var json = evt.Data;
+
+                        if (!string.IsNullOrWhiteSpace(json))
+                        {
+                            RaiseMessageEvent(new WebSocketClientEventArgs(json));
+                        }
+                        else
+                        {
+                            _logger?.LogWarning($"{nameof(WebSocketSharpClient)}.OnMessage: Received empty JSON message.");
+                        }
+                    }
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e)
+                {
+                    if (!token.IsCancellationRequested)
+                    {
+                        _logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.OnMessage: WebSocket read exception.");
+                        throw;
+                    }
+                }
+            };
+
+            Exception exception = null;
+
+            webSocket.OnError += (s, e) =>
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    _logger?.LogError(e.Exception, $"{nameof(WebSocketSharpClient)}.OnError: WebSocket exception.");
+                    exception = e.Exception;
+                    tcs.TrySetCanceled();
+                }
+            };
+
+            try
+            {
+                webSocket.Connect();
+
+                await tcs.Task
+                    .ConfigureAwait(false);
+
+                if (exception != null)
+                    throw exception;
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception e)
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    _logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket connect exception.");
+                    throw;
+                }
+            }
+            finally
+            {
+                IsStreaming = false;
+
+                if (webSocket.IsAlive)
+                {
+                    webSocket.Close(CloseStatusCode.Normal);
+                }
+
+                (webSocket as IDisposable)?.Dispose();
+
+                RaiseCloseEvent();
+            }
+        }
+    }
+}

@@ -6,7 +6,7 @@
     <Version>0.2.0-alpha14</Version>
     <PackageId>Binance</PackageId>
     <Authors>sonvister</Authors>
-    <Company>sonvister</Company>
+    <Company></Company>
     <Product>Binance</Product>
     <AssemblyVersion>0.2.0.14</AssemblyVersion>
     <Description>A full-featured .NET Binance API facade designed for ease of use.</Description>

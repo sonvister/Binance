@@ -32,6 +32,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Binance\Binance.csproj" />
     <ProjectReference Include="..\Binance.Application\Binance.Application.csproj" />
+    <ProjectReference Include="..\Binance.WebSocket.WebSocket4Net\Binance.WebSocket.WebSocket4Net.csproj" />
+    <ProjectReference Include="..\Binance.WebSocket.WebSocketSharp\Binance.WebSocket.WebSocketSharp.csproj" />
   </ItemGroup>
   
   <ItemGroup>

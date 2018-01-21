@@ -70,6 +70,8 @@ namespace BinanceConsoleApp
                 // Configure services.
                ServiceProvider = new ServiceCollection()
                     .AddBinance()
+                    //.AddTransient<IWebSocketClient, WebSocket4NetClient>()
+                    //.AddTransient<IWebSocketClient, WebSocketSharpClient>()
                     .AddOptions()
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .Configure<BinanceApiOptions>(Configuration.GetSection("ApiOptions"))

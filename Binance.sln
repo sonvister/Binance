@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{8871736C-4CDB-47C5-B73A-BED3CA46164A}"
 EndProject
@@ -34,9 +34,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Binance24HourStatistics", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinanceClassicConsoleApp", "samples\BinanceClassicConsoleApp\BinanceClassicConsoleApp.csproj", "{BC43C0B3-1EF1-458E-9A97-B9A4FD9FE5F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinanceWebApp", "samples\BinanceWebApp\BinanceWebApp.csproj", "{A9FA64FF-B0CF-4B5B-8AC9-2491F11747EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinanceWebApp", "samples\BinanceWebApp\BinanceWebApp.csproj", "{A9FA64FF-B0CF-4B5B-8AC9-2491F11747EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinanceClassicWebApp", "samples\BinanceClassicWebApp\BinanceClassicWebApp.csproj", "{6C70F1C4-86BE-40E0-9B9A-6F5373E21F28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Binance.WebSocket.WebSocketSharp", "samples\Binance.WebSocket.WebSocketSharp\Binance.WebSocket.WebSocketSharp.csproj", "{FE699962-ABF9-4BD9-B27A-DA242D6C7F11}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Binance.WebSocket.WebSocket4Net", "samples\Binance.WebSocket.WebSocket4Net\Binance.WebSocket.WebSocket4Net.csproj", "{67C1BE38-527F-424D-85A6-DFD8117E21D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,6 +96,14 @@ Global
 		{6C70F1C4-86BE-40E0-9B9A-6F5373E21F28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C70F1C4-86BE-40E0-9B9A-6F5373E21F28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C70F1C4-86BE-40E0-9B9A-6F5373E21F28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE699962-ABF9-4BD9-B27A-DA242D6C7F11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE699962-ABF9-4BD9-B27A-DA242D6C7F11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE699962-ABF9-4BD9-B27A-DA242D6C7F11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE699962-ABF9-4BD9-B27A-DA242D6C7F11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67C1BE38-527F-424D-85A6-DFD8117E21D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67C1BE38-527F-424D-85A6-DFD8117E21D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67C1BE38-527F-424D-85A6-DFD8117E21D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67C1BE38-527F-424D-85A6-DFD8117E21D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,6 +120,8 @@ Global
 		{BC43C0B3-1EF1-458E-9A97-B9A4FD9FE5F9} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
 		{A9FA64FF-B0CF-4B5B-8AC9-2491F11747EE} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
 		{6C70F1C4-86BE-40E0-9B9A-6F5373E21F28} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
+		{FE699962-ABF9-4BD9-B27A-DA242D6C7F11} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
+		{67C1BE38-527F-424D-85A6-DFD8117E21D1} = {8871736C-4CDB-47C5-B73A-BED3CA46164A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1D98031F-42D5-47D4-8F4E-D2B81629EEA4}

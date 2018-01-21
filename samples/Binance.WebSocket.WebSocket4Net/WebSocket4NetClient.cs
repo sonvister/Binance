@@ -1,0 +1,114 @@
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Binance.WebSocket.Events;
+using Microsoft.Extensions.Logging;
+
+namespace Binance.WebSocket
+{
+    public class WebSocket4NetClient : WebSocketClient
+    {
+        public WebSocket4NetClient(ILogger<WebSocket4NetClient> logger)
+            : base(logger)
+        { }
+
+        public override async Task StreamAsync(Uri uri, CancellationToken token)
+        {
+            if (uri == null)
+                throw new ArgumentNullException(nameof(uri));
+
+            if (!token.CanBeCanceled)
+                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
+
+            token.ThrowIfCancellationRequested();
+
+            IsStreaming = true;
+
+            var tcs = new TaskCompletionSource<object>();
+            token.Register(() => tcs.TrySetCanceled());
+
+            var webSocket = new WebSocket4Net.WebSocket(uri.AbsoluteUri);
+
+            webSocket.Opened += (s, e) =>
+            {
+                RaiseOpenEvent();
+            };
+
+            webSocket.Closed += (s, e) =>
+            {
+                tcs.TrySetCanceled();
+            };
+
+            webSocket.MessageReceived += (s, evt) =>
+            {
+                try
+                {
+                    var json = evt.Message;
+
+                    if (!string.IsNullOrWhiteSpace(json))
+                    {
+                        RaiseMessageEvent(new WebSocketClientEventArgs(json));
+                    }
+                    else
+                    {
+                        _logger?.LogWarning($"{nameof(WebSocket4NetClient)}.MessageReceived: Received empty JSON message.");
+                    }
+                }
+                catch (OperationCanceledException) { }
+                catch (Exception e)
+                {
+                    if (!token.IsCancellationRequested)
+                    {
+                        _logger?.LogError(e, $"{nameof(WebSocket4NetClient)}.MessageReceived: WebSocket read exception.");
+                        throw;
+                    }
+                }
+            };
+
+            Exception exception = null;
+
+            webSocket.Error += (s, e) =>
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    _logger?.LogError(e.Exception, $"{nameof(WebSocket4NetClient)}.Error: WebSocket exception.");
+                    exception = e.Exception;
+                    tcs.TrySetCanceled();
+                }
+            };
+
+            try
+            {
+                webSocket.Open();
+
+                await tcs.Task
+                    .ConfigureAwait(false);
+
+                if (exception != null)
+                    throw exception;
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception e)
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    _logger?.LogError(e, $"{nameof(WebSocket4NetClient)}.{nameof(StreamAsync)}: WebSocket connect exception.");
+                    throw;
+                }
+            }
+            finally
+            {
+                IsStreaming = false;
+
+                if (webSocket.State == WebSocket4Net.WebSocketState.Open)
+                {
+                    webSocket.Close();
+                }
+
+                webSocket.Dispose();
+
+                RaiseCloseEvent();
+            }
+        }
+    }
+}
