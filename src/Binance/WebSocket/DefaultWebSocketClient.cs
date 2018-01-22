@@ -39,8 +39,6 @@ namespace Binance.WebSocket
 
             token.ThrowIfCancellationRequested();
 
-            IsStreaming = true;
-
             var webSocket = new ClientWebSocket();
             webSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
 
@@ -51,8 +49,11 @@ namespace Binance.WebSocket
                     await webSocket.ConnectAsync(uri, token)
                         .ConfigureAwait(false);
 
-                    if (webSocket.State == WebSocketState.Open)
-                        RaiseOpenEvent();
+                    if (webSocket.State != WebSocketState.Open)
+                        throw new Exception($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket connect failed.");
+
+                    IsStreaming = true;
+                    RaiseOpenEvent();
                 }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
@@ -134,18 +135,27 @@ namespace Binance.WebSocket
             }
             finally
             {
-                IsStreaming = false;
-
                 // NOTE: WebSocketState.CloseSent should not be encountered since CloseOutputAsync is not used.
                 if (webSocket.State == WebSocketState.Open || webSocket.State == WebSocketState.CloseReceived)
                 {
-                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
-                        .ConfigureAwait(false);
+                    try
+                    {
+                        await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
+                            .ConfigureAwait(false);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger?.LogError(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
+                    }
                 }
 
                 webSocket?.Dispose();
 
-                RaiseCloseEvent();
+                if (IsStreaming)
+                {
+                    IsStreaming = false;
+                    RaiseCloseEvent();
+                }
             }
         }
 

@@ -69,7 +69,7 @@ namespace Binance.Cache
             if (_isLinked)
             {
                 if (client == Client)
-                    throw new InvalidOperationException($"{GetType().Name} is already linked to this {Client.GetType().Name}.");
+                    return; // ignore.
 
                 throw new InvalidOperationException($"{GetType().Name} is linked to another {Client.GetType().Name}.");
             }
@@ -124,13 +124,6 @@ namespace Binance.Cache
             });
 
             _bufferBlock.LinkTo(_actionBlock);
-
-            client.WebSocket.Client.Close += OnWebSocketClose;
-        }
-
-        private void OnWebSocketClose(object sender, EventArgs e)
-        {
-            UnLink();
         }
 
         public virtual void UnLink()
