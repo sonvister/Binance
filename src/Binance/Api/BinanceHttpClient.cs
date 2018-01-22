@@ -27,6 +27,11 @@ namespace Binance.Api
 
         #region Public Properties
 
+        /// <summary>
+        /// Singleton.
+        /// </summary>
+        public static BinanceHttpClient Instance => Initializer.Value;
+
         public ITimestampProvider TimestampProvider { get; set; }
 
         public IApiRateLimiter RateLimiter { get; set; }
@@ -36,11 +41,6 @@ namespace Binance.Api
         #endregion Public Properties
 
         #region Internal
-
-        /// <summary>
-        /// Singleton.
-        /// </summary>
-        public static BinanceHttpClient Instance => Initializer.Value;
 
         /// <summary>
         /// Lazy initializer.

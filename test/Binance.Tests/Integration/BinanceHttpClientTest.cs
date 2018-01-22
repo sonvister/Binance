@@ -30,7 +30,7 @@ namespace Binance.Tests.Integration
         [Fact]
         public async Task Ping()
         {
-            Assert.Equal(BinanceApi.SuccessfulTestResponse, await _api.PingAsync());
+            Assert.Equal(BinanceHttpClient.SuccessfulTestResponse, await _api.PingAsync());
         }
 
         [Fact]

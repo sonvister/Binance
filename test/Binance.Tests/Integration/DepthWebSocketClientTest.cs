@@ -5,7 +5,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Api.WebSocket;
+using Binance.WebSocket;
 using Moq;
 using Xunit;
 
@@ -16,21 +16,21 @@ namespace Binance.Tests.Integration
         [Fact]
         public Task SubscribeThrows()
         {
-            var client = new DepthWebSocketClient(new Mock<IWebSocketClient>().Object);
+            var client = new DepthWebSocketClient(new Mock<IWebSocketStream>().Object);
 
             using (var cts = new CancellationTokenSource())
-                return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.SubscribeAsync(null, cts.Token));
+                return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.StreamAsync(null, cts.Token));
         }
 
         [Fact]
         public async Task Properties()
         {
             var symbol = Symbol.BTC_USDT;
-            var client = new DepthWebSocketClient(new WebSocketClient());
+            var client = new DepthWebSocketClient(new BinanceWebSocketStream());
 
             using (var cts = new CancellationTokenSource())
             {
-                var task = client.SubscribeAsync(symbol, cts.Token);
+                var task = client.StreamAsync(symbol, cts.Token);
 
                 Assert.Equal(symbol, client.Symbol);
 
@@ -43,13 +43,13 @@ namespace Binance.Tests.Integration
         public Task SubscribeTwiceThrows()
         {
             var symbol = Symbol.BTC_USDT;
-            var client = new DepthWebSocketClient(new WebSocketClient());
+            var client = new DepthWebSocketClient(new BinanceWebSocketStream());
 
             using (var cts = new CancellationTokenSource())
             {
-                client.SubscribeAsync(symbol, cts.Token);
+                client.StreamAsync(symbol, cts.Token);
 
-                return Assert.ThrowsAsync<InvalidOperationException>(() => client.SubscribeAsync(symbol, cts.Token));
+                return Assert.ThrowsAsync<InvalidOperationException>(() => client.StreamAsync(symbol, cts.Token));
             }
         }
 
@@ -57,11 +57,11 @@ namespace Binance.Tests.Integration
         public async Task SubscribeCallback()
         {
             var symbol = Symbol.BTC_USDT;
-            var client = new DepthWebSocketClient(new WebSocketClient());
+            var client = new DepthWebSocketClient(new BinanceWebSocketStream());
 
             using (var cts = new CancellationTokenSource())
             {
-                var task = client.SubscribeAsync(symbol, args =>
+                var task = client.StreamAsync(symbol, args =>
                 {
                     // NOTE: The first event will cancel the client ...could be a while.
                     // ReSharper disable once AccessToDisposedClosure
