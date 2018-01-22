@@ -416,7 +416,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest("/api/v3/order", 2)
+            var request = new BinanceHttpRequest("/api/v3/order")
             {
                 ApiKey = user.ApiKey
             };
@@ -490,7 +490,7 @@ namespace Binance.Api
         }
 
         /// <summary>
-        /// Get all open orders on a symbol.
+        /// Get all open orders on a symbol or all symbols.
         /// </summary>
         /// <param name="client"></param>
         /// <param name="user"></param>
@@ -506,7 +506,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest("/api/v3/openOrders")
+            var request = new BinanceHttpRequest("/api/v3/openOrders", string.IsNullOrWhiteSpace(symbol) ? Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading) / 2 : 1)
             {
                 ApiKey = user.ApiKey
             };
@@ -545,7 +545,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest("/api/v3/allOrders", 20)
+            var request = new BinanceHttpRequest("/api/v3/allOrders", 15)
             {
                 ApiKey = user.ApiKey
             };
@@ -619,7 +619,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest("/api/v3/myTrades", 20)
+            var request = new BinanceHttpRequest("/api/v3/myTrades", 15)
             {
                 ApiKey = user.ApiKey
             };
