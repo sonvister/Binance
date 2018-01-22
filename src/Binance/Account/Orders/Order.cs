@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Binance.Api;
 
 namespace Binance.Account.Orders
@@ -85,6 +86,11 @@ namespace Binance.Account.Orders
         /// </summary>
         public bool IsWorking { get; internal set; }
 
+        /// <summary>
+        /// Get the fills.
+        /// </summary>
+        public IEnumerable<Fill> Fills { get; internal set; }
+
         #endregion Public Properties
 
         #region Constructors
@@ -107,6 +113,7 @@ namespace Binance.Account.Orders
         /// <param name="icebergQuantity"></param>
         /// <param name="timestamp"></param>
         /// <param name="isWorking"></param>
+        /// <param name="fills"></param>
         public Order(
             IBinanceApiUser user,
             string symbol,
@@ -122,7 +129,8 @@ namespace Binance.Account.Orders
             decimal stopPrice,
             decimal icebergQuantity,
             long timestamp,
-            bool isWorking)
+            bool isWorking,
+            IEnumerable<Fill> fills = null)
             : this(user)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
@@ -159,6 +167,8 @@ namespace Binance.Account.Orders
             IcebergQuantity = icebergQuantity;
             Timestamp = timestamp;
             IsWorking = isWorking;
+
+            Fills = fills ?? new Fill[] { };
         }
 
         /// <summary>

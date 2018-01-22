@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api;
 using Newtonsoft.Json;
@@ -24,6 +25,12 @@ namespace Binance.Serialization
         private const string Key_StopPrice = "stopPrice";
         private const string Key_IcebergQuantity = "icebergQty";
         private const string Key_IsWorking = "isWorking";
+        private const string Key_Fills = "fills";
+        private const string Key_Fill_Price = "price";
+        private const string Key_Fill_Quantity = "qty";
+        private const string Key_Fill_Commission = "commission";
+        private const string Key_Fill_CommissionAsset = "commissionAsset";
+        private const string Key_Fill_TradeId = "tradeId";
 
         public virtual Order Deserialize(string json, Order order)
         {
@@ -73,6 +80,25 @@ namespace Binance.Serialization
                 new JProperty(Key_IsWorking, order.IsWorking)
             };
 
+            if (order.Fills.Any())
+            {
+                var jArray = new JArray();
+
+                foreach (var fill in order.Fills)
+                {
+                    jArray.Add(new JObject
+                    {
+                        new JProperty(Key_Fill_Price, fill.Price.ToString(CultureInfo.InvariantCulture)),
+                        new JProperty(Key_Fill_Quantity, fill.Quantity.ToString(CultureInfo.InvariantCulture)),
+                        new JProperty(Key_Fill_Commission, fill.Commission.ToString(CultureInfo.InvariantCulture)),
+                        new JProperty(Key_Fill_CommissionAsset, fill.CommissionAsset),
+                        new JProperty(Key_Fill_TradeId, fill.TradeId)
+                    });
+                }
+
+                jObject.Add(new JProperty(Key_Fills, jArray));
+            }
+
             return jObject.ToString(Formatting.None);
         }
 
@@ -92,6 +118,20 @@ namespace Binance.Serialization
             order.StopPrice = jToken[Key_StopPrice]?.Value<decimal>() ?? order.StopPrice;
             order.IcebergQuantity = jToken[Key_IcebergQuantity]?.Value<decimal>() ?? order.IcebergQuantity;
             order.IsWorking = jToken[Key_IsWorking]?.Value<bool>() ?? order.IsWorking;
+
+            var fills = jToken[Key_Fills]?
+                    .Select(entry => new Fill(
+                        entry[Key_Fill_Price].Value<decimal>(),
+                        entry[Key_Fill_Quantity].Value<decimal>(),
+                        entry[Key_Fill_Commission].Value<decimal>(),
+                        entry[Key_Fill_CommissionAsset].Value<string>(),
+                        entry[Key_Fill_TradeId].Value<long>()))
+                    .ToArray();
+
+            if (fills != null)
+            {
+                order.Fills = fills;
+            }
 
             return order;
         }

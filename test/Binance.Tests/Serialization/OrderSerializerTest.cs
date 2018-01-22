@@ -1,4 +1,5 @@
 ﻿using System;
+using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api;
 using Binance.Serialization;
@@ -26,8 +27,12 @@ namespace Binance.Tests.Serialization
             const decimal icebergQuantity = 0.1m;
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             const bool isWorking = true;
+            Fill[] fills =
+            {
+                new Fill(price, originalQuantity, 0.001m, "BNB", 12345678990)
+            };
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking, fills);
 
             var serializer = new OrderSerializer();
 

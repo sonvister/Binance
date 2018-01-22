@@ -63,6 +63,11 @@ namespace BinanceConsoleApp.Controllers
                     lock (Program.ConsoleSync)
                     {
                         Console.WriteLine($">> MARKET {order.Side} order (ID: {order.Id}) placed for {order.OriginalQuantity:0.00000000} {order.Symbol} @ {order.Price:0.00000000}");
+
+                        foreach (var fill in order.Fills)
+                        {
+                            Console.WriteLine($"   {fill.Quantity:0.00000000} @ {fill.Price:0.00000000}  fee: {fill.Commission:0.00000000} {fill.CommissionAsset}  [Trade ID: {fill.TradeId}]");
+                        }
                     }
                 }
             }
