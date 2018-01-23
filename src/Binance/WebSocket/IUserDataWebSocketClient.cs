@@ -8,7 +8,7 @@ namespace Binance.WebSocket
 {
     public interface IUserDataWebSocketClient : IBinanceWebSocketClient
     {
-        #region Public Events
+        #region Events
 
         /// <summary>
         /// The account update event.
@@ -25,9 +25,9 @@ namespace Binance.WebSocket
         /// </summary>
         event EventHandler<AccountTradeUpdateEventArgs> TradeUpdate;
 
-        #endregion Public Events
+        #endregion Events
 
-        #region Public Methods
+        #region Methods
 
         /// <summary>
         /// Subscribe to the specified user (for use with combined streams).
@@ -39,6 +39,6 @@ namespace Binance.WebSocket
         /// <returns></returns>
         Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token = default);
 
-        #endregion Public Methods
+        #endregion Methods
     }
 }

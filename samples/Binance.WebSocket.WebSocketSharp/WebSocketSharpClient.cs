@@ -6,6 +6,7 @@ using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 using WebSocketSharp;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.WebSocket
 {
     public class WebSocketSharpClient : WebSocketClient
@@ -37,27 +38,24 @@ namespace Binance.WebSocket
                 RaiseOpenEvent();
             };
 
-            webSocket.OnClose += (s, e) =>
-            {
-                tcs.TrySetCanceled();
-            };
+            webSocket.OnClose += (s, e) => tcs.TrySetCanceled();
 
             webSocket.OnMessage += (s, evt) =>
             {
                 try
                 {
-                    if (evt.IsText)
-                    {
-                        var json = evt.Data;
+                    if (!evt.IsText)
+                        return;
 
-                        if (!string.IsNullOrWhiteSpace(json))
-                        {
-                            RaiseMessageEvent(new WebSocketClientEventArgs(json));
-                        }
-                        else
-                        {
-                            _logger?.LogWarning($"{nameof(WebSocketSharpClient)}.OnMessage: Received empty JSON message.");
-                        }
+                    var json = evt.Data;
+
+                    if (!string.IsNullOrWhiteSpace(json))
+                    {
+                        RaiseMessageEvent(new WebSocketClientEventArgs(json));
+                    }
+                    else
+                    {
+                        Logger?.LogWarning($"{nameof(WebSocketSharpClient)}.OnMessage: Received empty JSON message.");
                     }
                 }
                 catch (OperationCanceledException) { }
@@ -65,7 +63,7 @@ namespace Binance.WebSocket
                 {
                     if (!token.IsCancellationRequested)
                     {
-                        _logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.OnMessage: WebSocket read exception.");
+                        Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.OnMessage: WebSocket read exception.");
                         throw;
                     }
                 }
@@ -75,12 +73,12 @@ namespace Binance.WebSocket
 
             webSocket.OnError += (s, e) =>
             {
-                if (!token.IsCancellationRequested)
-                {
-                    _logger?.LogError(e.Exception, $"{nameof(WebSocketSharpClient)}.OnError: WebSocket exception.");
-                    exception = e.Exception;
-                    tcs.TrySetCanceled();
-                }
+                if (token.IsCancellationRequested)
+                    return;
+
+                Logger?.LogError(e.Exception, $"{nameof(WebSocketSharpClient)}.OnError: WebSocket exception.");
+                exception = e.Exception;
+                tcs.TrySetCanceled();
             };
 
             try
@@ -98,7 +96,7 @@ namespace Binance.WebSocket
             {
                 if (!token.IsCancellationRequested)
                 {
-                    _logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket connect exception.");
+                    Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket connect exception.");
                     throw;
                 }
             }
@@ -109,11 +107,11 @@ namespace Binance.WebSocket
                     try { webSocket.Close(CloseStatusCode.Normal); }
                     catch (Exception e)
                     {
-                        _logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
+                        Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
                     }
                 }
 
-                (webSocket as IDisposable)?.Dispose();
+                ((IDisposable) webSocket).Dispose();
 
                 if (IsStreaming)
                 {

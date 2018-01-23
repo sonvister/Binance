@@ -59,9 +59,7 @@ namespace Binance.Cache
 
         protected override Task<AccountInfoCacheEventArgs> OnAction(UserDataEventArgs @event)
         {
-            var accountInfoEvent = @event as AccountUpdateEventArgs;
-
-            if (accountInfoEvent == null)
+            if (!(@event is AccountUpdateEventArgs accountInfoEvent))
                 return null;
 
             AccountInfo = accountInfoEvent.AccountInfo;

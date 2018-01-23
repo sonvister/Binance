@@ -8,16 +8,16 @@ namespace Binance.Cache
 {
     public interface ISymbolStatisticsCache
     {
-        #region Public Events
+        #region Events
 
         /// <summary>
         /// SymbolStatistics cache update event.
         /// </summary>
         event EventHandler<SymbolStatisticsCacheEventArgs> Update;
 
-        #endregion Public Events
+        #endregion Events
 
-        #region Public Properties
+        #region  Properties
 
         /// <summary>
         /// The symbol statistics. Can be empty if not yet synchronized.
@@ -29,22 +29,22 @@ namespace Binance.Cache
         /// </summary>
         ISymbolStatisticsWebSocketClient Client { get; }
 
-        #endregion Public Properties
+        #endregion Properties
 
-        #region Public Methods
+        #region Methods
 
         /// <summary>
         /// Get statistics for a symbol.
         /// </summary>
         /// <param name="symbol"></param>
-        /// <returns><see cref="SymbolStatistics"> or null if not subscribed to symbol or cache is not initialized.</returns>
+        /// <returns><see cref="SymbolStatistics"/> or null if not subscribed to symbol or cache is not initialized.</returns>
         SymbolStatistics GetStatistics(string symbol);
 
         /// <summary>
         /// Get statistics for multiple symbols.
         /// </summary>
         /// <param name="symbols"></param>
-        /// <returns><see cref="SymbolStatistics"> or null if not subscribed to a symbol or cache is not initialized.</returns>
+        /// <returns><see cref="SymbolStatistics"/> or null if not subscribed to a symbol or cache is not initialized.</returns>
         IEnumerable<SymbolStatistics> GetStatistics(params string[] symbols);
 
         /// <summary>
@@ -73,6 +73,6 @@ namespace Binance.Cache
         /// </summary>
         void UnLink();
 
-        #endregion Public Methods
+        #endregion Methods
     }
 }

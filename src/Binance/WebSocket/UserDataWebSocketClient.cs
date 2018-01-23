@@ -56,14 +56,14 @@ namespace Binance.WebSocket
         /// but no options support or logging.
         /// </summary>
         public UserDataWebSocketClient()
-            : this(new BinanceApi(), new BinanceWebSocketStream(), null)
+            : this(new BinanceApi(), new BinanceWebSocketStream())
         { }
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="api">The Binance API.</param>
-        /// <param name="client">The WebSocket client.</param>
+        /// <param name="webSocket">The WebSocket client.</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
         public UserDataWebSocketClient(IBinanceApi api, IWebSocketStream webSocket, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)

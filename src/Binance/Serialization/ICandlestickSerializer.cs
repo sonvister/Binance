@@ -17,6 +17,7 @@ namespace Binance.Serialization
         /// </summary>
         /// <param name="json"></param>
         /// <param name="symbol"></param>
+        /// <param name="interval"></param>
         /// <returns></returns>
         IEnumerable<Candlestick> DeserializeMany(string json, string symbol, CandlestickInterval interval);
 

@@ -9,19 +9,19 @@ namespace Binance.Serialization
 {
     public class CandlestickSerializer : ICandlestickSerializer
     {
-        private const string Key_Symbol = "symbol";
-        private const string Key_Interval = "interval";
-        private const string Key_OpenTime = "openTime";
-        private const string Key_Open = "open";
-        private const string Key_High = "high";
-        private const string Key_Low = "low";
-        private const string Key_Close = "close";
-        private const string Key_Volume = "volume";
-        private const string Key_CloseTime = "closeTime";
-        private const string Key_QuoteAssetVolume = "quoteAssetVolume";
-        private const string Key_NumberOfTrades = "numberOfTrades";
-        private const string Key_TakerBuyBaseAssetVolume = "takerBuyBaseAssetVolume";
-        private const string Key_TakerBuyQuoteAssetVolume = "takerBuyQuoteAssetVolume";
+        private const string KeySymbol = "symbol";
+        private const string KeyInterval = "interval";
+        private const string KeyOpenTime = "openTime";
+        private const string KeyOpen = "open";
+        private const string KeyHigh = "high";
+        private const string KeyLow = "low";
+        private const string KeyClose = "close";
+        private const string KeyVolume = "volume";
+        private const string KeyCloseTime = "closeTime";
+        private const string KeyQuoteAssetVolume = "quoteAssetVolume";
+        private const string KeyNumberOfTrades = "numberOfTrades";
+        private const string KeyTakerBuyBaseAssetVolume = "takerBuyBaseAssetVolume";
+        private const string KeyTakerBuyQuoteAssetVolume = "takerBuyQuoteAssetVolume";
 
         public virtual Candlestick Deserialize(string json)
         {
@@ -30,19 +30,19 @@ namespace Binance.Serialization
             var jToken = JToken.Parse(json);
 
             return new Candlestick(
-                jToken[Key_Symbol]?.Value<string>(),
-                jToken[Key_Interval].Value<string>().ToCandlestickInterval(),
-                jToken[Key_OpenTime].Value<long>(),
-                jToken[Key_Open].Value<decimal>(),
-                jToken[Key_High].Value<decimal>(),
-                jToken[Key_Low].Value<decimal>(),
-                jToken[Key_Close].Value<decimal>(),
-                jToken[Key_Volume].Value<decimal>(),
-                jToken[Key_CloseTime].Value<long>(),
-                jToken[Key_QuoteAssetVolume].Value<decimal>(),
-                jToken[Key_NumberOfTrades].Value<long>(),
-                jToken[Key_TakerBuyBaseAssetVolume].Value<decimal>(),
-                jToken[Key_TakerBuyQuoteAssetVolume].Value<decimal>());
+                jToken[KeySymbol]?.Value<string>(),
+                jToken[KeyInterval].Value<string>().ToCandlestickInterval(),
+                jToken[KeyOpenTime].Value<long>(),
+                jToken[KeyOpen].Value<decimal>(),
+                jToken[KeyHigh].Value<decimal>(),
+                jToken[KeyLow].Value<decimal>(),
+                jToken[KeyClose].Value<decimal>(),
+                jToken[KeyVolume].Value<decimal>(),
+                jToken[KeyCloseTime].Value<long>(),
+                jToken[KeyQuoteAssetVolume].Value<decimal>(),
+                jToken[KeyNumberOfTrades].Value<long>(),
+                jToken[KeyTakerBuyBaseAssetVolume].Value<decimal>(),
+                jToken[KeyTakerBuyQuoteAssetVolume].Value<decimal>());
         }
 
         public virtual IEnumerable<Candlestick> DeserializeMany(string json, string symbol, CandlestickInterval interval)
@@ -74,19 +74,19 @@ namespace Binance.Serialization
 
             var jObject = new JObject
             {
-                new JProperty(Key_Symbol, candlestick.Symbol),
-                new JProperty(Key_Interval, candlestick.Interval.AsString()),
-                new JProperty(Key_OpenTime, candlestick.OpenTime),
-                new JProperty(Key_Open, candlestick.Open.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_High, candlestick.High.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_Low, candlestick.Low.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_Close, candlestick.Close.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_Volume, candlestick.Volume.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_CloseTime, candlestick.CloseTime),
-                new JProperty(Key_QuoteAssetVolume, candlestick.QuoteAssetVolume.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_NumberOfTrades, candlestick.NumberOfTrades),
-                new JProperty(Key_TakerBuyBaseAssetVolume, candlestick.TakerBuyBaseAssetVolume.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_TakerBuyQuoteAssetVolume, candlestick.TakerBuyQuoteAssetVolume.ToString(CultureInfo.InvariantCulture))
+                new JProperty(KeySymbol, candlestick.Symbol),
+                new JProperty(KeyInterval, candlestick.Interval.AsString()),
+                new JProperty(KeyOpenTime, candlestick.OpenTime),
+                new JProperty(KeyOpen, candlestick.Open.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyHigh, candlestick.High.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyLow, candlestick.Low.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyClose, candlestick.Close.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyVolume, candlestick.Volume.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyCloseTime, candlestick.CloseTime),
+                new JProperty(KeyQuoteAssetVolume, candlestick.QuoteAssetVolume.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyNumberOfTrades, candlestick.NumberOfTrades),
+                new JProperty(KeyTakerBuyBaseAssetVolume, candlestick.TakerBuyBaseAssetVolume.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyTakerBuyQuoteAssetVolume, candlestick.TakerBuyQuoteAssetVolume.ToString(CultureInfo.InvariantCulture))
             };
 
             return jObject.ToString(Formatting.None);

@@ -83,12 +83,12 @@ namespace Binance.Cache
             {
                 Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-                if (!_symbols.Contains(symbol))
-                {
-                    _symbols.Add(symbol);
+                if (_symbols.Contains(symbol))
+                    continue;
 
-                    Client.Subscribe(symbol, ClientCallback);
-                }
+                _symbols.Add(symbol);
+
+                Client.Subscribe(symbol, ClientCallback);
             }
         }
 

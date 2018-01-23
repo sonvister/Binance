@@ -14,7 +14,6 @@ namespace Binance.Tests.Cache
         [Fact]
         public async Task StreamThrows()
         {
-            var user = new BinanceApiUser("api-key");
             var api = new Mock<IBinanceApi>().Object;
 
             var cache = new AccountInfoCache(api, new Mock<IUserDataWebSocketClient>().Object);

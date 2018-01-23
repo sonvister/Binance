@@ -5,16 +5,16 @@ namespace Binance.WebSocket
 {
     public interface ISymbolStatisticsWebSocketClient : IBinanceWebSocketClient
     {
-        #region Public Events
+        #region Events
 
         /// <summary>
         /// The symbol statistics event.
         /// </summary>
         event EventHandler<SymbolStatisticsEventArgs> StatisticsUpdate;
 
-        #endregion Public Events
+        #endregion Events
 
-        #region Public Methods
+        #region Methods
 
         /// <summary>
         /// Subscribe to all symbols (for use with combined streams).
@@ -31,6 +31,6 @@ namespace Binance.WebSocket
         /// <param name="callback">An event callback.</param>
         void Subscribe(string symbol, Action<SymbolStatisticsEventArgs> callback);
 
-        #endregion Public Methods
+        #endregion Methods
     }
 }

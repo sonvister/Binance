@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks.Dataflow;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
@@ -20,20 +19,11 @@ namespace Binance.WebSocket
 
         #region Protected Fields
 
-        protected BufferBlock<string> BufferBlock;
-        protected ActionBlock<string> ActionBlock;
-
         protected readonly ILogger Logger;
 
-        protected readonly IDictionary<string, IList<Action<TEventArgs>>> _subscribers;
+        protected readonly IDictionary<string, IList<Action<TEventArgs>>> Subscribers;
 
         #endregion Protected Fields
-
-        #region Private Fields
-
-        private int _maxBufferCount;
-
-        #endregion Private Fields
 
         #region Constructors
 
@@ -49,7 +39,7 @@ namespace Binance.WebSocket
             WebSocket = webSocket;
             Logger = logger;
 
-            _subscribers = new Dictionary<string, IList<Action<TEventArgs>>>();
+            Subscribers = new Dictionary<string, IList<Action<TEventArgs>>>();
         }
 
         #endregion Constructors
@@ -60,7 +50,7 @@ namespace Binance.WebSocket
 
         private void WebSocketCallback(WebSocketStreamEventArgs args)
         {
-            OnWebSocketEvent(args, _subscribers.ContainsKey(args.StreamName) ? _subscribers[args.StreamName] : null);
+            OnWebSocketEvent(args, Subscribers.ContainsKey(args.StreamName) ? Subscribers[args.StreamName] : null);
         }
 
         protected void SubscribeTo(string stream, Action<TEventArgs> callback)
@@ -70,37 +60,17 @@ namespace Binance.WebSocket
             if (callback == null)
                 return;
 
-            if (!_subscribers.ContainsKey(stream))
+            if (!Subscribers.ContainsKey(stream))
             {
-                _subscribers[stream] = new List<Action<TEventArgs>>();
+                Subscribers[stream] = new List<Action<TEventArgs>>();
             }
 
-            if (!_subscribers[stream].Contains(callback))
+            if (!Subscribers[stream].Contains(callback))
             {
-                _subscribers[stream].Add(callback);
+                Subscribers[stream].Add(callback);
             }
         }
 
         #endregion Protected Methods
-
-        #region Private Methods
-
-        private void OnClientMessage(object sender, WebSocketClientEventArgs e)
-        {
-            // Provides buffering and single-threaded execution.
-            BufferBlock.Post(e.Message);
-
-            var count = BufferBlock.Count;
-            if (count <= _maxBufferCount)
-                return;
-
-            _maxBufferCount = count;
-            if (_maxBufferCount > 1)
-            {
-                Logger?.LogTrace($"{GetType().Name} - Maximum buffer block count: {_maxBufferCount}");
-            }
-        }
-
-        #endregion Private Methods
     }
 }

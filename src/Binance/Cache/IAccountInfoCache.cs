@@ -10,16 +10,16 @@ namespace Binance.Cache
 {
     public interface IAccountInfoCache
     {
-        #region Public Events
+        #region Events
 
         /// <summary>
         /// AccountInfo cache update event.
         /// </summary>
         event EventHandler<AccountInfoCacheEventArgs> Update;
 
-        #endregion Public Events
+        #endregion Events
 
-        #region Public Properties
+        #region Properties
 
         /// <summary>
         /// The account information. Can be null if not yet synchronized or out-of-sync.
@@ -31,9 +31,9 @@ namespace Binance.Cache
         /// </summary>
         IUserDataWebSocketClient Client { get; }
 
-        #endregion Public Properties
+        #endregion Properties
 
-        #region Public Methods
+        #region Methods
 
         /// <summary>
         /// 
@@ -57,6 +57,6 @@ namespace Binance.Cache
         /// </summary>
         void UnLink();
 
-        #endregion Public Methods
+        #endregion Methods
     }
 }

@@ -13,29 +13,29 @@ namespace Binance.Serialization
         /// </summary>
         public bool SerializeSymbol { get; set; } = true;
 
-        private const string Key_Symbol = "symbol";
-        private const string Key_LastUpdateId = "lastUpdateId";
-        private const string Key_Bids = "bids";
-        private const string Key_Asks = "asks";
+        private const string KeySymbol = "symbol";
+        private const string KeyLastUpdateId = "lastUpdateId";
+        private const string KeyBids = "bids";
+        private const string KeyAsks = "asks";
 
         public override bool CanConvert(Type objectType)
         {
-            return (objectType == typeof(OrderBook));
+            return objectType == typeof(OrderBook);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var jObject = JObject.Load(reader);
 
-            var symbol = jObject[Key_Symbol].Value<string>();
+            var symbol = jObject[KeySymbol].Value<string>();
 
-            var lastUpdateId = jObject[Key_LastUpdateId].Value<long>();
+            var lastUpdateId = jObject[KeyLastUpdateId].Value<long>();
 
-            var bids = jObject[Key_Bids]
+            var bids = jObject[KeyBids]
                 .Select(_ => (_[0].Value<decimal>(), _[1].Value<decimal>()))
                 .ToArray();
 
-            var asks = jObject[Key_Asks]
+            var asks = jObject[KeyAsks]
                 .Select(_ => (_[0].Value<decimal>(), _[1].Value<decimal>()))
                 .ToArray();
 
@@ -44,23 +44,21 @@ namespace Binance.Serialization
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var orderBook = value as OrderBook;
-
-            if (orderBook == null)
+            if (!(value is OrderBook orderBook))
                 return;
 
             var jObject = new JObject();
 
             if (SerializeSymbol)
             {
-                jObject.Add(new JProperty(Key_Symbol, orderBook.Symbol));
+                jObject.Add(new JProperty(KeySymbol, orderBook.Symbol));
             }
 
-            jObject.Add(new JProperty(Key_LastUpdateId, orderBook.LastUpdateId));
+            jObject.Add(new JProperty(KeyLastUpdateId, orderBook.LastUpdateId));
 
-            jObject.Add(new JProperty(Key_Bids, orderBook.Bids.Select(_ => new JArray { _.Price, _.Quantity })));
+            jObject.Add(new JProperty(KeyBids, orderBook.Bids.Select(_ => new JArray { _.Price, _.Quantity })));
 
-            jObject.Add(new JProperty(Key_Asks, orderBook.Asks.Select(_ => new JArray { _.Price, _.Quantity })));
+            jObject.Add(new JProperty(KeyAsks, orderBook.Asks.Select(_ => new JArray { _.Price, _.Quantity })));
 
             jObject.WriteTo(writer);
         }

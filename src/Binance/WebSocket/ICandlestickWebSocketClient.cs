@@ -6,16 +6,16 @@ namespace Binance.WebSocket
 {
     public interface ICandlestickWebSocketClient : IBinanceWebSocketClient
     {
-        #region Public Events
+        #region Events
 
         /// <summary>
         /// The candlestick event.
         /// </summary>
         event EventHandler<CandlestickEventArgs> Candlestick;
 
-        #endregion Public Events
+        #endregion Events
 
-        #region Public Methods
+        #region Methods
 
         /// <summary>
         /// Subscribe to the specified symbol (for use with combined streams).
@@ -26,6 +26,6 @@ namespace Binance.WebSocket
         /// <param name="callback">An event callback.</param>
         void Subscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback);
 
-        #endregion Public Methods
+        #endregion Methods
     }
 }

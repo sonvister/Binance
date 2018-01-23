@@ -7,7 +7,7 @@ namespace Binance.Serialization
     {
         public OrderBookJsonConverter JsonConverter { get; }
 
-        private JsonSerializerSettings _settings;
+        private readonly JsonSerializerSettings _settings;
 
         public OrderBookSerializer()
         {

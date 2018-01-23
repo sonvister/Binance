@@ -13,7 +13,6 @@ namespace Binance.WebSocket
         /// </summary>
         /// <param name="client"></param>
         /// <param name="symbol"></param>
-        /// <param name="token"></param>
         /// <returns></returns>
         public static void Subscribe(this IDepthWebSocketClient client, string symbol)
             => client.Subscribe(symbol, default, null);
@@ -24,7 +23,6 @@ namespace Binance.WebSocket
         /// <param name="client"></param>
         /// <param name="symbol"></param>
         /// <param name="limit"></param>
-        /// <param name="token"></param>
         /// <returns></returns>
         public static void Subscribe(this IDepthWebSocketClient client, string symbol, int limit)
             => client.Subscribe(symbol, limit, null);
@@ -35,7 +33,6 @@ namespace Binance.WebSocket
         /// <param name="client"></param>
         /// <param name="symbol"></param>
         /// <param name="callback"></param>
-        /// <param name="token"></param>
         /// <returns></returns>
         public static void Subscribe(this IDepthWebSocketClient client, string symbol, Action<DepthUpdateEventArgs> callback)
             => client.Subscribe(symbol, default, callback);

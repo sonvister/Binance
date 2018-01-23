@@ -9,11 +9,11 @@ namespace Binance.Serialization
 {
     public class OrderBookTopSerializer : IOrderBookTopSerializer
     {
-        private const string Key_Symbol = "symbol";
-        private const string Key_BidPrice = "bidPrice";
-        private const string Key_BidQuantity = "bidQty";
-        private const string Key_AskPrice = "askPrice";
-        private const string Key_AskQuantity = "askQty";
+        private const string KeySymbol = "symbol";
+        private const string KeyBidPrice = "bidPrice";
+        private const string KeyBidQuantity = "bidQty";
+        private const string KeyAskPrice = "askPrice";
+        private const string KeyAskQuantity = "askQty";
 
         public virtual OrderBookTop Deserialize(string json)
         {
@@ -37,11 +37,11 @@ namespace Binance.Serialization
 
             var jObject = new JObject
             {
-                new JProperty(Key_Symbol, orderBookTop.Symbol),
-                new JProperty(Key_BidPrice, orderBookTop.Bid.Price.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_BidQuantity, orderBookTop.Bid.Quantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_AskPrice, orderBookTop.Ask.Price.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_AskQuantity, orderBookTop.Ask.Quantity.ToString(CultureInfo.InvariantCulture))
+                new JProperty(KeySymbol, orderBookTop.Symbol),
+                new JProperty(KeyBidPrice, orderBookTop.Bid.Price.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyBidQuantity, orderBookTop.Bid.Quantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyAskPrice, orderBookTop.Ask.Price.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyAskQuantity, orderBookTop.Ask.Quantity.ToString(CultureInfo.InvariantCulture))
             };
 
             return jObject.ToString(Formatting.None);
@@ -50,11 +50,11 @@ namespace Binance.Serialization
         private static OrderBookTop DeserializeOrderBookTop(JToken jToken)
         {
             return OrderBookTop.Create(
-                jToken[Key_Symbol].Value<string>(),
-                jToken[Key_BidPrice].Value<decimal>(),
-                jToken[Key_BidQuantity].Value<decimal>(),
-                jToken[Key_AskPrice].Value<decimal>(),
-                jToken[Key_AskQuantity].Value<decimal>());
+                jToken[KeySymbol].Value<string>(),
+                jToken[KeyBidPrice].Value<decimal>(),
+                jToken[KeyBidQuantity].Value<decimal>(),
+                jToken[KeyAskPrice].Value<decimal>(),
+                jToken[KeyAskQuantity].Value<decimal>());
         }
     }
 }

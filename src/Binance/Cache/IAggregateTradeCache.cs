@@ -8,16 +8,16 @@ namespace Binance.Cache
 {
     public interface IAggregateTradeCache
     {
-        #region Public Events
+        #region Events
 
         /// <summary>
         /// Aggregate trades update event.
         /// </summary>
         event EventHandler<AggregateTradeCacheEventArgs> Update;
 
-        #endregion Public Events
+        #endregion Events
 
-        #region Public Properties
+        #region Properties
 
         /// <summary>
         /// The latest trades. Can be empty if not yet synchronized or out-of-sync.
@@ -29,9 +29,9 @@ namespace Binance.Cache
         /// </summary>
         IAggregateTradeWebSocketClient Client { get; }
 
-        #endregion Public Properties
+        #endregion Properties
 
-        #region Public Methods
+        #region Methods
 
         /// <summary>
         /// 
@@ -53,6 +53,6 @@ namespace Binance.Cache
         /// </summary>
         void UnLink();
 
-        #endregion Public Methods
+        #endregion Methods
     }
 }

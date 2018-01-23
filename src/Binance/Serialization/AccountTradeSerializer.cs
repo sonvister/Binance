@@ -9,17 +9,17 @@ namespace Binance.Serialization
 {
     public class AccountTradeSerializer : IAccountTradeSerializer
     {
-        private const string Key_Symbol = "symbol";
-        private const string Key_Id = "id";
-        private const string Key_OrderId = "orderId";
-        private const string Key_Price = "price";
-        private const string Key_Quantity = "qty";
-        private const string Key_Commission = "commission";
-        private const string Key_CommissionAsset = "commissionAsset";
-        private const string Key_Time = "time";
-        private const string Key_IsBuyer = "isBuyer";
-        private const string Key_IsMaker = "isMaker";
-        private const string Key_IsBestPriceMatch = "isBestMatch";
+        private const string KeySymbol = "symbol";
+        private const string KeyId = "id";
+        private const string KeyOrderId = "orderId";
+        private const string KeyPrice = "price";
+        private const string KeyQuantity = "qty";
+        private const string KeyCommission = "commission";
+        private const string KeyCommissionAsset = "commissionAsset";
+        private const string KeyTime = "time";
+        private const string KeyIsBuyer = "isBuyer";
+        private const string KeyIsMaker = "isMaker";
+        private const string KeyIsBestPriceMatch = "isBestMatch";
 
         public virtual AccountTrade Deserialize(string json)
         {
@@ -46,17 +46,17 @@ namespace Binance.Serialization
 
             var jObject = new JObject
             {
-                new JProperty(Key_Symbol, trade.Symbol),
-                new JProperty(Key_Id, trade.Id),
-                new JProperty(Key_OrderId, trade.OrderId),
-                new JProperty(Key_Price, trade.Price.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_Quantity, trade.Quantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_Commission, trade.Commission.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_CommissionAsset, trade.CommissionAsset),
-                new JProperty(Key_Time, trade.Timestamp),
-                new JProperty(Key_IsBuyer, trade.IsBuyer),
-                new JProperty(Key_IsMaker, trade.IsMaker),
-                new JProperty(Key_IsBestPriceMatch, trade.IsBestPriceMatch)
+                new JProperty(KeySymbol, trade.Symbol),
+                new JProperty(KeyId, trade.Id),
+                new JProperty(KeyOrderId, trade.OrderId),
+                new JProperty(KeyPrice, trade.Price.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyQuantity, trade.Quantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyCommission, trade.Commission.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyCommissionAsset, trade.CommissionAsset),
+                new JProperty(KeyTime, trade.Timestamp),
+                new JProperty(KeyIsBuyer, trade.IsBuyer),
+                new JProperty(KeyIsMaker, trade.IsMaker),
+                new JProperty(KeyIsBestPriceMatch, trade.IsBestPriceMatch)
             };
 
             return jObject.ToString(Formatting.None);
@@ -67,33 +67,31 @@ namespace Binance.Serialization
             if (symbol == null)
             {
                 return new AccountTrade(
-                    jToken[Key_Symbol].Value<string>(),
-                    jToken[Key_Id].Value<long>(),
-                    jToken[Key_OrderId].Value<long>(),
-                    jToken[Key_Price].Value<decimal>(),
-                    jToken[Key_Quantity].Value<decimal>(),
-                    jToken[Key_Commission].Value<decimal>(),
-                    jToken[Key_CommissionAsset].Value<string>(),
-                    jToken[Key_Time].Value<long>(),
-                    jToken[Key_IsBuyer].Value<bool>(),
-                    jToken[Key_IsMaker].Value<bool>(),
-                    jToken[Key_IsBestPriceMatch].Value<bool>());
+                    jToken[KeySymbol].Value<string>(),
+                    jToken[KeyId].Value<long>(),
+                    jToken[KeyOrderId].Value<long>(),
+                    jToken[KeyPrice].Value<decimal>(),
+                    jToken[KeyQuantity].Value<decimal>(),
+                    jToken[KeyCommission].Value<decimal>(),
+                    jToken[KeyCommissionAsset].Value<string>(),
+                    jToken[KeyTime].Value<long>(),
+                    jToken[KeyIsBuyer].Value<bool>(),
+                    jToken[KeyIsMaker].Value<bool>(),
+                    jToken[KeyIsBestPriceMatch].Value<bool>());
             }
-            else
-            {
-                return new AccountTrade(
-                    symbol,
-                    jToken["id"].Value<long>(),
-                    jToken["orderId"].Value<long>(),
-                    jToken["price"].Value<decimal>(),
-                    jToken["qty"].Value<decimal>(),
-                    jToken["commission"].Value<decimal>(),
-                    jToken["commissionAsset"].Value<string>(),
-                    jToken["time"].Value<long>(),
-                    jToken["isBuyer"].Value<bool>(),
-                    jToken["isMaker"].Value<bool>(),
-                    jToken["isBestMatch"].Value<bool>());
-            }
+
+            return new AccountTrade(
+                symbol,
+                jToken["id"].Value<long>(),
+                jToken["orderId"].Value<long>(),
+                jToken["price"].Value<decimal>(),
+                jToken["qty"].Value<decimal>(),
+                jToken["commission"].Value<decimal>(),
+                jToken["commissionAsset"].Value<string>(),
+                jToken["time"].Value<long>(),
+                jToken["isBuyer"].Value<bool>(),
+                jToken["isMaker"].Value<bool>(),
+                jToken["isBestMatch"].Value<bool>());
         }
     }
 }

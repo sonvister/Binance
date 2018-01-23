@@ -8,16 +8,16 @@ namespace Binance.Cache
 {
     public interface ICandlestickCache
     {
-        #region Public Events
+        #region Events
 
         /// <summary>
         /// Candlesticks update event.
         /// </summary>
         event EventHandler<CandlestickCacheEventArgs> Update;
 
-        #endregion Public Events
+        #endregion Events
 
-        #region Public Properties
+        #region Properties
 
         /// <summary>
         /// The candlesticks. Can be empty if not yet synchronized or out-of-sync.
@@ -29,9 +29,9 @@ namespace Binance.Cache
         /// </summary>
         ICandlestickWebSocketClient Client { get; }
 
-        #endregion Public Properties
+        #endregion Properties
 
-        #region Public Methods
+        #region Methods
 
         /// <summary>
         /// 
@@ -54,6 +54,6 @@ namespace Binance.Cache
         /// </summary>
         void UnLink();
 
-        #endregion Public Methods
+        #endregion Methods
     }
 }

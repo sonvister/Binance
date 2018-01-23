@@ -10,16 +10,16 @@ namespace Binance.Cache
     /// </summary>
     public interface IOrderBookCache
     {
-        #region Public Events
+        #region Events
 
         /// <summary>
         /// Order book cache update event.
         /// </summary>
         event EventHandler<OrderBookCacheEventArgs> Update;
 
-        #endregion Public Events
+        #endregion Events
 
-        #region Public Properties
+        #region Properties
 
         /// <summary>
         /// The order book. Can be null if not yet synchronized or out-of-sync.
@@ -31,9 +31,9 @@ namespace Binance.Cache
         /// </summary>
         IDepthWebSocketClient Client { get; }
 
-        #endregion Public Properties
+        #endregion Properties
 
-        #region Public Methods
+        #region Methods
 
         /// <summary>
         /// Subscribe the web socket client to the symbol and link this cache to client.
@@ -55,6 +55,6 @@ namespace Binance.Cache
         /// </summary>
         void UnLink();
 
-        #endregion Public Methods
+        #endregion Methods
     }
 }

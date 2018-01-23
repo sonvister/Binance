@@ -10,15 +10,15 @@ namespace Binance.Serialization
 {
     public class TradeSerializer : ITradeSerializer
     {
-        private const string Key_Symbol = "symbol";
-        private const string Key_Id = "id";
-        private const string Key_Price = "price";
-        private const string Key_Quantity = "qty";
-        private const string Key_Time = "time";
-        private const string Key_IsBuyerMaker = "isBuyerMaker";
-        private const string Key_IsBestPriceMatch = "isBestMatch";
-        private const string Key_BuyerOrderId = "buyerOrderId";
-        private const string Key_SellerOrderId = "sellerOrderId";
+        private const string KeySymbol = "symbol";
+        private const string KeyId = "id";
+        private const string KeyPrice = "price";
+        private const string KeyQuantity = "qty";
+        private const string KeyTime = "time";
+        private const string KeyIsBuyerMaker = "isBuyerMaker";
+        private const string KeyIsBestPriceMatch = "isBestMatch";
+        private const string KeyBuyerOrderId = "buyerOrderId";
+        private const string KeySellerOrderId = "sellerOrderId";
 
         public virtual Trade Deserialize(string json)
         {
@@ -45,23 +45,23 @@ namespace Binance.Serialization
 
             var jObject = new JObject
             {
-                new JProperty(Key_Symbol, trade.Symbol),
-                new JProperty(Key_Id, trade.Id),
-                new JProperty(Key_Price, trade.Price.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_Quantity, trade.Quantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_Time, trade.Timestamp),
-                new JProperty(Key_IsBuyerMaker, trade.IsBuyerMaker),
-                new JProperty(Key_IsBestPriceMatch, trade.IsBestPriceMatch)
+                new JProperty(KeySymbol, trade.Symbol),
+                new JProperty(KeyId, trade.Id),
+                new JProperty(KeyPrice, trade.Price.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyQuantity, trade.Quantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyTime, trade.Timestamp),
+                new JProperty(KeyIsBuyerMaker, trade.IsBuyerMaker),
+                new JProperty(KeyIsBestPriceMatch, trade.IsBestPriceMatch)
             };
 
             if (trade.BuyerOrderId != BinanceApi.NullId)
             {
-                jObject.Add(new JProperty(Key_BuyerOrderId, trade.BuyerOrderId));
+                jObject.Add(new JProperty(KeyBuyerOrderId, trade.BuyerOrderId));
             }
 
             if (trade.SellerOrderId != BinanceApi.NullId)
             {
-                jObject.Add(new JProperty(Key_SellerOrderId, trade.SellerOrderId));
+                jObject.Add(new JProperty(KeySellerOrderId, trade.SellerOrderId));
             }
 
             return jObject.ToString(Formatting.None);
@@ -70,15 +70,15 @@ namespace Binance.Serialization
         private static Trade DeserializeTrade(JToken jToken, string symbol = null)
         {
             return new Trade(
-                jToken[Key_Symbol]?.Value<string>() ?? symbol,
-                jToken[Key_Id].Value<long>(), // ID
-                jToken[Key_Price].Value<decimal>(), // price
-                jToken[Key_Quantity].Value<decimal>(), // quantity
-                jToken[Key_BuyerOrderId]?.Value<long>() ?? BinanceApi.NullId, // buyer order ID
-                jToken[Key_SellerOrderId]?.Value<long>() ?? BinanceApi.NullId, // seller order ID
-                jToken[Key_Time].Value<long>(), // timestamp
-                jToken[Key_IsBuyerMaker].Value<bool>(), // is buyer maker
-                jToken[Key_IsBestPriceMatch].Value<bool>()); // is best price match
+                jToken[KeySymbol]?.Value<string>() ?? symbol,
+                jToken[KeyId].Value<long>(), // ID
+                jToken[KeyPrice].Value<decimal>(), // price
+                jToken[KeyQuantity].Value<decimal>(), // quantity
+                jToken[KeyBuyerOrderId]?.Value<long>() ?? BinanceApi.NullId, // buyer order ID
+                jToken[KeySellerOrderId]?.Value<long>() ?? BinanceApi.NullId, // seller order ID
+                jToken[KeyTime].Value<long>(), // timestamp
+                jToken[KeyIsBuyerMaker].Value<bool>(), // is buyer maker
+                jToken[KeyIsBestPriceMatch].Value<bool>()); // is best price match
         }
     }
 }

@@ -60,7 +60,7 @@ namespace Binance.WebSocket
                 {
                     if (!token.IsCancellationRequested)
                     {
-                        _logger?.LogError(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket connect exception.");
+                        Logger?.LogError(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket connect exception.");
                         throw;
                     }
                 }
@@ -100,7 +100,7 @@ namespace Binance.WebSocket
                                     break;
 
                                 case WebSocketMessageType.Binary:
-                                    _logger?.LogWarning($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Received unsupported binary message type.");
+                                    Logger?.LogWarning($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Received unsupported binary message type.");
                                     break;
 
                                 default:
@@ -114,7 +114,7 @@ namespace Binance.WebSocket
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            _logger?.LogError(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket receive exception.");
+                            Logger?.LogError(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket receive exception.");
                             throw;
                         }
                     }
@@ -129,7 +129,7 @@ namespace Binance.WebSocket
                     }
                     else
                     {
-                        _logger?.LogWarning($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Received empty JSON message.");
+                        Logger?.LogWarning($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Received empty JSON message.");
                     }
                 }
             }
@@ -145,7 +145,7 @@ namespace Binance.WebSocket
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
+                        Logger?.LogError(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
                     }
                 }
 

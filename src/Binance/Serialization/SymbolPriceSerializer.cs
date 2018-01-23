@@ -8,8 +8,8 @@ namespace Binance.Serialization
 {
     public class SymbolPriceSerializer : ISymbolPriceSerializer
     {
-        private const string Key_Symbol = "symbol";
-        private const string Key_Price = "price";
+        private const string KeySymbol = "symbol";
+        private const string KeyPrice = "price";
 
         public virtual SymbolPrice Deserialize(string json)
         {
@@ -34,8 +34,8 @@ namespace Binance.Serialization
 
             var jObject = new JObject
             {
-                new JProperty(Key_Symbol, symbolPrice.Symbol),
-                new JProperty(Key_Price, symbolPrice.Value)
+                new JProperty(KeySymbol, symbolPrice.Symbol),
+                new JProperty(KeyPrice, symbolPrice.Value)
             };
 
             return jObject.ToString(Formatting.None);

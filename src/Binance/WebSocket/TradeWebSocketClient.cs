@@ -30,7 +30,7 @@ namespace Binance.WebSocket
         /// Default constructor provides default web socket client, but no logging.
         /// </summary>
         public TradeWebSocketClient()
-            : this(new BinanceWebSocketStream(), null)
+            : this(new BinanceWebSocketStream())
         { }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Binance.WebSocket
 
             Symbol = symbol.FormatSymbol();
 
-            base.SubscribeTo($"{Symbol.ToLowerInvariant()}@trade", callback);
+            SubscribeTo($"{Symbol.ToLowerInvariant()}@trade", callback);
         }
 
         #endregion Public Methods

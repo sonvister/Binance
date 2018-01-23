@@ -4,7 +4,7 @@ using Binance.Api;
 
 namespace BinanceClassicConsoleApp
 {
-    class Program
+    internal class Program
     {
         public static async Task Main(string[] args)
         {

@@ -10,27 +10,27 @@ namespace Binance.Serialization
 {
     public class SymbolStatisticsSerializer : ISymbolStatisticsSerializer
     {
-        private const string Key_Symbol = "symbol";
-        private const string Key_PriceChange = "priceChange";
-        private const string Key_PriceChangePercent = "priceChangePercent";
-        private const string Key_WeightedAveragePrice = "weightedAvgPrice";
-        private const string Key_PreviousClosePrice = "prevClosePrice";
-        private const string Key_LastPrice = "lastPrice";
-        private const string Key_LastQuantity = "lastQty";
-        private const string Key_BidPrice = "bidPrice";
-        private const string Key_BidQuantity = "bidQty";
-        private const string Key_AskPrice = "askPrice";
-        private const string Key_AskQuantity = "askQty";
-        private const string Key_OpenPrice = "openPrice";
-        private const string Key_HighPrice = "highPrice";
-        private const string Key_LowPrice = "lowPrice";
-        private const string Key_Volume = "volume";
-        private const string Key_QuoteVolume = "quoteVolume";
-        private const string Key_OpenTime = "openTime";
-        private const string Key_CloseTime = "closeTime";
-        private const string Key_FirstTradeId = "firstId";
-        private const string Key_LastTradeId = "lastId";
-        private const string Key_TradeCount = "count";
+        private const string KeySymbol = "symbol";
+        private const string KeyPriceChange = "priceChange";
+        private const string KeyPriceChangePercent = "priceChangePercent";
+        private const string KeyWeightedAveragePrice = "weightedAvgPrice";
+        private const string KeyPreviousClosePrice = "prevClosePrice";
+        private const string KeyLastPrice = "lastPrice";
+        private const string KeyLastQuantity = "lastQty";
+        private const string KeyBidPrice = "bidPrice";
+        private const string KeyBidQuantity = "bidQty";
+        private const string KeyAskPrice = "askPrice";
+        private const string KeyAskQuantity = "askQty";
+        private const string KeyOpenPrice = "openPrice";
+        private const string KeyHighPrice = "highPrice";
+        private const string KeyLowPrice = "lowPrice";
+        private const string KeyVolume = "volume";
+        private const string KeyQuoteVolume = "quoteVolume";
+        private const string KeyOpenTime = "openTime";
+        private const string KeyCloseTime = "closeTime";
+        private const string KeyFirstTradeId = "firstId";
+        private const string KeyLastTradeId = "lastId";
+        private const string KeyTradeCount = "count";
 
         public virtual SymbolStatistics Deserialize(string json)
         {
@@ -54,27 +54,27 @@ namespace Binance.Serialization
 
             var jObject = new JObject
             {
-                new JProperty(Key_Symbol, statistics.Symbol),
-                new JProperty(Key_PriceChange, statistics.PriceChange.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_PriceChangePercent, statistics.PriceChangePercent.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_WeightedAveragePrice, statistics.WeightedAveragePrice.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_PreviousClosePrice, statistics.PreviousClosePrice.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_LastPrice, statistics.LastPrice.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_LastQuantity, statistics.LastQuantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_BidPrice, statistics.BidPrice.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_BidQuantity, statistics.BidQuantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_AskPrice, statistics.AskPrice.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_AskQuantity, statistics.AskQuantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_OpenPrice, statistics.OpenPrice.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_HighPrice, statistics.HighPrice.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_LowPrice, statistics.LowPrice.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_Volume, statistics.Volume.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_QuoteVolume, statistics.QuoteVolume.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_OpenTime, statistics.OpenTime),
-                new JProperty(Key_CloseTime, statistics.CloseTime),
-                new JProperty(Key_FirstTradeId, statistics.FirstTradeId),
-                new JProperty(Key_LastTradeId, statistics.LastTradeId),
-                new JProperty(Key_TradeCount, statistics.TradeCount),
+                new JProperty(KeySymbol, statistics.Symbol),
+                new JProperty(KeyPriceChange, statistics.PriceChange.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyPriceChangePercent, statistics.PriceChangePercent.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyWeightedAveragePrice, statistics.WeightedAveragePrice.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyPreviousClosePrice, statistics.PreviousClosePrice.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyLastPrice, statistics.LastPrice.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyLastQuantity, statistics.LastQuantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyBidPrice, statistics.BidPrice.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyBidQuantity, statistics.BidQuantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyAskPrice, statistics.AskPrice.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyAskQuantity, statistics.AskQuantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyOpenPrice, statistics.OpenPrice.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyHighPrice, statistics.HighPrice.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyLowPrice, statistics.LowPrice.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyVolume, statistics.Volume.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyQuoteVolume, statistics.QuoteVolume.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyOpenTime, statistics.OpenTime),
+                new JProperty(KeyCloseTime, statistics.CloseTime),
+                new JProperty(KeyFirstTradeId, statistics.FirstTradeId),
+                new JProperty(KeyLastTradeId, statistics.LastTradeId),
+                new JProperty(KeyTradeCount, statistics.TradeCount)
             };
 
             return jObject.ToString(Formatting.None);
@@ -83,28 +83,28 @@ namespace Binance.Serialization
         private static SymbolStatistics DeserializeSymbolStatistics(JToken jToken)
         {
             return new SymbolStatistics(
-                jToken[Key_Symbol].Value<string>(),
+                jToken[KeySymbol].Value<string>(),
                 TimeSpan.FromHours(24),
-                jToken[Key_PriceChange].Value<decimal>(),
-                jToken[Key_PriceChangePercent].Value<decimal>(),
-                jToken[Key_WeightedAveragePrice].Value<decimal>(),
-                jToken[Key_PreviousClosePrice].Value<decimal>(),
-                jToken[Key_LastPrice].Value<decimal>(),
-                jToken[Key_LastQuantity].Value<decimal>(),
-                jToken[Key_BidPrice].Value<decimal>(),
-                jToken[Key_BidQuantity].Value<decimal>(),
-                jToken[Key_AskPrice].Value<decimal>(),
-                jToken[Key_AskQuantity].Value<decimal>(),
-                jToken[Key_OpenPrice].Value<decimal>(),
-                jToken[Key_HighPrice].Value<decimal>(),
-                jToken[Key_LowPrice].Value<decimal>(),
-                jToken[Key_Volume].Value<decimal>(),
-                jToken[Key_QuoteVolume].Value<decimal>(),
-                jToken[Key_OpenTime].Value<long>(),
-                jToken[Key_CloseTime].Value<long>(),
-                jToken[Key_FirstTradeId].Value<long>(),
-                jToken[Key_LastTradeId].Value<long>(),
-                jToken[Key_TradeCount].Value<long>());
+                jToken[KeyPriceChange].Value<decimal>(),
+                jToken[KeyPriceChangePercent].Value<decimal>(),
+                jToken[KeyWeightedAveragePrice].Value<decimal>(),
+                jToken[KeyPreviousClosePrice].Value<decimal>(),
+                jToken[KeyLastPrice].Value<decimal>(),
+                jToken[KeyLastQuantity].Value<decimal>(),
+                jToken[KeyBidPrice].Value<decimal>(),
+                jToken[KeyBidQuantity].Value<decimal>(),
+                jToken[KeyAskPrice].Value<decimal>(),
+                jToken[KeyAskQuantity].Value<decimal>(),
+                jToken[KeyOpenPrice].Value<decimal>(),
+                jToken[KeyHighPrice].Value<decimal>(),
+                jToken[KeyLowPrice].Value<decimal>(),
+                jToken[KeyVolume].Value<decimal>(),
+                jToken[KeyQuoteVolume].Value<decimal>(),
+                jToken[KeyOpenTime].Value<long>(),
+                jToken[KeyCloseTime].Value<long>(),
+                jToken[KeyFirstTradeId].Value<long>(),
+                jToken[KeyLastTradeId].Value<long>(),
+                jToken[KeyTradeCount].Value<long>());
         }
     }
 }

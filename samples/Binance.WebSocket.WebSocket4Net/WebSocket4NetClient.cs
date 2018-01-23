@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.WebSocket
 {
     public class WebSocket4NetClient : WebSocketClient
@@ -33,10 +34,7 @@ namespace Binance.WebSocket
                 RaiseOpenEvent();
             };
 
-            webSocket.Closed += (s, e) =>
-            {
-                tcs.TrySetCanceled();
-            };
+            webSocket.Closed += (s, e) => tcs.TrySetCanceled();
 
             webSocket.MessageReceived += (s, evt) =>
             {
@@ -50,7 +48,7 @@ namespace Binance.WebSocket
                     }
                     else
                     {
-                        _logger?.LogWarning($"{nameof(WebSocket4NetClient)}.MessageReceived: Received empty JSON message.");
+                        Logger?.LogWarning($"{nameof(WebSocket4NetClient)}.MessageReceived: Received empty JSON message.");
                     }
                 }
                 catch (OperationCanceledException) { }
@@ -58,7 +56,7 @@ namespace Binance.WebSocket
                 {
                     if (!token.IsCancellationRequested)
                     {
-                        _logger?.LogError(e, $"{nameof(WebSocket4NetClient)}.MessageReceived: WebSocket read exception.");
+                        Logger?.LogError(e, $"{nameof(WebSocket4NetClient)}.MessageReceived: WebSocket read exception.");
                         throw;
                     }
                 }
@@ -68,12 +66,12 @@ namespace Binance.WebSocket
 
             webSocket.Error += (s, e) =>
             {
-                if (!token.IsCancellationRequested)
-                {
-                    _logger?.LogError(e.Exception, $"{nameof(WebSocket4NetClient)}.Error: WebSocket exception.");
-                    exception = e.Exception;
-                    tcs.TrySetCanceled();
-                }
+                if (token.IsCancellationRequested)
+                    return;
+
+                Logger?.LogError(e.Exception, $"{nameof(WebSocket4NetClient)}.Error: WebSocket exception.");
+                exception = e.Exception;
+                tcs.TrySetCanceled();
             };
 
             try
@@ -91,7 +89,7 @@ namespace Binance.WebSocket
             {
                 if (!token.IsCancellationRequested)
                 {
-                    _logger?.LogError(e, $"{nameof(WebSocket4NetClient)}.{nameof(StreamAsync)}: WebSocket open exception.");
+                    Logger?.LogError(e, $"{nameof(WebSocket4NetClient)}.{nameof(StreamAsync)}: WebSocket open exception.");
                     throw;
                 }
             }
@@ -102,7 +100,7 @@ namespace Binance.WebSocket
                     try { webSocket.Close(); }
                     catch (Exception e)
                     {
-                        _logger?.LogError(e, $"{nameof(WebSocket4NetClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
+                        Logger?.LogError(e, $"{nameof(WebSocket4NetClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
                     }
                 }
 

@@ -13,8 +13,6 @@ namespace Binance.Tests.Api.WebSocket
         [Fact]
         public async Task StreamThrows()
         {
-            var user = new BinanceApiUser("api-key");
-
             var webSocket = new Mock<IWebSocketStream>();
             webSocket.SetupGet(_ => _.Client).Returns(new Mock<IWebSocketClient>().Object);
 

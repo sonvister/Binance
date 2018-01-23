@@ -26,7 +26,7 @@ namespace Binance.WebSocket
 
         #region Protected Fields
 
-        protected readonly ILogger<WebSocketClient> _logger;
+        protected readonly ILogger<WebSocketClient> Logger;
 
         #endregion Protected Fields
 
@@ -36,9 +36,9 @@ namespace Binance.WebSocket
         /// Constructor
         /// </summary>
         /// <param name="logger"></param>
-        public WebSocketClient(ILogger<WebSocketClient> logger)
+        protected WebSocketClient(ILogger<WebSocketClient> logger)
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         #endregion Constructors
@@ -60,7 +60,7 @@ namespace Binance.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                _logger?.LogError(e, $"{GetType().Name}: Unhandled open event handler exception.");
+                Logger?.LogError(e, $"{GetType().Name}: Unhandled open event handler exception.");
             }
         }
 
@@ -74,7 +74,7 @@ namespace Binance.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                _logger?.LogError(e, $"{GetType().Name}: Unhandled message event handler exception.");
+                Logger?.LogError(e, $"{GetType().Name}: Unhandled message event handler exception.");
             }
         }
 
@@ -87,7 +87,7 @@ namespace Binance.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                _logger?.LogError(e, $"{GetType().Name}: Unhandled close event handler exception.");
+                Logger?.LogError(e, $"{GetType().Name}: Unhandled close event handler exception.");
             }
         }
 

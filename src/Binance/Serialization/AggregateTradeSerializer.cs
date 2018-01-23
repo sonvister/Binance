@@ -9,15 +9,15 @@ namespace Binance.Serialization
 {
     public class AggregateTradeSerializer : IAggregateTradeSerializer
     {
-        private const string Key_Symbol = "symbol";
-        private const string Key_Id = "id";
-        private const string Key_Price = "price";
-        private const string Key_Quantity = "qty";
-        private const string Key_FirstTradeId = "firstTradeId";
-        private const string Key_LastTradeId = "lastTradeId";
-        private const string Key_Time = "time";
-        private const string Key_IsBuyerMaker = "isBuyerMaker";
-        private const string Key_IsBestPriceMatch = "isBestMatch";
+        private const string KeySymbol = "symbol";
+        private const string KeyId = "id";
+        private const string KeyPrice = "price";
+        private const string KeyQuantity = "qty";
+        private const string KeyFirstTradeId = "firstTradeId";
+        private const string KeyLastTradeId = "lastTradeId";
+        private const string KeyTime = "time";
+        private const string KeyIsBuyerMaker = "isBuyerMaker";
+        private const string KeyIsBestPriceMatch = "isBestMatch";
 
         public virtual AggregateTrade Deserialize(string json)
         {
@@ -44,15 +44,15 @@ namespace Binance.Serialization
 
             var jObject = new JObject
             {
-                new JProperty(Key_Symbol, trade.Symbol),
-                new JProperty(Key_Id, trade.Id),
-                new JProperty(Key_Price, trade.Price.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_Quantity, trade.Quantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_FirstTradeId, trade.FirstTradeId),
-                new JProperty(Key_LastTradeId, trade.LastTradeId),
-                new JProperty(Key_Time, trade.Timestamp),
-                new JProperty(Key_IsBuyerMaker, trade.IsBuyerMaker),
-                new JProperty(Key_IsBestPriceMatch, trade.IsBestPriceMatch)
+                new JProperty(KeySymbol, trade.Symbol),
+                new JProperty(KeyId, trade.Id),
+                new JProperty(KeyPrice, trade.Price.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyQuantity, trade.Quantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyFirstTradeId, trade.FirstTradeId),
+                new JProperty(KeyLastTradeId, trade.LastTradeId),
+                new JProperty(KeyTime, trade.Timestamp),
+                new JProperty(KeyIsBuyerMaker, trade.IsBuyerMaker),
+                new JProperty(KeyIsBestPriceMatch, trade.IsBestPriceMatch)
             };
 
             return jObject.ToString(Formatting.None);
@@ -63,29 +63,27 @@ namespace Binance.Serialization
             if (symbol == null)
             {
                 return new AggregateTrade(
-                    jToken[Key_Symbol].Value<string>(),
-                    jToken[Key_Id].Value<long>(),
-                    jToken[Key_Price].Value<decimal>(),
-                    jToken[Key_Quantity].Value<decimal>(),
-                    jToken[Key_FirstTradeId].Value<long>(),
-                    jToken[Key_LastTradeId].Value<long>(),
-                    jToken[Key_Time].Value<long>(),
-                    jToken[Key_IsBuyerMaker].Value<bool>(),
-                    jToken[Key_IsBestPriceMatch].Value<bool>());
+                    jToken[KeySymbol].Value<string>(),
+                    jToken[KeyId].Value<long>(),
+                    jToken[KeyPrice].Value<decimal>(),
+                    jToken[KeyQuantity].Value<decimal>(),
+                    jToken[KeyFirstTradeId].Value<long>(),
+                    jToken[KeyLastTradeId].Value<long>(),
+                    jToken[KeyTime].Value<long>(),
+                    jToken[KeyIsBuyerMaker].Value<bool>(),
+                    jToken[KeyIsBestPriceMatch].Value<bool>());
             }
-            else
-            {
-                return new AggregateTrade(
-                    symbol,
-                    jToken["a"].Value<long>(), // ID
-                    jToken["p"].Value<decimal>(), // price
-                    jToken["q"].Value<decimal>(), // quantity
-                    jToken["f"].Value<long>(), // first trade ID
-                    jToken["l"].Value<long>(), // last trade ID
-                    jToken["T"].Value<long>(), // timestamp
-                    jToken["m"].Value<bool>(), // is buyer maker
-                    jToken["M"].Value<bool>()); // is best price match
-            }
+
+            return new AggregateTrade(
+                symbol,
+                jToken["a"].Value<long>(), // ID
+                jToken["p"].Value<decimal>(), // price
+                jToken["q"].Value<decimal>(), // quantity
+                jToken["f"].Value<long>(), // first trade ID
+                jToken["l"].Value<long>(), // last trade ID
+                jToken["T"].Value<long>(), // timestamp
+                jToken["m"].Value<bool>(), // is buyer maker
+                jToken["M"].Value<bool>()); // is best price match
         }
     }
 }

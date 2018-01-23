@@ -76,6 +76,14 @@ namespace Binance.Api
         /// </summary>
         /// <param name="client"></param>
         /// <param name="orderBookSerializer"></param>
+        /// <param name="orderBookTopSerializer"></param>
+        /// <param name="aggregateTradeSerializer"></param>
+        /// <param name="candlestickSerializer"></param>
+        /// <param name="symbolPriceSerializer"></param>
+        /// <param name="symbolStatisticsSerializer"></param>
+        /// <param name="accountTradeSerializer"></param>
+        /// <param name="tradeSerializer"></param>
+        /// <param name="orderSerializer"></param>
         /// <param name="logger"></param>
         public BinanceApi(
             IBinanceHttpClient client,
@@ -770,6 +778,7 @@ namespace Binance.Api
                 throw NewFailedToParseJsonException(nameof(GetDepositAddressAsync), json, e);
             }
 
+            // ReSharper disable once InvertIf
             if (!success)
             {
                 var message = $"{nameof(BinanceApi)}.{nameof(GetDepositAddressAsync)} unsuccessful (asset: \"{asset}\").";

@@ -30,13 +30,13 @@ namespace Binance.WebSocket
         /// Default constructor provides default web socket stream, but no logging.
         /// </summary>
         public CandlestickWebSocketClient()
-            : this(new BinanceWebSocketStream(), null)
+            : this(new BinanceWebSocketStream())
         { }
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="client"></param>
+        /// <param name="webSocket"></param>
         /// <param name="logger"></param>
         public CandlestickWebSocketClient(IWebSocketStream webSocket, ILogger<CandlestickWebSocketClient> logger = null)
             : base(webSocket, logger)

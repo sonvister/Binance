@@ -11,26 +11,26 @@ namespace Binance.Serialization
 {
     public class OrderSerializer : IOrderSerializer
     {
-        private const string Key_Symbol = "symbol";
-        private const string Key_OrderId = "orderId";
-        private const string Key_ClientOrderId = "clientOrderId";
-        private const string Key_Time = "time";
-        private const string Key_Price = "price";
-        private const string Key_OriginalQuantity = "origQty";
-        private const string Key_ExecutedQuantity = "executedQty";
-        private const string Key_Status = "status";
-        private const string Key_TimeInForce = "timeInForce";
-        private const string Key_Type = "type";
-        private const string Key_Side = "side";
-        private const string Key_StopPrice = "stopPrice";
-        private const string Key_IcebergQuantity = "icebergQty";
-        private const string Key_IsWorking = "isWorking";
-        private const string Key_Fills = "fills";
-        private const string Key_Fill_Price = "price";
-        private const string Key_Fill_Quantity = "qty";
-        private const string Key_Fill_Commission = "commission";
-        private const string Key_Fill_CommissionAsset = "commissionAsset";
-        private const string Key_Fill_TradeId = "tradeId";
+        private const string KeySymbol = "symbol";
+        private const string KeyOrderId = "orderId";
+        private const string KeyClientOrderId = "clientOrderId";
+        private const string KeyTime = "time";
+        private const string KeyPrice = "price";
+        private const string KeyOriginalQuantity = "origQty";
+        private const string KeyExecutedQuantity = "executedQty";
+        private const string KeyStatus = "status";
+        private const string KeyTimeInForce = "timeInForce";
+        private const string KeyType = "type";
+        private const string KeySide = "side";
+        private const string KeyStopPrice = "stopPrice";
+        private const string KeyIcebergQuantity = "icebergQty";
+        private const string KeyIsWorking = "isWorking";
+        private const string KeyFills = "fills";
+        private const string KeyFillPrice = "price";
+        private const string KeyFillQuantity = "qty";
+        private const string KeyFillCommission = "commission";
+        private const string KeyFillCommissionAsset = "commissionAsset";
+        private const string KeyFillTradeId = "tradeId";
 
         public virtual Order Deserialize(string json, Order order)
         {
@@ -64,22 +64,23 @@ namespace Binance.Serialization
 
             var jObject = new JObject
             {
-                new JProperty(Key_Symbol, order.Symbol),
-                new JProperty(Key_OrderId, order.Id),
-                new JProperty(Key_ClientOrderId, order.ClientOrderId),
-                new JProperty(Key_Time, order.Timestamp),
-                new JProperty(Key_Price, order.Price.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_OriginalQuantity, order.OriginalQuantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_ExecutedQuantity, order.ExecutedQuantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_Status, order.Status.AsString()),
-                new JProperty(Key_TimeInForce, order.TimeInForce.ToString().ToUpperInvariant()),
-                new JProperty(Key_Type, order.Type.AsString()),
-                new JProperty(Key_Side, order.Side.ToString().ToUpperInvariant()),
-                new JProperty(Key_StopPrice, order.StopPrice.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_IcebergQuantity, order.IcebergQuantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(Key_IsWorking, order.IsWorking)
+                new JProperty(KeySymbol, order.Symbol),
+                new JProperty(KeyOrderId, order.Id),
+                new JProperty(KeyClientOrderId, order.ClientOrderId),
+                new JProperty(KeyTime, order.Timestamp),
+                new JProperty(KeyPrice, order.Price.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyOriginalQuantity, order.OriginalQuantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyExecutedQuantity, order.ExecutedQuantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyStatus, order.Status.AsString()),
+                new JProperty(KeyTimeInForce, order.TimeInForce.ToString().ToUpperInvariant()),
+                new JProperty(KeyType, order.Type.AsString()),
+                new JProperty(KeySide, order.Side.ToString().ToUpperInvariant()),
+                new JProperty(KeyStopPrice, order.StopPrice.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyIcebergQuantity, order.IcebergQuantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyIsWorking, order.IsWorking)
             };
 
+            // ReSharper disable once InvertIf
             if (order.Fills.Any())
             {
                 var jArray = new JArray();
@@ -88,15 +89,15 @@ namespace Binance.Serialization
                 {
                     jArray.Add(new JObject
                     {
-                        new JProperty(Key_Fill_Price, fill.Price.ToString(CultureInfo.InvariantCulture)),
-                        new JProperty(Key_Fill_Quantity, fill.Quantity.ToString(CultureInfo.InvariantCulture)),
-                        new JProperty(Key_Fill_Commission, fill.Commission.ToString(CultureInfo.InvariantCulture)),
-                        new JProperty(Key_Fill_CommissionAsset, fill.CommissionAsset),
-                        new JProperty(Key_Fill_TradeId, fill.TradeId)
+                        new JProperty(KeyFillPrice, fill.Price.ToString(CultureInfo.InvariantCulture)),
+                        new JProperty(KeyFillQuantity, fill.Quantity.ToString(CultureInfo.InvariantCulture)),
+                        new JProperty(KeyFillCommission, fill.Commission.ToString(CultureInfo.InvariantCulture)),
+                        new JProperty(KeyFillCommissionAsset, fill.CommissionAsset),
+                        new JProperty(KeyFillTradeId, fill.TradeId)
                     });
                 }
 
-                jObject.Add(new JProperty(Key_Fills, jArray));
+                jObject.Add(new JProperty(KeyFills, jArray));
             }
 
             return jObject.ToString(Formatting.None);
@@ -104,28 +105,28 @@ namespace Binance.Serialization
 
         private static Order FillOrder(Order order, JToken jToken)
         {
-            order.Symbol = jToken[Key_Symbol].Value<string>();
-            order.Id = jToken[Key_OrderId].Value<long>();
-            order.ClientOrderId = jToken[Key_ClientOrderId].Value<string>();
-            order.Timestamp = (jToken[Key_Time] ?? jToken["transactTime"]).Value<long>();
-            order.Price = jToken[Key_Price].Value<decimal>();
-            order.OriginalQuantity = jToken[Key_OriginalQuantity].Value<decimal>();
-            order.ExecutedQuantity = jToken[Key_ExecutedQuantity].Value<decimal>();
-            order.Status = jToken[Key_Status].Value<string>().ConvertOrderStatus();
-            order.TimeInForce = jToken[Key_TimeInForce].Value<string>().ConvertTimeInForce();
-            order.Type = jToken[Key_Type].Value<string>().ConvertOrderType();
-            order.Side = jToken[Key_Side].Value<string>().ConvertOrderSide();
-            order.StopPrice = jToken[Key_StopPrice]?.Value<decimal>() ?? order.StopPrice;
-            order.IcebergQuantity = jToken[Key_IcebergQuantity]?.Value<decimal>() ?? order.IcebergQuantity;
-            order.IsWorking = jToken[Key_IsWorking]?.Value<bool>() ?? order.IsWorking;
+            order.Symbol = jToken[KeySymbol].Value<string>();
+            order.Id = jToken[KeyOrderId].Value<long>();
+            order.ClientOrderId = jToken[KeyClientOrderId].Value<string>();
+            order.Timestamp = (jToken[KeyTime] ?? jToken["transactTime"]).Value<long>();
+            order.Price = jToken[KeyPrice].Value<decimal>();
+            order.OriginalQuantity = jToken[KeyOriginalQuantity].Value<decimal>();
+            order.ExecutedQuantity = jToken[KeyExecutedQuantity].Value<decimal>();
+            order.Status = jToken[KeyStatus].Value<string>().ConvertOrderStatus();
+            order.TimeInForce = jToken[KeyTimeInForce].Value<string>().ConvertTimeInForce();
+            order.Type = jToken[KeyType].Value<string>().ConvertOrderType();
+            order.Side = jToken[KeySide].Value<string>().ConvertOrderSide();
+            order.StopPrice = jToken[KeyStopPrice]?.Value<decimal>() ?? order.StopPrice;
+            order.IcebergQuantity = jToken[KeyIcebergQuantity]?.Value<decimal>() ?? order.IcebergQuantity;
+            order.IsWorking = jToken[KeyIsWorking]?.Value<bool>() ?? order.IsWorking;
 
-            var fills = jToken[Key_Fills]?
+            var fills = jToken[KeyFills]?
                     .Select(entry => new Fill(
-                        entry[Key_Fill_Price].Value<decimal>(),
-                        entry[Key_Fill_Quantity].Value<decimal>(),
-                        entry[Key_Fill_Commission].Value<decimal>(),
-                        entry[Key_Fill_CommissionAsset].Value<string>(),
-                        entry[Key_Fill_TradeId].Value<long>()))
+                        entry[KeyFillPrice].Value<decimal>(),
+                        entry[KeyFillQuantity].Value<decimal>(),
+                        entry[KeyFillCommission].Value<decimal>(),
+                        entry[KeyFillCommissionAsset].Value<string>(),
+                        entry[KeyFillTradeId].Value<long>()))
                     .ToArray();
 
             if (fills != null)

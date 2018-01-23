@@ -13,7 +13,6 @@ namespace Binance.Cache
         /// </summary>
         /// <param name="cache"></param>
         /// <param name="symbol"></param>
-        /// <param name="token"></param>
         /// <returns></returns>
         public static void Subscribe(this IOrderBookCache cache, string symbol)
             => cache.Subscribe(symbol, default, null);

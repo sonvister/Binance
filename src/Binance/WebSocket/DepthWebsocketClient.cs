@@ -30,7 +30,7 @@ namespace Binance.WebSocket
         /// Default constructor provides default web socket stream, but no logging.
         /// </summary>
         public DepthWebSocketClient()
-            : this(new BinanceWebSocketStream(), null)
+            : this(new BinanceWebSocketStream())
         { }
 
         /// <summary>
