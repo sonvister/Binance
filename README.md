@@ -1,5 +1,5 @@
 # Binance ![](https://github.com/sonvister/Binance/blob/master/images/logo.png?raw=true)
-A full-featured .NET **[Binance API](https://www.binance.com/restapipub.html)** facade designed for ease of use.
+A full-featured .NET **[Binance API](https://www.binance.com/restapipub.html)** designed for ease of use.
 
 [![](https://img.shields.io/github/last-commit/sonvister/Binance.svg)](https://github.com/sonvister/Binance)
 
