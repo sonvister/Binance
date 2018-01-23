@@ -24,8 +24,6 @@ namespace Binance.WebSocket
 
             token.ThrowIfCancellationRequested();
 
-            IsStreaming = true;
-
             var tcs = new TaskCompletionSource<object>();
             token.Register(() => tcs.TrySetCanceled());
 
@@ -35,6 +33,7 @@ namespace Binance.WebSocket
 
             webSocket.OnOpen += (s, e) =>
             {
+                IsStreaming = true;
                 RaiseOpenEvent();
             };
 
@@ -105,16 +104,22 @@ namespace Binance.WebSocket
             }
             finally
             {
-                IsStreaming = false;
-
                 if (webSocket.IsAlive)
                 {
-                    webSocket.Close(CloseStatusCode.Normal);
+                    try { webSocket.Close(CloseStatusCode.Normal); }
+                    catch (Exception e)
+                    {
+                        _logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
+                    }
                 }
 
                 (webSocket as IDisposable)?.Dispose();
 
-                RaiseCloseEvent();
+                if (IsStreaming)
+                {
+                    IsStreaming = false;
+                    RaiseCloseEvent();
+                }
             }
         }
     }
