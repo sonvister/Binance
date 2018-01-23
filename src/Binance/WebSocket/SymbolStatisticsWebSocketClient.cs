@@ -49,7 +49,7 @@ namespace Binance.WebSocket
 
         public virtual void Subscribe(Action<SymbolStatisticsEventArgs> callback)
         {
-            Subscribe("/ws/!ticker@arr", callback);
+            SubscribeTo("!ticker@arr", callback);
         }
 
         public virtual void Subscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
