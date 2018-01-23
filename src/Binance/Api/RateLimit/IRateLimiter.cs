@@ -7,7 +7,7 @@ namespace Binance.Api
 {
     public interface IRateLimiter
     {
-        #region Public Properties
+        #region Properties
 
         /// <summary>
         /// The count.
@@ -19,9 +19,9 @@ namespace Binance.Api
         /// </summary>
         TimeSpan Duration { get; set; }
 
-        #endregion Public Properties
+        #endregion Properties
 
-        #region Public Methods
+        #region Methods
 
         /// <summary>
         /// Delay if count has been exceeded within time duration.
@@ -31,6 +31,6 @@ namespace Binance.Api
         /// <returns></returns>
         Task DelayAsync(int count = 1, CancellationToken token = default);
 
-        #endregion Public Methods
+        #endregion Methods
     }
 }

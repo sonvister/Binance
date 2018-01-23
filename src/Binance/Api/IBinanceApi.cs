@@ -3,20 +3,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Account.Orders;
+using Binance.Api.RateLimit;
 using Binance.Market;
 
 namespace Binance.Api
 {
     public interface IBinanceApi
     {
-        #region Public Properties
+        #region Properties
 
         /// <summary>
         /// The (low-level) HTTP client.
         /// </summary>
         IBinanceHttpClient HttpClient { get; }
 
-        #endregion Public Properties
+        #endregion Properties
 
         #region Connectivity
 
@@ -32,6 +33,13 @@ namespace Binance.Api
         /// <param name="token"></param>
         /// <returns></returns>
         Task<long> GetTimestampAsync(CancellationToken token = default);
+
+        /// <summary>
+        /// Get rate limit information.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IEnumerable<RateLimitInfo>> GetRateLimitInfoAsync(CancellationToken token = default);
 
         #endregion Connectivity
 

@@ -53,6 +53,15 @@ namespace Binance.Tests.Integration
             Assert.Equal(DateTimeKind.Utc, time.Kind);
         }
 
+        [Fact]
+        public async Task GetRateLimitInfo()
+        {
+            var rateLimits = await _api.GetRateLimitInfoAsync();
+
+            Assert.NotNull(rateLimits);
+            Assert.NotEmpty(rateLimits);
+        }
+
         #endregion Connectivity
 
         #region Market Data

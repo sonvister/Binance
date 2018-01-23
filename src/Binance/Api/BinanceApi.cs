@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Account.Orders;
+using Binance.Api.RateLimit;
 using Binance.Market;
 using Binance.Serialization;
 using Microsoft.Extensions.Logging;
@@ -129,6 +130,37 @@ namespace Binance.Api
             {
                 throw NewFailedToParseJsonException(nameof(GetTimestampAsync), json, e);
             }
+        }
+
+        public virtual async Task<IEnumerable<RateLimitInfo>> GetRateLimitInfoAsync(CancellationToken token = default)
+        {
+            var json = await HttpClient.GetExchangeInfoAsync(token)
+                .ConfigureAwait(false);
+
+            var rateLimits = new List<RateLimitInfo>();
+
+            try
+            {
+                var jObject = JObject.Parse(json);
+
+                var jArray = jObject["rateLimits"];
+
+                if (jArray != null)
+                {
+                    rateLimits.AddRange(
+                        jArray.Select(jToken =>
+                            new RateLimitInfo(
+                                jToken["rateLimitType"].Value<string>(),
+                                jToken["interval"].Value<string>(),
+                                jToken["limit"].Value<int>())));
+                }
+            }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetRateLimitInfoAsync), json, e);
+            }
+
+            return rateLimits;
         }
 
         #endregion Connectivity

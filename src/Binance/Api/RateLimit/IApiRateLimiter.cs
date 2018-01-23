@@ -7,16 +7,16 @@ namespace Binance.Api
 {
     public interface IApiRateLimiter
     {
-        #region Public Properties
+        #region Properties
 
         /// <summary>
         /// Get or set the rate limiting enabled flag.
         /// </summary>
         bool IsEnabled { get; set; }
 
-        #endregion Public Properties
+        #endregion Properties
 
-        #region Public Methods
+        #region Methods
 
         /// <summary>
         /// Set a duration and maximum count (remove with count = 0).
@@ -34,6 +34,6 @@ namespace Binance.Api
         /// <returns></returns>
         Task DelayAsync(int count = 1, CancellationToken token = default);
 
-        #endregion Public Methods
+        #endregion Methods
     }
 }
