@@ -66,7 +66,7 @@ namespace Binance
             public int Count { get; set; } = OrderRateLimitCountDefault;
 
             /// <summary>
-            /// Get or set the default rate limit duration for orders (seconds).
+            /// Get or set the default rate limit duration for orders (days).
             /// </summary>
             public int DurationDays { get; set; } = OrderRateLimitDurationDaysDefault;
 
