@@ -6,9 +6,10 @@ A full-featured .NET **[Binance API](https://www.binance.com/restapipub.html)** 
 ## Features
 * Compatible with **.NET Standard 2.0** and **.NET Framework 4.7.1**.
 * **Complete** coverage of the [Binance API](https://www.binance.com/restapipub.html) including all REST and WebSocket endpoints (*with combined streams*).
-* A **simple** API abstraction using domain/value objects that do not expose underlying (*HTTP/REST*) behavior.
+* **Simple** API abstraction using domain/value objects that do not expose underlying (*HTTP/REST*) behavior.
 * Consistent use of **domain models** whether you're querying the API or using real-time WebSocket client events.
 * Customizable **dual-layer API** with access to JSON responses (*low-level*) or deserialized domain/value objects.
+  * Same serializers used in `BinanceApi` are available to provide application-level deserialization of JSON data.
 * API exceptions provide the Binance server response **ERROR code and message** for easier troubleshooting.
 * Unique implementation supports **multiple users** and requires user authentication only where necessary.
 * Web API interface includes automatic **rate limiting** and system-to-server **time synchronization** for reliability.
