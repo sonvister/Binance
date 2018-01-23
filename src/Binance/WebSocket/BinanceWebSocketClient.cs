@@ -29,12 +29,6 @@ namespace Binance.WebSocket
 
         #endregion Protected Fields
 
-        #region Private Constants
-
-        private const string BaseUri = "wss://stream.binance.com:9443";
-
-        #endregion Private Constants
-
         #region Private Fields
 
         private int _maxBufferCount;
