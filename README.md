@@ -5,14 +5,14 @@ A full-featured .NET **[Binance API](https://www.binance.com/restapipub.html)** 
 
 ## Features
 * Compatible with **.NET Standard 2.0** and **.NET Framework 4.7.1**.
-* **Complete** implementation of the [Binance API](https://www.binance.com/restapipub.html) including all public/private REST and WebSocket endpoints.
+* **Complete** coverage of the [Binance API](https://www.binance.com/restapipub.html) including all REST and WebSocket endpoints (*with combined streams*).
 * A **simple** API abstraction using domain/value objects that do not expose underlying (*HTTP/REST*) behavior.
 * Consistent use of **domain models** whether you're querying the API or using real-time WebSocket client events.
 * Customizable **dual-layer API** with access to JSON responses (*low-level*) or deserialized domain/value objects.
 * API exceptions provide the Binance server response **ERROR code and message** for easier troubleshooting.
 * Unique implementation supports **multiple users** and requires user authentication only where necessary.
 * Web API interface includes automatic **rate limiting** and system-to-server **time synchronization** for reliability.
-* Easy-to-use **WebSocket endpoint clients** and various ready-to-use **caching** implementations (*w/ events*).
+* Easy-to-use **WebSocket endpoint clients** and various ready-to-use **caching** implementations (*with events*).
 * Low-level `BinanceHttpClient` API utilizes a single, cached HttpClient for performance (*and implemented as singleton*).
 * **Limited dependencies** and use of Microsoft extensions for **dependency injection**, **logging**, and **options**.
 * .NET Core **sample applications** including live displays of market depth, trades, and candlesticks for a symbol.
