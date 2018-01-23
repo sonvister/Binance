@@ -20,7 +20,7 @@ A full-featured .NET **[Binance API](https://www.binance.com/restapipub.html)** 
 * **Limited dependencies** and use of Microsoft extensions for **dependency injection**, **logging**, and **options**.
 * Multiple .NET **sample applications** including live displays of market depth, trades, and candlesticks for a symbol.
   * Alternative `IWebSocketClients` for using **WebSocketSharp** or **WebSocket4Net** (*for Windows 7 compatibility*).
-  * **Efficiently** utilizing combined streams with a single, application-wide, web socket (`BinanceWebSocketStream`).
+  * How to **efficiently** use combined streams with a single, application-wide, web socket (`BinanceWebSocketStream`).
 
 ## Getting Started
 ### Binance Sign-up
