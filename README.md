@@ -12,10 +12,13 @@ A full-featured .NET **[Binance API](https://www.binance.com/restapipub.html)** 
 * API exceptions provide the Binance server response **ERROR code and message** for easier troubleshooting.
 * Unique implementation supports **multiple users** and requires user authentication only where necessary.
 * Web API interface includes automatic **rate limiting** and system-to-server **time synchronization** for reliability.
+  * Advanced rate limiting includes distinct (request and order) rate limiters with **endpoint weights** incorporated. 
 * Easy-to-use **WebSocket endpoint clients** and various ready-to-use **caching** implementations (*with events*).
 * Low-level `BinanceHttpClient` API utilizes a single, cached HttpClient for performance (*and implemented as singleton*).
 * **Limited dependencies** and use of Microsoft extensions for **dependency injection**, **logging**, and **options**.
-* .NET Core **sample applications** including live displays of market depth, trades, and candlesticks for a symbol.
+* Multiple .NET **sample applications** including live displays of market depth, trades, and candlesticks for a symbol.
+  * Alternative `IWebSocketClients` for using **WebSocketSharp** or **WebSocket4Net** (*for Windows 7 compatibility*).
+  * **Efficiently** utilizing combined streams with a single, application-wide, web socket (`BinanceWebSocketStream`).
 
 ## Getting Started
 ### Binance Sign-up
