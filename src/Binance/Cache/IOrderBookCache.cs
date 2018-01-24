@@ -17,6 +17,11 @@ namespace Binance.Cache
         /// </summary>
         event EventHandler<OrderBookCacheEventArgs> Update;
 
+        /// <summary>
+        /// Order book out-of-sync event.
+        /// </summary>
+        event EventHandler<EventArgs> OutOfSync;
+
         #endregion Events
 
         #region Properties

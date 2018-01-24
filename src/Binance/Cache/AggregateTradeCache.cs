@@ -16,6 +16,12 @@ namespace Binance.Cache
 {
     public sealed class AggregateTradeCache : WebSocketClientCache<IAggregateTradeWebSocketClient, AggregateTradeEventArgs, AggregateTradeCacheEventArgs>, IAggregateTradeCache
     {
+        #region Public Events
+
+        public event EventHandler<EventArgs> OutOfSync;
+
+        #endregion Public Events
+
         #region Public Properties
 
         public IEnumerable<AggregateTrade> Trades
@@ -85,47 +91,36 @@ namespace Binance.Cache
 
         protected override async Task<AggregateTradeCacheEventArgs> OnAction(AggregateTradeEventArgs @event)
         {
-            if (_trades.Count == 0)
+            // If trades have not been initialized or are out-of-sync (gap in data).
+            while (_trades.Count == 0 || @event.Trade.Id > _trades.Last().Id + 1)
             {
-                await SynchronizeTradesAsync(_symbol, _limit, @event.Token)
-                    .ConfigureAwait(false);
-            }
-
-            // If there is a gap in the trades received (out-of-sync).
-            if (@event.Trade.Id > _trades.Last().Id + 1)
-            {
-                Logger?.LogError($"{nameof(AggregateTradeCache)}: Synchronization failure ({@event.Trade.Id} > {_trades.Last().Id} + 1).");
-
-                await Task.Delay(1000, @event.Token)
-                    .ConfigureAwait(false); // wait a bit.
-
-                // Re-synchronize.
-                await SynchronizeTradesAsync(_symbol, _limit, @event.Token)
-                    .ConfigureAwait(false);
-
-                // If still out-of-sync.
-                if (@event.Trade.Id > _trades.Last().Id + 1)
+                if (_trades.Count > 0)
                 {
-                    Logger?.LogError($"{nameof(AggregateTradeCache)}: Re-Synchronization failure ({@event.Trade.Id} > {_trades.Last().Id} + 1).");
-
-                    // Reset and wait for next event.
-                    lock (_sync) _trades.Clear();
-                    return null;
+                    OutOfSync?.Invoke(this, EventArgs.Empty);
                 }
+
+                await SynchronizeTradesAsync(_symbol, _limit, @event.Token)
+                    .ConfigureAwait(false);
             }
 
-            // If the trade exists in the queue already (occurs after synchronization).
-            if (_trades.Any(t => t.Id == @event.Trade.Id))
+            // Ignore trades older than the latest trade in queue.
+            if (@event.Trade.Id <= _trades.Last().Id)
+            {
+                Logger?.LogDebug($"{nameof(AggregateTradeCache)}: Ignoring event (trade ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
                 return null;
+            }
 
-            AggregateTrade removed;
             lock (_sync)
             {
-                removed = _trades.Dequeue();
-                _trades.Enqueue(@event.Trade);
-            }
+                while (_trades.Count >= _limit)
+                {
+                    var removed = _trades.Dequeue();
+                    Logger?.LogDebug($"{nameof(AggregateTradeCache)}: REMOVE aggregate trade (ID: {removed.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                }
 
-            Logger?.LogDebug($"{nameof(AggregateTradeCache)}: Added aggregate trade [ID: {@event.Trade.Id}] and removed [ID: {removed.Id}].");
+                _trades.Enqueue(@event.Trade);
+                Logger?.LogDebug($"{nameof(AggregateTradeCache)}: ADD aggregate trade (ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+            }
 
             return new AggregateTradeCacheEventArgs(_trades.ToArray());
         }
@@ -143,7 +138,7 @@ namespace Binance.Cache
         /// <returns></returns>
         private async Task SynchronizeTradesAsync(string symbol, int limit, CancellationToken token)
         {
-            Logger?.LogInformation($"{nameof(AggregateTradeCache)}: Synchronizing aggregate trades...");
+            Logger?.LogInformation($"{nameof(AggregateTradeCache)}: Synchronizing aggregate trades...  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
             var trades = await Api.GetAggregateTradesAsync(symbol, limit, token)
                 .ConfigureAwait(false);
@@ -156,6 +151,8 @@ namespace Binance.Cache
                     _trades.Enqueue(trade);
                 }
             }
+
+            Logger?.LogInformation($"{nameof(AggregateTradeCache)}: Synchronization complete (latest trade ID: {trades.Last().Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
         }
 
         #endregion Private Methods

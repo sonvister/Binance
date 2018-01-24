@@ -12,6 +12,12 @@ namespace Binance.Cache
 {
     public sealed class OrderBookCache : WebSocketClientCache<IDepthWebSocketClient, DepthUpdateEventArgs, OrderBookCacheEventArgs>, IOrderBookCache
     {
+        #region Public Events
+
+        public event EventHandler<EventArgs> OutOfSync;
+
+        #endregion Public Events
+
         #region Public Properties
 
         public OrderBook OrderBook => _orderBookClone;
@@ -86,53 +92,33 @@ namespace Binance.Cache
                 if (_orderBookClone != null && @event.LastUpdateId <= _orderBookClone.LastUpdateId)
                     return null;
 
-                // Top <level> bids and asks, pushed every second.
+                // Top <limit> bids and asks, pushed every second.
                 // NOTE: LastUpdateId is not contiguous between events when using partial depth stream.
                 _orderBookClone = new OrderBook(_symbol, @event.LastUpdateId, @event.Bids, @event.Asks);
             }
             else
             {
-                // If order book has not been initialized.
-                if (_orderBook == null)
+                // If order book has not been initialized or is out-of-sync (gap in data).
+                while (_orderBook == null || @event.FirstUpdateId > _orderBook.LastUpdateId + 1)
                 {
+                    if (_orderBook != null)
+                    {
+                        OutOfSync?.Invoke(this, EventArgs.Empty);
+                    }
+
                     // Synchronize.
                     await SynchronizeOrderBookAsync(@event.Token)
                         .ConfigureAwait(false);
                 }
 
-                // If there is a gap in events (order book out-of-sync).
-                // ReSharper disable once InvertIf
-                if (@event.FirstUpdateId > _orderBook.LastUpdateId + 1)
-                {
-                    Logger?.LogError($"{nameof(OrderBookCache)}: Synchronization failure ({@event.FirstUpdateId} > {_orderBook.LastUpdateId} + 1).  [thread: {Thread.CurrentThread.ManagedThreadId}, cancelled: {@event.Token.IsCancellationRequested}]");
-
-                    await Task.Delay(1000, @event.Token)
-                        .ConfigureAwait(false); // wait a bit.
-
-                    // Re-synchronize.
-                    await SynchronizeOrderBookAsync(@event.Token)
-                        .ConfigureAwait(false);
-
-                    // If still out-of-sync.
-                    // ReSharper disable once InvertIf
-                    if (@event.FirstUpdateId > _orderBook.LastUpdateId + 1)
-                    {
-                        Logger?.LogError($"{nameof(OrderBookCache)}: Re-Synchronization failure ({@event.FirstUpdateId} > {_orderBook.LastUpdateId} + 1).  [thread: {Thread.CurrentThread.ManagedThreadId}, cancelled: {@event.Token.IsCancellationRequested}]");
-
-                        // Reset and wait for next event.
-                        _orderBook = null;
-                        return null;
-                    }
-                }
-
-                // Ignore events prior to order book snapshot (occurs after synchronization).
+                // Ignore events prior to order book snapshot.
                 if (@event.LastUpdateId <= _orderBook.LastUpdateId)
                 {
-                    Logger?.LogDebug($"{nameof(OrderBookCache)}: Ignoring event (last update ID: {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}, cancelled: {@event.Token.IsCancellationRequested}]");
+                    Logger?.LogDebug($"{nameof(OrderBookCache)}: Ignoring event (last update ID: {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
                     return null;
                 }
 
-                Logger?.LogDebug($"{nameof(OrderBookCache)}: Updating order book (last update ID: {_orderBook.LastUpdateId} => {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}, cancelled: {@event.Token.IsCancellationRequested}]");
+                Logger?.LogDebug($"{nameof(OrderBookCache)}: Updating order book (last update ID: {_orderBook.LastUpdateId} => {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
                 _orderBook.Modify(@event.LastUpdateId, @event.Bids, @event.Asks);
 
@@ -148,13 +134,13 @@ namespace Binance.Cache
 
         private async Task SynchronizeOrderBookAsync(CancellationToken token)
         {
-            Logger?.LogInformation($"{nameof(OrderBookCache)}: Synchronizing order book...  [thread: {Thread.CurrentThread.ManagedThreadId}, cancelled: {token.IsCancellationRequested}]");
+            Logger?.LogInformation($"{nameof(OrderBookCache)}: Synchronizing order book...  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
             // Get order book snapshot with the maximum limit.
             _orderBook = await Api.GetOrderBookAsync(_symbol, 1000, token)
                 .ConfigureAwait(false);
 
-            Logger?.LogInformation($"{nameof(OrderBookCache)}: Synchronizing complete.  [thread: {Thread.CurrentThread.ManagedThreadId}, cancelled: {@token.IsCancellationRequested}]");
+            Logger?.LogInformation($"{nameof(OrderBookCache)}: Synchronization complete (last update ID: {_orderBook.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
         }
 
         #endregion Private Methods

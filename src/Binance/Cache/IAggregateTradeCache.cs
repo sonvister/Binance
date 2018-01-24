@@ -15,6 +15,11 @@ namespace Binance.Cache
         /// </summary>
         event EventHandler<AggregateTradeCacheEventArgs> Update;
 
+        /// <summary>
+        /// Aggregate trades out-of-sync event.
+        /// </summary>
+        event EventHandler<EventArgs> OutOfSync;
+
         #endregion Events
 
         #region Properties
