@@ -112,11 +112,8 @@ namespace Binance.Cache
 
             lock (_sync)
             {
-                while (_trades.Count >= _limit)
-                {
-                    var removed = _trades.Dequeue();
-                    Logger?.LogDebug($"{nameof(AggregateTradeCache)}: REMOVE aggregate trade (ID: {removed.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
-                }
+                var removed = _trades.Dequeue();
+                Logger?.LogDebug($"{nameof(AggregateTradeCache)}: REMOVE aggregate trade (ID: {removed.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
                 _trades.Enqueue(@event.Trade);
                 Logger?.LogDebug($"{nameof(AggregateTradeCache)}: ADD aggregate trade (ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
