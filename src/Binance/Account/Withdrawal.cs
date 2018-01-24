@@ -68,9 +68,9 @@ namespace Binance.Account
             Throw.IfNullOrWhiteSpace(address, nameof(address));
 
             if (amount <= 0)
-                throw new ArgumentException($"{nameof(Withdrawal)} amount must be greater than 0.", nameof(amount));
+                throw new ArgumentException($"{nameof(Withdrawal)}: amount must be greater than 0.", nameof(amount));
             if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(Withdrawal)} timestamp must be greater than 0.", nameof(timestamp));
+                throw new ArgumentException($"{nameof(Withdrawal)}: timestamp must be greater than 0.", nameof(timestamp));
 
             Id = id;
             Asset = asset.FormatSymbol();

@@ -61,9 +61,9 @@ namespace Binance.Account
             Throw.IfNullOrWhiteSpace(address, nameof(address));
 
             if (amount <= 0)
-                throw new ArgumentException($"{nameof(Deposit)} amount must be greater than 0.", nameof(amount));
+                throw new ArgumentException($"{nameof(Deposit)}: amount must be greater than 0.", nameof(amount));
             if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(Deposit)} timestamp must be greater than 0.", nameof(timestamp));
+                throw new ArgumentException($"{nameof(Deposit)}: timestamp must be greater than 0.", nameof(timestamp));
 
             Asset = asset.FormatSymbol();
             Amount = amount;
