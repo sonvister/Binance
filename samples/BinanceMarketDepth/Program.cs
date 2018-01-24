@@ -89,7 +89,7 @@ namespace BinanceMarketDepth
         private static void Display(OrderBook orderBook)
         {
             Console.SetCursorPosition(0, 0);
-            orderBook.Print(Console.Out);
+            orderBook.Print(Console.Out, 10);
 
             Console.WriteLine();
             Console.WriteLine("...press any key to exit.");

@@ -40,7 +40,7 @@ namespace Binance.Application
                     while (size-- >= 1)
                         bars.Append("-");
 
-                    while (bars.Length < 50)
+                    while (bars.Length < 51)
                         bars.Append(" ");
                 }
 
@@ -65,7 +65,7 @@ namespace Binance.Application
                     while (size-- >= 1)
                         bars.Append("-");
 
-                    while (bars.Length < 50)
+                    while (bars.Length < 51)
                         bars.Append(" ");
                 }
 
