@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Binance;
-using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
@@ -23,7 +21,7 @@ namespace BinanceTradeHistory
     /// </summary>
     internal class Program
     {
-        private static async Task Main()
+        private static void Main()
         {
             try
             {
@@ -53,11 +51,6 @@ namespace BinanceTradeHistory
 
                 using (var controller = new RetryTaskController())
                 {
-                    var api = services.GetService<IBinanceApi>();
-
-                    // Query and display the latest aggregate trades for the symbol.
-                    Display(await api.GetAggregateTradesAsync(symbol, limit));
-
                     // Monitor latest aggregate trades and display updates in real-time.
                     controller.Begin(
                         tkn => cache.StreamAsync(symbol, limit, evt => Display(evt.Trades), tkn),

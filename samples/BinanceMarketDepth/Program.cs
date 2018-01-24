@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using Binance;
-using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
@@ -21,7 +19,7 @@ namespace BinanceMarketDepth
     /// </summary>
     internal class Program
     {
-        private static async Task Main()
+        private static void Main()
         {
             try
             {
@@ -56,11 +54,6 @@ namespace BinanceMarketDepth
 
                 using (var controller = new RetryTaskController())
                 {
-                    var api = services.GetService<IBinanceApi>();
-
-                    // Query and display the order book.
-                    Display(await api.GetOrderBookAsync(symbol, limit == 0 ? 1000 : limit));
-
                     // Monitor order book and display updates in real-time.
                     // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
                     //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
