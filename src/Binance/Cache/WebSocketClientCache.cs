@@ -21,7 +21,7 @@ namespace Binance.Cache
 
         #region Public Properties
 
-        public TClient Client { get; }
+        public TClient Client { get; private set; }
 
         #endregion Public Properties
 
@@ -30,8 +30,6 @@ namespace Binance.Cache
         protected readonly IBinanceApi Api;
 
         protected readonly ILogger Logger;
-
-        protected CancellationToken Token = CancellationToken.None;
 
         #endregion Protected Fields
 
@@ -74,6 +72,8 @@ namespace Binance.Cache
                 throw new InvalidOperationException($"{GetType().Name} is linked to another {Client.GetType().Name}.");
             }
 
+            Client = client;
+
             _isLinked = true;
 
             _callback = callback;
@@ -81,13 +81,15 @@ namespace Binance.Cache
             _bufferBlock = new BufferBlock<TEventArgs>(new DataflowBlockOptions
             {
                 EnsureOrdered = true,
-                CancellationToken = Token,
+                CancellationToken = CancellationToken.None,
                 BoundedCapacity = DataflowBlockOptions.Unbounded,
                 MaxMessagesPerTask = DataflowBlockOptions.Unbounded
             });
 
             _actionBlock = new ActionBlock<TEventArgs>(async @event =>
             {
+                Logger?.LogTrace($"{GetType().Name}: Processing {nameof(OnAction)}... (Thread ID: {Thread.CurrentThread.ManagedThreadId})");
+
                 TCacheEventArgs eventArgs = null;
 
                 try
@@ -95,7 +97,7 @@ namespace Binance.Cache
                     eventArgs = await OnAction(@event)
                         .ConfigureAwait(false);
                 }
-                catch (OperationCanceledException) { }
+                catch (OperationCanceledException) { /* ignore */ }
                 catch (Exception e)
                 {
                     Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(OnAction)} exception.");
@@ -108,7 +110,7 @@ namespace Binance.Cache
                         _callback?.Invoke(eventArgs);
                         Update?.Invoke(this, eventArgs);
                     }
-                    catch (OperationCanceledException) { }
+                    catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
                         Logger?.LogError(e, $"{GetType().Name}: Unhandled update event handler exception.");
@@ -118,8 +120,9 @@ namespace Binance.Cache
             {
                 BoundedCapacity = 1,
                 EnsureOrdered = true,
+                MaxMessagesPerTask = 1,
                 MaxDegreeOfParallelism = 1,
-                CancellationToken = Token,
+                CancellationToken = CancellationToken.None,
                 SingleProducerConstrained = true
             });
 
@@ -128,6 +131,8 @@ namespace Binance.Cache
 
         public virtual void UnLink()
         {
+            Client = null;
+
             _callback = null;
 
             _isLinked = false;

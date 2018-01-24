@@ -138,6 +138,9 @@ namespace Binance.Market
         /// <param name="asks"></param>
         internal void Modify(long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
         {
+            if (lastUpdateId <= LastUpdateId)
+                throw new ArgumentException($"{nameof(OrderBook)}.{nameof(Modify)}: new ID must be greater than previous ID.");
+
             // Update order book bids.
             foreach (var bid in bids)
             {

@@ -89,7 +89,7 @@ namespace Binance.Cache
         {
             if (_candlesticks.Count == 0)
             {
-                await SynchronizeCandlesticksAsync(_symbol, _interval, _limit, Token)
+                await SynchronizeCandlesticksAsync(_symbol, _interval, _limit, @event.Token)
                     .ConfigureAwait(false);
             }
 

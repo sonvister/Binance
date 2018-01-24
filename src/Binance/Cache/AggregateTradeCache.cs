@@ -87,26 +87,26 @@ namespace Binance.Cache
         {
             if (_trades.Count == 0)
             {
-                await SynchronizeTradesAsync(_symbol, _limit, Token)
+                await SynchronizeTradesAsync(_symbol, _limit, @event.Token)
                     .ConfigureAwait(false);
             }
 
             // If there is a gap in the trades received (out-of-sync).
             if (@event.Trade.Id > _trades.Last().Id + 1)
             {
-                Logger?.LogError($"{nameof(AggregateTradeCache)}: Synchronization failure (trade ID > last trade ID + 1).");
+                Logger?.LogError($"{nameof(AggregateTradeCache)}: Synchronization failure ({@event.Trade.Id} > {_trades.Last().Id} + 1).");
 
-                await Task.Delay(1000, Token)
+                await Task.Delay(1000, @event.Token)
                     .ConfigureAwait(false); // wait a bit.
 
                 // Re-synchronize.
-                await SynchronizeTradesAsync(_symbol, _limit, Token)
+                await SynchronizeTradesAsync(_symbol, _limit, @event.Token)
                     .ConfigureAwait(false);
 
                 // If still out-of-sync.
                 if (@event.Trade.Id > _trades.Last().Id + 1)
                 {
-                    Logger?.LogError($"{nameof(AggregateTradeCache)}: Re-Synchronization failure (trade ID > last trade ID + 1).");
+                    Logger?.LogError($"{nameof(AggregateTradeCache)}: Re-Synchronization failure ({@event.Trade.Id} > {_trades.Last().Id} + 1).");
 
                     // Reset and wait for next event.
                     lock (_sync) _trades.Clear();

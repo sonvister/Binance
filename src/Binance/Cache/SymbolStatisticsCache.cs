@@ -120,7 +120,7 @@ namespace Binance.Cache
 
                 if (!_symbols.Any())
                 {
-                    var statistics = await Api.Get24HourStatisticsAsync(Token)
+                    var statistics = await Api.Get24HourStatisticsAsync(@event.Token)
                         .ConfigureAwait(false);
 
                     lock (_sync)

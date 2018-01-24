@@ -161,6 +161,7 @@ namespace Binance.WebSocket
                 {
                     BoundedCapacity = 1,
                     EnsureOrdered = true,
+                    MaxMessagesPerTask = 1,
                     MaxDegreeOfParallelism = 1,
                     CancellationToken = token,
                     SingleProducerConstrained = true
