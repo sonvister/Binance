@@ -3,15 +3,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Binance.Api;
+using Binance.Cache.Events;
 using Binance.WebSocket;
+using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
     public abstract class WebSocketClientCache<TClient, TEventArgs, TCacheEventArgs>
         where TClient : class, IBinanceWebSocketClient
-        where TEventArgs : EventArgs
-        where TCacheEventArgs : EventArgs
+        where TEventArgs : ClientEventArgs
+        where TCacheEventArgs : CacheEventArgs
     {
         #region Public Events
 
@@ -88,7 +90,7 @@ namespace Binance.Cache
 
             _actionBlock = new ActionBlock<TEventArgs>(async @event =>
             {
-                Logger?.LogTrace($"{GetType().Name}: Processing {nameof(OnAction)}... (Thread ID: {Thread.CurrentThread.ManagedThreadId})");
+                Logger?.LogTrace($"{GetType().Name}: Beginning {nameof(OnAction)}...  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
                 TCacheEventArgs eventArgs = null;
 
@@ -100,7 +102,7 @@ namespace Binance.Cache
                 catch (OperationCanceledException) { /* ignore */ }
                 catch (Exception e)
                 {
-                    Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(OnAction)} exception.");
+                    Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(OnAction)} exception.  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
                 }
 
                 if (eventArgs != null)
@@ -113,7 +115,7 @@ namespace Binance.Cache
                     catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
-                        Logger?.LogError(e, $"{GetType().Name}: Unhandled update event handler exception.");
+                        Logger?.LogError(e, $"{GetType().Name}: Unhandled update event handler exception.  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
                     }
                 }
             }, new ExecutionDataflowBlockOptions

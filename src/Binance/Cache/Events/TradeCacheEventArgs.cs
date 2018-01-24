@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Binance.Market;
 
 namespace Binance.Cache.Events
 {
-    public sealed class TradeCacheEventArgs : EventArgs
+    public sealed class TradeCacheEventArgs : CacheEventArgs
     {
         #region Public Properties
 

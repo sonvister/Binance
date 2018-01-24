@@ -1,9 +1,8 @@
-﻿using System;
-using Binance.Market;
+﻿using Binance.Market;
 
 namespace Binance.Cache.Events
 {
-    public sealed class SymbolStatisticsCacheEventArgs : EventArgs
+    public sealed class SymbolStatisticsCacheEventArgs : CacheEventArgs
     {
         #region Public Properties
 

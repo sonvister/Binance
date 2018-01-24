@@ -1,9 +1,8 @@
-﻿using System;
-using Binance.Account;
+﻿using Binance.Account;
 
 namespace Binance.Cache.Events
 {
-    public sealed class AccountInfoCacheEventArgs : EventArgs
+    public sealed class AccountInfoCacheEventArgs : CacheEventArgs
     {
         #region Public Properties
 
