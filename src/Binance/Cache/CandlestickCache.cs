@@ -93,7 +93,7 @@ namespace Binance.Cache
                     .ConfigureAwait(false);
             }
 
-            Logger?.LogDebug($"{nameof(CandlestickCache)}: Updating candlestick [open time: {@event.Candlestick.OpenTime}].");
+            Logger?.LogDebug($"{nameof(CandlestickCache)}: Updating candlestick (open time: {@event.Candlestick.OpenTime}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
             // Get the candlestick with matching open time.
             var candlestick = _candlesticks.FirstOrDefault(c => c.OpenTime == @event.Candlestick.OpenTime);
@@ -121,7 +121,7 @@ namespace Binance.Cache
         /// <returns></returns>
         private async Task SynchronizeCandlesticksAsync(string symbol, CandlestickInterval interval, int limit, CancellationToken token)
         {
-            Logger?.LogInformation($"{nameof(CandlestickCache)}: Synchronizing candlesticks...");
+            Logger?.LogInformation($"{nameof(CandlestickCache)}: Synchronizing candlesticks...  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
             var candlesticks = await Api.GetCandlesticksAsync(symbol, interval, limit, token: token)
                 .ConfigureAwait(false);
@@ -134,6 +134,8 @@ namespace Binance.Cache
                     _candlesticks.Add(candlestick);
                 }
             }
+
+            Logger?.LogInformation($"{nameof(CandlestickCache)}: Synchronization complete (latest open time: {candlesticks.Last().OpenTime}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
         }
 
         #endregion Private Methods
