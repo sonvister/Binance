@@ -55,15 +55,20 @@ namespace Binance24HourStatistics
                     Display(await Get24HourStatisticsAsync(api, symbols));
 
                     // Monitor 24-hour statistics of a symbol and display updates in real-time.
-                    //controller.Begin(
-                    //    tkn => cache.StreamAsync(symbol, evt => Display(evt.Statistics), tkn),
-                    //    err => Console.WriteLine(err.Message));
-
-                    // Alternative usage (if sharing IBinanceWebSocket for combined streams).
-                    cache.Subscribe(evt => Display(evt.Statistics), symbols);
-                    controller.Begin(
-                        tkn => cache.Client.WebSocket.StreamAsync(tkn),
-                        err => Console.WriteLine(err.Message));
+                    if (symbols.Length == 1)
+                    {
+                        controller.Begin(
+                            tkn => cache.StreamAsync(symbols[0], evt => Display(evt.Statistics), tkn),
+                            err => Console.WriteLine(err.Message));
+                    }
+                    else
+                    {
+                        // Alternative usage (if sharing IBinanceWebSocket for combined streams).
+                        cache.Subscribe(evt => Display(evt.Statistics), symbols);
+                        controller.Begin(
+                            tkn => cache.Client.WebSocket.StreamAsync(tkn),
+                            err => Console.WriteLine(err.Message));
+                    }
 
                     Console.ReadKey(true);
                 }
