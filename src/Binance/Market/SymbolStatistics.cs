@@ -97,12 +97,12 @@ namespace Binance.Market
         /// <summary>
         /// Get the open time.
         /// </summary>
-        public decimal OpenTime { get; }
+        public long OpenTime { get; }
 
         /// <summary>
         /// Get the close time.
         /// </summary>
-        public decimal CloseTime { get; }
+        public long CloseTime { get; }
 
         /// <summary>
         /// Get the first trade ID.
