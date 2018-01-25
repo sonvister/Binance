@@ -6,7 +6,7 @@ namespace Binance.Market
     /// Candlestick/K-Line which is uniquely identified by the symbol,
     /// interval, and open time.
     /// </summary>
-    public sealed class Candlestick : IEquatable<Candlestick>
+    public sealed class Candlestick : IEquatable<Candlestick>, IChronological
     {
         #region Public Properties
 
@@ -74,6 +74,11 @@ namespace Binance.Market
         /// Get the taker buy quote asset volume.
         /// </summary>
         public decimal TakerBuyQuoteAssetVolume { get; }
+
+        /// <summary>
+        /// Get the candlestick timestamp.
+        /// </summary>
+        public long Timestamp => OpenTime;
 
         #endregion Public Properties
 
