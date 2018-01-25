@@ -140,7 +140,9 @@ namespace Binance.Cache
                     _statistics[stats.Symbol] = stats;
                 }
 
-                return new SymbolStatisticsCacheEventArgs(_symbols.Select(s => _statistics[s]).ToArray());
+                return !_symbols.Any()
+                    ? new SymbolStatisticsCacheEventArgs(_statistics.Values.ToArray())
+                    : new SymbolStatisticsCacheEventArgs(_symbols.Select(s => _statistics[s]).ToArray());
             }
         }
 
