@@ -84,7 +84,7 @@ namespace Binance.Cache
         /// </summary>
         /// <param name="event"></param>
         /// <returns></returns>
-        protected override async Task<OrderBookCacheEventArgs> OnAction(DepthUpdateEventArgs @event)
+        protected override async ValueTask<OrderBookCacheEventArgs> OnAction(DepthUpdateEventArgs @event)
         {
             if (_limit > 0)
             {

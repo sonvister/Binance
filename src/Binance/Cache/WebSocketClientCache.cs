@@ -152,7 +152,7 @@ namespace Binance.Cache
         /// </summary>
         /// <param name="event"></param>
         /// <returns></returns>
-        protected abstract Task<TCacheEventArgs> OnAction(TEventArgs @event);
+        protected abstract ValueTask<TCacheEventArgs> OnAction(TEventArgs @event);
 
         /// <summary>
         /// Route event handler to callback method.

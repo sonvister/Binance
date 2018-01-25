@@ -57,14 +57,14 @@ namespace Binance.Cache
 
         #region Protected Methods
 
-        protected override Task<AccountInfoCacheEventArgs> OnAction(UserDataEventArgs @event)
+        protected override ValueTask<AccountInfoCacheEventArgs> OnAction(UserDataEventArgs @event)
         {
             if (!(@event is AccountUpdateEventArgs accountInfoEvent))
-                return null;
+                return new ValueTask<AccountInfoCacheEventArgs>();
 
             AccountInfo = accountInfoEvent.AccountInfo;
 
-            return Task.FromResult(new AccountInfoCacheEventArgs(AccountInfo));
+            return new ValueTask<AccountInfoCacheEventArgs>(new AccountInfoCacheEventArgs(AccountInfo));
         }
 
         #endregion Protected Methods

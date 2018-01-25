@@ -89,7 +89,7 @@ namespace Binance.Cache
 
         #region Protected Methods
 
-        protected override async Task<TradeCacheEventArgs> OnAction(TradeEventArgs @event)
+        protected override async ValueTask<TradeCacheEventArgs> OnAction(TradeEventArgs @event)
         {
             // If trades have not been initialized or are out-of-sync (gap in data).
             while (_trades.Count == 0 || @event.Trade.Id > _trades.Last().Id + 1)

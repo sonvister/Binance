@@ -112,7 +112,7 @@ namespace Binance.Cache
 
         #region Protected Methods
 
-        protected override async Task<SymbolStatisticsCacheEventArgs> OnAction(SymbolStatisticsEventArgs @event)
+        protected override async ValueTask<SymbolStatisticsCacheEventArgs> OnAction(SymbolStatisticsEventArgs @event)
         {
             if (_statistics.Count == 0)
             {

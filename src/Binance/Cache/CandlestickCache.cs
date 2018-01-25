@@ -85,7 +85,7 @@ namespace Binance.Cache
 
         #region Protected Methods
 
-        protected override async Task<CandlestickCacheEventArgs> OnAction(CandlestickEventArgs @event)
+        protected override async ValueTask<CandlestickCacheEventArgs> OnAction(CandlestickEventArgs @event)
         {
             if (_candlesticks.Count == 0)
             {
