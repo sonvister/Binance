@@ -14,7 +14,7 @@ namespace Binance
         {
             Throw.IfNull(chronological, nameof(chronological));
 
-            return DateTimeOffset.FromUnixTimeMilliseconds(chronological.Timestamp).UtcDateTime;
+            return chronological.Timestamp.ToDateTime();
         }
     }
 }
