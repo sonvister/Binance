@@ -1,4 +1,6 @@
-﻿namespace Binance.Extensions
+﻿using System;
+
+namespace Binance
 {
     public static class InclusiveRangeExtensions
     {
@@ -13,6 +15,88 @@
             Throw.IfNull(range, nameof(range));
 
             return value >= range.Minimum && value <= range.Maximum && (value - range.Minimum) % range.Increment == 0;
+        }
+
+        /// <summary>
+        /// Get the nearest valid value within range coercing remainders UP to the next increment.
+        /// 
+        /// For example, use this to get a valid quantity given an expected minimum amount:
+        ///   1.234 => 1.240 given range of [0.01 - 10.00] with increment of 0.01.
+        /// </summary>
+        /// <param name="range"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static decimal GetUpperValidValue(this InclusiveRange range, decimal value)
+        {
+            if (value <= range.Minimum) return range.Minimum;
+            if (value >= range.Maximum) return range.Maximum;
+
+            var remainder = value % range.Increment;
+
+            if (remainder == 0) return value;
+
+            return value - value % range.Increment + range.Increment;
+        }
+
+        /// <summary>
+        /// Get the nearest valid value within range coercing remainders to the closest increment.
+        /// Specify a midpoint rounding behavior for values with remainder equals increment / 2.
+        /// The default behavior rounds midpoint remainders to the nearest even increment.
+        /// 
+        /// For example:
+        ///   1.234 => 1.230 given range of [0.01 - 10.00] with increment of 0.01.
+        ///   2.345 => 2.340 given range of [0.01 - 10.00] with increment of 0.01 (midpoint rounding to even).
+        ///   2.345 => 2.350 given range of [0.01 - 10.00] with increment of 0.01 (midpoint rounding away from 0).
+        ///   9.876 => 9.880 given range of [0.01 - 10.00] with increment of 0.01.
+        /// </summary>
+        /// <param name="range"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static decimal GetValidValue(this InclusiveRange range, decimal value, MidpointRounding midpointRounding = MidpointRounding.ToEven)
+        {
+            if (value <= range.Minimum) return range.Minimum;
+            if (value >= range.Maximum) return range.Maximum;
+
+            var remainder = value % range.Increment;
+
+            if (remainder == 0) return value;
+
+            var midpoint = range.Increment / 2;
+            var lower = value - remainder;
+
+            if (remainder < midpoint) return lower;
+            if (remainder > midpoint) return lower + range.Increment;
+
+            // Otherwise, remainder equals increment / 2...
+
+            if (midpointRounding == MidpointRounding.AwayFromZero)
+                return lower + range.Increment;
+
+            // Round to nearest even increment...
+            return (lower % (range.Increment * 2) == 0)
+                ? lower // ...if lower is even.
+                : lower + range.Increment;
+        }
+
+        /// <summary>
+        /// Get the nearest valid value within range coercing remainders DOWN to the next increment.
+        /// 
+        /// For example, use this to get a valid price given an expected maximum amount:
+        ///   9.876 => 9.870 given range of [0.01 - 10.00] with increment of 0.01.
+        /// </summary>
+        /// <param name="range"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static decimal GetLowerValidValue(this InclusiveRange range, decimal value)
+        {
+            if (value <= range.Minimum) return range.Minimum;
+            if (value >= range.Maximum) return range.Maximum;
+
+            var remainder = value % range.Increment;
+
+            if (remainder == 0) return value;
+
+            return value - value % range.Increment;
         }
     }
 }
