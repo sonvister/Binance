@@ -6,6 +6,7 @@ A full-featured .NET **[Binance API](https://www.binance.com/restapipub.html)** 
 ## Features
 * Compatible with **.NET Standard 2.0** and **.NET Framework 4.7.1**.
 * **Complete** coverage of the [Binance API](https://www.binance.com/restapipub.html) including all REST and WebSocket endpoints (*with combined streams*).
+  * A Binance account API Key is *not required* to access *public* REST and WebSocket endpoints (*most market data*).
 * **Simple** API abstraction using domain/value objects that do not expose underlying (*HTTP/REST*) behavior.
 * **Convenient** assets and symbols (e.g. `Symbol.BTC_USDT`) with exchange info (*price/quantity min, max, etc.*).
 * Consistent use of **domain models** whether you're querying the API or using real-time WebSocket client events.
