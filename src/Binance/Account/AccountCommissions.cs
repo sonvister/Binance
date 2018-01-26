@@ -10,22 +10,22 @@ namespace Binance.Account
         #region Public Properties
 
         /// <summary>
-        /// Get the maker commission.
+        /// Get the maker commission in basis points (bips).
         /// </summary>
         public int Maker { get; }
 
         /// <summary>
-        /// Get the taker commission.
+        /// Get the taker commission in basis points (bips).
         /// </summary>
         public int Taker { get; }
 
         /// <summary>
-        /// Get the buyer commission.
+        /// Get the buyer commission in basis points (bips).
         /// </summary>
         public int Buyer { get; }
 
         /// <summary>
-        /// Get the seller commission.
+        /// Get the seller commission in basis points (bips).
         /// </summary>
         public int Seller { get; }
 
@@ -36,10 +36,10 @@ namespace Binance.Account
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="maker">The maker commission.</param>
-        /// <param name="taker">The taker commission.</param>
-        /// <param name="buyer">The buyer commission.</param>
-        /// <param name="seller">The seller commission.</param>
+        /// <param name="maker">The maker commission (bips).</param>
+        /// <param name="taker">The taker commission (bips).</param>
+        /// <param name="buyer">The buyer commission (bips).</param>
+        /// <param name="seller">The seller commission (bips).</param>
         public AccountCommissions(int maker, int taker, int buyer, int seller)
         {
             ThrowIfCommissionIsInvalid(maker, nameof(maker));
@@ -64,8 +64,8 @@ namespace Binance.Account
         /// <param name="paramName">The parameter name.</param>
         internal static void ThrowIfCommissionIsInvalid(decimal commission, string paramName)
         {
-            if (commission < 0 || commission > 100)
-                throw new ArgumentException($"{nameof(AccountCommissions)} commission must be in the range [0-100].", paramName);
+            if (commission < 0 || commission > 10000)
+                throw new ArgumentException($"{nameof(AccountCommissions)} commission must be in the range [0-10000] BPS.", paramName);
         }
 
         #endregion Private Methods
