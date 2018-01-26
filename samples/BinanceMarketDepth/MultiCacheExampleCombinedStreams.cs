@@ -44,7 +44,7 @@ namespace BinanceMarketDepth
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
 
-                var limit = 5;
+                var limit = 5; // set to 0 to use diff. depth stream (instead of partial depth stream).
 
                 var api = services.GetService<IBinanceApi>();
 
@@ -108,7 +108,7 @@ namespace BinanceMarketDepth
 
                 foreach (var orderBook in orderBooks)
                 {
-                    orderBook.Print(Console.Out);
+                    orderBook.Print(Console.Out, 5);
                     Console.WriteLine();
                 }
 

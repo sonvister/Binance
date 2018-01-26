@@ -106,17 +106,17 @@ namespace Binance.Cache
             // Ignore trades older than the latest trade in queue.
             if (@event.Trade.Id <= _trades.Last().Id)
             {
-                Logger?.LogDebug($"{nameof(AggregateTradeCache)}: Ignoring event (trade ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                Logger?.LogDebug($"{nameof(AggregateTradeCache)} ({_symbol}): Ignoring event (trade ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
                 return null;
             }
 
             lock (_sync)
             {
                 var removed = _trades.Dequeue();
-                Logger?.LogDebug($"{nameof(AggregateTradeCache)}: REMOVE aggregate trade (ID: {removed.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                Logger?.LogDebug($"{nameof(AggregateTradeCache)} ({_symbol}): REMOVE aggregate trade (ID: {removed.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
                 _trades.Enqueue(@event.Trade);
-                Logger?.LogDebug($"{nameof(AggregateTradeCache)}: ADD aggregate trade (ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                Logger?.LogDebug($"{nameof(AggregateTradeCache)} ({_symbol}): ADD aggregate trade (ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
             }
 
             return new AggregateTradeCacheEventArgs(_trades.ToArray());
@@ -135,7 +135,7 @@ namespace Binance.Cache
         /// <returns></returns>
         private async Task SynchronizeTradesAsync(string symbol, int limit, CancellationToken token)
         {
-            Logger?.LogInformation($"{nameof(AggregateTradeCache)}: Synchronizing aggregate trades...  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+            Logger?.LogInformation($"{nameof(AggregateTradeCache)} ({_symbol}): Synchronizing aggregate trades...  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
             var trades = await Api.GetAggregateTradesAsync(symbol, limit, token)
                 .ConfigureAwait(false);
@@ -149,7 +149,7 @@ namespace Binance.Cache
                 }
             }
 
-            Logger?.LogInformation($"{nameof(AggregateTradeCache)}: Synchronization complete (latest trade ID: {trades.Last().Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+            Logger?.LogInformation($"{nameof(AggregateTradeCache)} ({_symbol}): Synchronization complete (latest trade ID: {trades.Last().Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
         }
 
         #endregion Private Methods
