@@ -6,7 +6,7 @@ namespace Binance
     internal static class TimestampExtensions
     {
         /// <summary>
-        /// Convert a timestamp to UTC <see cref="DateTime"/>.
+        /// Convert Unix time milliseconds to <see cref="DateTime"/> (UTC).
         /// </summary>
         /// <param name="timestamp"></param>
         /// <returns></returns>

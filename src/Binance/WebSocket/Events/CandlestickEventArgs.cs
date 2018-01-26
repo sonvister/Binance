@@ -39,14 +39,14 @@ namespace Binance.WebSocket.Events
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="timestamp">The event time.</param>
+        /// <param name="time">The event time.</param>
         /// <param name="token">The cancellation token.</param>
         /// <param name="candlestick">The candlestick.</param>
         /// <param name="firstTradeId">The first trade ID.</param>
         /// <param name="lastTradeId">The last trade ID.</param>
         /// <param name="isFinal">Is candlestick final.</param>
-        public CandlestickEventArgs(long timestamp, CancellationToken token, Candlestick candlestick, long firstTradeId, long lastTradeId, bool isFinal)
-            : base(timestamp, token)
+        public CandlestickEventArgs(DateTime time, CancellationToken token, Candlestick candlestick, long firstTradeId, long lastTradeId, bool isFinal)
+            : base(time, token)
         {
             Throw.IfNull(candlestick, nameof(candlestick));
 

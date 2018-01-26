@@ -17,12 +17,12 @@ namespace Binance.Tests.Serialization
             const decimal quantity = 1;
             const decimal commission = 10;
             var commissionAsset = Asset.BNB;
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
             const bool isBuyer = true;
             const bool isMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AccountTrade(symbol, id, orderId, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch);
+            var trade = new AccountTrade(symbol, id, orderId, price, quantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch);
 
             var serializer = new AccountTradeSerializer();
 

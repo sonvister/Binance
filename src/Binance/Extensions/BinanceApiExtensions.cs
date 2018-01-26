@@ -24,7 +24,7 @@ namespace Binance.Api
 
             var timestamp = await api.GetTimestampAsync(token).ConfigureAwait(false);
 
-            return DateTimeOffset.FromUnixTimeMilliseconds(timestamp).UtcDateTime;
+            return timestamp.ToDateTime();
         }
 
         /// <summary>

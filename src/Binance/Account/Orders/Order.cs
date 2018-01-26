@@ -77,9 +77,9 @@ namespace Binance.Account.Orders
         public decimal IcebergQuantity { get; internal set; }
 
         /// <summary>
-        /// Get the timestamp.
+        /// Get the time.
         /// </summary>
-        public long Timestamp { get; internal set; }
+        public DateTime Time { get; internal set; }
 
         /// <summary>
         /// Get the is working flag.
@@ -111,7 +111,7 @@ namespace Binance.Account.Orders
         /// <param name="orderSide"></param>
         /// <param name="stopPrice"></param>
         /// <param name="icebergQuantity"></param>
-        /// <param name="timestamp"></param>
+        /// <param name="time"></param>
         /// <param name="isWorking"></param>
         /// <param name="fills"></param>
         public Order(
@@ -128,7 +128,7 @@ namespace Binance.Account.Orders
             OrderSide orderSide,
             decimal stopPrice,
             decimal icebergQuantity,
-            long timestamp,
+            DateTime time,
             bool isWorking,
             IEnumerable<Fill> fills = null)
             : this(user)
@@ -150,9 +150,6 @@ namespace Binance.Account.Orders
             if (icebergQuantity < 0)
                 throw new ArgumentException($"{nameof(Order)}: quantity must not be less than 0.", nameof(icebergQuantity));
 
-            if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(Order)}: timestamp must be greater than 0.", nameof(timestamp));
-
             Symbol = symbol.FormatSymbol();
             Id = id;
             ClientOrderId = clientOrderId;
@@ -165,7 +162,7 @@ namespace Binance.Account.Orders
             Side = orderSide;
             StopPrice = stopPrice;
             IcebergQuantity = icebergQuantity;
-            Timestamp = timestamp;
+            Time = time;
             IsWorking = isWorking;
 
             Fills = fills ?? new Fill[] { };
@@ -202,7 +199,7 @@ namespace Binance.Account.Orders
                 && other.Side == Side
                 && other.StopPrice == StopPrice
                 && other.IcebergQuantity == IcebergQuantity
-                && other.Timestamp == Timestamp;
+                && other.Time.Equals(Time);
         }
 
         #endregion IEquatable

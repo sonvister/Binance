@@ -28,7 +28,7 @@ namespace Binance.Api
         Task<bool> PingAsync(CancellationToken token = default);
 
         /// <summary>
-        /// Test connectivity to the server and get the current time (timestamp).
+        /// Test connectivity to the server and get the current time (Unix time milliseconds).
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>

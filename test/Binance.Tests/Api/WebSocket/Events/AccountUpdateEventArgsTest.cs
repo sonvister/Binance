@@ -12,42 +12,36 @@ namespace Binance.Tests.Api.WebSocket.Events
         [Fact]
         public void Throws()
         {
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
             var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);
-            long updateTime = 1234567890;
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
             var balances = new[] { new AccountBalance("BTC", 0.1m, 0.2m) };
 
-            var account = new AccountInfo(user, commissions, status, updateTime, balances);
+            var account = new AccountInfo(user, commissions, status, time, balances);
 
             using (var cts = new CancellationTokenSource())
             {
-                Assert.Throws<ArgumentException>("timestamp", () => new AccountUpdateEventArgs(-1, cts.Token, account));
-                Assert.Throws<ArgumentException>("timestamp", () => new AccountUpdateEventArgs(0, cts.Token, account));
-                Assert.Throws<ArgumentNullException>("accountInfo", () => new AccountUpdateEventArgs(timestamp, cts.Token, null));
+                Assert.Throws<ArgumentNullException>("accountInfo", () => new AccountUpdateEventArgs(time, cts.Token, null));
             }
         }
 
         [Fact]
         public void Properties()
         {
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
             var user = new BinanceApiUser("api-key");
             var commissions = new AccountCommissions(10, 10, 0, 0);
             var status = new AccountStatus(true, true, true);
-            long updateTime = 1234567890;
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
             var balances = new[] { new AccountBalance("BTC", 0.1m, 0.2m) };
 
-            var account = new AccountInfo(user, commissions, status, updateTime, balances);
+            var account = new AccountInfo(user, commissions, status, time, balances);
 
             using (var cts = new CancellationTokenSource())
             {
-                var args = new AccountUpdateEventArgs(timestamp, cts.Token, account);
+                var args = new AccountUpdateEventArgs(time, cts.Token, account);
 
-                Assert.Equal(timestamp, args.Timestamp);
+                Assert.Equal(time, args.Time);
                 Assert.Equal(account, args.AccountInfo);
             }
         }

@@ -72,7 +72,7 @@ namespace Binance.WebSocket
                 if (eventType == "kline")
                 {
                     //var symbol = jObject["s"].Value<string>();
-                    var eventTime = jObject["E"].Value<long>();
+                    var eventTime = jObject["E"].Value<long>().ToDateTime();
 
                     var firstTradeId = jObject["k"]["f"].Value<long>();
                     var lastTradeId = jObject["k"]["L"].Value<long>();

@@ -49,7 +49,7 @@ namespace Binance.Serialization
                 new JProperty(KeyId, trade.Id),
                 new JProperty(KeyPrice, trade.Price.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyQuantity, trade.Quantity.ToString(CultureInfo.InvariantCulture)),
-                new JProperty(KeyTime, trade.Timestamp),
+                new JProperty(KeyTime, trade.Time.ToTimestamp()),
                 new JProperty(KeyIsBuyerMaker, trade.IsBuyerMaker),
                 new JProperty(KeyIsBestPriceMatch, trade.IsBestPriceMatch)
             };
@@ -71,14 +71,14 @@ namespace Binance.Serialization
         {
             return new Trade(
                 jToken[KeySymbol]?.Value<string>() ?? symbol,
-                jToken[KeyId].Value<long>(), // ID
-                jToken[KeyPrice].Value<decimal>(), // price
-                jToken[KeyQuantity].Value<decimal>(), // quantity
-                jToken[KeyBuyerOrderId]?.Value<long>() ?? BinanceApi.NullId, // buyer order ID
+                jToken[KeyId].Value<long>(),                                  // ID
+                jToken[KeyPrice].Value<decimal>(),                            // price
+                jToken[KeyQuantity].Value<decimal>(),                         // quantity
+                jToken[KeyBuyerOrderId]?.Value<long>() ?? BinanceApi.NullId,  // buyer order ID
                 jToken[KeySellerOrderId]?.Value<long>() ?? BinanceApi.NullId, // seller order ID
-                jToken[KeyTime].Value<long>(), // timestamp
-                jToken[KeyIsBuyerMaker].Value<bool>(), // is buyer maker
-                jToken[KeyIsBestPriceMatch].Value<bool>()); // is best price match
+                jToken[KeyTime].Value<long>().ToDateTime(),                   // time
+                jToken[KeyIsBuyerMaker].Value<bool>(),                        // is buyer maker
+                jToken[KeyIsBestPriceMatch].Value<bool>());                   // is best price match
         }
     }
 }

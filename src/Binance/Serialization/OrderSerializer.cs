@@ -67,7 +67,7 @@ namespace Binance.Serialization
                 new JProperty(KeySymbol, order.Symbol),
                 new JProperty(KeyOrderId, order.Id),
                 new JProperty(KeyClientOrderId, order.ClientOrderId),
-                new JProperty(KeyTime, order.Timestamp),
+                new JProperty(KeyTime, order.Time.ToTimestamp()),
                 new JProperty(KeyPrice, order.Price.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyOriginalQuantity, order.OriginalQuantity.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyExecutedQuantity, order.ExecutedQuantity.ToString(CultureInfo.InvariantCulture)),
@@ -108,7 +108,7 @@ namespace Binance.Serialization
             order.Symbol = jToken[KeySymbol].Value<string>();
             order.Id = jToken[KeyOrderId].Value<long>();
             order.ClientOrderId = jToken[KeyClientOrderId].Value<string>();
-            order.Timestamp = (jToken[KeyTime] ?? jToken["transactTime"]).Value<long>();
+            order.Time = (jToken[KeyTime] ?? jToken["transactTime"]).Value<long>().ToDateTime();
             order.Price = jToken[KeyPrice].Value<decimal>();
             order.OriginalQuantity = jToken[KeyOriginalQuantity].Value<decimal>();
             order.ExecutedQuantity = jToken[KeyExecutedQuantity].Value<decimal>();

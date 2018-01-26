@@ -13,7 +13,7 @@ namespace Binance.Tests.Api.WebSocket.Events
         [Fact]
         public void Throws()
         {
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
 
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
@@ -30,7 +30,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             const decimal icebergQuantity = 0.1m;
             const bool isWorking = true;
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, isWorking);
 
             const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
             const string newClientOrderId = "new-test-order";
@@ -44,22 +44,20 @@ namespace Binance.Tests.Api.WebSocket.Events
             const bool isMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AccountTrade(symbol, tradeId, orderId, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch);
+            var trade = new AccountTrade(symbol, tradeId, orderId, price, quantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch);
 
             decimal quantityOfLastFilledTrade = 1;
 
             using (var cts = new CancellationTokenSource())
             {
-                Assert.Throws<ArgumentException>("timestamp", () => new AccountTradeUpdateEventArgs(-1, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
-                Assert.Throws<ArgumentException>("timestamp", () => new AccountTradeUpdateEventArgs(0, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
-                Assert.Throws<ArgumentNullException>("order", () => new AccountTradeUpdateEventArgs(timestamp, cts.Token, null, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
+                Assert.Throws<ArgumentNullException>("order", () => new AccountTradeUpdateEventArgs(time, cts.Token, null, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
             }
         }
 
         [Fact]
         public void Properties()
         {
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
 
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
@@ -76,7 +74,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             const decimal icebergQuantity = 0.1m;
             const bool isWorking = true;
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, isWorking);
 
             const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
             const string newClientOrderId = "new-test-order";
@@ -90,15 +88,15 @@ namespace Binance.Tests.Api.WebSocket.Events
             const bool isMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AccountTrade(symbol, tradeId, orderId, price, quantity, commission, commissionAsset, timestamp, isBuyer, isMaker, isBestPriceMatch);
+            var trade = new AccountTrade(symbol, tradeId, orderId, price, quantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch);
 
             const decimal quantityOfLastFilledTrade = 1;
 
             using (var cts = new CancellationTokenSource())
             {
-                var args = new AccountTradeUpdateEventArgs(timestamp, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
+                var args = new AccountTradeUpdateEventArgs(time, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
 
-                Assert.Equal(timestamp, args.Timestamp);
+                Assert.Equal(time, args.Time);
                 Assert.Equal(order, args.Order);
                 Assert.Equal(OrderExecutionType.Trade, args.OrderExecutionType);
                 Assert.Equal(orderRejectedReason, args.OrderRejectedReason);

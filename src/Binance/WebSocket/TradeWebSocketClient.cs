@@ -71,7 +71,7 @@ namespace Binance.WebSocket
 
                 if (eventType == "trade")
                 {
-                    var eventTime = jObject["E"].Value<long>();
+                    var eventTime = jObject["E"].Value<long>().ToDateTime();
 
                     var trade = new Trade(
                         jObject["s"].Value<string>(),  // symbol
@@ -80,7 +80,8 @@ namespace Binance.WebSocket
                         jObject["q"].Value<decimal>(), // quantity
                         jObject["b"].Value<long>(),    // buyer order ID
                         jObject["a"].Value<long>(),    // seller order ID
-                        jObject["T"].Value<long>(),    // trade time (timestamp)
+                        jObject["T"].Value<long>()
+                            .ToDateTime(),             // trade time
                         jObject["m"].Value<bool>(),    // is buyer the market maker?
                         jObject["M"].Value<bool>());   // is best price match?
 

@@ -25,14 +25,14 @@ namespace Binance.Tests.Serialization
             const OrderSide orderSide = OrderSide.Sell;
             const decimal stopPrice = 5000;
             const decimal icebergQuantity = 0.1m;
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
             const bool isWorking = true;
             Fill[] fills =
             {
                 new Fill(price, originalQuantity, 0.001m, "BNB", 12345678990)
             };
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking, fills);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, isWorking, fills);
 
             var serializer = new OrderSerializer();
 

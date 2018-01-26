@@ -1,4 +1,5 @@
-﻿using Binance.Api;
+﻿using System;
+using Binance.Api;
 
 namespace Binance.Account.Orders
 {
@@ -39,7 +40,7 @@ namespace Binance.Account.Orders
         /// <summary>
         /// Get the transact time.
         /// </summary>
-        public long Timestamp { get; internal set; }
+        public DateTime Time { get; internal set; }
 
         #endregion Public Properties
 

@@ -13,7 +13,7 @@ namespace Binance.WebSocket.Events
         /// <summary>
         /// Get the event time.
         /// </summary>
-        public long Timestamp { get; }
+        public DateTime Time { get; }
 
         /// <summary>
         /// Get the cancellation token.
@@ -27,14 +27,11 @@ namespace Binance.WebSocket.Events
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="timestamp">The event time.</param>
+        /// <param name="time">The event time.</param>
         /// <param name="token"></param>
-        protected ClientEventArgs(long timestamp, CancellationToken token)
+        protected ClientEventArgs(DateTime time, CancellationToken token)
         {
-            if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(ClientEventArgs)} timestamp must be greater than 0.", nameof(timestamp));
-
-            Timestamp = timestamp;
+            Time = time;
             Token = token;
         }
 

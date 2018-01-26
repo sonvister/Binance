@@ -444,7 +444,7 @@ namespace Binance.Api
 
                 // Update client order properties.
                 clientOrder.Id = order.ClientOrderId;
-                clientOrder.Timestamp = order.Timestamp;
+                clientOrder.Time = order.Time;
             }
             catch (Exception e)
             {
@@ -599,7 +599,7 @@ namespace Binance.Api
                         entry["locked"].Value<decimal>()))
                     .ToArray();
 
-                return new AccountInfo(user, commissions, status, jObject["updateTime"].Value<long>(), balances);
+                return new AccountInfo(user, commissions, status, jObject["updateTime"].Value<long>().ToDateTime(), balances);
             }
             catch (Exception e)
             {
@@ -678,7 +678,7 @@ namespace Binance.Api
                             depositList.Select(jToken => new Deposit(
                                 jToken["asset"].Value<string>(),
                                 jToken["amount"].Value<decimal>(),
-                                jToken["insertTime"].Value<long>(),
+                                jToken["insertTime"].Value<long>().ToDateTime(),
                                 (DepositStatus)jToken["status"].Value<int>(),
                                 jToken["address"]?.Value<string>(),
                                 jToken["addressTag"]?.Value<string>(),
@@ -727,7 +727,7 @@ namespace Binance.Api
                                 jToken["id"].Value<string>(),
                                 jToken["asset"].Value<string>(),
                                 jToken["amount"].Value<decimal>(),
-                                jToken["applyTime"].Value<long>(),
+                                jToken["applyTime"].Value<long>().ToDateTime(),
                                 (WithdrawalStatus)jToken["status"].Value<int>(),
                                 jToken["address"].Value<string>(),
                                 jToken["addressTag"]?.Value<string>(),

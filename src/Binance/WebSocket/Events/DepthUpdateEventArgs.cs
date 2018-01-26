@@ -43,15 +43,15 @@ namespace Binance.WebSocket.Events
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="timestamp">The event time.</param>
+        /// <param name="time">The event time.</param>
         /// <param name="token">The cancellation token.</param>
         /// <param name="symbol">The symbol.</param>
         /// <param name="firstUpdateId"></param>
         /// <param name="lastUpdateId"></param>
         /// <param name="bids">The bids.</param>
         /// <param name="asks">The asks.</param>
-        public DepthUpdateEventArgs(long timestamp, CancellationToken token, string symbol, long firstUpdateId, long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
-            : base(timestamp, token)
+        public DepthUpdateEventArgs(DateTime time, CancellationToken token, string symbol, long firstUpdateId, long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
+            : base(time, token)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 

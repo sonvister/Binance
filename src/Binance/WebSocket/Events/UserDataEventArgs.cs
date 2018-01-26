@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace Binance.WebSocket.Events
 {
@@ -12,10 +13,10 @@ namespace Binance.WebSocket.Events
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="timestamp">The event time.</param>
+        /// <param name="time">The event time.</param>
         /// <param name="token">The cancellation token.</param>
-        protected UserDataEventArgs(long timestamp, CancellationToken token)
-            : base(timestamp, token)
+        protected UserDataEventArgs(DateTime time, CancellationToken token)
+            : base(time, token)
         { }
 
         #endregion Constructors

@@ -50,7 +50,7 @@ namespace Binance.Account
         /// <param name="quantity"></param>
         /// <param name="commission"></param>
         /// <param name="commissionAsset"></param>
-        /// <param name="timestamp"></param>
+        /// <param name="time"></param>
         /// <param name="isBuyer"></param>
         /// <param name="isMaker"></param>
         /// <param name="isBestPriceMatch"></param>
@@ -62,11 +62,11 @@ namespace Binance.Account
             decimal quantity,
             decimal commission,
             string commissionAsset,
-            long timestamp,
+            DateTime time,
             bool isBuyer,
             bool isMaker,
             bool isBestPriceMatch)
-            : base(symbol, id, price, quantity, isBuyer ? orderId : BinanceApi.NullId, !isBuyer ? orderId : BinanceApi.NullId, timestamp, !(isBuyer ^ isMaker), isBestPriceMatch)
+            : base(symbol, id, price, quantity, isBuyer ? orderId : BinanceApi.NullId, !isBuyer ? orderId : BinanceApi.NullId, time, !(isBuyer ^ isMaker), isBestPriceMatch)
         {
             if (orderId < 0)
                 throw new ArgumentException($"{nameof(Trade)}: ID must not be less than 0.", nameof(orderId));

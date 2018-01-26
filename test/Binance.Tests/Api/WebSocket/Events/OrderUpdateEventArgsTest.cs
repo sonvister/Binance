@@ -12,7 +12,7 @@ namespace Binance.Tests.Api.WebSocket.Events
         [Fact]
         public void Throws()
         {
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
 
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
@@ -29,7 +29,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             const decimal icebergQuantity = 0.1m;
             const bool isWorking = true;
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, isWorking);
 
             const OrderExecutionType orderExecutionType = OrderExecutionType.New;
             const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
@@ -37,16 +37,14 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             using (var cts = new CancellationTokenSource())
             {
-                Assert.Throws<ArgumentException>("timestamp", () => new OrderUpdateEventArgs(-1, cts.Token, order, orderExecutionType, orderRejectedReason, newClientOrderId));
-                Assert.Throws<ArgumentException>("timestamp", () => new OrderUpdateEventArgs(0, cts.Token, order, orderExecutionType, orderRejectedReason, newClientOrderId));
-                Assert.Throws<ArgumentNullException>("order", () => new OrderUpdateEventArgs(timestamp, cts.Token, null, orderExecutionType, orderRejectedReason, newClientOrderId));
+                Assert.Throws<ArgumentNullException>("order", () => new OrderUpdateEventArgs(time, cts.Token, null, orderExecutionType, orderRejectedReason, newClientOrderId));
             }
         }
 
         [Fact]
         public void Properties()
         {
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
 
             var user = new BinanceApiUser("api-key");
             var symbol = Symbol.BTC_USDT;
@@ -63,7 +61,7 @@ namespace Binance.Tests.Api.WebSocket.Events
             const decimal icebergQuantity = 0.1m;
             const bool isWorking = true;
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, timestamp, isWorking);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, isWorking);
 
             const OrderExecutionType orderExecutionType = OrderExecutionType.New;
             const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
@@ -71,9 +69,9 @@ namespace Binance.Tests.Api.WebSocket.Events
 
             using (var cts = new CancellationTokenSource())
             {
-                var args = new OrderUpdateEventArgs(timestamp, cts.Token, order, orderExecutionType, orderRejectedReason, newClientOrderId);
+                var args = new OrderUpdateEventArgs(time, cts.Token, order, orderExecutionType, orderRejectedReason, newClientOrderId);
 
-                Assert.Equal(timestamp, args.Timestamp);
+                Assert.Equal(time, args.Time);
                 Assert.Equal(order, args.Order);
                 Assert.Equal(orderExecutionType, args.OrderExecutionType);
                 Assert.Equal(orderRejectedReason, args.OrderRejectedReason);

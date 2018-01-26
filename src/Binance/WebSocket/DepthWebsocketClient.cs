@@ -76,7 +76,7 @@ namespace Binance.WebSocket
                     case null:
                     {
                         // Simulate event time.
-                        var eventTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                        var eventTime = DateTime.UtcNow.ToTimestamp().ToDateTime();
 
                         var lastUpdateId = jObject["lastUpdateId"].Value<long>();
 
@@ -89,7 +89,7 @@ namespace Binance.WebSocket
                     case "depthUpdate":
                     {
                         var symbol = jObject["s"].Value<string>();
-                        var eventTime = jObject["E"].Value<long>();
+                        var eventTime = jObject["E"].Value<long>().ToDateTime();
 
                         var firstUpdateId = jObject["U"].Value<long>();
                         var lastUpdateId = jObject["u"].Value<long>();

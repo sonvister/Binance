@@ -31,9 +31,9 @@ namespace Binance.Market
         public decimal Quantity { get; }
 
         /// <summary>
-        /// Get the trade timestamp.
+        /// Get the trade time.
         /// </summary>
-        public long Timestamp { get; }
+        public DateTime Time { get; }
 
         /// <summary>
         /// Get flag indicating if the buyer the maker.
@@ -68,7 +68,7 @@ namespace Binance.Market
         /// <param name="quantity">The aggregate quantity.</param>
         /// <param name="firstTradeId">The first trade ID.</param>
         /// <param name="lastTradeId">The last trade ID.</param>
-        /// <param name="timestamp">The timestamp.</param>
+        /// <param name="time">The time.</param>
         /// <param name="isBuyerMaker">Is buyer maker.</param>
         /// <param name="isBestPriceMatch">Is best price match.</param>
         public AggregateTrade(
@@ -78,7 +78,7 @@ namespace Binance.Market
             decimal quantity,
             long firstTradeId,
             long lastTradeId,
-            long timestamp,
+            DateTime time,
             bool isBuyerMaker,
             bool isBestPriceMatch)
         {
@@ -90,8 +90,6 @@ namespace Binance.Market
                 throw new ArgumentException($"{nameof(AggregateTrade)}: price must not be less than 0.", nameof(price));
             if (quantity <= 0)
                 throw new ArgumentException($"{nameof(AggregateTrade)}: quantity must be greater than 0.", nameof(quantity));
-            if (timestamp <= 0)
-                throw new ArgumentException($"{nameof(AggregateTrade)}: timestamp must be greater than 0.", nameof(timestamp));
             if (firstTradeId < 0)
                 throw new ArgumentException($"{nameof(AggregateTrade)}: ID must not be less than 0.", nameof(firstTradeId));
             if (lastTradeId < 0)
@@ -105,7 +103,7 @@ namespace Binance.Market
             Quantity = quantity;
             FirstTradeId = firstTradeId;
             LastTradeId = lastTradeId;
-            Timestamp = timestamp;
+            Time = time;
             IsBuyerMaker = isBuyerMaker;
             IsBestPriceMatch = isBestPriceMatch;
         }
@@ -125,7 +123,7 @@ namespace Binance.Market
                 && other.Quantity == Quantity
                 && other.FirstTradeId == FirstTradeId
                 && other.LastTradeId == LastTradeId
-                && other.Timestamp == Timestamp
+                && other.Time.Equals(Time)
                 && other.IsBuyerMaker == IsBuyerMaker
                 && other.IsBestPriceMatch == IsBestPriceMatch;
         }

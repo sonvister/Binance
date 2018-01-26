@@ -14,25 +14,25 @@ namespace Binance.Tests.Market
             const long id = 12345;
             const decimal price = 5000;
             const decimal quantity = 1;
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
             const long firstTradeId = 123456;
             const long lastTradeId = 234567;
             const bool isBuyerMaker = true;
             const bool isBestPriceMatch = true;
 
-            Assert.Throws<ArgumentNullException>("symbol", () => new AggregateTrade(null, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentNullException>("symbol", () => new AggregateTrade(null, id, price, quantity, firstTradeId, lastTradeId, time, isBuyerMaker, isBestPriceMatch));
 
-            Assert.Throws<ArgumentException>("id", () => new AggregateTrade(symbol, -1, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("id", () => new AggregateTrade(symbol, -1, price, quantity, firstTradeId, lastTradeId, time, isBuyerMaker, isBestPriceMatch));
 
-            Assert.Throws<ArgumentException>("price", () => new AggregateTrade(symbol, id, -1, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("price", () => new AggregateTrade(symbol, id, -1, quantity, firstTradeId, lastTradeId, time, isBuyerMaker, isBestPriceMatch));
 
-            Assert.Throws<ArgumentException>("quantity", () => new AggregateTrade(symbol, id, price, -1, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch));
-            Assert.Throws<ArgumentException>("quantity", () => new AggregateTrade(symbol, id, price, 0, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("quantity", () => new AggregateTrade(symbol, id, price, -1, firstTradeId, lastTradeId, time, isBuyerMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("quantity", () => new AggregateTrade(symbol, id, price, 0, firstTradeId, lastTradeId, time, isBuyerMaker, isBestPriceMatch));
 
-            Assert.Throws<ArgumentException>("firstTradeId", () => new AggregateTrade(symbol, id, price, quantity, -1, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("firstTradeId", () => new AggregateTrade(symbol, id, price, quantity, -1, lastTradeId, time, isBuyerMaker, isBestPriceMatch));
 
-            Assert.Throws<ArgumentException>("lastTradeId", () => new AggregateTrade(symbol, id, price, quantity, firstTradeId, -1, timestamp, isBuyerMaker, isBestPriceMatch));
-            Assert.Throws<ArgumentException>("lastTradeId", () => new AggregateTrade(symbol, id, price, quantity, lastTradeId, firstTradeId, timestamp, isBuyerMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("lastTradeId", () => new AggregateTrade(symbol, id, price, quantity, firstTradeId, -1, time, isBuyerMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("lastTradeId", () => new AggregateTrade(symbol, id, price, quantity, lastTradeId, firstTradeId, time, isBuyerMaker, isBestPriceMatch));
         }
 
         [Fact]
@@ -42,13 +42,13 @@ namespace Binance.Tests.Market
             const long id = 12345;
             const decimal price = 5000;
             const decimal quantity = 1;
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
             const long firstTradeId = 123456;
             const long lastTradeId = 234567;
             const bool isBuyerMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch);
+            var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, time, isBuyerMaker, isBestPriceMatch);
 
             Assert.Equal(symbol, trade.Symbol);
             Assert.Equal(id, trade.Id);
@@ -56,7 +56,7 @@ namespace Binance.Tests.Market
             Assert.Equal(quantity, trade.Quantity);
             Assert.Equal(firstTradeId, trade.FirstTradeId);
             Assert.Equal(lastTradeId, trade.LastTradeId);
-            Assert.Equal(timestamp, trade.Timestamp);
+            Assert.Equal(time, trade.Time);
             Assert.Equal(isBuyerMaker, trade.IsBuyerMaker);
             Assert.Equal(isBestPriceMatch, trade.IsBestPriceMatch);
         }
@@ -68,13 +68,13 @@ namespace Binance.Tests.Market
             const long id = 12345;
             const decimal price = 5000;
             const decimal quantity = 1;
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
             const long firstTradeId = 123456;
             const long lastTradeId = 234567;
             const bool isBuyerMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch);
+            var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, time, isBuyerMaker, isBestPriceMatch);
 
             var json = JsonConvert.SerializeObject(trade);
 
@@ -86,7 +86,7 @@ namespace Binance.Tests.Market
             Assert.Equal(quantity, trade.Quantity);
             Assert.Equal(firstTradeId, trade.FirstTradeId);
             Assert.Equal(lastTradeId, trade.LastTradeId);
-            Assert.Equal(timestamp, trade.Timestamp);
+            Assert.Equal(time, trade.Time);
             Assert.Equal(isBuyerMaker, trade.IsBuyerMaker);
             Assert.Equal(isBestPriceMatch, trade.IsBestPriceMatch);
         }

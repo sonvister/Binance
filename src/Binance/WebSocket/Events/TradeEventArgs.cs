@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Binance.Market;
 
 namespace Binance.WebSocket.Events
@@ -22,11 +23,11 @@ namespace Binance.WebSocket.Events
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="timestamp">The event time.</param>
+        /// <param name="time">The event time.</param>
         /// <param name="token">The cancellation token.</param>
         /// <param name="trade">The trade.</param>
-        public TradeEventArgs(long timestamp, CancellationToken token, Trade trade)
-            : base(timestamp, token)
+        public TradeEventArgs(DateTime time, CancellationToken token, Trade trade)
+            : base(time, token)
         {
             Throw.IfNull(trade, nameof(trade));
 

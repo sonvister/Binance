@@ -1,14 +1,16 @@
-﻿namespace Binance
+﻿using System;
+
+namespace Binance
 {
     public interface IChronological
     {
-        #region Public Properties
+        #region Properties
 
         /// <summary>
-        /// Get the timestamp in milliseconds (Unix time).
+        /// Get the time (UTC).
         /// </summary>
-        long Timestamp { get; }
+        DateTime Time { get; }
 
-        #endregion Public Properties
+        #endregion Properties
     }
 }

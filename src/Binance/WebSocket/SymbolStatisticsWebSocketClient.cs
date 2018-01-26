@@ -76,7 +76,7 @@ namespace Binance.WebSocket
                 if (args.Json.IsJsonArray())
                 {
                     // Simulate a single event time.
-                    var eventTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    var eventTime = DateTime.UtcNow.ToTimestamp().ToDateTime();
 
                     var statistics = JArray.Parse(args.Json).Select(DeserializeSymbolStatistics).ToArray();
 
@@ -90,7 +90,7 @@ namespace Binance.WebSocket
 
                     if (eventType == "24hrTicker")
                     {
-                        var eventTime = jObject["E"].Value<long>();
+                        var eventTime = jObject["E"].Value<long>().ToDateTime();
 
                         var statistics = DeserializeSymbolStatistics(jObject);
 

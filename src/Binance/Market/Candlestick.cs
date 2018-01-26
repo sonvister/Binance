@@ -76,9 +76,9 @@ namespace Binance.Market
         public decimal TakerBuyQuoteAssetVolume { get; }
 
         /// <summary>
-        /// Get the candlestick timestamp.
+        /// Get the candlestick time.
         /// </summary>
-        public long Timestamp => OpenTime.ToTimestamp();
+        public DateTime Time => OpenTime;
 
         #endregion Public Properties
 

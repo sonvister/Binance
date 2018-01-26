@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Binance.Account;
 
 namespace Binance.WebSocket.Events
@@ -22,11 +23,11 @@ namespace Binance.WebSocket.Events
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="timestamp">The event time.</param>
+        /// <param name="time">The event time.</param>
         /// <param name="token">The cancellation token.</param>
         /// <param name="accountInfo">The account information.</param>
-        public AccountUpdateEventArgs(long timestamp, CancellationToken token, AccountInfo accountInfo)
-            : base(timestamp, token)
+        public AccountUpdateEventArgs(DateTime time, CancellationToken token, AccountInfo accountInfo)
+            : base(time, token)
         {
             Throw.IfNull(accountInfo, nameof(accountInfo));
 

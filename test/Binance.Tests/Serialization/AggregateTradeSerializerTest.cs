@@ -14,13 +14,13 @@ namespace Binance.Tests.Serialization
             const long id = 12345;
             const decimal price = 5000;
             const decimal quantity = 1;
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
             const long firstTradeId = 123456;
             const long lastTradeId = 234567;
             const bool isBuyerMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch);
+            var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, time, isBuyerMaker, isBestPriceMatch);
 
             var serializer = new AggregateTradeSerializer();
 

@@ -29,7 +29,7 @@ namespace Binance.Account
         /// <summary>
         /// Get the account update time.
         /// </summary>
-        public long Timestamp { get; }
+        public DateTime Time { get; }
 
         /// <summary>
         /// Get the account balances.
@@ -46,21 +46,18 @@ namespace Binance.Account
         /// <param name="user">The user.</param>
         /// <param name="commissions">The account commissions.</param>
         /// <param name="status">The account status.</param>
-        /// <param name="updateTime">The update time.</param>
+        /// <param name="time">The update time.</param>
         /// <param name="balances">The account balances.</param>
-        public AccountInfo(IBinanceApiUser user, AccountCommissions commissions, AccountStatus status, long updateTime, IEnumerable<AccountBalance> balances = null)
+        public AccountInfo(IBinanceApiUser user, AccountCommissions commissions, AccountStatus status, DateTime time, IEnumerable<AccountBalance> balances = null)
         {
             Throw.IfNull(user, nameof(user));
             Throw.IfNull(commissions, nameof(commissions));
             Throw.IfNull(status, nameof(status));
 
-            if (updateTime <= 0)
-                throw new ArgumentException($"{nameof(AccountInfo)}: timestamp must be greater than 0.", nameof(updateTime));
-
             User = user;
             Commissions = commissions;
             Status = status;
-            Timestamp = updateTime;
+            Time = time;
 
             Balances = balances ?? new AccountBalance[] { };
         }

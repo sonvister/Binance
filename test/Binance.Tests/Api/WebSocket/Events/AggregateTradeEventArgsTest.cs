@@ -11,7 +11,7 @@ namespace Binance.Tests.Api.WebSocket.Events
         [Fact]
         public void Throws()
         {
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
 
             var symbol = Symbol.BTC_USDT;
             const long id = 12345;
@@ -22,19 +22,18 @@ namespace Binance.Tests.Api.WebSocket.Events
             const bool isBuyerMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch);
+            var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, time, isBuyerMaker, isBestPriceMatch);
 
             using (var cts = new CancellationTokenSource())
             {
-                Assert.Throws<ArgumentException>("timestamp", () => new AggregateTradeEventArgs(-1, cts.Token, trade));
-                Assert.Throws<ArgumentNullException>("trade", () => new AggregateTradeEventArgs(timestamp, cts.Token, null));
+                Assert.Throws<ArgumentNullException>("trade", () => new AggregateTradeEventArgs(time, cts.Token, null));
             }
         }
 
         [Fact]
         public void Properties()
         {
-            var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
 
             var symbol = Symbol.BTC_USDT;
             const long id = 12345;
@@ -45,13 +44,13 @@ namespace Binance.Tests.Api.WebSocket.Events
             const bool isBuyerMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, timestamp, isBuyerMaker, isBestPriceMatch);
+            var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, time, isBuyerMaker, isBestPriceMatch);
 
             using (var cts = new CancellationTokenSource())
             {
-                var args = new AggregateTradeEventArgs(timestamp, cts.Token, trade);
+                var args = new AggregateTradeEventArgs(time, cts.Token, trade);
 
-                Assert.Equal(timestamp, args.Timestamp);
+                Assert.Equal(time, args.Time);
                 Assert.Equal(trade, args.Trade);
             }
         }
