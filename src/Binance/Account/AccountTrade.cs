@@ -71,8 +71,6 @@ namespace Binance.Account
             if (orderId < 0)
                 throw new ArgumentException($"{nameof(Trade)}: ID must not be less than 0.", nameof(orderId));
 
-            AccountCommissions.ThrowIfCommissionIsInvalid(commission, nameof(commission));
-
             OrderId = orderId;
             Commission = commission;
             CommissionAsset = commissionAsset;

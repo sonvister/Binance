@@ -62,7 +62,7 @@ namespace Binance.Account
         /// </summary>
         /// <param name="commission">The commission.</param>
         /// <param name="paramName">The parameter name.</param>
-        internal static void ThrowIfCommissionIsInvalid(decimal commission, string paramName)
+        private static void ThrowIfCommissionIsInvalid(decimal commission, string paramName)
         {
             if (commission < 0 || commission > 10000)
                 throw new ArgumentException($"{nameof(AccountCommissions)} commission must be in the range [0-10000] BPS.", paramName);
