@@ -18,13 +18,13 @@ namespace Binance.Tests.Cache.Events
         {
             var symbol = Symbol.BTC_USDT;
             const CandlestickInterval interval = CandlestickInterval.Hour;
-            const long openTime = 1234567890;
+            var openTime = DateTime.UtcNow;
             const decimal open = 4950;
             const decimal high = 5100;
             const decimal low = 4900;
             const decimal close = 5050;
             const decimal volume = 1000;
-            const long closeTime = 2345678901;
+            var closeTime = openTime.AddHours(1);
             const long quoteAssetVolume = 5000000;
             const int numberOfTrades = 555555;
             const decimal takerBuyBaseAssetVolume = 4444;

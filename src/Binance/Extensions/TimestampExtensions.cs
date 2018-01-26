@@ -3,7 +3,7 @@
 // ReSharper disable once CheckNamespace
 namespace Binance
 {
-    public static class TimestampExtensions
+    internal static class TimestampExtensions
     {
         /// <summary>
         /// Convert a timestamp to UTC <see cref="DateTime"/>.

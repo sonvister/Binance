@@ -83,13 +83,15 @@ namespace Binance.WebSocket
                         jObject["k"]["s"].Value<string>(),  // symbol
                         jObject["k"]["i"].Value<string>()
                             .ToCandlestickInterval(),       // interval
-                        jObject["k"]["t"].Value<long>(),    // open time
+                        jObject["k"]["t"]
+                            .Value<long>().ToDateTime(),    // open time
                         jObject["k"]["o"].Value<decimal>(), // open
                         jObject["k"]["h"].Value<decimal>(), // high
                         jObject["k"]["l"].Value<decimal>(), // low
                         jObject["k"]["c"].Value<decimal>(), // close
                         jObject["k"]["v"].Value<decimal>(), // volume
-                        jObject["k"]["T"].Value<long>(),    // close time
+                        jObject["k"]["T"].Value<long>()
+                            .ToDateTime(),                  // close time
                         jObject["k"]["q"].Value<decimal>(), // quote asset volume
                         jObject["k"]["n"].Value<long>(),    // number of trades
                         jObject["k"]["V"].Value<decimal>(), // taker buy base asset volume (volume of active buy)

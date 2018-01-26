@@ -23,7 +23,7 @@ namespace Binance.Market
         /// <summary>
         /// Get the open time.
         /// </summary>
-        public long OpenTime { get; }
+        public DateTime OpenTime { get; }
 
         /// <summary>
         /// Get the open price in quote asset units.
@@ -53,7 +53,7 @@ namespace Binance.Market
         /// <summary>
         /// Get the close time.
         /// </summary>
-        public long CloseTime { get; }
+        public DateTime CloseTime { get; }
 
         /// <summary>
         /// Get the volume in quote asset units.
@@ -78,7 +78,7 @@ namespace Binance.Market
         /// <summary>
         /// Get the candlestick timestamp.
         /// </summary>
-        public long Timestamp => OpenTime;
+        public long Timestamp => OpenTime.ToTimestamp();
 
         #endregion Public Properties
 
@@ -103,24 +103,19 @@ namespace Binance.Market
         public Candlestick(
             string symbol,
             CandlestickInterval interval,
-            long openTime,
+            DateTime openTime,
             decimal open,
             decimal high,
             decimal low,
             decimal close,
             decimal volume,
-            long closeTime,
+            DateTime closeTime,
             decimal quoteAssetVolume,
             long numberOfTrades,
             decimal takerBuyBaseAssetVolume,
             decimal takerBuyQuoteAssetVolume)
         {
             Throw.IfNull(symbol, nameof(symbol));
-
-            if (openTime <= 0)
-                throw new ArgumentException($"{nameof(Candlestick)}: timestamp must be greater than 0.", nameof(openTime));
-            if (closeTime <= 0)
-                throw new ArgumentException($"{nameof(Candlestick)}: timestamp must be greater than 0.", nameof(closeTime));
 
             if (open < 0)
                 throw new ArgumentException($"{nameof(Candlestick)}: price must not be less than 0.", nameof(open));
@@ -169,13 +164,13 @@ namespace Binance.Market
 
             return other.Symbol == Symbol
                 && other.Interval == Interval
-                && other.OpenTime == OpenTime
+                && other.OpenTime.Equals(OpenTime)
                 && other.Open == Open
                 && other.High == High
                 && other.Low == Low
                 && other.Close == Close
                 && other.Volume == Volume
-                && other.CloseTime == CloseTime
+                && other.CloseTime.Equals(CloseTime)
                 && other.QuoteAssetVolume == QuoteAssetVolume
                 && other.NumberOfTrades == NumberOfTrades
                 && other.TakerBuyBaseAssetVolume == TakerBuyBaseAssetVolume
