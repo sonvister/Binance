@@ -450,10 +450,10 @@ namespace BinanceConsoleApp
         {
             lock (ConsoleSync)
             {
-                Console.WriteLine($"    Maker Commission:  {account.Commissions.Maker.ToString().PadLeft(3)} %");
-                Console.WriteLine($"    Taker Commission:  {account.Commissions.Taker.ToString().PadLeft(3)} %");
-                Console.WriteLine($"    Buyer Commission:  {account.Commissions.Buyer.ToString().PadLeft(3)} %");
-                Console.WriteLine($"    Seller Commission: {account.Commissions.Seller.ToString().PadLeft(3)} %");
+                Console.WriteLine($"    Maker Commission:  {account.Commissions.Maker.ToString().PadLeft(3)} bips  ({account.Commissions.Maker / 100.0m}%)");
+                Console.WriteLine($"    Taker Commission:  {account.Commissions.Taker.ToString().PadLeft(3)} bips  ({account.Commissions.Taker / 100.0m}%)");
+                Console.WriteLine($"    Buyer Commission:  {account.Commissions.Buyer.ToString().PadLeft(3)} bips  ({account.Commissions.Buyer / 100.0m}%)");
+                Console.WriteLine($"    Seller Commission: {account.Commissions.Seller.ToString().PadLeft(3)} bips  ({account.Commissions.Seller / 100.0m}%)");
                 Console.WriteLine($"    Can Trade:    {(account.Status.CanTrade ? "Yes" : "No").PadLeft(3)}");
                 Console.WriteLine($"    Can Withdraw: {(account.Status.CanWithdraw ? "Yes" : "No").PadLeft(3)}");
                 Console.WriteLine($"    Can Deposit:  {(account.Status.CanDeposit ? "Yes" : "No").PadLeft(3)}");
