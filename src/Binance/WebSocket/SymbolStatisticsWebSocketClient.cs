@@ -155,8 +155,10 @@ namespace Binance.WebSocket
                 jToken["l"].Value<decimal>(), // low price
                 jToken["v"].Value<decimal>(), // base asset volume
                 jToken["q"].Value<decimal>(), // quote asset volume
-                jToken["O"].Value<long>(),    // open time
-                jToken["C"].Value<long>(),    // close time
+                jToken["O"].Value<long>()
+                    .ToDateTime(),            // open time
+                jToken["C"].Value<long>()
+                    .ToDateTime(),            // close time
                 jToken["F"].Value<long>(),    // first trade ID
                 jToken["L"].Value<long>(),    // last trade ID
                 jToken["n"].Value<long>());   // trade count

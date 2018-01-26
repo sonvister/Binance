@@ -27,8 +27,8 @@ namespace Binance.Tests.Serialization
             const decimal lowPrice = 4925;
             const decimal volume = 100000;
             const decimal quoteVolume = 200000;
-            var openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            var closeTime = DateTimeOffset.FromUnixTimeMilliseconds(openTime).AddHours(24).ToUnixTimeMilliseconds();
+            var openTime = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
+            var closeTime = openTime.AddHours(24);
             const long firstTradeId = 123456;
             const long lastTradeId = 234567;
             const long tradeCount = lastTradeId - firstTradeId + 1;

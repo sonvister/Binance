@@ -1,5 +1,6 @@
 ﻿using System;
 using Binance.Market;
+using Binance.Serialization;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -27,8 +28,8 @@ namespace Binance.Tests.Market
             const decimal lowPrice = 4925;
             const decimal volume = 100000;
             const decimal quoteVolume = 200000;
-            var openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            var closeTime = DateTimeOffset.FromUnixTimeMilliseconds(openTime).AddHours(24).ToUnixTimeMilliseconds();
+            var openTime = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
+            var closeTime = openTime.AddHours(24);
             const long firstTradeId = 123456;
             const long lastTradeId = 234567;
             const long tradeCount = lastTradeId - firstTradeId + 1;
@@ -53,10 +54,6 @@ namespace Binance.Tests.Market
             Assert.Throws<ArgumentException>("volume", () => new SymbolStatistics(symbol, period, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, lastQuantity, bidPrice, bidQuantity, askPrice, askQuantity, openPrice, highPrice, lowPrice, -1, quoteVolume, openTime, closeTime, firstTradeId, lastTradeId, tradeCount));
             Assert.Throws<ArgumentException>("quoteVolume", () => new SymbolStatistics(symbol, period, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, lastQuantity, bidPrice, bidQuantity, askPrice, askQuantity, openPrice, highPrice, lowPrice, volume, -1, openTime, closeTime, firstTradeId, lastTradeId, tradeCount));
 
-            Assert.Throws<ArgumentException>("openTime", () => new SymbolStatistics(symbol, period, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, lastQuantity, bidPrice, bidQuantity, askPrice, askQuantity, openPrice, highPrice, lowPrice, volume, quoteVolume, -1, closeTime, firstTradeId, lastTradeId, tradeCount));
-            Assert.Throws<ArgumentException>("openTime", () => new SymbolStatistics(symbol, period, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, lastQuantity, bidPrice, bidQuantity, askPrice, askQuantity, openPrice, highPrice, lowPrice, volume, quoteVolume, 0, closeTime, firstTradeId, lastTradeId, tradeCount));
-            Assert.Throws<ArgumentException>("closeTime", () => new SymbolStatistics(symbol, period, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, lastQuantity, bidPrice, bidQuantity, askPrice, askQuantity, openPrice, highPrice, lowPrice, volume, quoteVolume, openTime, -1, firstTradeId, lastTradeId, tradeCount));
-            Assert.Throws<ArgumentException>("closeTime", () => new SymbolStatistics(symbol, period, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, lastQuantity, bidPrice, bidQuantity, askPrice, askQuantity, openPrice, highPrice, lowPrice, volume, quoteVolume, openTime, 0, firstTradeId, lastTradeId, tradeCount));
             Assert.Throws<ArgumentException>("openTime", () => new SymbolStatistics(symbol, period, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, lastQuantity, bidPrice, bidQuantity, askPrice, askQuantity, openPrice, highPrice, lowPrice, volume, quoteVolume, closeTime, openTime, firstTradeId, lastTradeId, tradeCount));
 
             Assert.Throws<ArgumentException>("lastTradeId", () => new SymbolStatistics(symbol, period, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, lastQuantity, bidPrice, bidQuantity, askPrice, askQuantity, openPrice, highPrice, lowPrice, volume, quoteVolume, openTime, closeTime, lastTradeId, firstTradeId, tradeCount));
@@ -87,8 +84,8 @@ namespace Binance.Tests.Market
             const decimal lowPrice = 4925;
             const decimal volume = 100000;
             const decimal quoteVolume = 200000;
-            var openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            var closeTime = DateTimeOffset.FromUnixTimeMilliseconds(openTime).AddHours(24).ToUnixTimeMilliseconds();
+            var openTime = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
+            var closeTime = openTime.AddHours(24);
             const long firstTradeId = 123456;
             const long lastTradeId = 234567;
             const long tradeCount = lastTradeId - firstTradeId + 1;
@@ -138,17 +135,20 @@ namespace Binance.Tests.Market
             const decimal lowPrice = 4925;
             const decimal volume = 100000;
             const decimal quoteVolume = 200000;
-            var openTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            var closeTime = DateTimeOffset.FromUnixTimeMilliseconds(openTime).AddHours(24).ToUnixTimeMilliseconds();
+            var openTime = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
+            var closeTime = openTime.AddHours(24);
             const long firstTradeId = 123456;
             const long lastTradeId = 234567;
             const long tradeCount = lastTradeId - firstTradeId + 1;
 
             var stats = new SymbolStatistics(symbol, period, priceChange, priceChangePercent, weightedAveragePrice, previousClosePrice, lastPrice, lastQuantity, bidPrice, bidQuantity, askPrice, askQuantity, openPrice, highPrice, lowPrice, volume, quoteVolume, openTime, closeTime, firstTradeId, lastTradeId, tradeCount);
 
-            var json = JsonConvert.SerializeObject(stats);
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new TimestampJsonConverter());
 
-            stats = JsonConvert.DeserializeObject<SymbolStatistics>(json);
+            var json = JsonConvert.SerializeObject(stats, settings);
+
+            stats = JsonConvert.DeserializeObject<SymbolStatistics>(json, settings);
 
             Assert.Equal(symbol, stats.Symbol);
             Assert.Equal(priceChange, stats.PriceChange);

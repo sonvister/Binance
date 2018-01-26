@@ -97,12 +97,12 @@ namespace Binance.Market
         /// <summary>
         /// Get the open time.
         /// </summary>
-        public long OpenTime { get; }
+        public DateTime OpenTime { get; }
 
         /// <summary>
         /// Get the close time.
         /// </summary>
-        public long CloseTime { get; }
+        public DateTime CloseTime { get; }
 
         /// <summary>
         /// Get the first trade ID.
@@ -166,8 +166,8 @@ namespace Binance.Market
             decimal lowPrice,
             decimal volume,
             decimal quoteVolume,
-            long openTime,
-            long closeTime,
+            DateTime openTime,
+            DateTime closeTime,
             long firstTradeId,
             long lastTradeId,
             long tradeCount)
@@ -204,10 +204,6 @@ namespace Binance.Market
             if (quoteVolume < 0)
                 throw new ArgumentException($"{nameof(SymbolStatistics)}: volume must be greater than or equal to 0.", nameof(quoteVolume));
 
-            if (openTime <= 0)
-                throw new ArgumentException($"{nameof(SymbolStatistics)}: time must be greater than 0.", nameof(openTime));
-            if (closeTime <= 0)
-                throw new ArgumentException($"{nameof(SymbolStatistics)}: time must be greater than 0.", nameof(closeTime));
             if (openTime >= closeTime)
                 throw new ArgumentException($"{nameof(SymbolStatistics)}: open time must be less than close time.", nameof(openTime));
 
@@ -275,8 +271,8 @@ namespace Binance.Market
                 && other.LowPrice == LowPrice
                 && other.Volume == Volume
                 && other.QuoteVolume == QuoteVolume
-                && other.OpenTime == OpenTime
-                && other.CloseTime == CloseTime
+                && other.OpenTime.Equals(OpenTime)
+                && other.CloseTime.Equals(CloseTime)
                 && other.FirstTradeId == FirstTradeId
                 && other.LastTradeId == LastTradeId
                 && other.TradeCount == TradeCount;
