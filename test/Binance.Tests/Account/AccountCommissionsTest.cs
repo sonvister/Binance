@@ -11,16 +11,16 @@ namespace Binance.Tests.Account
         public void Throws()
         {
             Assert.Throws<ArgumentException>("maker", () => new AccountCommissions(-10, 10, 10, 10));
-            Assert.Throws<ArgumentException>("maker", () => new AccountCommissions(110, 10, 10, 10));
+            Assert.Throws<ArgumentException>("maker", () => new AccountCommissions(10010, 10, 10, 10));
 
             Assert.Throws<ArgumentException>("taker", () => new AccountCommissions(10, -10, 10, 10));
-            Assert.Throws<ArgumentException>("taker", () => new AccountCommissions(10, 110, 10, 10));
+            Assert.Throws<ArgumentException>("taker", () => new AccountCommissions(10, 10010, 10, 10));
 
             Assert.Throws<ArgumentException>("buyer", () => new AccountCommissions(10, 10, -10, 10));
-            Assert.Throws<ArgumentException>("buyer", () => new AccountCommissions(10, 10, 110, 10));
+            Assert.Throws<ArgumentException>("buyer", () => new AccountCommissions(10, 10, 10010, 10));
 
             Assert.Throws<ArgumentException>("seller", () => new AccountCommissions(10, 10, 10, -10));
-            Assert.Throws<ArgumentException>("seller", () => new AccountCommissions(10, 10, 10, 110));
+            Assert.Throws<ArgumentException>("seller", () => new AccountCommissions(10, 10, 10, 10010));
         }
 
         [Fact]

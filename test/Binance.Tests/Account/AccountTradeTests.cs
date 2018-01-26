@@ -33,7 +33,7 @@ namespace Binance.Tests.Account
             Assert.Throws<ArgumentException>("quantity", () => new AccountTrade(symbol, id, orderId, price, 0, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
 
             Assert.Throws<ArgumentException>("commission", () => new AccountTrade(symbol, id, orderId, price, quantity, -1, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
-            Assert.Throws<ArgumentException>("commission", () => new AccountTrade(symbol, id, orderId, price, quantity, 101, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("commission", () => new AccountTrade(symbol, id, orderId, price, quantity, 10001, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
         }
 
         [Fact]
