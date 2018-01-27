@@ -1,29 +1,36 @@
 ﻿using System;
+using System.Collections.Generic;
 using Binance.WebSocket.Events;
 
 namespace Binance.WebSocket
 {
     public interface IAggregateTradeWebSocketClient : IBinanceWebSocketClient
     {
-        #region Events
-
         /// <summary>
-        /// The aggregate trade event.
+        /// The aggregate trade event. Receive aggregate trade events for all
+        /// subscribed symbols.
         /// </summary>
         event EventHandler<AggregateTradeEventArgs> AggregateTrade;
 
-        #endregion Events
-
-        #region Methods
+        /// <summary>
+        /// Get the subscribed symbols.
+        /// </summary>
+        IEnumerable<string> SubscribedSymbols { get; }
 
         /// <summary>
         /// Subscribe to the specified symbol (for use with combined streams).
         /// Call <see cref="IWebSocketStream"/> StreamAsync to begin streaming.
         /// </summary>
         /// <param name="symbol">The symbol to subscribe.</param>
-        /// <param name="callback">An event callback.</param>
+        /// <param name="callback">An event callback (optional).</param>
         void Subscribe(string symbol, Action<AggregateTradeEventArgs> callback);
 
-        #endregion Methods
+        /// <summary>
+        /// Unsubscribe a callback from symbol aggregate trade events. If no
+        /// callback is specified, unsubscribe from symbol (all callbacks).
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="callback"></param>
+        void Unsubscribe(string symbol, Action<AggregateTradeEventArgs> callback);
     }
 }

@@ -21,6 +21,14 @@ namespace Binance.WebSocket
         /// </summary>
         /// <param name="client"></param>
         /// <param name="symbol"></param>
+        public static void Unsubscribe(this IAggregateTradeWebSocketClient client, string symbol)
+            => client.Unsubscribe(symbol, null);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
         public static Task StreamAsync(this IAggregateTradeWebSocketClient client, string symbol, CancellationToken token)

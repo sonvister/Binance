@@ -39,7 +39,7 @@ namespace BinanceTradeHistory
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging").GetSection("File"));
+                    .AddFile(configuration.GetSection("Logging:File"));
 
                 // Get configuration settings.
                 var limit = 25;
@@ -79,7 +79,7 @@ namespace BinanceTradeHistory
             Console.SetCursorPosition(0, 0);
             foreach (var trade in trades.Reverse())
             {
-                Console.WriteLine($"  {trade.Time.ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time}           ");
+                Console.WriteLine($"  {trade.Time.ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time.ToTimestamp()}         ");
             }
             Console.WriteLine();
             Console.WriteLine("...press any key to exit.");

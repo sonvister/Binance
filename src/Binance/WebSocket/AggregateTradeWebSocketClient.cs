@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Binance.Market;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
@@ -20,9 +21,15 @@ namespace Binance.WebSocket
 
         #region Public Properties
 
-        public string Symbol { get; private set; }
+        public IEnumerable<string> SubscribedSymbols => _symbols;
 
         #endregion Public Properties
+
+        #region Private Fields
+
+        private readonly IList<string> _symbols = new List<string>();
+
+        #endregion Private Fields
 
         #region Constructors
 
@@ -50,9 +57,35 @@ namespace Binance.WebSocket
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            Symbol = symbol.FormatSymbol();
+            symbol = symbol.FormatSymbol();
 
-            SubscribeTo($"{Symbol.ToLowerInvariant()}@aggTrade", callback);
+            if (_symbols.Contains(symbol))
+                throw new InvalidOperationException($"{nameof(AggregateTradeWebSocketClient)} is already subscribed to symbol: \"{symbol}\"");
+
+            Logger?.LogInformation($"{nameof(AggregateTradeWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            _symbols.Add(symbol);
+
+            SubscribeStream(GetStreamName(symbol), callback);
+        }
+
+        public virtual void Unsubscribe(string symbol, Action<AggregateTradeEventArgs> callback)
+        {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            symbol = symbol.FormatSymbol();
+
+            if (!_symbols.Contains(symbol))
+            {
+                Logger?.LogWarning($"{nameof(AggregateTradeWebSocketClient)}.{nameof(Unsubscribe)} - Not subscribed to symbol: \"{symbol}\"");
+                return; // ignore.
+            }
+
+            Logger?.LogInformation($"{nameof(AggregateTradeWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            _symbols.Remove(symbol);
+
+            UnsubscribeStream(GetStreamName(symbol), callback);
         }
 
         #endregion Public Methods
@@ -61,7 +94,7 @@ namespace Binance.WebSocket
 
         protected override void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<AggregateTradeEventArgs>> callbacks)
         {
-            Logger?.LogDebug($"{nameof(AggregateTradeWebSocketClient)}: \"{args.Json}\"");
+            Logger?.LogDebug($"{nameof(AggregateTradeWebSocketClient)}: \"{args.Json}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             try
             {
@@ -73,8 +106,16 @@ namespace Binance.WebSocket
                 {
                     var eventTime = jObject["E"].Value<long>().ToDateTime();
 
+                    var symbol = jObject["s"].Value<string>();
+
+                    if (!_symbols.Contains(symbol))
+                    {
+                        Logger?.LogDebug($"{nameof(AggregateTradeWebSocketClient)}.{nameof(OnWebSocketEvent)} - Ignoring event for non-subscribed symbol: \"{symbol}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        return; // ignore.
+                    }
+
                     var trade = new AggregateTrade(
-                        jObject["s"].Value<string>(),  // symbol
+                        symbol,
                         jObject["a"].Value<long>(),    // aggregate trade ID
                         jObject["p"].Value<decimal>(), // price
                         jObject["q"].Value<decimal>(), // quantity
@@ -101,13 +142,13 @@ namespace Binance.WebSocket
                     {
                         if (!args.Token.IsCancellationRequested)
                         {
-                            Logger?.LogError(e, $"{nameof(AggregateTradeWebSocketClient)}: Unhandled aggregate trade event handler exception.");
+                            Logger?.LogError(e, $"{nameof(AggregateTradeWebSocketClient)}: Unhandled aggregate trade event handler exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                         }
                     }
                 }
                 else
                 {
-                    Logger?.LogWarning($"{nameof(AggregateTradeWebSocketClient)}.{nameof(OnWebSocketEvent)}: Unexpected event type ({eventType}).");
+                    Logger?.LogWarning($"{nameof(AggregateTradeWebSocketClient)}.{nameof(OnWebSocketEvent)}: Unexpected event type ({eventType}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 }
             }
             catch (OperationCanceledException) { }
@@ -115,11 +156,18 @@ namespace Binance.WebSocket
             {
                 if (!args.Token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{nameof(AggregateTradeWebSocketClient)}.{nameof(OnWebSocketEvent)}");
+                    Logger?.LogError(e, $"{nameof(AggregateTradeWebSocketClient)}.{nameof(OnWebSocketEvent)} failed. [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 }
             }
         }
 
         #endregion Protected Methods
+
+        #region Private Methods
+
+        private static string GetStreamName(string symbol)
+            => $"{symbol.ToLowerInvariant()}@aggTrade";
+
+        #endregion Private Methods
     }
 }

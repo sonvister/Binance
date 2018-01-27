@@ -144,7 +144,12 @@ namespace Binance.Api
         {
             Throw.IfNull(api, nameof(api));
 
-            return api.GetCandlesticksAsync(symbol, interval, limit, new DateTimeOffset(startTime).ToUnixTimeMilliseconds(), new DateTimeOffset(endTime).ToUnixTimeMilliseconds(), token);
+            if (startTime.Kind != DateTimeKind.Utc)
+                throw new ArgumentException("Date/Time must be UTC.", nameof(startTime));
+            if (endTime.Kind != DateTimeKind.Utc)
+                throw new ArgumentException("Date/Time must be UTC.", nameof(endTime));
+
+            return api.GetCandlesticksAsync(symbol, interval, limit, startTime.ToTimestamp(), endTime.ToTimestamp(), token);
         }
 
         /// <summary>

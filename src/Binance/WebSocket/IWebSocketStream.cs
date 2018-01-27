@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.WebSocket.Events;
@@ -14,6 +15,11 @@ namespace Binance.WebSocket
         /// The low-level web socket client.
         /// </summary>
         IWebSocketClient Client { get; }
+
+        /// <summary>
+        /// Get the subscribed streams.
+        /// </summary>
+        IEnumerable<string> SubscribedStreams { get; }
 
         /// <summary>
         /// Get flag indicating if using combined streams.

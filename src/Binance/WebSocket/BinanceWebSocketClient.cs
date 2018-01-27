@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
@@ -53,21 +55,54 @@ namespace Binance.WebSocket
             OnWebSocketEvent(args, Subscribers.ContainsKey(args.StreamName) ? Subscribers[args.StreamName] : null);
         }
 
-        protected void SubscribeTo(string stream, Action<TEventArgs> callback)
+        /// <summary>
+        /// Subscribe to a stream (with optional callback) if not already.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="callback"></param>
+        protected void SubscribeStream(string stream, Action<TEventArgs> callback)
         {
-            WebSocket.Subscribe(stream, WebSocketCallback);
-
-            if (callback == null)
-                return;
+            Throw.IfNullOrWhiteSpace(stream, nameof(stream));
 
             if (!Subscribers.ContainsKey(stream))
             {
+                Logger?.LogDebug($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(SubscribeStream)}: Adding stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
                 Subscribers[stream] = new List<Action<TEventArgs>>();
+                WebSocket.Subscribe(stream, WebSocketCallback);
             }
 
-            if (!Subscribers[stream].Contains(callback))
+            if (callback != null && !Subscribers[stream].Contains(callback))
             {
+                Logger?.LogDebug($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(SubscribeStream)}: Adding callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 Subscribers[stream].Add(callback);
+            }
+        }
+
+        /// <summary>
+        /// Unsubscribe from a stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="callback"></param>
+        protected void UnsubscribeStream(string stream, Action<TEventArgs> callback)
+        {
+            Throw.IfNullOrWhiteSpace(stream, nameof(stream));
+
+            if (callback != null && Subscribers.ContainsKey(stream))
+            {
+                if (Subscribers[stream].Contains(callback))
+                {
+                    Logger?.LogDebug($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(UnsubscribeStream)}: Removing callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Subscribers[stream].Remove(callback);
+                }
+            }
+
+            if (callback == null || (Subscribers.ContainsKey(stream) && !Subscribers[stream].Any()))
+            {
+                WebSocket.Unsubscribe(stream, WebSocketCallback);
+
+                Logger?.LogDebug($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(UnsubscribeStream)}: Removing stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Subscribers.Remove(stream);
             }
         }
 

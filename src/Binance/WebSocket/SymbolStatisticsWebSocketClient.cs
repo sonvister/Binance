@@ -49,7 +49,7 @@ namespace Binance.WebSocket
 
         public virtual void Subscribe(Action<SymbolStatisticsEventArgs> callback)
         {
-            SubscribeTo("!ticker@arr", callback);
+            SubscribeStream("!ticker@arr", callback);
         }
 
         public virtual void Subscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
@@ -58,7 +58,7 @@ namespace Binance.WebSocket
 
             Symbol = symbol.FormatSymbol();
 
-            SubscribeTo($"{Symbol.ToLowerInvariant()}@ticker", callback);
+            SubscribeStream($"{Symbol.ToLowerInvariant()}@ticker", callback);
         }
 
         #endregion Public Methods

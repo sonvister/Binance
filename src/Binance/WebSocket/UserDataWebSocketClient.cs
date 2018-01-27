@@ -114,7 +114,7 @@ namespace Binance.WebSocket
                 if (string.IsNullOrWhiteSpace(_listenKeys[user]))
                     throw new Exception($"{nameof(IUserDataWebSocketClient)}: Failed to get listen key from API.");
 
-                SubscribeTo(_listenKeys[user], callback);
+                SubscribeStream(_listenKeys[user], callback);
             }
             catch (OperationCanceledException) { }
             catch (Exception e)

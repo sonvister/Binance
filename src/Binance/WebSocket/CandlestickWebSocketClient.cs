@@ -52,7 +52,7 @@ namespace Binance.WebSocket
 
             Symbol = symbol.FormatSymbol();
 
-            SubscribeTo($"{Symbol.ToLowerInvariant()}@kline_{interval.AsString()}", callback);
+            SubscribeStream($"{Symbol.ToLowerInvariant()}@kline_{interval.AsString()}", callback);
         }
 
         #endregion Public Methods
