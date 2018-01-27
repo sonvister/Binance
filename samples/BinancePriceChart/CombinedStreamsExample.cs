@@ -46,26 +46,30 @@ namespace BinanceTradeHistory
                 var symbols = configuration.GetSection("CombinedStreamsExample:Symbols").Get<string[]>()
                     ?? new string[] { Symbol.BTC_USDT };
 
-                var client = services.GetService<IAggregateTradeWebSocketClient>();
+                var interval = CandlestickInterval.Minute;
+                try { interval = configuration.GetSection("PriceChart")?["Interval"].ToCandlestickInterval() ?? CandlestickInterval.Minute; }
+                catch { /* ignored */ }
+
+                var client = services.GetService<ICandlestickWebSocketClient>();
 
                 using (var controller = new RetryTaskController())
                 {
                     if (symbols.Length == 1)
                     {
-                        // Monitor latest aggregate trade for a symbol and display.
+                        // Monitor latest candlestick for a symbol and display.
                         controller.Begin(
-                            tkn => client.StreamAsync(symbols[0], evt => Display(evt.Trade), tkn),
+                            tkn => client.StreamAsync(symbols[0], interval, evt => Display(evt.Candlestick), tkn),
                             err => Console.WriteLine(err.Message));
                     }
                     else
                     {
                         // Alternative usage (combined streams).
-                        client.AggregateTrade += (s, evt) => { Display(evt.Trade); };
+                        client.Candlestick += (s, evt) => { Display(evt.Candlestick); };
 
                         // Subscribe to all symbols.
                         foreach (var symbol in symbols)
                         {
-                            client.Subscribe(symbol); // using event instead of callbacks.
+                            client.Subscribe(symbol, interval); // using event instead of callbacks.
                         }
 
                         // Begin streaming.
@@ -82,16 +86,16 @@ namespace BinanceTradeHistory
 
                     // Cancel streaming.
                     await controller.CancelAsync();
-                    
+
                     // Unsubscribe a symbol.
-                    client.Unsubscribe(symbols[0]);
-                    
+                    client.Unsubscribe(symbols[0], interval);
+
                     // Remove unsubscribed symbol and clear display (application specific).
-                    _trades.Remove(symbols[0]);
+                    _candlesticks.Remove(symbols[0]);
                     Console.Clear();
 
                     // Subscribe to the real Bitcoin :D
-                    client.Subscribe(Symbol.BCH_USDT); // a.k.a. BCC.
+                    client.Subscribe(Symbol.BCH_USDT, interval); // a.k.a. BCC.
 
                     // Begin streaming again.
                     controller.Begin(
@@ -116,21 +120,21 @@ namespace BinanceTradeHistory
 
         private static readonly object _sync = new object();
 
-        private static IDictionary<string, AggregateTrade> _trades
-            = new SortedDictionary<string, AggregateTrade>();
+        private static IDictionary<string, Candlestick> _candlesticks
+            = new SortedDictionary<string, Candlestick>();
 
-        private static void Display(AggregateTrade trade)
+        private static void Display(Candlestick candlestick)
         {
             lock (_sync)
             {
                 Console.SetCursorPosition(0, 0);
 
-                _trades[trade.Symbol] = trade;
+                _candlesticks[candlestick.Symbol] = candlestick;
 
-                foreach (var keyPair in _trades)
+                foreach (var keyPair in _candlesticks)
                 {
-                    trade = keyPair.Value;
-                    Console.WriteLine($" {trade.Time.ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time.ToTimestamp()}".PadRight(119));
+                    candlestick = keyPair.Value;
+                    Console.WriteLine($" {candlestick.Symbol} - O: {candlestick.Open:0.00000000} | H: {candlestick.High:0.00000000} | L: {candlestick.Low:0.00000000} | C: {candlestick.Close:0.00000000} | V: {candlestick.Volume:0.00} - [{candlestick.OpenTime.ToTimestamp()}]".PadRight(119));
                     Console.WriteLine();
                 }
 

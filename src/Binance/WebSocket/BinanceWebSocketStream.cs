@@ -207,7 +207,7 @@ namespace Binance.WebSocket
             {
                 if (!token.IsCancellationRequested)
                 {
-                    _logger?.LogError(e, $"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    _logger?.LogError(e, $"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     throw;
                 }
             }
@@ -219,7 +219,7 @@ namespace Binance.WebSocket
                 _actionBlock?.Complete();
             }
 
-            _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: Complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
         }
 
         #endregion Public Methods

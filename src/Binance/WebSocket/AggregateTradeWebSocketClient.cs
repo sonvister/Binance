@@ -19,18 +19,6 @@ namespace Binance.WebSocket
 
         #endregion Public Events
 
-        #region Public Properties
-
-        public IEnumerable<string> SubscribedSymbols => _symbols;
-
-        #endregion Public Properties
-
-        #region Private Fields
-
-        private readonly IList<string> _symbols = new List<string>();
-
-        #endregion Private Fields
-
         #region Constructors
 
         /// <summary>
@@ -59,12 +47,7 @@ namespace Binance.WebSocket
 
             symbol = symbol.FormatSymbol();
 
-            if (_symbols.Contains(symbol))
-                throw new InvalidOperationException($"{nameof(AggregateTradeWebSocketClient)} is already subscribed to symbol: \"{symbol}\"");
-
             Logger?.LogInformation($"{nameof(AggregateTradeWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-            _symbols.Add(symbol);
 
             SubscribeStream(GetStreamName(symbol), callback);
         }
@@ -75,15 +58,7 @@ namespace Binance.WebSocket
 
             symbol = symbol.FormatSymbol();
 
-            if (!_symbols.Contains(symbol))
-            {
-                Logger?.LogWarning($"{nameof(AggregateTradeWebSocketClient)}.{nameof(Unsubscribe)} - Not subscribed to symbol: \"{symbol}\"");
-                return; // ignore.
-            }
-
             Logger?.LogInformation($"{nameof(AggregateTradeWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-            _symbols.Remove(symbol);
 
             UnsubscribeStream(GetStreamName(symbol), callback);
         }
@@ -106,23 +81,15 @@ namespace Binance.WebSocket
                 {
                     var eventTime = jObject["E"].Value<long>().ToDateTime();
 
-                    var symbol = jObject["s"].Value<string>();
-
-                    if (!_symbols.Contains(symbol))
-                    {
-                        Logger?.LogDebug($"{nameof(AggregateTradeWebSocketClient)}.{nameof(OnWebSocketEvent)} - Ignoring event for non-subscribed symbol: \"{symbol}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                        return; // ignore.
-                    }
-
                     var trade = new AggregateTrade(
-                        symbol,
+                        jObject["s"].Value<string>(),  // symbol
                         jObject["a"].Value<long>(),    // aggregate trade ID
                         jObject["p"].Value<decimal>(), // price
                         jObject["q"].Value<decimal>(), // quantity
                         jObject["f"].Value<long>(),    // first trade ID
                         jObject["l"].Value<long>(),    // last trade ID
-                        jObject["T"].Value<long>()
-                            .ToDateTime(),             // trade time
+                        jObject["T"].Value<long>()     // trade time
+                            .ToDateTime(),
                         jObject["m"].Value<bool>(),    // is buyer the market maker?
                         jObject["M"].Value<bool>());   // is best price match?
 
@@ -156,7 +123,7 @@ namespace Binance.WebSocket
             {
                 if (!args.Token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{nameof(AggregateTradeWebSocketClient)}.{nameof(OnWebSocketEvent)} failed. [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Logger?.LogError(e, $"{nameof(AggregateTradeWebSocketClient)}.{nameof(OnWebSocketEvent)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 }
             }
         }

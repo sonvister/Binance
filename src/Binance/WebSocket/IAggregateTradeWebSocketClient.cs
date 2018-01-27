@@ -13,11 +13,6 @@ namespace Binance.WebSocket
         event EventHandler<AggregateTradeEventArgs> AggregateTrade;
 
         /// <summary>
-        /// Get the subscribed symbols.
-        /// </summary>
-        IEnumerable<string> SubscribedSymbols { get; }
-
-        /// <summary>
         /// Subscribe to the specified symbol (for use with combined streams).
         /// Call <see cref="IWebSocketStream"/> StreamAsync to begin streaming.
         /// </summary>
@@ -26,8 +21,8 @@ namespace Binance.WebSocket
         void Subscribe(string symbol, Action<AggregateTradeEventArgs> callback);
 
         /// <summary>
-        /// Unsubscribe a callback from symbol aggregate trade events. If no
-        /// callback is specified, unsubscribe from symbol (all callbacks).
+        /// Unsubscribe a callback from symbol events. If no callback is
+        /// specified, then unsubscribe from symbol (all callbacks).
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="callback"></param>

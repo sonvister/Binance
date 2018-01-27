@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Binance.Market;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
@@ -17,12 +18,6 @@ namespace Binance.WebSocket
         public event EventHandler<CandlestickEventArgs> Candlestick;
 
         #endregion Public Events
-
-        #region Public Properties
-
-        public string Symbol { get; private set; }
-
-        #endregion Public Properties
 
         #region Constructors
 
@@ -50,9 +45,22 @@ namespace Binance.WebSocket
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            Symbol = symbol.FormatSymbol();
+            symbol = symbol.FormatSymbol();
 
-            SubscribeStream($"{Symbol.ToLowerInvariant()}@kline_{interval.AsString()}", callback);
+            Logger?.LogInformation($"{nameof(CandlestickWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" \"{interval.AsString()}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            SubscribeStream(GetStreamName(symbol, interval), callback);
+        }
+
+        public virtual void Unsubscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
+        {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            symbol = symbol.FormatSymbol();
+
+            Logger?.LogInformation($"{nameof(CandlestickWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" \"{interval.AsString()}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            UnsubscribeStream(GetStreamName(symbol, interval), callback);
         }
 
         #endregion Public Methods
@@ -74,28 +82,30 @@ namespace Binance.WebSocket
                     //var symbol = jObject["s"].Value<string>();
                     var eventTime = jObject["E"].Value<long>().ToDateTime();
 
-                    var firstTradeId = jObject["k"]["f"].Value<long>();
-                    var lastTradeId = jObject["k"]["L"].Value<long>();
+                    var kLine = jObject["k"];
 
-                    var isFinal = jObject["k"]["x"].Value<bool>();
+                    var firstTradeId = kLine["f"].Value<long>();
+                    var lastTradeId = kLine["L"].Value<long>();
+
+                    var isFinal = kLine["x"].Value<bool>();
 
                     var candlestick = new Candlestick(
-                        jObject["k"]["s"].Value<string>(),  // symbol
-                        jObject["k"]["i"].Value<string>()
-                            .ToCandlestickInterval(),       // interval
-                        jObject["k"]["t"]
-                            .Value<long>().ToDateTime(),    // open time
-                        jObject["k"]["o"].Value<decimal>(), // open
-                        jObject["k"]["h"].Value<decimal>(), // high
-                        jObject["k"]["l"].Value<decimal>(), // low
-                        jObject["k"]["c"].Value<decimal>(), // close
-                        jObject["k"]["v"].Value<decimal>(), // volume
-                        jObject["k"]["T"].Value<long>()
-                            .ToDateTime(),                  // close time
-                        jObject["k"]["q"].Value<decimal>(), // quote asset volume
-                        jObject["k"]["n"].Value<long>(),    // number of trades
-                        jObject["k"]["V"].Value<decimal>(), // taker buy base asset volume (volume of active buy)
-                        jObject["k"]["Q"].Value<decimal>()  // taker buy quote asset volume (quote volume of active buy)
+                        kLine["s"].Value<string>(),  // symbol
+                        kLine["i"].Value<string>()   // interval
+                            .ToCandlestickInterval(), 
+                        kLine["t"].Value<long>()     // open time
+                            .ToDateTime(),           
+                        kLine["o"].Value<decimal>(), // open
+                        kLine["h"].Value<decimal>(), // high
+                        kLine["l"].Value<decimal>(), // low
+                        kLine["c"].Value<decimal>(), // close
+                        kLine["v"].Value<decimal>(), // volume
+                        kLine["T"].Value<long>()     // close time
+                            .ToDateTime(),           
+                        kLine["q"].Value<decimal>(), // quote asset volume
+                        kLine["n"].Value<long>(),    // number of trades
+                        kLine["V"].Value<decimal>(), // taker buy base asset volume (volume of active buy)
+                        kLine["Q"].Value<decimal>()  // taker buy quote asset volume (quote volume of active buy)
                     );
 
                     var eventArgs = new CandlestickEventArgs(eventTime, args.Token, candlestick, firstTradeId, lastTradeId, isFinal);
@@ -134,5 +144,12 @@ namespace Binance.WebSocket
         }
 
         #endregion Protected Methods
+
+        #region Private Methods
+
+        private static string GetStreamName(string symbol, CandlestickInterval interval)
+            => $"{symbol.ToLowerInvariant()}@kline_{interval.AsString()}";
+
+        #endregion Private Methods
     }
 }
