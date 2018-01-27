@@ -5,16 +5,10 @@ namespace Binance.WebSocket
 {
     public interface ITradeWebSocketClient : IBinanceWebSocketClient
     {
-        #region Events
-
         /// <summary>
         /// The trade event.
         /// </summary>
         event EventHandler<TradeEventArgs> Trade;
-
-        #endregion Events
-
-        #region Methods
 
         /// <summary>
         /// Subscribe to the specified symbol (for use with combined streams).
@@ -24,6 +18,12 @@ namespace Binance.WebSocket
         /// <param name="callback">An event callback.</param>
         void Subscribe(string symbol, Action<TradeEventArgs> callback);
 
-        #endregion Methods
+        /// <summary>
+        /// Unsubscribe a callback from symbol events. If no callback is
+        /// specified, then unsubscribe symbol (all callbacks).
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="callback"></param>
+        void Unsubscribe(string symbol, Action<TradeEventArgs> callback);
     }
 }

@@ -22,7 +22,7 @@ namespace Binance.WebSocket
 
         /// <summary>
         /// Unsubscribe a callback from symbol events. If no callback is
-        /// specified, then unsubscribe from symbol & interval (all callbacks).
+        /// specified, then unsubscribe symbol & interval (all callbacks).
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="interval">The interval.</param>

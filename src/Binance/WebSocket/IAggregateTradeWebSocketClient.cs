@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Binance.WebSocket.Events;
 
 namespace Binance.WebSocket
@@ -22,7 +21,7 @@ namespace Binance.WebSocket
 
         /// <summary>
         /// Unsubscribe a callback from symbol events. If no callback is
-        /// specified, then unsubscribe from symbol (all callbacks).
+        /// specified, then unsubscribe symbol (all callbacks).
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="callback"></param>

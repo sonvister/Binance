@@ -4,6 +4,7 @@ using Binance.WebSocket.Events;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace Binance.WebSocket
 {
@@ -17,12 +18,6 @@ namespace Binance.WebSocket
         public event EventHandler<TradeEventArgs> Trade;
 
         #endregion Public Events
-
-        #region Public Properties
-
-        public string Symbol { get; private set; }
-
-        #endregion Public Properties
 
         #region Constructors
 
@@ -50,9 +45,22 @@ namespace Binance.WebSocket
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            Symbol = symbol.FormatSymbol();
+            symbol = symbol.FormatSymbol();
 
-            SubscribeStream($"{Symbol.ToLowerInvariant()}@trade", callback);
+            Logger?.LogInformation($"{nameof(TradeWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            SubscribeStream(GetStreamName(symbol), callback);
+        }
+
+        public virtual void Unsubscribe(string symbol, Action<TradeEventArgs> callback)
+        {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            symbol = symbol.FormatSymbol();
+
+            Logger?.LogInformation($"{nameof(TradeWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            UnsubscribeStream(GetStreamName(symbol), callback);
         }
 
         #endregion Public Methods
@@ -121,5 +129,12 @@ namespace Binance.WebSocket
         }
 
         #endregion Protected Methods
+
+        #region Private Methods
+
+        private static string GetStreamName(string symbol)
+            => $"{symbol.ToLowerInvariant()}@trade";
+
+        #endregion Private Methods
     }
 }
