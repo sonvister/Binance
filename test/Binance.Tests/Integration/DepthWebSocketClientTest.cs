@@ -20,17 +20,6 @@ namespace Binance.Tests.Integration
         }
 
         [Fact]
-        public void Properties()
-        {
-            var symbol = Symbol.LTC_USDT;
-            var client = new DepthWebSocketClient(new BinanceWebSocketStream());
-
-            client.Subscribe(symbol);
-
-            Assert.Equal(symbol, client.Symbol);
-        }
-
-        [Fact]
         public void SubscribeTwiceIgnored()
         {
             var symbol = Symbol.LTC_USDT;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -17,12 +18,6 @@ namespace Binance.WebSocket
         public event EventHandler<DepthUpdateEventArgs> DepthUpdate;
 
         #endregion Public Events
-
-        #region Public Properties
-
-        public string Symbol { get; private set; }
-
-        #endregion Public Properties
 
         #region Constructors
 
@@ -50,9 +45,22 @@ namespace Binance.WebSocket
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            Symbol = symbol.FormatSymbol();
+            symbol = symbol.FormatSymbol();
 
-            SubscribeStream(limit > 0 ? $"{Symbol.ToLowerInvariant()}@depth{limit}" : $"{Symbol.ToLowerInvariant()}@depth", callback);
+            Logger?.LogInformation($"{nameof(DepthWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" \"{limit}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            SubscribeStream(GetStreamName(symbol, limit), callback);
+        }
+
+        public virtual void Unsubscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback)
+        {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            symbol = symbol.FormatSymbol();
+
+            Logger?.LogInformation($"{nameof(DepthWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" \"{limit}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            UnsubscribeStream(GetStreamName(symbol, limit), callback);
         }
 
         #endregion Public Methods
@@ -73,8 +81,10 @@ namespace Binance.WebSocket
 
                 switch (eventType)
                 {
-                    case null:
+                    case null: // partial depth stream.
                     {
+                        var symbol = args.StreamName.Split('@')[0].ToUpperInvariant();
+                        
                         // Simulate event time.
                         var eventTime = DateTime.UtcNow.ToTimestamp().ToDateTime();
 
@@ -83,7 +93,7 @@ namespace Binance.WebSocket
                         var bids = jObject["bids"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
                         var asks = jObject["asks"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
 
-                        eventArgs = new DepthUpdateEventArgs(eventTime, args.Token, Symbol, lastUpdateId, lastUpdateId, bids, asks);
+                        eventArgs = new DepthUpdateEventArgs(eventTime, args.Token, symbol, lastUpdateId, lastUpdateId, bids, asks);
                         break;
                     }
                     case "depthUpdate":
@@ -134,5 +144,12 @@ namespace Binance.WebSocket
         }
 
         #endregion Protected Methods
+
+        #region Private Methods
+
+        private static string GetStreamName(string symbol, int limit)
+            => limit > 0 ? $"{symbol.ToLowerInvariant()}@depth{limit}" : $"{symbol.ToLowerInvariant()}@depth";
+
+        #endregion Private Methods
     }
 }
