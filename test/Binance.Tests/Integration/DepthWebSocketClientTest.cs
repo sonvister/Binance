@@ -1,7 +1,5 @@
 ﻿//#define INTEGRATION
 
-#if INTEGRATION
-
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,49 +12,39 @@ namespace Binance.Tests.Integration
     public class DepthWebSocketClientTest
     {
         [Fact]
-        public Task SubscribeThrows()
+        public void SubscribeThrows()
         {
             var client = new DepthWebSocketClient(new Mock<IWebSocketStream>().Object);
 
-            using (var cts = new CancellationTokenSource())
-                return Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.StreamAsync(null, cts.Token));
+            Assert.Throws<ArgumentNullException>("symbol", () => client.Subscribe(null));
         }
 
         [Fact]
-        public async Task Properties()
+        public void Properties()
         {
-            var symbol = Symbol.BTC_USDT;
+            var symbol = Symbol.LTC_USDT;
             var client = new DepthWebSocketClient(new BinanceWebSocketStream());
 
-            using (var cts = new CancellationTokenSource())
-            {
-                var task = client.StreamAsync(symbol, cts.Token);
+            client.Subscribe(symbol);
 
-                Assert.Equal(symbol, client.Symbol);
-
-                cts.Cancel();
-                await task;
-            }
+            Assert.Equal(symbol, client.Symbol);
         }
 
         [Fact]
-        public Task SubscribeTwiceThrows()
+        public void SubscribeTwiceIgnored()
         {
-            var symbol = Symbol.BTC_USDT;
+            var symbol = Symbol.LTC_USDT;
             var client = new DepthWebSocketClient(new BinanceWebSocketStream());
 
-            using (var cts = new CancellationTokenSource())
-            {
-                client.StreamAsync(symbol, cts.Token);
-
-                return Assert.ThrowsAsync<InvalidOperationException>(() => client.StreamAsync(symbol, cts.Token));
-            }
+            client.Subscribe(symbol);
+            client.Subscribe(symbol);
         }
 
+#if INTEGRATION
         [Fact]
         public async Task SubscribeCallback()
         {
-            var symbol = Symbol.BTC_USDT;
+            var symbol = Symbol.LTC_USDT;
             var client = new DepthWebSocketClient(new BinanceWebSocketStream());
 
             using (var cts = new CancellationTokenSource())
@@ -72,7 +60,7 @@ namespace Binance.Tests.Integration
                 await task;
             }
         }
+#endif
     }
 }
 
-#endif
