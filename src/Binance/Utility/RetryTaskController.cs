@@ -16,23 +16,21 @@ namespace Binance.Utility
 
         #region Private Fields
 
-        private readonly CancellationTokenSource _cts;
+        private CancellationTokenSource _cts;
 
         #endregion Private Fields
-
-        #region Constructors
-
-        public RetryTaskController()
-        {
-            _cts = new CancellationTokenSource();
-        }
-
-        #endregion Constructors
 
         #region Public Methods
 
         public void Begin(Func<CancellationToken, Task> action, Action<Exception> onError = null)
         {
+            ThrowIfDisposed();
+
+            if (_cts != null)
+                throw new InvalidOperationException($"{nameof(RetryTaskController)} - Task already running, use {nameof(CancelAsync)} to abort.");
+
+            _cts = new CancellationTokenSource();
+
             Task = Task.Run(async () =>
             {
                 while (!_cts.IsCancellationRequested)
@@ -56,6 +54,21 @@ namespace Binance.Utility
             });
         }
 
+        public async Task CancelAsync()
+        {
+            ThrowIfDisposed();
+
+            if (_cts == null)
+                throw new InvalidOperationException($"{nameof(RetryTaskController)} - Task is not running, use {nameof(Begin)} to start.");
+
+            _cts.Cancel();
+
+            await Task;
+
+            _cts.Dispose();
+            _cts = null;
+        }
+
         #endregion Public Methods
 
         #region Protected Methods
@@ -67,6 +80,12 @@ namespace Binance.Utility
         #region IDisposable
 
         private bool _disposed;
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(RetryTaskController));
+        }
 
         private void Dispose(bool disposing)
         {
