@@ -5,6 +5,7 @@ using Binance.WebSocket.Events;
 using Binance.Market;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace Binance.WebSocket
 {
@@ -18,12 +19,6 @@ namespace Binance.WebSocket
         public event EventHandler<SymbolStatisticsEventArgs> StatisticsUpdate;
 
         #endregion Public Events
-
-        #region Public Properties
-
-        public string Symbol { get; private set; }
-
-        #endregion Public Properties
 
         #region Constructors
 
@@ -49,16 +44,38 @@ namespace Binance.WebSocket
 
         public virtual void Subscribe(Action<SymbolStatisticsEventArgs> callback)
         {
-            SubscribeStream("!ticker@arr", callback);
+            Logger?.LogInformation($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Subscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            SubscribeStream(GetStreamName(null), callback);
         }
 
         public virtual void Subscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            Symbol = symbol.FormatSymbol();
+            symbol = symbol.FormatSymbol();
 
-            SubscribeStream($"{Symbol.ToLowerInvariant()}@ticker", callback);
+            Logger?.LogInformation($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            SubscribeStream(GetStreamName(symbol), callback);
+        }
+
+        public virtual void Unsubscribe(Action<SymbolStatisticsEventArgs> callback)
+        {
+            Logger?.LogInformation($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Unsubscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            UnsubscribeStream(GetStreamName(null), callback);
+        }
+
+        public virtual void Unsubscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
+        {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            symbol = symbol.FormatSymbol();
+
+            Logger?.LogInformation($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            UnsubscribeStream(GetStreamName(symbol), callback);
         }
 
         #endregion Public Methods
@@ -134,6 +151,9 @@ namespace Binance.WebSocket
         #endregion Protected Methods
 
         #region Private Methods
+
+        private static string GetStreamName(string symbol)
+            => symbol == null ? "!ticker@arr" : $"{symbol.ToLowerInvariant()}@ticker";
 
         private static SymbolStatistics DeserializeSymbolStatistics(JToken jToken)
         {
