@@ -23,8 +23,6 @@ namespace BinanceConsoleApp.Controllers
 
                 // ReSharper disable once PossibleMultipleEnumeration
                 Symbol.UpdateCache(s);
-                // ReSharper disable once PossibleMultipleEnumeration
-                Asset.UpdateCache(s);
             }
 
             var symbols = Symbol.Cache.Values;

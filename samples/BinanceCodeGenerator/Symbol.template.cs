@@ -2,7 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Binance.Account.Orders;
+using Binance.Api;
 
 namespace Binance
 {
@@ -163,7 +166,21 @@ namespace Binance
         #region Public Methods
 
         /// <summary>
-        /// Update the symbol cache.
+        /// Update the symbol cache and asset cache.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task UpdateCacheAsync(IBinanceApi api, CancellationToken token = default)
+        {
+            var symbols = await api.GetSymbolsAsync(token)
+                .ConfigureAwait(false);
+
+            UpdateCache(symbols);
+        }
+
+        /// <summary>
+        /// Update the symbol cache and asset cache.
         /// </summary>
         /// <param name="symbols">The symbols.</param>
         /// <returns></returns>
@@ -194,6 +211,8 @@ namespace Binance
                     Cache[symbol] = symbol;
                 }
             }
+
+            Asset.UpdateCache(symbols);
         }
 
         public override string ToString()

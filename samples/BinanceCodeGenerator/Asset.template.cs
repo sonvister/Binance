@@ -103,12 +103,31 @@ namespace Binance
 
         #region Public Methods
 
+        public override bool Equals(object obj)
+        {
+            return Symbol.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Symbol.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return Symbol;
+        }
+
+        #endregion Public Methods
+
+        #region Internal Methods
+
         /// <summary>
         /// Update the asset cache.
         /// </summary>
         /// <param name="symbols">The symbols.</param>
         /// <returns></returns>
-        public static void UpdateCache(IEnumerable<Symbol> symbols)
+        internal static void UpdateCache(IEnumerable<Symbol> symbols)
         {
             Throw.IfNull(symbols, nameof(symbols));
 
@@ -147,22 +166,7 @@ namespace Binance
             }
         }
 
-        public override bool Equals(object obj)
-        {
-            return Symbol.Equals(obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return Symbol.GetHashCode();
-        }
-
-        public override string ToString()
-        {
-            return Symbol;
-        }
-
-        #endregion Public Methods
+        #endregion Internal Methods
 
         #region IComparable<Asset>
 
