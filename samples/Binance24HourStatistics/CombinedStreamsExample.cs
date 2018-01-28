@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 
 // ReSharper disable AccessToDisposedClosure
 
-namespace BinancePriceChart
+namespace Binance24HourStatistics
 {
     /// <summary>
     /// Demonstrate how to monitor candlesticks for multiple symbols
@@ -47,11 +47,7 @@ namespace BinancePriceChart
                 var symbols = configuration.GetSection("CombinedStreamsExample:Symbols").Get<string[]>()
                     ?? new string[] { Symbol.BTC_USDT };
 
-                var interval = CandlestickInterval.Minute;
-                try { interval = configuration.GetSection("PriceChart")?["Interval"].ToCandlestickInterval() ?? CandlestickInterval.Minute; }
-                catch { /* ignored */ }
-
-                var client = services.GetService<ICandlestickWebSocketClient>();
+                var client = services.GetService<ISymbolStatisticsWebSocketClient>();
 
                 using (var controller = new RetryTaskController())
                 {
@@ -59,18 +55,18 @@ namespace BinancePriceChart
                     {
                         // Monitor latest candlestick for a symbol and display.
                         controller.Begin(
-                            tkn => client.StreamAsync(symbols[0], interval, evt => Display(evt.Candlestick), tkn),
+                            tkn => client.StreamAsync(symbols[0], evt => Display(evt.Statistics[0]), tkn),
                             err => Console.WriteLine(err.Message));
                     }
                     else
                     {
                         // Alternative usage (combined streams).
-                        client.Candlestick += (s, evt) => { Display(evt.Candlestick); };
+                        client.StatisticsUpdate += (s, evt) => { Display(evt.Statistics[0]); };
 
                         // Subscribe to all symbols.
                         foreach (var symbol in symbols)
                         {
-                            client.Subscribe(symbol, interval); // using event instead of callbacks.
+                            client.Subscribe(symbol); // using event instead of callbacks.
                         }
 
                         // Begin streaming.
@@ -89,14 +85,14 @@ namespace BinancePriceChart
                     await controller.CancelAsync();
 
                     // Unsubscribe a symbol.
-                    client.Unsubscribe(symbols[0], interval);
+                    client.Unsubscribe(symbols[0]);
 
                     // Remove unsubscribed symbol and clear display (application specific).
-                    _candlesticks.Remove(symbols[0]);
+                    _statistics.Remove(symbols[0]);
                     Console.Clear();
 
                     // Subscribe to the real Bitcoin :D
-                    client.Subscribe(Symbol.BCH_USDT, interval); // a.k.a. BCC.
+                    client.Subscribe(Symbol.BCH_USDT); // a.k.a. BCC.
 
                     // Begin streaming again.
                     controller.Begin(
@@ -121,16 +117,16 @@ namespace BinancePriceChart
 
         private static readonly object _sync = new object();
 
-        private static IDictionary<string, Candlestick> _candlesticks
-            = new SortedDictionary<string, Candlestick>();
+        private static IDictionary<string, SymbolStatistics> _statistics
+            = new SortedDictionary<string, SymbolStatistics>();
 
         private static Task _displayTask = Task.CompletedTask;
 
-        private static void Display(Candlestick candlestick)
+        private static void Display(SymbolStatistics statsistics)
         {
             lock (_sync)
             {
-                _candlesticks[candlestick.Symbol] = candlestick;
+                _statistics[statsistics.Symbol] = statsistics;
 
                 if (_displayTask.IsCompleted)
                 {
@@ -138,17 +134,19 @@ namespace BinancePriceChart
                     _displayTask = Task.Delay(100)
                         .ContinueWith(_ =>
                         {
-                            Candlestick[] latestCandlesticks;
+                            SymbolStatistics[] latestStatistics;
                             lock (_sync)
                             {
-                                latestCandlesticks = _candlesticks.Values.ToArray();
+                                latestStatistics = _statistics.Values.ToArray();
                             }
 
                             Console.SetCursorPosition(0, 0);
 
-                            foreach (var c in latestCandlesticks)
+                            foreach (var stats in latestStatistics)
                             {
-                                Console.WriteLine($" {c.Symbol} - O: {c.Open:0.00000000} | H: {c.High:0.00000000} | L: {c.Low:0.00000000} | C: {c.Close:0.00000000} | V: {c.Volume:0.00} - [{c.OpenTime.ToTimestamp()}]".PadRight(119));
+                                Console.WriteLine($"  24-hour statistics for {stats.Symbol}:");
+                                Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
+                                Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
                                 Console.WriteLine();
                             }
 

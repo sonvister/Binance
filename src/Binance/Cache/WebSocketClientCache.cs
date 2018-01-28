@@ -122,7 +122,7 @@ namespace Binance.Cache
             {
                 BoundedCapacity = 1,
                 EnsureOrdered = true,
-                MaxMessagesPerTask = 1,
+                //MaxMessagesPerTask = 1,
                 MaxDegreeOfParallelism = 1,
                 CancellationToken = CancellationToken.None,
                 SingleProducerConstrained = true

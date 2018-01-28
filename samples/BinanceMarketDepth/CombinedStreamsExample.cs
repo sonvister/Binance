@@ -122,22 +122,37 @@ namespace BinanceMarketDepth
         private static IDictionary<string, OrderBookTop> _orderBookTops
             = new SortedDictionary<string, OrderBookTop>();
 
+        private static Task _displayTask = Task.CompletedTask;
+
         private static void Display(OrderBookTop orderBookTop)
         {
             lock (_sync)
             {
-                Console.SetCursorPosition(0, 0);
-
                 _orderBookTops[orderBookTop.Symbol] = orderBookTop;
 
-                foreach (var keyPair in _orderBookTops)
+                if (_displayTask.IsCompleted)
                 {
-                    var top = keyPair.Value;
-                    Console.WriteLine($" {top.Symbol.PadLeft(8)}  -  Bid: {top.Bid.Price.ToString("0.00000000").PadLeft(13)} (qty: {top.Bid.Quantity})   |   Ask: {top.Ask.Price.ToString("0.00000000").PadLeft(13)} (qty: {top.Ask.Quantity})");
-                    Console.WriteLine();
-                }
+                    // Delay to allow multiple data updates between display updates.
+                    _displayTask = Task.Delay(100)
+                        .ContinueWith(_ =>
+                        {
+                            OrderBookTop[] latestTops;
+                            lock (_sync)
+                            {
+                                latestTops = _orderBookTops.Values.ToArray();
+                            }
 
-                Console.WriteLine(message);
+                            Console.SetCursorPosition(0, 0);
+
+                            foreach (var t in latestTops)
+                            {
+                                Console.WriteLine($" {t.Symbol.PadLeft(8)}  -  Bid: {t.Bid.Price.ToString("0.00000000").PadLeft(13)} (qty: {t.Bid.Quantity})   |   Ask: {t.Ask.Price.ToString("0.00000000").PadLeft(13)} (qty: {t.Ask.Quantity})");
+                                Console.WriteLine();
+                            }
+
+                            Console.WriteLine(message);
+                        });
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
@@ -119,22 +120,37 @@ namespace BinanceTradeHistory
         private static IDictionary<string, AggregateTrade> _trades
             = new SortedDictionary<string, AggregateTrade>();
 
+        private static Task _displayTask = Task.CompletedTask;
+
         private static void Display(AggregateTrade trade)
         {
             lock (_sync)
             {
-                Console.SetCursorPosition(0, 0);
-
                 _trades[trade.Symbol] = trade;
 
-                foreach (var keyPair in _trades)
+                if (_displayTask.IsCompleted)
                 {
-                    trade = keyPair.Value;
-                    Console.WriteLine($" {trade.Time.ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time.ToTimestamp()}".PadRight(119));
-                    Console.WriteLine();
-                }
+                    // Delay to allow multiple data updates between display updates.
+                    _displayTask = Task.Delay(100)
+                        .ContinueWith(_ =>
+                        {
+                            AggregateTrade[] latestsTrades;
+                            lock (_sync)
+                            {
+                                latestsTrades = _trades.Values.ToArray();
+                            }
 
-                Console.WriteLine(message);
+                            Console.SetCursorPosition(0, 0);
+
+                            foreach (var t in latestsTrades)
+                            {
+                                Console.WriteLine($" {t.Time.ToLocalTime()} - {t.Symbol.PadLeft(8)} - {(t.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {t.Quantity:0.00000000} @ {t.Price:0.00000000}{(t.IsBestPriceMatch ? "*" : " ")} - [ID: {t.Id}] - {t.Time.ToTimestamp()}".PadRight(119));
+                                Console.WriteLine();
+                            }
+
+                            Console.WriteLine(message);
+                        });
+                }
             }
         }
     }
