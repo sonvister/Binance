@@ -60,7 +60,7 @@ namespace Binance.Tests
 
             asset.ValidateAmount(000.000000000000m);
 
-            Assert.Throws<ArgumentOutOfRangeException>("amount", () => asset.IsAmountValid(-000.000000010000m));
+            Assert.Throws<ArgumentOutOfRangeException>("amount", () => asset.ValidateAmount(-000.000000010000m));
         }
     }
 }
