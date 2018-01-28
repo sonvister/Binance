@@ -17,7 +17,7 @@ namespace Binance.Account
         public long OrderId { get; }
 
         /// <summary>
-        /// Get the commission.
+        /// Get the commission (commission asset quantity).
         /// </summary>
         public decimal Commission { get; }
 

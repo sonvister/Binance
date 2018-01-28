@@ -15,7 +15,7 @@
         public decimal Quantity { get; }
 
         /// <summary>
-        /// Get the commission.
+        /// Get the commission (commission asset quantity).
         /// </summary>
         public decimal Commission { get; }
 
