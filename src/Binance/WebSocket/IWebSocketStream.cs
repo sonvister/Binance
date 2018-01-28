@@ -49,6 +49,7 @@ namespace Binance.WebSocket
         /// Runtime exceptions are thrown by this method and must be handled
         /// by the caller, otherwise the <see cref="Task"/> continues receiving
         /// and processing messages until the token is canceled.
+        /// Open/Close events are provided by <see cref="IWebSocketClient"/>.
         /// </summary>
         /// <param name="token">The cancellation token (required to cancel operation).</param>
         /// <returns></returns>
