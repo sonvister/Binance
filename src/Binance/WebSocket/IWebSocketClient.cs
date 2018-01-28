@@ -32,6 +32,9 @@ namespace Binance.WebSocket
 
         /// <summary>
         /// Connect web socket to URI and begin receiving messages.
+        /// Runtime exceptions are thrown by this method and must be handled
+        /// by the caller, otherwise the <see cref="Task"/> continues receiving
+        /// and processing messages until the token is canceled.
         /// </summary>
         /// <param name="uri">The URI.</param>
         /// <param name="token">The cancellation token (required to cancel operation).</param>

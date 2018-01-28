@@ -28,6 +28,8 @@ namespace Binance.WebSocket
 
         /// <summary>
         /// Subscribe a callback to a stream.
+        /// This can be done while streaming, subscribing a new stream does not
+        /// take effect until the stream operation is cancelled and restarted.
         /// </summary>
         /// <param name="stream">The stream name.</param>
         /// <param name="callback">The callback.</param>
@@ -35,13 +37,18 @@ namespace Binance.WebSocket
 
         /// <summary>
         /// Unsubscribe a callback from a stream.
+        /// This can be done while streaming, unsubscribing a stream does not
+        /// take effect until the stream operation is cancelled and restarted.
         /// </summary>
         /// <param name="stream">The stream name.</param>
         /// <param name="callback">The callback.</param>
         void Unsubscribe(string stream, Action<WebSocketStreamEventArgs> callback);
 
         /// <summary>
-        /// Initiate a web socket connection and begin receiving messages (streaming).
+        /// Initiate a web socket connection and begin receiving messages.
+        /// Runtime exceptions are thrown by this method and must be handled
+        /// by the caller, otherwise the <see cref="Task"/> continues receiving
+        /// and processing messages until the token is canceled.
         /// </summary>
         /// <param name="token">The cancellation token (required to cancel operation).</param>
         /// <returns></returns>
