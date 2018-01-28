@@ -26,6 +26,26 @@ namespace Binance.Tests
         }
 
         [Fact]
+        public void Validate()
+        {
+            const decimal minimum = 0.01m;
+            const decimal maximum = 10.0m;
+            const decimal increment = 0.01m;
+
+            var range = new InclusiveRange(minimum, maximum, increment);
+
+            range.Validate(minimum);
+            range.Validate(maximum);
+            range.Validate(minimum + increment);
+            range.Validate(maximum - increment);
+
+            Assert.Throws<ArgumentOutOfRangeException>("value", () => range.Validate(minimum - increment));
+            Assert.Throws<ArgumentOutOfRangeException>("value", () => range.Validate(maximum + increment));
+            Assert.Throws<ArgumentOutOfRangeException>("value", () => range.Validate(minimum + increment / 2));
+            Assert.Throws<ArgumentOutOfRangeException>("value", () => range.Validate(maximum - increment / 2));
+        }
+
+        [Fact]
         public void GetUpperValidValue()
         {
             const decimal minimum = 0.01m;

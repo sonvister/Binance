@@ -5,7 +5,7 @@ namespace Binance
     public static class InclusiveRangeExtensions
     {
         /// <summary>
-        /// Verify a value is within range and of a valid increment.
+        /// Verify a value is within range and a multiple of the increment.
         /// </summary>
         /// <param name="range"></param>
         /// <param name="value"></param>
@@ -15,6 +15,25 @@ namespace Binance
             Throw.IfNull(range, nameof(range));
 
             return value >= range.Minimum && value <= range.Maximum && (value - range.Minimum) % range.Increment == 0;
+        }
+
+        /// <summary>
+        /// Throw an exception if value is not within range or an increment multiple.
+        /// </summary>
+        /// <param name="range"></param>
+        /// <param name="value"></param>
+        public static void Validate(this InclusiveRange range, decimal value)
+        {
+            Throw.IfNull(range, nameof(range));
+
+            if (value < range.Minimum)
+                throw new ArgumentOutOfRangeException(nameof(value), $"Value ({value}) must be greater than or equal to minimum ({range.Minimum}).");
+
+            if (value > range.Maximum)
+                throw new ArgumentOutOfRangeException(nameof(value), $"Value ({value}) must be less than or equal to maximum ({range.Maximum}).");
+
+            if ((value - range.Minimum) % range.Increment > 0)
+                throw new ArgumentOutOfRangeException(nameof(value), $"Value ({value}) must be a multiple of the increment ({range.Increment}).");
         }
 
         /// <summary>
