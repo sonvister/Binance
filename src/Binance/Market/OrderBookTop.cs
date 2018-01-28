@@ -32,6 +32,16 @@ namespace Binance.Market
         /// <summary>
         /// Construct order book top.
         /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="bid">The best bid price and quantity.</param>
+        /// <param name="ask">The best ask price and quantity.</param>
+        /// <returns></returns>
+        public static OrderBookTop Create(string symbol, (decimal, decimal) bid, (decimal, decimal) ask)
+            => Create(symbol, bid.Item1, bid.Item2, ask.Item1, ask.Item2);
+
+        /// <summary>
+        /// Construct order book top.
+        /// </summary>
         /// <param name="symbol">The symbol.</param> 
         /// <param name="bidPrice">The best bid price.</param> 
         /// <param name="bidQuantity">The best bid quantity.</param> 

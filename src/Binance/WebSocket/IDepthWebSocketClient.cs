@@ -8,16 +8,10 @@ namespace Binance.WebSocket
     /// </summary>
     public interface IDepthWebSocketClient : IBinanceWebSocketClient
     {
-        #region Events
-
         /// <summary>
         /// The depth update event.
         /// </summary>
         event EventHandler<DepthUpdateEventArgs> DepthUpdate;
-
-        #endregion Events
-
-        #region Methods
 
         /// <summary>
         /// Subscribe to the specified symbol (for use with combined streams).
@@ -28,6 +22,13 @@ namespace Binance.WebSocket
         /// <param name="callback">An event callback.</param>
         void Subscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback);
 
-        #endregion Methods
+        /// <summary>
+        /// Unsubscribe a callback from symbol events. If no callback is
+        /// specified, then unsubscribe symbol (all callbacks).
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="limit">The limit (optional, uses partial depth stream). Valid values are: 5, 10, or 20.</param>
+        /// <param name="callback"></param>
+        void Unsubscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback);
     }
 }

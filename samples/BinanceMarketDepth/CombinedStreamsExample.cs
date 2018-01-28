@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
@@ -14,10 +15,10 @@ using Microsoft.Extensions.Logging;
 
 // ReSharper disable AccessToDisposedClosure
 
-namespace BinancePriceChart
+namespace BinanceMarketDepth
 {
     /// <summary>
-    /// Demonstrate how to monitor candlesticks for multiple symbols
+    /// Demonstrate how to monitor order book for multiple symbols
     /// and how to unsubscribe/subscribe a symbol after streaming begins.
     /// </summary>
     internal class CombinedStreamsExample
@@ -46,11 +47,9 @@ namespace BinancePriceChart
                 var symbols = configuration.GetSection("CombinedStreamsExample:Symbols").Get<string[]>()
                     ?? new string[] { Symbol.BTC_USDT };
 
-                var interval = CandlestickInterval.Minute;
-                try { interval = configuration.GetSection("PriceChart")?["Interval"].ToCandlestickInterval() ?? CandlestickInterval.Minute; }
-                catch { /* ignored */ }
+                var limit = 5;
 
-                var client = services.GetService<ICandlestickWebSocketClient>();
+                var client = services.GetService<IDepthWebSocketClient>();
 
                 using (var controller = new RetryTaskController())
                 {
@@ -58,18 +57,18 @@ namespace BinancePriceChart
                     {
                         // Monitor latest candlestick for a symbol and display.
                         controller.Begin(
-                            tkn => client.StreamAsync(symbols[0], interval, evt => Display(evt.Candlestick), tkn),
+                            tkn => client.StreamAsync(symbols[0], evt => Display(OrderBookTop.Create(evt.Symbol, evt.Bids.First(), evt.Asks.First())), tkn),
                             err => Console.WriteLine(err.Message));
                     }
                     else
                     {
                         // Alternative usage (combined streams).
-                        client.Candlestick += (s, evt) => { Display(evt.Candlestick); };
+                        client.DepthUpdate += (s, evt) => { Display(OrderBookTop.Create(evt.Symbol, evt.Bids.First(), evt.Asks.First())); };
 
                         // Subscribe to all symbols.
                         foreach (var symbol in symbols)
                         {
-                            client.Subscribe(symbol, interval); // using event instead of callbacks.
+                            client.Subscribe(symbol, limit); // using event instead of callbacks.
                         }
 
                         // Begin streaming.
@@ -88,14 +87,14 @@ namespace BinancePriceChart
                     await controller.CancelAsync();
 
                     // Unsubscribe a symbol.
-                    client.Unsubscribe(symbols[0], interval);
+                    client.Unsubscribe(symbols[0], limit);
 
                     // Remove unsubscribed symbol and clear display (application specific).
-                    _candlesticks.Remove(symbols[0]);
+                    _orderBookTops.Remove(symbols[0]);
                     Console.Clear();
 
                     // Subscribe to the real Bitcoin :D
-                    client.Subscribe(Symbol.BCH_USDT, interval); // a.k.a. BCC.
+                    client.Subscribe(Symbol.BCH_USDT, limit); // a.k.a. BCC.
 
                     // Begin streaming again.
                     controller.Begin(
@@ -120,21 +119,21 @@ namespace BinancePriceChart
 
         private static readonly object _sync = new object();
 
-        private static IDictionary<string, Candlestick> _candlesticks
-            = new SortedDictionary<string, Candlestick>();
+        private static IDictionary<string, OrderBookTop> _orderBookTops
+            = new SortedDictionary<string, OrderBookTop>();
 
-        private static void Display(Candlestick candlestick)
+        private static void Display(OrderBookTop orderBookTop)
         {
             lock (_sync)
             {
                 Console.SetCursorPosition(0, 0);
 
-                _candlesticks[candlestick.Symbol] = candlestick;
+                _orderBookTops[orderBookTop.Symbol] = orderBookTop;
 
-                foreach (var keyPair in _candlesticks)
+                foreach (var keyPair in _orderBookTops)
                 {
-                    candlestick = keyPair.Value;
-                    Console.WriteLine($" {candlestick.Symbol} - O: {candlestick.Open:0.00000000} | H: {candlestick.High:0.00000000} | L: {candlestick.Low:0.00000000} | C: {candlestick.Close:0.00000000} | V: {candlestick.Volume:0.00} - [{candlestick.OpenTime.ToTimestamp()}]".PadRight(119));
+                    var top = keyPair.Value;
+                    Console.WriteLine($" {top.Symbol.PadLeft(8)}  -  Bid: {top.Bid.Price.ToString("0.00000000").PadLeft(13)} (qty: {top.Bid.Quantity})   |   Ask: {top.Ask.Price.ToString("0.00000000").PadLeft(13)} (qty: {top.Ask.Quantity})");
                     Console.WriteLine();
                 }
 
