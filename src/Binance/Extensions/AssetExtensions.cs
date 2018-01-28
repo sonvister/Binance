@@ -1,6 +1,6 @@
-﻿// ReSharper disable once CheckNamespace
-using System;
+﻿using System;
 
+// ReSharper disable once CheckNamespace
 namespace Binance
 {
     public static class AssetExtensions
@@ -24,15 +24,15 @@ namespace Binance
         /// </summary>
         /// <param name="asset"></param>
         /// <param name="amount"></param>
-        public static void ValidateAmount(this Asset asset, decimal amount)
+        public static void ValidateAmount(this Asset asset, decimal amount, string paramName = null)
         {
             if (amount < 0)
-                throw new ArgumentOutOfRangeException(nameof(amount), $"Asset amount ({amount}) must be greater than or equal to 0.");
+                throw new ArgumentOutOfRangeException(paramName ?? nameof(amount), $"Asset amount ({amount}) must be greater than or equal to 0.");
 
             var precision = (decimal)Math.Pow(10, -asset.Precision);
 
             if (amount % precision > 0)
-                throw new ArgumentOutOfRangeException(nameof(amount), $"Asset amount ({amount}) is too precise ({precision}).");
+                throw new ArgumentOutOfRangeException(paramName ?? nameof(amount), $"Asset amount ({amount}) is too precise ({precision}).");
         }
     }
 }

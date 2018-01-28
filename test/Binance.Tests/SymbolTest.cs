@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Binance.Account.Orders;
 using Binance.Api;
 using Moq;
@@ -147,6 +148,136 @@ namespace Binance.Tests
             order.Price = price;
             order.Quantity = symbol.NotionalMinimumValue / price - symbol.Quantity.Increment;
             Assert.False(symbol.IsValid(order));
+        }
+
+        [Fact]
+        public void ValidateOrderType()
+        {
+            var symbol = Symbol.BTC_USDT;
+            var user = new Mock<IBinanceApiUser>().Object;
+
+            Assert.Contains(OrderType.Limit, symbol.OrderTypes);
+
+            symbol.Validate(OrderType.Limit);
+
+            var order = new LimitOrder(new Mock<IBinanceApiUser>().Object);
+
+            symbol.ValidateOrderType(order);
+
+            var takeProfitLimitOrder = new TakeProfitLimitOrder(user);
+
+            if (symbol.OrderTypes.Contains(OrderType.TakeProfitLimit))
+            {
+                symbol.ValidateOrderType(takeProfitLimitOrder);
+            }
+            else
+            {
+                Assert.Throws<ArgumentException>(nameof(takeProfitLimitOrder.Type), () => symbol.ValidateOrderType(takeProfitLimitOrder));
+            }
+        }
+
+        [Fact]
+        public void ValidatePriceQuantity()
+        {
+            var symbol = Symbol.BTC_USDT;
+            var user = new Mock<IBinanceApiUser>().Object;
+            const decimal price = 10000;
+            const decimal quantity = 1;
+
+            Assert.Equal(8, symbol.BaseAsset.Precision);
+            Assert.Equal(8, symbol.QuoteAsset.Precision);
+
+            symbol.ValidatePriceQuantity(price, quantity);
+
+            Assert.Throws<ArgumentOutOfRangeException>("quantity", () => symbol.ValidatePriceQuantity(price, 0.000000001m));
+            Assert.Throws<ArgumentOutOfRangeException>("price", () => symbol.ValidatePriceQuantity(0.000000001m, quantity));
+
+            Assert.Throws<ArgumentOutOfRangeException>("quantity", () => symbol.ValidatePriceQuantity(price, symbol.Quantity.Maximum + symbol.Quantity.Increment));
+            Assert.Throws<ArgumentOutOfRangeException>("price", () => symbol.ValidatePriceQuantity(symbol.Price.Minimum - symbol.Price.Increment, quantity));
+
+            symbol.IsPriceQuantityValid(price, symbol.NotionalMinimumValue / price);
+            Assert.Throws<ArgumentOutOfRangeException>("notionalValue", () => symbol.ValidatePriceQuantity(price, symbol.NotionalMinimumValue / price - symbol.Quantity.Increment));
+
+            var order = new LimitOrder(user)
+            {
+                Price = price,
+                Quantity = quantity
+            };
+
+            symbol.ValidatePriceQuantity(order);
+
+            order.Price = price;
+            order.Quantity = 0.000000001m;
+            Assert.Throws<ArgumentOutOfRangeException>(nameof(order.Quantity), () => symbol.ValidatePriceQuantity(order));
+
+            order.Price = 0.000000001m;
+            order.Quantity = quantity;
+            Assert.Throws<ArgumentOutOfRangeException>(nameof(order.Price), () => symbol.ValidatePriceQuantity(order));
+
+            order.Price = price;
+            order.Quantity = symbol.Quantity.Maximum + symbol.Quantity.Increment;
+            Assert.Throws<ArgumentOutOfRangeException>(nameof(order.Quantity), () => symbol.ValidatePriceQuantity(order));
+
+            order.Price = symbol.Price.Minimum - symbol.Price.Increment;
+            order.Quantity = quantity;
+            Assert.Throws<ArgumentOutOfRangeException>(nameof(order.Price), () => symbol.ValidatePriceQuantity(order));
+
+            order.Price = price;
+            order.Quantity = symbol.NotionalMinimumValue / price;
+            symbol.ValidatePriceQuantity(order);
+
+            order.Price = price;
+            order.Quantity = symbol.NotionalMinimumValue / price - symbol.Quantity.Increment;
+            Assert.Throws<ArgumentOutOfRangeException>("notionalValue", () => symbol.ValidatePriceQuantity(order));
+        }
+
+        [Fact]
+        public void Validate()
+        {
+            var symbol = Symbol.BTC_USDT;
+            var user = new Mock<IBinanceApiUser>().Object;
+            const decimal price = 10000;
+            const decimal quantity = 1;
+
+            Assert.Equal(8, symbol.BaseAsset.Precision);
+            Assert.Equal(8, symbol.QuoteAsset.Precision);
+
+            var order = new LimitOrder(user);
+
+            Assert.Throws<ArgumentException>("Symbol", () => symbol.Validate(order));
+
+            order.Symbol = symbol;
+            Assert.Throws<ArgumentOutOfRangeException>(nameof(order.Quantity), () => symbol.Validate(order));
+
+            order.Quantity = quantity;
+            Assert.Throws<ArgumentOutOfRangeException>(nameof(order.Price), () => symbol.Validate(order));
+
+            order.Price = price;
+            symbol.Validate(order);
+
+            order.Price = price;
+            order.Quantity = 0.000000001m;
+            Assert.Throws<ArgumentOutOfRangeException>(nameof(order.Quantity), () => symbol.Validate(order));
+
+            order.Price = 0.000000001m;
+            order.Quantity = quantity;
+            Assert.Throws<ArgumentOutOfRangeException>(nameof(order.Price), () => symbol.Validate(order));
+
+            order.Price = price;
+            order.Quantity = symbol.Quantity.Maximum + symbol.Quantity.Increment;
+            Assert.Throws<ArgumentOutOfRangeException>(nameof(order.Quantity), () => symbol.Validate(order));
+
+            order.Price = symbol.Price.Minimum - symbol.Price.Increment;
+            order.Quantity = quantity;
+            Assert.Throws<ArgumentOutOfRangeException>(nameof(order.Price), () => symbol.Validate(order));
+
+            order.Price = price;
+            order.Quantity = symbol.NotionalMinimumValue / price;
+            symbol.Validate(order);
+
+            order.Price = price;
+            order.Quantity = symbol.NotionalMinimumValue / price - symbol.Quantity.Increment;
+            Assert.Throws<ArgumentOutOfRangeException>("notionalValue", () => symbol.Validate(order));
         }
     }
 }

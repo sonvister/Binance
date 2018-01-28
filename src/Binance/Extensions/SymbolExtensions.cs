@@ -97,54 +97,95 @@ namespace Binance
         }
 
         /// <summary>
-        /// 
+        /// Validate an order for a symbol.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="order"></param>
         public static void Validate(this Symbol symbol, ClientOrder order)
         {
-            throw new NotImplementedException(); // TODO
+            Throw.IfNull(symbol, nameof(symbol));
+            Throw.IfNull(order, nameof(order));
+
+            if (order.Symbol != symbol)
+                throw new ArgumentException($"The order symbol ({order.Symbol ?? "null"}) does not match symbol ({symbol}).", nameof(order.Symbol));
+
+            ValidateOrderType(symbol, order);
+
+            ValidatePriceQuantity(symbol, order);
         }
 
         /// <summary>
-        /// 
+        /// Validate an order type for a symbol.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="orderType"></param>
         public static void Validate(this Symbol symbol, OrderType orderType)
         {
-            throw new NotImplementedException(); // TODO
+            Throw.IfNull(symbol, nameof(symbol));
+
+            if (!IsSupported(symbol, orderType))
+                throw new ArgumentException($"The order type ({orderType.AsString()}) is not supported.", nameof(orderType));
         }
 
         /// <summary>
-        /// 
+        /// Validate an order type for a symbol.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="order"></param>
         public static void ValidateOrderType(this Symbol symbol, ClientOrder order)
         {
-            throw new NotImplementedException(); // TODO
+            Throw.IfNull(symbol, nameof(symbol));
+            Throw.IfNull(order, nameof(order));
+
+            if (!IsOrderTypeSupported(symbol, order))
+                throw new ArgumentException($"The order type ({order.Type.AsString()}) is not supported.", nameof(order.Type));
         }
 
         /// <summary>
-        /// 
+        /// Validate order price and quantity for a symbol.
+        /// Price is ignored unless order is <see cref="LimitOrder"/>.
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="order"></param>
         public static void ValidatePriceQuantity(this Symbol symbol, ClientOrder order)
         {
-            throw new NotImplementedException(); // TODO
+            Throw.IfNull(symbol, nameof(symbol));
+            Throw.IfNull(order, nameof(order));
+
+            symbol.BaseAsset.ValidateAmount(order.Quantity, nameof(order.Quantity));
+            symbol.Quantity.Validate(order.Quantity, nameof(order.Quantity));
+
+            var limitOrder = (order as LimitOrder);
+            if (limitOrder == null)
+                return;
+
+            symbol.QuoteAsset.ValidateAmount(limitOrder.Price, nameof(limitOrder.Price));
+            symbol.Price.Validate(limitOrder.Price, nameof(limitOrder.Price));
+
+            var notionalValue = limitOrder.Price * order.Quantity;
+            if (notionalValue < symbol.NotionalMinimumValue)
+                throw new ArgumentOutOfRangeException(nameof(notionalValue), $"The price * quantity ({notionalValue}) must be greater than or equal to minimum notional value ({symbol.NotionalMinimumValue}).");
         }
 
         /// <summary>
-        /// 
+        /// Validate price and quantity for a symbol.
         /// </summary>
         /// <param name=""></param>
         /// <param name="price"></param>
         /// <param name="quantity"></param>
         public static void ValidatePriceQuantity(this Symbol symbol, decimal price, decimal quantity)
         {
-            throw new NotImplementedException(); // TODO
+            Throw.IfNull(symbol, nameof(symbol));
+
+            symbol.QuoteAsset.ValidateAmount(price, nameof(price));
+            symbol.BaseAsset.ValidateAmount(quantity, nameof (quantity));
+
+            symbol.Price.Validate(price, nameof(price));
+            symbol.Quantity.Validate(quantity, nameof(quantity));
+
+            var notionalValue = price * quantity;
+            if (notionalValue < symbol.NotionalMinimumValue)
+                throw new ArgumentOutOfRangeException(nameof(notionalValue), $"The price * quantity ({notionalValue}) must be greater than or equal to minimum notional value ({symbol.NotionalMinimumValue}).");
         }
     }
 }

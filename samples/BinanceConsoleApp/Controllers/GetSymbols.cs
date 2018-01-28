@@ -19,10 +19,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (args.Length > 1 && args[1].Equals("refresh", StringComparison.OrdinalIgnoreCase))
             {
-                var s = await Program.Api.GetSymbolsAsync(token);
-
-                // ReSharper disable once PossibleMultipleEnumeration
-                Symbol.UpdateCache(s);
+                await Symbol.UpdateCacheAsync(Program.Api);
             }
 
             var symbols = Symbol.Cache.Values;

@@ -22,18 +22,18 @@ namespace Binance
         /// </summary>
         /// <param name="range"></param>
         /// <param name="value"></param>
-        public static void Validate(this InclusiveRange range, decimal value)
+        public static void Validate(this InclusiveRange range, decimal value, string paramName = null)
         {
             Throw.IfNull(range, nameof(range));
 
             if (value < range.Minimum)
-                throw new ArgumentOutOfRangeException(nameof(value), $"Value ({value}) must be greater than or equal to minimum ({range.Minimum}).");
+                throw new ArgumentOutOfRangeException(paramName ?? nameof(value), $"Value ({value}) must be greater than or equal to minimum ({range.Minimum}).");
 
             if (value > range.Maximum)
-                throw new ArgumentOutOfRangeException(nameof(value), $"Value ({value}) must be less than or equal to maximum ({range.Maximum}).");
+                throw new ArgumentOutOfRangeException(paramName ?? nameof(value), $"Value ({value}) must be less than or equal to maximum ({range.Maximum}).");
 
             if ((value - range.Minimum) % range.Increment > 0)
-                throw new ArgumentOutOfRangeException(nameof(value), $"Value ({value}) must be a multiple of the increment ({range.Increment}).");
+                throw new ArgumentOutOfRangeException(paramName ?? nameof(value), $"Value ({value}) must be a multiple of the increment ({range.Increment}).");
         }
 
         /// <summary>
