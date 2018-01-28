@@ -58,10 +58,10 @@ namespace Binance.Tests.Api
 
                 stopwatch.Stop();
 
-                // Assume elapsed milliseconds is within +/- 45 msec of expected time (15 msec clock resolution).
-                // NOTE: Accounts for error in two timestamps and Task.Delay() ignoring any Stopwatch errors.
-                Assert.True(stopwatch.ElapsedMilliseconds >= duration.TotalMilliseconds - 45);
-                Assert.False(stopwatch.ElapsedMilliseconds > duration.TotalMilliseconds + 45);
+                // Assume elapsed milliseconds is within +/- 60 msec of expected time (15 msec clock resolution).
+                // NOTE: Should account for errors in two timestamps, Task.Delay(), and Stopwatch.
+                Assert.True(stopwatch.ElapsedMilliseconds >= duration.TotalMilliseconds - 60);
+                Assert.False(stopwatch.ElapsedMilliseconds > duration.TotalMilliseconds + 60);
             }
         }
     }

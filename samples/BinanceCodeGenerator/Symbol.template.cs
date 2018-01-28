@@ -41,6 +41,7 @@ namespace Binance
 
         public static implicit operator Symbol(string s)
         {
+            if (s == null) return null;
             var _s = s.FormatSymbol();
             lock (_sync)
             {

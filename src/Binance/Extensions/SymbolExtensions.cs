@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Binance.Account.Orders;
 
 // ReSharper disable once CheckNamespace
@@ -23,6 +24,19 @@ namespace Binance
         }
 
         /// <summary>
+        /// Determine if a symbol supports an order type.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="orderType"></param>
+        /// <returns></returns>
+        public static bool IsSupported(this Symbol symbol, OrderType orderType)
+        {
+            Throw.IfNull(symbol, nameof(symbol));
+
+            return symbol.OrderTypes.Contains(orderType);
+        }
+
+        /// <summary>
         /// Determine if a symbol supports a client order type.
         /// </summary>
         /// <param name="symbol"></param>
@@ -32,38 +46,7 @@ namespace Binance
         {
             Throw.IfNull(order, nameof(order));
 
-            return IsOrderTypeSupported(symbol, order.Type);
-        }
-
-        /// <summary>
-        /// Determine if a symbol supports an order type.
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <param name="orderType"></param>
-        /// <returns></returns>
-        public static bool IsOrderTypeSupported(this Symbol symbol, OrderType orderType)
-        {
-            Throw.IfNull(symbol, nameof(symbol));
-
-            return symbol.OrderTypes.Contains(orderType);
-        }
-
-        /// <summary>
-        /// Determine if price and quantity are valid for a symbol.
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <param name="price"></param>
-        /// <param name="quantity"></param>
-        /// <returns></returns>
-        public static bool IsPriceQuantityValid(this Symbol symbol, decimal price, decimal quantity)
-        {
-            Throw.IfNull(symbol, nameof(symbol));
-
-            return symbol.QuoteAsset.IsAmountValid(price)
-                && symbol.BaseAsset.IsAmountValid(quantity)
-                && symbol.Price.IsValid(price)
-                && symbol.Quantity.IsValid(quantity)
-                && price * quantity >= symbol.NotionalMinimumValue;
+            return IsSupported(symbol, order.Type);
         }
 
         /// <summary>
@@ -93,6 +76,75 @@ namespace Binance
 
             return symbol.Price.IsValid(limitOrder.Price)
                 && limitOrder.Price * order.Quantity >= symbol.NotionalMinimumValue;
+        }
+
+        /// <summary>
+        /// Determine if price and quantity are valid for a symbol.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="price"></param>
+        /// <param name="quantity"></param>
+        /// <returns></returns>
+        public static bool IsPriceQuantityValid(this Symbol symbol, decimal price, decimal quantity)
+        {
+            Throw.IfNull(symbol, nameof(symbol));
+
+            return symbol.QuoteAsset.IsAmountValid(price)
+                && symbol.BaseAsset.IsAmountValid(quantity)
+                && symbol.Price.IsValid(price)
+                && symbol.Quantity.IsValid(quantity)
+                && price * quantity >= symbol.NotionalMinimumValue;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="order"></param>
+        public static void Validate(this Symbol symbol, ClientOrder order)
+        {
+            throw new NotImplementedException(); // TODO
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="orderType"></param>
+        public static void Validate(this Symbol symbol, OrderType orderType)
+        {
+            throw new NotImplementedException(); // TODO
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="order"></param>
+        public static void ValidateOrderType(this Symbol symbol, ClientOrder order)
+        {
+            throw new NotImplementedException(); // TODO
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="order"></param>
+        public static void ValidatePriceQuantity(this Symbol symbol, ClientOrder order)
+        {
+            throw new NotImplementedException(); // TODO
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name=""></param>
+        /// <param name="price"></param>
+        /// <param name="quantity"></param>
+        public static void ValidatePriceQuantity(this Symbol symbol, decimal price, decimal quantity)
+        {
+            throw new NotImplementedException(); // TODO
         }
     }
 }

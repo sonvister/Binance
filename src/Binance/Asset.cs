@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1517160730710;
+        public static readonly long LastUpdateAt = 1517170491339;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH;
@@ -138,6 +138,7 @@ namespace Binance
 
         public static implicit operator Asset(string s)
         {
+            if (s == null) return null;
             var _s = s.FormatSymbol();
             lock (_sync)
             {
