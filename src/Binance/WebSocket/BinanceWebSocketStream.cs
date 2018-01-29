@@ -13,6 +13,22 @@ namespace Binance.WebSocket
 {
     public sealed class BinanceWebSocketStream : IWebSocketStream
     {
+        #region Public Events
+
+        public event EventHandler<EventArgs> Open
+        {
+            add { Client.Open += value; }
+            remove { Client.Open -= value; }
+        }
+
+        public event EventHandler<EventArgs> Close
+        {
+            add { Client.Close += value; }
+            remove { Client.Close -= value; }
+        }
+
+        #endregion Public Events
+
         #region Public Properties
 
         public IWebSocketClient Client { get; }

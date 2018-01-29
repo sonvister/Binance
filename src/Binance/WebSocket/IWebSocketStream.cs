@@ -12,6 +12,16 @@ namespace Binance.WebSocket
     public interface IWebSocketStream
     {
         /// <summary>
+        /// The web socket client open event.
+        /// </summary>
+        event EventHandler<EventArgs> Open;
+
+        /// <summary>
+        /// The web socket client close event.
+        /// </summary>
+        event EventHandler<EventArgs> Close;
+
+        /// <summary>
         /// The low-level web socket client.
         /// </summary>
         IWebSocketClient Client { get; }

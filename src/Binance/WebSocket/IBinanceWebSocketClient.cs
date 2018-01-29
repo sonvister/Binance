@@ -5,12 +5,12 @@ namespace Binance.WebSocket
     public interface IBinanceWebSocketClient
     {
         /// <summary>
-        /// The open event.
+        /// The web socket client open event.
         /// </summary>
         event EventHandler<EventArgs> Open;
 
         /// <summary>
-        /// The close event.
+        /// The web socket client close event.
         /// </summary>
         event EventHandler<EventArgs> Close;
 
