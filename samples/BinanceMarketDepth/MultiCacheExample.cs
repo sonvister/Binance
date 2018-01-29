@@ -22,7 +22,7 @@ namespace BinanceMarketDepth
     /// </summary>
     internal class MultiCacheExample
     {
-        private static async Task Main()
+        private static async Task ExampleMain()
         {
             try
             {

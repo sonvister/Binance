@@ -23,7 +23,7 @@ namespace BinanceMarketDepth
     /// </summary>
     internal class CombinedStreamsExample
     {
-        private static async Task Main()
+        private static async Task ExampleMain()
         {
             try
             {
@@ -73,7 +73,7 @@ namespace BinanceMarketDepth
 
                         // Begin streaming.
                         controller.Begin(
-                            tkn => client.WebSocket.StreamAsync(tkn),
+                            tkn => client.StreamAsync(tkn),
                             err => Console.WriteLine(err.Message));
                     }
 
@@ -98,7 +98,7 @@ namespace BinanceMarketDepth
 
                     // Begin streaming again.
                     controller.Begin(
-                        tkn => client.WebSocket.StreamAsync(tkn),
+                        tkn => client.StreamAsync(tkn),
                         err => Console.WriteLine(err.Message));
 
                     message = "...press any key to exit.";

@@ -75,7 +75,7 @@ namespace BinancePriceChart
 
                         // Begin streaming.
                         controller.Begin(
-                            tkn => client.WebSocket.StreamAsync(tkn),
+                            tkn => client.StreamAsync(tkn),
                             err => Console.WriteLine(err.Message));
                     }
 
@@ -100,7 +100,7 @@ namespace BinancePriceChart
 
                     // Begin streaming again.
                     controller.Begin(
-                        tkn => client.WebSocket.StreamAsync(tkn),
+                        tkn => client.StreamAsync(tkn),
                         err => Console.WriteLine(err.Message));
 
                     message = "...press any key to exit.";

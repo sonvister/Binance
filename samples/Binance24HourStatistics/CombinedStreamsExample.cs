@@ -23,7 +23,7 @@ namespace Binance24HourStatistics
     /// </summary>
     internal class CombinedStreamsExample
     {
-        private static async Task Main()
+        private static async Task ExampleMain()
         {
             try
             {
@@ -55,7 +55,7 @@ namespace Binance24HourStatistics
                     {
                         // Monitor latest candlestick for a symbol and display.
                         controller.Begin(
-                            tkn => client.StreamAsync(symbols[0], evt => Display(evt.Statistics[0]), tkn),
+                            tkn => client.SubscribeAndStreamAsync(symbols[0], evt => Display(evt.Statistics[0]), tkn),
                             err => Console.WriteLine(err.Message));
                     }
                     else
@@ -71,7 +71,7 @@ namespace Binance24HourStatistics
 
                         // Begin streaming.
                         controller.Begin(
-                            tkn => client.WebSocket.StreamAsync(tkn),
+                            tkn => client.StreamAsync(tkn),
                             err => Console.WriteLine(err.Message));
                     }
 
@@ -96,7 +96,7 @@ namespace Binance24HourStatistics
 
                     // Begin streaming again.
                     controller.Begin(
-                        tkn => client.WebSocket.StreamAsync(tkn),
+                        tkn => client.StreamAsync(tkn),
                         err => Console.WriteLine(err.Message));
 
                     message = "...press any key to exit.";
