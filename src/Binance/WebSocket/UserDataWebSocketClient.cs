@@ -99,7 +99,7 @@ namespace Binance.WebSocket
 
         #region Public Methods
 
-        public async Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token = default)
+        public virtual async Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
