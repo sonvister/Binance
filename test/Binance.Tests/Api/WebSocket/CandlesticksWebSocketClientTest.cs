@@ -17,7 +17,7 @@ namespace Binance.Tests.Api.WebSocket
 
             using (var cts = new CancellationTokenSource())
             {
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.StreamAsync(null, CandlestickInterval.Hour, cts.Token));
+                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.SubscribeAndStreamAsync(null, CandlestickInterval.Hour, cts.Token));
             }
         }
     }

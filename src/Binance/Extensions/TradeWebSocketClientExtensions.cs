@@ -22,10 +22,31 @@ namespace Binance.WebSocket
         /// </summary>
         /// <param name="client"></param>
         /// <param name="symbol"></param>
+        public static void Unsubscribe(this ITradeWebSocketClient client, string symbol)
+            => client.Unsubscribe(symbol, null);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task StreamAsync(this ITradeWebSocketClient client, string symbol, CancellationToken token)
-            => StreamAsync(client, symbol, null, token);
+        public static Task StreamAsync(this ITradeWebSocketClient client, CancellationToken token)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            return client.WebSocket.StreamAsync(token);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="symbol"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task SubscribeAndStreamAsync(this ITradeWebSocketClient client, string symbol, CancellationToken token)
+            => SubscribeAndStreamAsync(client, symbol, null, token);
 
         /// <summary>
         /// 
@@ -35,13 +56,13 @@ namespace Binance.WebSocket
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task StreamAsync(this ITradeWebSocketClient client, string symbol, Action<TradeEventArgs> callback, CancellationToken token)
+        public static Task SubscribeAndStreamAsync(this ITradeWebSocketClient client, string symbol, Action<TradeEventArgs> callback, CancellationToken token)
         {
             Throw.IfNull(client, nameof(client));
 
             client.Subscribe(symbol, callback);
 
-            return client.WebSocket.StreamAsync(token);
+            return StreamAsync(client, token);
         }
     }
 }

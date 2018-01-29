@@ -16,8 +16,8 @@ namespace Binance.WebSocket
         /// <param name="user"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task StreamAsync(this IUserDataWebSocketClient client, IBinanceApiUser user, CancellationToken token)
-            => StreamAsync(client, user, null, token);
+        public static Task SubscribeAndStreamAsync(this IUserDataWebSocketClient client, IBinanceApiUser user, CancellationToken token)
+            => SubscribeAndStreamAsync(client, user, null, token);
 
         /// <summary>
         /// 
@@ -27,7 +27,7 @@ namespace Binance.WebSocket
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task StreamAsync(this IUserDataWebSocketClient client, IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token)
+        public static async Task SubscribeAndStreamAsync(this IUserDataWebSocketClient client, IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token)
         {
             Throw.IfNull(client, nameof(client));
 

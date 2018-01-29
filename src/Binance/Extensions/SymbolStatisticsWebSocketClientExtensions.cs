@@ -47,7 +47,20 @@ namespace Binance.WebSocket
         /// <param name="token"></param>
         /// <returns></returns>
         public static Task StreamAsync(this ISymbolStatisticsWebSocketClient client, CancellationToken token)
-            => StreamAsync(client, (Action<SymbolStatisticsEventArgs>)null, token);
+        {
+            Throw.IfNull(client, nameof(client));
+
+            return client.WebSocket.StreamAsync(token);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task SubscribeAndStreamAsync(this ISymbolStatisticsWebSocketClient client, CancellationToken token)
+            => SubscribeAndStreamAsync(client, (Action<SymbolStatisticsEventArgs>)null, token);
 
         /// <summary>
         /// 
@@ -56,8 +69,8 @@ namespace Binance.WebSocket
         /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task StreamAsync(this ISymbolStatisticsWebSocketClient client, string symbol, CancellationToken token)
-            => StreamAsync(client, symbol, null, token);
+        public static Task SubscribeAndStreamAsync(this ISymbolStatisticsWebSocketClient client, string symbol, CancellationToken token)
+            => SubscribeAndStreamAsync(client, symbol, null, token);
 
         /// <summary>
         /// 
@@ -66,13 +79,13 @@ namespace Binance.WebSocket
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task StreamAsync(this ISymbolStatisticsWebSocketClient client, Action<SymbolStatisticsEventArgs> callback, CancellationToken token)
+        public static Task SubscribeAndStreamAsync(this ISymbolStatisticsWebSocketClient client, Action<SymbolStatisticsEventArgs> callback, CancellationToken token)
         {
             Throw.IfNull(client, nameof(client));
 
             client.Subscribe(callback);
 
-            return client.WebSocket.StreamAsync(token);
+            return StreamAsync(client, token);
         }
 
         /// <summary>
@@ -83,13 +96,13 @@ namespace Binance.WebSocket
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task StreamAsync(this ISymbolStatisticsWebSocketClient client, string symbol, Action<SymbolStatisticsEventArgs> callback, CancellationToken token)
+        public static Task SubscribeAndStreamAsync(this ISymbolStatisticsWebSocketClient client, string symbol, Action<SymbolStatisticsEventArgs> callback, CancellationToken token)
         {
             Throw.IfNull(client, nameof(client));
 
             client.Subscribe(symbol, callback);
 
-            return client.WebSocket.StreamAsync(token);
+            return StreamAsync(client, token);
         }
     }
 }
