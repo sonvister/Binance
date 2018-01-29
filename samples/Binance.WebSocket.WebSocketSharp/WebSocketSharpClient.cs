@@ -25,6 +25,8 @@ namespace Binance.WebSocket
 
             token.ThrowIfCancellationRequested();
 
+            Exception exception = null;
+
             var tcs = new TaskCompletionSource<object>();
             token.Register(() => tcs.TrySetCanceled());
 
@@ -64,12 +66,11 @@ namespace Binance.WebSocket
                     if (!token.IsCancellationRequested)
                     {
                         Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.OnMessage: WebSocket read exception.");
-                        throw;
+                        exception = e;
+                        tcs.TrySetCanceled();
                     }
                 }
             };
-
-            Exception exception = null;
 
             webSocket.OnError += (s, e) =>
             {
