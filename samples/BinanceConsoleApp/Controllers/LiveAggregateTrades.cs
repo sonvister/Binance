@@ -47,7 +47,7 @@ namespace BinanceConsoleApp.Controllers
 
             Program.LiveTask = Task.Run(() =>
             {
-                Program.AggregateTradeCache.StreamAsync(symbol, e => { Program.Display(e.LatestTrade()); }, Program.LiveTokenSource.Token);
+                Program.AggregateTradeCache.SubscribeAndStreamAsync(symbol, e => { Program.Display(e.LatestTrade()); }, Program.LiveTokenSource.Token);
             }, token);
 
             lock (Program.ConsoleSync)

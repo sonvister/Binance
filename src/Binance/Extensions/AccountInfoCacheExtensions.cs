@@ -16,8 +16,8 @@ namespace Binance.Cache
         /// <param name="user"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task StreamAsync(this IAccountInfoCache cache, IBinanceApiUser user, CancellationToken token)
-            => StreamAsync(cache, user, null, token);
+        public static Task SubscribeAndStreamAsync(this IAccountInfoCache cache, IBinanceApiUser user, CancellationToken token)
+            => SubscribeAndStreamAsync(cache, user, null, token);
 
         /// <summary>
         /// 
@@ -27,7 +27,7 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task StreamAsync(this IAccountInfoCache cache, IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token)
+        public static async Task SubscribeAndStreamAsync(this IAccountInfoCache cache, IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token)
         {
             Throw.IfNull(cache, nameof(cache));
 

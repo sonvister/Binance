@@ -58,13 +58,13 @@ namespace BinanceMarketDepth
                     // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
                     //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
                     controller.Begin(
-                        tkn => cache.StreamAsync(symbol, limit, evt => Display(evt.OrderBook), tkn),
+                        tkn => cache.SubscribeAndStreamAsync(symbol, limit, evt => Display(evt.OrderBook), tkn),
                         err => Console.WriteLine(err.Message));
 
                     // Alternative usage (if sharing IBinanceWebSocket for combined streams).
                     //cache.Subscribe(symbol, limit, evt => Display(evt.OrderBook));
                     //controller.Begin(
-                    //    tkn => cache.Client.WebSocket.StreamAsync(tkn),
+                    //    tkn => cache.StreamAsync(tkn),
                     //    err => Console.WriteLine(err.Message));
 
                     Console.ReadKey(true);

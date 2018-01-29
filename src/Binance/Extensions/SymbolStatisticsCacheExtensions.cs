@@ -32,7 +32,20 @@ namespace Binance.Cache
         /// <param name="token"></param>
         /// <returns></returns>
         public static Task StreamAsync(this ISymbolStatisticsCache cache, CancellationToken token)
-            => StreamAsync(cache, (Action<SymbolStatisticsCacheEventArgs>)null, token);
+        {
+            Throw.IfNull(cache, nameof(cache));
+
+            return cache.Client.WebSocket.StreamAsync(token);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cache"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task SubscribeAndStreamAsync(this ISymbolStatisticsCache cache, CancellationToken token)
+            => SubscribeAndStreamAsync(cache, (Action<SymbolStatisticsCacheEventArgs>)null, token);
 
         /// <summary>
         /// 
@@ -41,8 +54,8 @@ namespace Binance.Cache
         /// <param name="symbol"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task StreamAsync(this ISymbolStatisticsCache cache, string symbol, CancellationToken token)
-            => StreamAsync(cache, symbol, null, token);
+        public static Task SubscribeAndStreamAsync(this ISymbolStatisticsCache cache, string symbol, CancellationToken token)
+            => SubscribeAndStreamAsync(cache, symbol, null, token);
 
         /// <summary>
         /// 
@@ -51,13 +64,13 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task StreamAsync(this ISymbolStatisticsCache cache, Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token)
+        public static Task SubscribeAndStreamAsync(this ISymbolStatisticsCache cache, Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token)
         {
             Throw.IfNull(cache, nameof(cache));
 
             cache.Subscribe(callback);
 
-            return cache.Client.WebSocket.StreamAsync(token);
+            return StreamAsync(cache, token);
         }
 
         /// <summary>
@@ -68,13 +81,13 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task StreamAsync(this ISymbolStatisticsCache cache, string symbol, Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token)
+        public static Task SubscribeAndStreamAsync(this ISymbolStatisticsCache cache, string symbol, Action<SymbolStatisticsCacheEventArgs> callback, CancellationToken token)
         {
             Throw.IfNull(cache, nameof(cache));
 
             cache.Subscribe(callback, symbol);
 
-            return cache.Client.WebSocket.StreamAsync(token);
+            return StreamAsync(cache, token);
         }
     }
 }

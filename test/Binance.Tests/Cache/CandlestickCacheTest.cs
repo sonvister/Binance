@@ -22,7 +22,7 @@ namespace Binance.Tests.Cache
 
             using (var cts = new CancellationTokenSource())
             {
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.StreamAsync(null, CandlestickInterval.Day, cts.Token));
+                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.SubscribeAndStreamAsync(null, CandlestickInterval.Day, cts.Token));
             }
         }
     }

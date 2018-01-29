@@ -58,7 +58,7 @@ namespace Binance24HourStatistics
                     if (symbols.Length == 1)
                     {
                         controller.Begin(
-                            tkn => cache.StreamAsync(symbols[0], evt => Display(evt.Statistics), tkn),
+                            tkn => cache.SubscribeAndStreamAsync(symbols[0], evt => Display(evt.Statistics), tkn),
                             err => Console.WriteLine(err.Message));
                     }
                     else
@@ -66,7 +66,7 @@ namespace Binance24HourStatistics
                         // Alternative usage (if sharing IBinanceWebSocket for combined streams).
                         cache.Subscribe(evt => Display(evt.Statistics), symbols);
                         controller.Begin(
-                            tkn => cache.Client.WebSocket.StreamAsync(tkn),
+                            tkn => cache.StreamAsync(tkn),
                             err => Console.WriteLine(err.Message));
                     }
 
