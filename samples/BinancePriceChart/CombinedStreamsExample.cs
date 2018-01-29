@@ -59,7 +59,7 @@ namespace BinancePriceChart
                     {
                         // Monitor latest candlestick for a symbol and display.
                         controller.Begin(
-                            tkn => client.StreamAsync(symbols[0], interval, evt => Display(evt.Candlestick), tkn),
+                            tkn => client.SubscribeAndStreamAsync(symbols[0], interval, evt => Display(evt.Candlestick), tkn),
                             err => Console.WriteLine(err.Message));
                     }
                     else

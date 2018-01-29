@@ -63,7 +63,7 @@ namespace BinanceMarketDepth
 
                     // Monitor order book and display updates in real-time.
                     controller1.Begin(
-                        tkn => btcCache.StreamAsync(Symbol.BTC_USDT, limit,
+                        tkn => btcCache.SubscribeAndStreamAsync(Symbol.BTC_USDT, limit,
                             evt =>
                             {
                                 btcOrderBook = evt.OrderBook;
@@ -73,7 +73,7 @@ namespace BinanceMarketDepth
 
                     // Monitor order book and display updates in real-time.
                     controller2.Begin(
-                        tkn => ethCache.StreamAsync(Symbol.ETH_BTC, limit,
+                        tkn => ethCache.SubscribeAndStreamAsync(Symbol.ETH_BTC, limit,
                             evt =>
                             {
                                 ethOrderBook = evt.OrderBook;

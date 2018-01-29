@@ -57,7 +57,7 @@ namespace BinanceMarketDepth
                     {
                         // Monitor latest candlestick for a symbol and display.
                         controller.Begin(
-                            tkn => client.StreamAsync(symbols[0], evt => Display(OrderBookTop.Create(evt.Symbol, evt.Bids.First(), evt.Asks.First())), tkn),
+                            tkn => client.SubscribeAndStreamAsync(symbols[0], evt => Display(OrderBookTop.Create(evt.Symbol, evt.Bids.First(), evt.Asks.First())), tkn),
                             err => Console.WriteLine(err.Message));
                     }
                     else

@@ -83,7 +83,7 @@ namespace BinanceMarketDepth
                         throw new Exception(":(");
 
                     controller.Begin(
-                        tkn => btcCache.Client.WebSocket.StreamAsync(tkn),
+                        tkn => btcCache.StreamAsync(tkn),
                         err => Console.WriteLine(err.Message));
 
                     Console.ReadKey(true);
