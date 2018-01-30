@@ -23,7 +23,7 @@ namespace BinanceMarketDepth
     /// </summary>
     internal class CombinedStreamsExample
     {
-        private static async Task ExampleMain()
+        public static async Task ExampleMain()
         {
             try
             {

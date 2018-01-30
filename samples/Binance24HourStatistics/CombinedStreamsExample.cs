@@ -23,7 +23,7 @@ namespace Binance24HourStatistics
     /// </summary>
     internal class CombinedStreamsExample
     {
-        private static async Task ExampleMain()
+        public static async Task ExampleMain()
         {
             try
             {

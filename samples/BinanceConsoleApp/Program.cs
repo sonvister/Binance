@@ -80,8 +80,8 @@ namespace BinanceConsoleApp
                 // Configure logging.
                 ServiceProvider
                     .GetService<ILoggerFactory>()
-                        .AddConsole(Configuration.GetSection("Logging").GetSection("Console"))
-                        .AddFile(Configuration.GetSection("Logging").GetSection("File"));
+                        .AddConsole(Configuration.GetSection("Logging:Console"))
+                        .AddFile(Configuration.GetSection("Logging:File"));
 
                 var apiKey = Configuration["BinanceApiKey"] // user secrets configuration.
                     ?? Configuration.GetSection("User")["ApiKey"]; // appsettings.json configuration.

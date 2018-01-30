@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
 using Binance.Cache;
@@ -19,7 +20,16 @@ namespace BinanceMarketDepth
     /// </summary>
     internal class Program
     {
-        private static void Main()
+        private static async Task Main(string[] args)
+        {
+            ExampleMain(); await Task.CompletedTask;
+
+            //await MultiCacheExample.ExampleMain();
+            //await MultiCacheCombinedStreamsExample.ExampleMain();
+            //await CombinedStreamsExample.ExampleMain();
+        }
+
+        private static void ExampleMain()
         {
             try
             {

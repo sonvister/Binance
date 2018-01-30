@@ -23,7 +23,7 @@ namespace BinancePriceChart
     /// </summary>
     internal class CombinedStreamsExample
     {
-        private static async Task Main()
+        public static async Task Main()
         {
             try
             {

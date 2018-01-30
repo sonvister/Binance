@@ -20,9 +20,9 @@ namespace BinanceMarketDepth
     /// Demonstrate how to maintain multiple order book caches
     /// and respond to real-time depth-of-market update events.
     /// </summary>
-    internal class MultiCacheExampleCombinedStreams
+    internal class MultiCacheCombinedStreamsExample
     {
-        private static async Task ExampleMain()
+        public static async Task ExampleMain()
         {
             try
             {
