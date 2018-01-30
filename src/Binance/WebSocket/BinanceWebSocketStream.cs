@@ -95,7 +95,9 @@ namespace Binance.WebSocket
             if (!_subscribers.ContainsKey(stream))
             {
                 if (Client.IsStreaming)
-                    throw new InvalidOperationException($"{nameof(IWebSocketClient)} is already streaming.");
+                {
+                    _logger?.LogWarning($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: {nameof(IWebSocketClient)} is already streaming.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                }
 
                 _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Adding stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 _subscribers[stream] = new List<Action<WebSocketStreamEventArgs>>();
@@ -128,6 +130,11 @@ namespace Binance.WebSocket
 
             if (!_subscribers[stream].Any())
             {
+                if (Client.IsStreaming)
+                {
+                    _logger?.LogWarning($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: {nameof(IWebSocketClient)} is already streaming.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                }
+
                 _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Removing stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 _subscribers.Remove(stream);
             }
@@ -141,7 +148,7 @@ namespace Binance.WebSocket
             token.ThrowIfCancellationRequested();
 
             if (Client.IsStreaming)
-                throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}: Already streaming.");
+                throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}: Already streaming ({nameof(IWebSocketClient)}.{nameof(IWebSocketClient.StreamAsync)} Task is not completed).");
 
             try
             {
@@ -233,9 +240,9 @@ namespace Binance.WebSocket
 
                 _bufferBlock?.Complete();
                 _actionBlock?.Complete();
-            }
 
-            _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: Complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            }
         }
 
         #endregion Public Methods
