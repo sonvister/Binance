@@ -75,7 +75,7 @@ namespace Binance.WebSocket
             _api = api;
             _options = options?.Value;
 
-            webSocket.Client.Open += (s, e) =>
+            webSocket.Open += (s, e) =>
             {
                 var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
                 period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
@@ -83,7 +83,7 @@ namespace Binance.WebSocket
                 _keepAliveTimer = new Timer(OnKeepAliveTimer, CancellationToken.None, period, period);
             };
 
-            webSocket.Client.Close += async (s, e) =>
+            webSocket.Close += async (s, e) =>
             {
                 _keepAliveTimer.Dispose();
 
