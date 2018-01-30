@@ -11,6 +11,8 @@ namespace Binance.WebSocket
 {
     public class WebSocketSharpClient : WebSocketClient
     {
+        private volatile bool _isOpen;
+
         public WebSocketSharpClient(ILogger<WebSocketSharpClient> logger)
             : base(logger)
         { }
@@ -25,6 +27,11 @@ namespace Binance.WebSocket
 
             token.ThrowIfCancellationRequested();
 
+            if (IsStreaming)
+                throw new InvalidOperationException($"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: Already streaming (this method is not reentrant).");
+
+            IsStreaming = true;
+
             Exception exception = null;
 
             var tcs = new TaskCompletionSource<object>();
@@ -36,7 +43,7 @@ namespace Binance.WebSocket
 
             webSocket.OnOpen += (s, e) =>
             {
-                IsStreaming = true;
+                _isOpen = true;
                 RaiseOpenEvent();
             };
 
@@ -114,11 +121,13 @@ namespace Binance.WebSocket
 
                 ((IDisposable) webSocket).Dispose();
 
-                if (IsStreaming)
+                if (_isOpen)
                 {
-                    IsStreaming = false;
+                    _isOpen = false;
                     RaiseCloseEvent();
                 }
+
+                IsStreaming = false;
             }
         }
     }
