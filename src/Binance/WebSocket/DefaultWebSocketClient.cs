@@ -16,6 +16,12 @@ namespace Binance.WebSocket
 
         #endregion Private Constants
 
+        #region Private Properties
+
+        private volatile bool _isOpen;
+
+        #endregion Private Properties
+
         #region Constructors
 
         /// <summary>
@@ -35,9 +41,14 @@ namespace Binance.WebSocket
             Throw.IfNull(uri, nameof(uri));
 
             if (!token.CanBeCanceled)
-                throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
+                throw new ArgumentException($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Token must be capable of being in the canceled state.", nameof(token));
 
             token.ThrowIfCancellationRequested();
+
+            if (IsStreaming)
+                throw new InvalidOperationException($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Already streaming (this method is not reentrant).");
+
+            IsStreaming = true;
 
             var webSocket = new ClientWebSocket();
             webSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
@@ -52,7 +63,7 @@ namespace Binance.WebSocket
                     if (webSocket.State != WebSocketState.Open)
                         throw new Exception($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket connect failed.");
 
-                    IsStreaming = true;
+                    _isOpen = true;
                     RaiseOpenEvent();
                 }
                 catch (OperationCanceledException) { }
@@ -151,11 +162,14 @@ namespace Binance.WebSocket
 
                 webSocket?.Dispose();
 
-                if (IsStreaming)
+                if (_isOpen)
                 {
-                    IsStreaming = false;
+                    _isOpen = false;
                     RaiseCloseEvent();
                 }
+
+                IsStreaming = false;
+                Logger?.LogInformation($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
         }
 
