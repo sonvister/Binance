@@ -42,6 +42,8 @@ namespace BinanceMarketDepth
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
 
+                Console.Clear(); // clear the display.
+
                 var limit = 5;
 
                 var api = services.GetService<IBinanceApi>();

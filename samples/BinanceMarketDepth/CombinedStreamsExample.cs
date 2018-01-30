@@ -47,6 +47,8 @@ namespace BinanceMarketDepth
                 var symbols = configuration.GetSection("CombinedStreamsExample:Symbols").Get<string[]>()
                     ?? new string[] { Symbol.BTC_USDT };
 
+                Console.Clear(); // clear the display.
+
                 var limit = 5;
 
                 var client = services.GetService<IDepthWebSocketClient>();

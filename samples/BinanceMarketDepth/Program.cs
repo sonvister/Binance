@@ -49,6 +49,8 @@ namespace BinanceMarketDepth
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging").GetSection("File"));
 
+                Console.Clear(); // clear the display.
+
                 // Get configuration settings.
                 var limit = 10;
                 var symbol = configuration.GetSection("OrderBook")?["Symbol"] ?? Symbol.BTC_USDT;
