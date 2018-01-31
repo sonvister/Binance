@@ -38,7 +38,7 @@ namespace Binance.Tests.Integration
 
             using (var cts = new CancellationTokenSource())
             {
-                var task = client.StreamAsync(symbol, args =>
+                var task = client.SubscribeAndStreamAsync(symbol, args =>
                 {
                     // NOTE: The first event will cancel the client ...could be a while.
                     // ReSharper disable once AccessToDisposedClosure
