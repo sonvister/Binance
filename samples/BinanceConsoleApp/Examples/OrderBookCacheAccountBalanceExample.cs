@@ -64,13 +64,13 @@ namespace BinanceConsoleApp
                 var asset = symbol.BaseAsset;
 
                 var api = services.GetService<IBinanceApi>();
-
                 var cache = services.GetService<IOrderBookCache>();
                 var client = services.GetService<IMultiUserDataWebSocketClient>();
+                var userProvider = services.GetService<IBinanceApiUserProvider>();
 
                 using (var controller1 = new RetryTaskController())
                 using (var controller2 = new RetryTaskController())
-                using (var user = new BinanceApiUser(key, secret))
+                using (var user = userProvider.CreateUser(key, secret))
                 {
                     // Query and display order book and current asset balance.
                     var balance = (await api.GetAccountInfoAsync(user)).GetBalance(asset);

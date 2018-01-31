@@ -19,7 +19,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1517170491339;
+        public static readonly long LastUpdateAt = 1517441739039;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Symbol BCH_USDT;
@@ -47,6 +47,7 @@ namespace Binance
         public static readonly Symbol BTG_BTC = new Symbol(SymbolStatus.Trading, Asset.BTG, Asset.BTC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.00200000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol BTS_BTC = new Symbol(SymbolStatus.Trading, Asset.BTS, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00200000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol CDT_BTC = new Symbol(SymbolStatus.Trading, Asset.CDT, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00200000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol CHAT_BTC = new Symbol(SymbolStatus.Trading, Asset.CHAT, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00200000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol CMT_BTC = new Symbol(SymbolStatus.Trading, Asset.CMT, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00200000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol CND_BTC = new Symbol(SymbolStatus.Trading, Asset.CND, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00200000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol CTR_BTC = new Symbol(SymbolStatus.Trading, Asset.CTR, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00200000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -152,6 +153,7 @@ namespace Binance
         public static readonly Symbol BTG_ETH = new Symbol(SymbolStatus.Trading, Asset.BTG, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.02000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol BTS_ETH = new Symbol(SymbolStatus.Trading, Asset.BTS, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.02000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol CDT_ETH = new Symbol(SymbolStatus.Trading, Asset.CDT, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.02000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol CHAT_ETH = new Symbol(SymbolStatus.Trading, Asset.CHAT, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.02000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol CMT_ETH = new Symbol(SymbolStatus.Trading, Asset.CMT, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.02000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol CND_ETH = new Symbol(SymbolStatus.Trading, Asset.CND, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.02000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol CTR_ETH = new Symbol(SymbolStatus.Trading, Asset.CTR, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000010m, 100000.00000000m, 0.00000010m), 0.02000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -361,6 +363,8 @@ namespace Binance
             { "BTSETH", BTS_ETH },
             { "CDTBTC", CDT_BTC },
             { "CDTETH", CDT_ETH },
+            { "CHATBTC", CHAT_BTC },
+            { "CHATETH", CHAT_ETH },
             { "CMTBNB", CMT_BNB },
             { "CMTBTC", CMT_BTC },
             { "CMTETH", CMT_ETH },

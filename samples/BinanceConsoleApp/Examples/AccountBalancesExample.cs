@@ -55,25 +55,24 @@ namespace BinanceConsoleApp
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
 
+                var asset = Asset.BTC;
+
+                var api = services.GetService<IBinanceApi>();
+                var cache = services.GetService<IAccountInfoCache>();
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
 
                 using (var controller = new RetryTaskController())
                 using (var user = userProvider.CreateUser(key, secret))
                 {
-                    var api = services.GetService<IBinanceApi>();
-
                     // Query and display current account balance.
                     var account = await api.GetAccountInfoAsync(user);
 
-                    var asset = Asset.BTC;
-
                     Display(account.GetBalance(asset));
 
-                    var cache = services.GetService<IAccountInfoCache>();
-
                     // Display updated account balance.
-                    controller.Begin(tkn => cache.SubscribeAndStreamAsync(user, 
-                        evt => Display(evt.AccountInfo.GetBalance(asset)), tkn),
+                    controller.Begin(
+                        tkn => cache.SubscribeAndStreamAsync(user, 
+                            evt => Display(evt.AccountInfo.GetBalance(asset)), tkn),
                         err => Console.WriteLine(err.Message));
 
                     Console.WriteLine("...press any key to continue.");
