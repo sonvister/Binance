@@ -82,7 +82,7 @@ namespace BinanceMarketDepth
 
                     // Verify we are using a shared/combined stream (not necessary).
                     if (!btcCache.Client.WebSocket.IsCombined || btcCache.Client.WebSocket != ethCache.Client.WebSocket)
-                        throw new Exception(":(");
+                        throw new Exception("Not using combined streams :(");
 
                     controller.Begin(
                         tkn => btcCache.StreamAsync(tkn),

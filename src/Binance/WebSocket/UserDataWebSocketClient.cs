@@ -13,10 +13,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Binance.WebSocket
 {
-    /// <summary>
-    /// A <see cref="IUserDataWebSocketClient"/> implementation.
-    /// </summary>
-    public class UserDataWebSocketClient : BinanceWebSocketClient<UserDataEventArgs>, IUserDataWebSocketClient
+    public abstract class UserDataWebSocketClient : BinanceWebSocketClient<UserDataEventArgs>, IUserDataWebSocketClient
     {
         #region Public Constants
 
@@ -36,104 +33,47 @@ namespace Binance.WebSocket
 
         #endregion Public Events
 
-        #region Private Fields
+        #region Protected Fields
 
-        private readonly IBinanceApi _api;
+        protected readonly IBinanceApi _api;
 
-        private readonly IDictionary<IBinanceApiUser, string> _listenKeys
-            = new Dictionary<IBinanceApiUser, string>();
+        protected readonly UserDataWebSocketClientOptions _options;
 
-        private Timer _keepAliveTimer;
-
-        private readonly UserDataWebSocketClientOptions _options;
-
-        #endregion Private Fields
+        #endregion Protected Fields
 
         #region Constructors
-
-        /// <summary>
-        /// Default constructor provides default Binance API and web socket client,
-        /// but no options support or logging.
-        /// </summary>
-        public UserDataWebSocketClient()
-            : this(new BinanceApi(), new BinanceWebSocketStream())
-        { }
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="api">The Binance API.</param>
-        /// <param name="webSocket">The WebSocket client.</param>
+        /// <param name="webSocket">The WebSocket stream.</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public UserDataWebSocketClient(IBinanceApi api, IWebSocketStream webSocket, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)
+        protected UserDataWebSocketClient(IBinanceApi api, IWebSocketStream webSocket, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)
             : base(webSocket, logger)
         {
             Throw.IfNull(api, nameof(api));
-            Throw.IfNull(webSocket, nameof(webSocket));
 
             _api = api;
             _options = options?.Value;
-
-            webSocket.Open += (s, e) =>
-            {
-                var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
-                period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
-
-                _keepAliveTimer = new Timer(OnKeepAliveTimer, CancellationToken.None, period, period);
-            };
-
-            webSocket.Close += async (s, e) =>
-            {
-                _keepAliveTimer.Dispose();
-
-                foreach (var _ in _listenKeys)
-                {
-                    await _api.UserStreamCloseAsync(_.Key, _.Value, CancellationToken.None)
-                        .ConfigureAwait(false);
-                }
-            };
         }
 
         #endregion Construtors
 
         #region Public Methods
 
-        public virtual async Task SubscribeAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token = default)
-        {
-            Throw.IfNull(user, nameof(user));
-
-            if (_listenKeys.ContainsKey(user))
-                throw new InvalidOperationException($"{nameof(UserDataWebSocketClient)}: Already subscribed to user.");
-
-            try
-            {
-                _listenKeys[user] = await _api.UserStreamStartAsync(user, token)
-                    .ConfigureAwait(false);
-
-                if (string.IsNullOrWhiteSpace(_listenKeys[user]))
-                    throw new Exception($"{nameof(IUserDataWebSocketClient)}: Failed to get listen key from API.");
-
-                SubscribeStream(_listenKeys[user], callback);
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception e)
-            {
-                if (!token.IsCancellationRequested)
-                {
-                    Logger?.LogError(e, $"{nameof(UserDataWebSocketClient)}.{nameof(SubscribeAsync)}");
-                    throw;
-                }
-            }
-        }
+        public abstract Task SubscribeAndStreamAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token);
 
         #endregion Public Methods
 
         #region Protected Methods
 
+        protected abstract IBinanceApiUser GetUserForEvent(WebSocketStreamEventArgs args);
+
         protected override void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<UserDataEventArgs>> callbacks)
         {
-            var user = _listenKeys.First(_ => _.Value == args.StreamName).Key;
+            var user = GetUserForEvent(args);
 
             Logger?.LogDebug($"{nameof(UserDataWebSocketClient)}: \"{args.Json}\"");
 
@@ -210,7 +150,7 @@ namespace Binance.WebSocket
                             order.Side == OrderSide.Buy,   // is buyer
                             jObject["m"].Value<bool>(),    // is buyer maker
                             jObject["M"].Value<bool>());   // is best price
-                        
+
                         var quantityOfLastFilledTrade = jObject["l"].Value<decimal>();
 
                         var eventArgs = new AccountTradeUpdateEventArgs(eventTime, args.Token, order, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
@@ -274,26 +214,6 @@ namespace Binance.WebSocket
         #endregion Protected Methods
 
         #region Private Methods
-
-        /// <summary>
-        /// Keep-alive timer callback.
-        /// </summary>
-        /// <param name="state"></param>
-        private async void OnKeepAliveTimer(object state)
-        {
-            try
-            {
-                foreach (var _ in _listenKeys)
-                {
-                    await _api.UserStreamKeepAliveAsync(_.Key, _.Value, (CancellationToken)state)
-                        .ConfigureAwait(false);
-                }
-            }
-            catch (Exception e)
-            {
-                Logger?.LogWarning(e, $"{nameof(UserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: \"{e.Message}\"");
-            }
-        }
 
         /// <summary>
         /// Deserialize and fill order instance.

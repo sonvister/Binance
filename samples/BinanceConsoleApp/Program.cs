@@ -54,6 +54,7 @@ namespace BinanceConsoleApp
             //await MinimalWithDependencyInjection.ExampleMain(args);
             //await MinimalWithoutDependencyInjection.ExampleMain(args);
             //await SerializationExample.ExampleMain(args);
+            //await OrderBookCacheAccountBalanceExample.ExampleMain(args);
 
             var cts = new CancellationTokenSource();
 
@@ -63,7 +64,7 @@ namespace BinanceConsoleApp
                 Configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", true, false)
-                    .AddUserSecrets<Program>()
+                    .AddUserSecrets<Program>() // for access to API key and secret.
                     .Build();
 
                 // Configure services.

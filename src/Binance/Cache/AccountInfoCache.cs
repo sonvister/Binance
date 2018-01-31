@@ -28,13 +28,13 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public Task SubscribeAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token = default)
+        public Task SubscribeAndStreamAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token = default)
         {
             Throw.IfNull(user, nameof(user));
 
             base.LinkTo(Client, callback);
 
-            return Client.SubscribeAsync(user, ClientCallback, token);
+            return Client.SubscribeAndStreamAsync(user, ClientCallback, token);
         }
 
         public override void LinkTo(IUserDataWebSocketClient client, Action<AccountInfoCacheEventArgs> callback = null)
