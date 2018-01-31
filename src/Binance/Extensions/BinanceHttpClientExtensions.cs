@@ -73,7 +73,7 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            var request = new BinanceHttpRequest("/api/v1/depth", limit >= 1000 ? 50 : limit >= 500 ? 25 : 1);
+            var request = new BinanceHttpRequest("/api/v1/depth", limit >= 1000 ? 10 : limit >= 500 ? 5 : 1);
 
             request.AddParameter("symbol", symbol.FormatSymbol());
 
@@ -123,7 +123,7 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            var request = new BinanceHttpRequest("/api/v1/historicalTrades", 20)
+            var request = new BinanceHttpRequest("/api/v1/historicalTrades", 5)
             {
                 ApiKey = apiKey
             };
@@ -156,7 +156,7 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            var request = new BinanceHttpRequest("/api/v1/aggTrades", 2);
+            var request = new BinanceHttpRequest("/api/v1/aggTrades");
 
             request.AddParameter("symbol", symbol.FormatSymbol());
 
@@ -203,7 +203,7 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            var request = new BinanceHttpRequest("/api/v1/klines", 2);
+            var request = new BinanceHttpRequest("/api/v1/klines");
 
             request.AddParameter("symbol", symbol.FormatSymbol());
             request.AddParameter("interval", interval.AsString());
@@ -250,7 +250,7 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
 
             // When symbol is not provided use number of symbols that are TRADING for weight.
-            var request = new BinanceHttpRequest("/api/v1/ticker/24hr", string.IsNullOrWhiteSpace(symbol) ? Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading) : 1);
+            var request = new BinanceHttpRequest("/api/v1/ticker/24hr", string.IsNullOrWhiteSpace(symbol) ? Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading)  / 2 : 1);
 
             if (!string.IsNullOrWhiteSpace(symbol))
             {
@@ -545,7 +545,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest("/api/v3/allOrders", 15)
+            var request = new BinanceHttpRequest("/api/v3/allOrders", 5)
             {
                 ApiKey = user.ApiKey
             };
@@ -584,7 +584,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest("/api/v3/account", 20)
+            var request = new BinanceHttpRequest("/api/v3/account", 5)
             {
                 ApiKey = user.ApiKey
             };
@@ -619,7 +619,7 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            var request = new BinanceHttpRequest("/api/v3/myTrades", 15)
+            var request = new BinanceHttpRequest("/api/v3/myTrades", 5)
             {
                 ApiKey = user.ApiKey
             };
