@@ -54,10 +54,14 @@ namespace Binance.WebSocket
 
             webSocket.Close += async (s, e) =>
             {
+                // TODO: Add logging...
+
                 _keepAliveTimer.Dispose();
 
                 foreach (var _ in _listenKeys)
                 {
+                    // TODO: Close user stream... what if disconnected... ?
+
                     await _api.UserStreamCloseAsync(_.Key, _.Value, CancellationToken.None)
                         .ConfigureAwait(false);
 
@@ -137,17 +141,19 @@ namespace Binance.WebSocket
         /// <param name="state"></param>
         private async void OnKeepAliveTimer(object state)
         {
-            try
+            foreach (var _ in _listenKeys)
             {
-                foreach (var _ in _listenKeys)
+                try
                 {
                     await _api.UserStreamKeepAliveAsync(_.Key, _.Value, (CancellationToken)state)
                         .ConfigureAwait(false);
                 }
-            }
-            catch (Exception e)
-            {
-                Logger?.LogWarning(e, $"{nameof(SingleUserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: \"{e.Message}\"");
+                catch (Exception e)
+                {
+                    // TODO: ...
+
+                    Logger?.LogWarning(e, $"{nameof(SingleUserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: \"{e.Message}\"");
+                }
             }
         }
 

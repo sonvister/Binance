@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 using Binance;
 using Binance.Account;
 using Binance.Api;
+using Binance.Application;
 using Binance.Cache;
 using Binance.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 // ReSharper disable AccessToDisposedClosure
 
@@ -44,10 +46,19 @@ namespace BinanceConsoleApp
                 // Configure services.
                 var services = new ServiceCollection()
                     .AddBinance()
+                    .AddOptions()
+                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+                    .Configure<UserDataWebSocketClientOptions>(configuration.GetSection("UserClientOptions"))
                     .BuildServiceProvider();
 
-                using (var controller = new TaskController())
-                using (var user = new BinanceApiUser(key, secret))
+                // Configure logging.
+                services.GetService<ILoggerFactory>()
+                    .AddFile(configuration.GetSection("Logging:File"));
+
+                var userProvider = services.GetService<IBinanceApiUserProvider>();
+
+                using (var controller = new RetryTaskController())
+                using (var user = userProvider.CreateUser(key, secret))
                 {
                     var api = services.GetService<IBinanceApi>();
 

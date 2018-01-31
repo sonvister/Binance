@@ -57,38 +57,61 @@ namespace Binance.WebSocket
 
             token.ThrowIfCancellationRequested();
 
-            if (User != null)
+            if (User != null && !User.Equals(user))
                 throw new InvalidOperationException($"{nameof(SingleUserDataWebSocketClient)}: Already subscribed to a user.");
-
-            User = user;
 
             try
             {
+                if (User != null && _listenKey != null)
+                {
+                    Logger?.LogDebug($"{nameof(SingleUserDataWebSocketClient)}.{nameof(SubscribeAndStreamAsync)}: Closing user stream (\"{_listenKey}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                    await _api.UserStreamCloseAsync(User, _listenKey, token)
+                        .ConfigureAwait(false);
+                }
+
+                User = user;
+
+                Logger?.LogDebug($"{nameof(SingleUserDataWebSocketClient)}.{nameof(SubscribeAndStreamAsync)}: Starting user stream...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
                 _listenKey = await _api.UserStreamStartAsync(user, token)
                     .ConfigureAwait(false);
 
                 if (string.IsNullOrWhiteSpace(_listenKey))
                     throw new Exception($"{nameof(IUserDataWebSocketClient)}: Failed to get listen key from API.");
 
-                SubscribeStream(_listenKey, callback);
+                Logger?.LogDebug($"{nameof(SingleUserDataWebSocketClient)}.{nameof(SubscribeAndStreamAsync)}: User stream open (\"{_listenKey}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
                 period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
 
                 _keepAliveTimer = new Timer(OnKeepAliveTimer, token, period, period);
 
+                SubscribeStream(_listenKey, callback);
+
                 try
                 {
+                    Logger?.LogDebug($"{nameof(SingleUserDataWebSocketClient)}.{nameof(SubscribeAndStreamAsync)}: Streaming.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
                     await WebSocket.StreamAsync(token)
                         .ConfigureAwait(false);
                 }
+                catch (OperationCanceledException) { }
                 finally
                 {
-                    _keepAliveTimer.Dispose();
+                    UnsubscribeStream(_listenKey, callback);
 
-                    await _api.UserStreamCloseAsync(User, _listenKey, CancellationToken.None)
-                        .ConfigureAwait(false);
+                    _keepAliveTimer.Dispose();
+                    _keepAliveTimer = null;
                 }
+
+                Logger?.LogDebug($"{nameof(SingleUserDataWebSocketClient)}.{nameof(SubscribeAndStreamAsync)}: Closing user stream (\"{_listenKey}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                await _api.UserStreamCloseAsync(User, _listenKey, token)
+                    .ConfigureAwait(false);
+
+                _listenKey = null;
+                User = null;
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
@@ -122,12 +145,14 @@ namespace Binance.WebSocket
         {
             try
             {
+                Logger?.LogDebug($"{nameof(SingleUserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: User stream keep alive (\"{_listenKey}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
                 await _api.UserStreamKeepAliveAsync(User, _listenKey, (CancellationToken)state)
                     .ConfigureAwait(false);
             }
             catch (Exception e)
             {
-                Logger?.LogWarning(e, $"{nameof(SingleUserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: \"{e.Message}\"");
+                Logger?.LogError(e, $"{nameof(SingleUserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: Failed to ping user data stream.");
             }
         }
 
