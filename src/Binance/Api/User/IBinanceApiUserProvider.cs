@@ -3,8 +3,6 @@ namespace Binance.Api
 {
     public interface IBinanceApiUserProvider
     {
-        #region Public Methods
-
         /// <summary>
         /// Create an API user.
         /// </summary>
@@ -12,7 +10,5 @@ namespace Binance.Api
         /// <param name="apiSecret">The API secret (optional)</param>
         /// <returns></returns>
         IBinanceApiUser CreateUser(string apiKey, string apiSecret = null);
-
-        #endregion Public Methods
     }
 }

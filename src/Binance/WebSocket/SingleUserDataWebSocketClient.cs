@@ -30,18 +30,18 @@ namespace Binance.WebSocket
         /// but no options support or logging. 
         /// </summary> 
         public SingleUserDataWebSocketClient()
-            : this(new BinanceApi(), new BinanceWebSocketStream())
+            : this(new BinanceApi(), new WebSocketStreamProvider())
         { }
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="api">The Binance API.</param>
-        /// <param name="webSocket">The WebSocket stream.</param>
+        /// <param name="streamProvider">The WebSocket stream provider.</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public SingleUserDataWebSocketClient(IBinanceApi api, BinanceWebSocketStream webSocket, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<SingleUserDataWebSocketClient> logger = null)
-            : base(api, webSocket, options, logger)
+        public SingleUserDataWebSocketClient(IBinanceApi api, IWebSocketStreamProvider streamProvider, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<SingleUserDataWebSocketClient> logger = null)
+            : base(api, streamProvider.CreateStream(), options, logger)
         { }
 
         #endregion Construtors

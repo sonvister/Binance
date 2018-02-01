@@ -50,6 +50,7 @@ namespace Binance
             services.AddTransient<ISymbolStatisticsCache, SymbolStatisticsCache>();
 
             // WebSockets
+            services.AddSingleton<IWebSocketStreamProvider, WebSocketStreamProvider>();
             services.AddTransient<ITradeWebSocketClient, TradeWebSocketClient>();
             services.AddTransient<IDepthWebSocketClient, DepthWebSocketClient>();
             services.AddTransient<ICandlestickWebSocketClient, CandlestickWebSocketClient>();
