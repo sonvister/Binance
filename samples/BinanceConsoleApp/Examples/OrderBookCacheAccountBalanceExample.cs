@@ -10,6 +10,7 @@ using Binance.Market;
 using Binance.Utility;
 using Binance.WebSocket;
 using Binance.WebSocket.Events;
+using Binance.WebSocket.UserData;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -65,7 +66,7 @@ namespace BinanceConsoleApp
 
                 var api = services.GetService<IBinanceApi>();
                 var cache = services.GetService<IOrderBookCache>();
-                var client = services.GetService<IMultiUserDataWebSocketClient>();
+                var client = services.GetService<IUserDataWebSocketClient>();
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
 
                 using (var controller1 = new RetryTaskController())

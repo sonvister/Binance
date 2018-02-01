@@ -3,6 +3,7 @@ using Binance.Api;
 using Binance.Cache;
 using Binance.Serialization;
 using Binance.WebSocket;
+using Binance.WebSocket.UserData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

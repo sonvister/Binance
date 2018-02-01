@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Binance.Api;
 using Binance.WebSocket.Events;
 
-namespace Binance.WebSocket
+namespace Binance.WebSocket.UserData
 {
     public interface IMultiUserDataWebSocketClient : IUserDataWebSocketClient
     {

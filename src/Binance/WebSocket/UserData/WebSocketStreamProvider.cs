@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Binance.WebSocket
+namespace Binance.WebSocket.UserData
 {
     public sealed class WebSocketStreamProvider : IWebSocketStreamProvider
     {

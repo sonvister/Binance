@@ -1,4 +1,4 @@
-﻿namespace Binance.WebSocket
+﻿namespace Binance.WebSocket.UserData
 {
     public interface IWebSocketStreamProvider
     {

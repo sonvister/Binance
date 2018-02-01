@@ -6,7 +6,7 @@ using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Binance.WebSocket
+namespace Binance.WebSocket.UserData
 {
     /// <summary>
     /// A <see cref="IUserDataWebSocketClient"/> implementation.
