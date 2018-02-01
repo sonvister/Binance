@@ -8,6 +8,6 @@ namespace Binance
         /// <summary>
         /// Keep-alive timer period.
         /// </summary>
-        public int KeepAliveTimerPeriod { get; set; } = UserDataWebSocketClient.KeepAliveTimerPeriodDefault;
+        public int KeepAliveTimerPeriod { get; set; } = UserDataKeepAliveTimer.PeriodDefault;
     }
 }

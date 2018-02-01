@@ -46,8 +46,12 @@ namespace Binance.WebSocket.UserData
         {
             webSocket.Open += (s, e) =>
             {
-                var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
-                period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
+                var period =
+                    Math.Min(
+                        Math.Max(
+                            _options?.KeepAliveTimerPeriod ?? UserDataKeepAliveTimer.PeriodDefault,
+                            KeepAliveTimerPeriodMin),
+                        KeepAliveTimerPeriodMax);
 
                 _keepAliveTimer = new Timer(OnKeepAliveTimer, CancellationToken.None, period, period);
             };

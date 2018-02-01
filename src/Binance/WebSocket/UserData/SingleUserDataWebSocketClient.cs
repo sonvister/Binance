@@ -15,11 +15,11 @@ namespace Binance.WebSocket.UserData
     {
         #region Private Fields
 
+        private readonly IUserDataKeepAliveTimerProvider _timerProvider;
+
         private IBinanceApiUser User;
 
         private string _listenKey;
-
-        private Timer _keepAliveTimer;
 
         #endregion Private Fields
 
@@ -30,7 +30,7 @@ namespace Binance.WebSocket.UserData
         /// but no options support or logging. 
         /// </summary> 
         public SingleUserDataWebSocketClient()
-            : this(new BinanceApi(), new WebSocketStreamProvider())
+            : this(new BinanceApi(), new WebSocketStreamProvider(), new UserDataKeepAliveTimerProvider())
         { }
 
         /// <summary>
@@ -38,11 +38,16 @@ namespace Binance.WebSocket.UserData
         /// </summary>
         /// <param name="api">The Binance API.</param>
         /// <param name="streamProvider">The WebSocket stream provider.</param>
+        /// <param name="timerProvider">The keep-alive timer provider.</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public SingleUserDataWebSocketClient(IBinanceApi api, IWebSocketStreamProvider streamProvider, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<SingleUserDataWebSocketClient> logger = null)
-            : base(api, streamProvider.CreateStream(), options, logger)
-        { }
+        public SingleUserDataWebSocketClient(IBinanceApi api, IWebSocketStreamProvider streamProvider, IUserDataKeepAliveTimerProvider timerProvider, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<SingleUserDataWebSocketClient> logger = null)
+            : base(api, streamProvider?.CreateStream(), options, logger)
+        {
+            Throw.IfNull(timerProvider, nameof(timerProvider));
+
+            _timerProvider = timerProvider;
+        }
 
         #endregion Construtors
 
@@ -82,10 +87,16 @@ namespace Binance.WebSocket.UserData
 
                 Logger?.LogDebug($"{nameof(SingleUserDataWebSocketClient)}.{nameof(SubscribeAndStreamAsync)}: User stream open (\"{_listenKey}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-                var period = _options?.KeepAliveTimerPeriod ?? KeepAliveTimerPeriodDefault;
-                period = Math.Min(Math.Max(period, KeepAliveTimerPeriodMin), KeepAliveTimerPeriodMax);
+                var period =
+                    Math.Min(
+                        Math.Max(
+                            _options?.KeepAliveTimerPeriod ?? UserDataKeepAliveTimer.PeriodDefault,
+                            KeepAliveTimerPeriodMin),
+                        KeepAliveTimerPeriodMax);
 
-                _keepAliveTimer = new Timer(OnKeepAliveTimer, token, period, period);
+                var timer = _timerProvider.CreateTimer(period);
+
+                timer.Add(User, _listenKey);
 
                 SubscribeStream(_listenKey, callback);
 
@@ -100,9 +111,7 @@ namespace Binance.WebSocket.UserData
                 finally
                 {
                     UnsubscribeStream(_listenKey, callback);
-
-                    _keepAliveTimer.Dispose();
-                    _keepAliveTimer = null;
+                    timer.Dispose();
                 }
 
                 Logger?.LogDebug($"{nameof(SingleUserDataWebSocketClient)}.{nameof(SubscribeAndStreamAsync)}: Closing user stream (\"{_listenKey}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
@@ -134,28 +143,5 @@ namespace Binance.WebSocket.UserData
         }
 
         #endregion Protected Methods
-
-        #region Private Methods
-
-        /// <summary>
-        /// Keep-alive timer callback.
-        /// </summary>
-        /// <param name="state"></param>
-        private async void OnKeepAliveTimer(object state)
-        {
-            try
-            {
-                Logger?.LogDebug($"{nameof(SingleUserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: User stream keep alive (\"{_listenKey}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                await _api.UserStreamKeepAliveAsync(User, _listenKey, (CancellationToken)state)
-                    .ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                Logger?.LogError(e, $"{nameof(SingleUserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: Failed to ping user data stream.");
-            }
-        }
-
-        #endregion Private Methods
     }
 }

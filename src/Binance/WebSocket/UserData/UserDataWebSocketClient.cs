@@ -19,7 +19,6 @@ namespace Binance.WebSocket.UserData
 
         public static readonly int KeepAliveTimerPeriodMax = 3600000; // 1 hour
         public static readonly int KeepAliveTimerPeriodMin =   60000; // 1 minute
-        public static readonly int KeepAliveTimerPeriodDefault = 1800000; // 30 minutes
 
         #endregion Public Constants
 
