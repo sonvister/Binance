@@ -1,11 +1,11 @@
 # Binance ![](https://github.com/sonvister/Binance/blob/master/images/logo.png?raw=true)
-A full-featured .NET **[Binance API](https://www.binance.com/restapipub.html)** designed for ease of use.
+A full-featured .NET **[Binance API](https://github.com/binance-exchange/binance-official-api-docs)** designed for ease of use.
 
 [![](https://img.shields.io/github/last-commit/sonvister/Binance.svg)](https://github.com/sonvister/Binance)
 
 ## Features
 * Compatible with **.NET Standard 2.0** and **.NET Framework 4.7.1**.
-* **Complete** coverage of the [Binance API](https://www.binance.com/restapipub.html) including all REST and WebSocket endpoints (*with combined streams*).
+* **Complete** coverage of the [Binance API](https://github.com/binance-exchange/binance-official-api-docs) including all REST and WebSocket endpoints (*with combined streams*).
   * A Binance account API Key is *not required* to access *public* REST and WebSocket endpoints (*most market data*).
 * **Simple** API abstraction using domain/value objects that do not expose underlying (*HTTP/REST*) behavior.
 * **Convenient** assets and symbols (e.g. `Symbol.BTC_USDT`) with exchange info (*price/quantity: min, max, etc.*).
@@ -44,9 +44,11 @@ To get the source code for a particular release, first select the corresponding 
 [Microsoft Visual Studio Community 2017](https://www.visualstudio.com/vs/community/)
 
 ## Documentation
-See [**Wiki**](https://github.com/sonvister/Binance/wiki)
-
+[**Wiki**](https://github.com/sonvister/Binance/wiki)\
 *NOTE: Some information is currently out-of-date ...will be updated soon.*
+
+Binance API information: [Binance Official Documentation](https://github.com/binance-exchange/binance-official-api-docs)\
+Binance API questions: [Binance API Telegram](https://t.me/binance_api_english)
 
 ## Donate
 DCR: Dsog2jYLS65Y3N2jDQSxsiBYC3SRqq7TGd4\
