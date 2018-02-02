@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Cache;
 using Binance.WebSocket;
+using Binance.WebSocket.UserData;
 using Moq;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace Binance.Tests.Cache
         {
             var api = new Mock<IBinanceApi>().Object;
 
-            var cache = new AccountInfoCache(api, new Mock<IUserDataWebSocketClient>().Object);
+            var cache = new AccountInfoCache(api, new Mock<IUserDataWebSocketManager>().Object);
 
             using (var cts = new CancellationTokenSource())
             {

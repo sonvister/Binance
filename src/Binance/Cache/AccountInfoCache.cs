@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Api;
 using Binance.Cache.Events;
-using Binance.WebSocket;
 using Binance.WebSocket.Events;
+using Binance.WebSocket.UserData;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public sealed class AccountInfoCache : WebSocketClientCache<IUserDataWebSocketClient, UserDataEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
+    public sealed class AccountInfoCache : WebSocketClientCache<IUserDataWebSocketManager, UserDataEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
     {
         #region Public Properties
 
@@ -20,8 +20,8 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public AccountInfoCache(IBinanceApi api, IUserDataWebSocketClient client, ILogger<AccountInfoCache> logger = null)
-            : base(api, client, logger)
+        public AccountInfoCache(IBinanceApi api, IUserDataWebSocketManager manager, ILogger<AccountInfoCache> logger = null)
+            : base(api, manager, logger)
         { }
 
         #endregion Constructors
@@ -37,13 +37,13 @@ namespace Binance.Cache
             return Client.SubscribeAndStreamAsync(user, ClientCallback, token);
         }
 
-        public override void LinkTo(IUserDataWebSocketClient client, Action<AccountInfoCacheEventArgs> callback = null)
+        public override void LinkTo(IUserDataWebSocketManager manager, Action<AccountInfoCacheEventArgs> callback = null)
         {
             // Confirm client is subscribed to only one stream.
-            if (client.WebSocket.IsCombined)
+            if (manager.Client.WebSocket.IsCombined)
                 throw new InvalidOperationException($"{nameof(AccountInfoCache)} can only link to {nameof(IUserDataWebSocketClient)} events from a single stream (not combined streams).");
 
-            base.LinkTo(client, callback);
+            base.LinkTo(manager, callback);
             Client.AccountUpdate += OnClientEvent;
         }
 

@@ -6,7 +6,7 @@ using Binance.WebSocket;
 using Moq;
 using Xunit;
 
-namespace Binance.Tests.Api.WebSocket
+namespace Binance.Tests.WebSocket
 {
     public class CandlesticksWebSocketClientTest
     {

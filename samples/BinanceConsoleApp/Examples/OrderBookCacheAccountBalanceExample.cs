@@ -66,7 +66,7 @@ namespace BinanceConsoleApp
 
                 var api = services.GetService<IBinanceApi>();
                 var cache = services.GetService<IOrderBookCache>();
-                var client = services.GetService<IUserDataWebSocketClient>();
+                var manager = services.GetService<IUserDataWebSocketManager>();
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
 
                 using (var controller1 = new RetryTaskController())
@@ -86,7 +86,7 @@ namespace BinanceConsoleApp
 
                     // Subscribe to user account information and begin streaming.
                     controller2.Begin(
-                        tkn => client.SubscribeAndStreamAsync(user,
+                        tkn => manager.SubscribeAndStreamAsync(user,
                             evt =>
                             {
                                 var accountUpdateEvent = (evt as AccountUpdateEventArgs);
@@ -101,7 +101,7 @@ namespace BinanceConsoleApp
                         err => Console.WriteLine(err.Message));
 
                     // Verify we are NOT using a combined streams (DEMONSTRATION ONLY).
-                    if (cache.Client.WebSocket.IsCombined || cache.Client.WebSocket == client.WebSocket)
+                    if (cache.Client.WebSocket.IsCombined || cache.Client.WebSocket == manager.Client.WebSocket)
                         throw new Exception("Using combined streams :(");
 
                     message = "...press any key to continue.";

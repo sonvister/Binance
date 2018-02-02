@@ -5,14 +5,14 @@ using Binance.WebSocket;
 using Moq;
 using Xunit;
 
-namespace Binance.Tests.Api.WebSocket
+namespace Binance.Tests.WebSocket
 {
-    public class DepthWebSocketClientTest
+    public class TradesWebSocketClientTest
     {
         [Fact]
         public async Task StreamThrows()
         {
-            var client = new DepthWebSocketClient(new Mock<IWebSocketStream>().Object);
+            var client = new AggregateTradeWebSocketClient(new Mock<IWebSocketStream>().Object);
 
             using (var cts = new CancellationTokenSource())
             {

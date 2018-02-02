@@ -3,7 +3,7 @@ using System.Threading;
 using Binance.WebSocket.Events;
 using Xunit;
 
-namespace Binance.Tests.Api.WebSocket.Events
+namespace Binance.Tests.WebSocket.Events
 {
     public class DepthUpdateEventArgsTest
     {

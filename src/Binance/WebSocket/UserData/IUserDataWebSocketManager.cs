@@ -6,7 +6,7 @@ using Binance.WebSocket.Events;
 
 namespace Binance.WebSocket.UserData
 {
-    public interface IUserDataWebSocketClient : IBinanceWebSocketClient
+    public interface IUserDataWebSocketManager
     {
         /// <summary>
         /// The account update event.
@@ -22,6 +22,11 @@ namespace Binance.WebSocket.UserData
         /// The trade update event.
         /// </summary>
         event EventHandler<AccountTradeUpdateEventArgs> TradeUpdate;
+
+        /// <summary>
+        /// Get the web socket client.
+        /// </summary>
+        IUserDataWebSocketClient Client { get; } // TODO
 
         /// <summary>
         /// Subscribe to the specified user and begin streaming.

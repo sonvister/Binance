@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Api;
 using Binance.Cache.Events;
-using Binance.WebSocket;
+using Binance.WebSocket.UserData;
 
 namespace Binance.Cache
 {
@@ -27,9 +27,9 @@ namespace Binance.Cache
         AccountInfo AccountInfo { get; }
 
         /// <summary>
-        /// The client that provides account synchronization.
+        /// The manager that provides account info synchronization.
         /// </summary>
-        IUserDataWebSocketClient Client { get; }
+        IUserDataWebSocketManager Client { get; }
 
         #endregion Properties
 
@@ -45,12 +45,12 @@ namespace Binance.Cache
         Task SubscribeAndStreamAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token = default);
 
         /// <summary>
-        /// Link to a subscribed <see cref="IUserDataWebSocketClient"/>.
+        /// Link to a subscribed <see cref="IUserDataWebSocketManager"/>.
         /// </summary>
-        /// <param name="client"></param>
+        /// <param name="manager"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        void LinkTo(IUserDataWebSocketClient client, Action<AccountInfoCacheEventArgs> callback = null);
+        void LinkTo(IUserDataWebSocketManager manager, Action<AccountInfoCacheEventArgs> callback = null);
 
         /// <summary>
         /// Unlink from client.

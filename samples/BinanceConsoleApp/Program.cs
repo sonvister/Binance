@@ -11,7 +11,7 @@ using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
-using Binance.WebSocket;
+using Binance.WebSocket.UserData;
 using BinanceConsoleApp.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +35,7 @@ namespace BinanceConsoleApp
         public static IOrderBookCache OrderBookCache;
         public static ICandlestickCache CandlestickCache;
         public static IAggregateTradeCache AggregateTradeCache;
-        public static IUserDataWebSocketClient UserDataClient;
+        public static IUserDataWebSocketManager UserDataManager;
 
         public static Task LiveTask;
         public static CancellationTokenSource LiveTokenSource;
@@ -358,7 +358,7 @@ namespace BinanceConsoleApp
             }
             AggregateTradeCache = null;
 
-            if (UserDataClient != null)
+            if (UserDataManager != null)
             {
                 lock (ConsoleSync)
                 {
@@ -366,7 +366,7 @@ namespace BinanceConsoleApp
                     Console.WriteLine("  ...live account feed disabled.");
                 }
             }
-            UserDataClient = null;
+            UserDataManager = null;
 
             LiveTokenSource = null;
             LiveTask = null;

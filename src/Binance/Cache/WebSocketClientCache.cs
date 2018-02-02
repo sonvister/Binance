@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Binance.Api;
 using Binance.Cache.Events;
-using Binance.WebSocket;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
     public abstract class WebSocketClientCache<TClient, TEventArgs, TCacheEventArgs>
-        where TClient : class, IBinanceWebSocketClient
+        where TClient : class
         where TEventArgs : ClientEventArgs
         where TCacheEventArgs : CacheEventArgs
     {

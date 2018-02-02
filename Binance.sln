@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{8871736C-4CDB-47C5-B73A-BED3CA46164A}"
 EndProject
@@ -38,7 +38,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinanceWebApp", "samples\Bi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinanceClassicWebApp", "samples\BinanceClassicWebApp\BinanceClassicWebApp.csproj", "{6C70F1C4-86BE-40E0-9B9A-6F5373E21F28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Binance.WebSocket.WebSocketSharp", "samples\Binance.WebSocket.WebSocketSharp\Binance.WebSocket.WebSocketSharp.csproj", "{FE699962-ABF9-4BD9-B27A-DA242D6C7F11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Binance.WebSocket.WebSocketSharp", "samples\Binance.WebSocket.WebSocketSharp\Binance.WebSocket.WebSocketSharp.csproj", "{FE699962-ABF9-4BD9-B27A-DA242D6C7F11}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Binance.WebSocket.WebSocket4Net", "samples\Binance.WebSocket.WebSocket4Net\Binance.WebSocket.WebSocket4Net.csproj", "{67C1BE38-527F-424D-85A6-DFD8117E21D1}"
 EndProject

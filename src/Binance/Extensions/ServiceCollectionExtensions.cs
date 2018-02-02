@@ -37,11 +37,6 @@ namespace Binance
             services.AddTransient<IRateLimiter, RateLimiter>();
             services.AddSingleton<IBinanceApi, BinanceApi>();
 
-            // WebSocket
-            services.AddTransient<IWebSocketClient, DefaultWebSocketClient>();
-            services.AddTransient<IWebSocketStream, BinanceWebSocketStream>();
-            services.AddTransient<BinanceWebSocketStream, BinanceWebSocketStream>();
-
             // Cache
             services.AddTransient<ITradeCache, TradeCache>();
             services.AddTransient<IOrderBookCache, OrderBookCache>();
@@ -50,7 +45,9 @@ namespace Binance
             services.AddTransient<IAggregateTradeCache, AggregateTradeCache>();
             services.AddTransient<ISymbolStatisticsCache, SymbolStatisticsCache>();
 
-            // WebSockets
+            // WebSocket
+            services.AddTransient<IWebSocketClient, DefaultWebSocketClient>();
+            services.AddTransient<IWebSocketStream, BinanceWebSocketStream>();
             services.AddSingleton<IWebSocketStreamProvider, WebSocketStreamProvider>();
             services.AddTransient<ITradeWebSocketClient, TradeWebSocketClient>();
             services.AddTransient<IDepthWebSocketClient, DepthWebSocketClient>();
@@ -61,6 +58,7 @@ namespace Binance
             services.AddTransient<IUserDataWebSocketClient, SingleUserDataWebSocketClient>();
             services.AddTransient<IUserDataKeepAliveTimer, UserDataKeepAliveTimer>();
             services.AddTransient<IUserDataKeepAliveTimerProvider, UserDataKeepAliveTimerProvider>();
+            services.AddTransient<IUserDataWebSocketManager, UserDataWebSocketManager>();
 
             // Serialization
             services.AddSingleton<IOrderBookTopSerializer, OrderBookTopSerializer>();
