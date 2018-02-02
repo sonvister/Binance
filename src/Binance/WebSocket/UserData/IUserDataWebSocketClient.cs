@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Binance.Api;
 using Binance.WebSocket.Events;
 
@@ -24,12 +22,20 @@ namespace Binance.WebSocket.UserData
         event EventHandler<AccountTradeUpdateEventArgs> TradeUpdate;
 
         /// <summary>
-        /// Subscribe to the specified user and begin streaming.
+        /// Subscribe to the specified listen key (for use with combined streams).
+        /// Call <see cref="IWebSocketStream"/> StreamAsync to begin streaming.
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="listenKey">The listen key to subscribe.</param>
+        /// <param name="user">The user.</param>
+        /// <param name="callback">An event callback (optional).</param>
+        void Subscribe(string listenKey, IBinanceApiUser user, Action<UserDataEventArgs> callback);
+
+        /// <summary>
+        /// Unsubscribe a callback from listen key events. If no callback is
+        /// specified, then unsubscribe listen key (all callbacks).
+        /// </summary>
+        /// <param name="listenKey"></param>
         /// <param name="callback"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task SubscribeAndStreamAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token = default);
+        void Unsubscribe(string listenKey, Action<UserDataEventArgs> callback);
     }
 }

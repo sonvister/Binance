@@ -75,7 +75,7 @@ namespace BinanceConsoleApp
                     .AddOptions()
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .Configure<BinanceApiOptions>(Configuration.GetSection("ApiOptions"))
-                    .Configure<UserDataWebSocketClientOptions>(Configuration.GetSection("UserClientOptions"))
+                    .Configure<UserDataWebSocketManagerOptions>(Configuration.GetSection("UserDataOptions"))
                     .BuildServiceProvider();
 
                 // Configure logging.

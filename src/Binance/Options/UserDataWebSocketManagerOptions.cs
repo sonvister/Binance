@@ -3,7 +3,7 @@
 // ReSharper disable once CheckNamespace
 namespace Binance
 {
-    public sealed class UserDataWebSocketClientOptions
+    public sealed class UserDataWebSocketManagerOptions
     {
         /// <summary>
         /// Keep-alive timer period.

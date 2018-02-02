@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 namespace Binance.WebSocket
 {
     /// <summary>
-    /// A <see cref="IAggregateTradeWebSocketClient"/> implementation.
+    /// An <see cref="IAggregateTradeWebSocketClient"/> implementation.
     /// </summary>
     public class AggregateTradeWebSocketClient : BinanceWebSocketClient<AggregateTradeEventArgs>, IAggregateTradeWebSocketClient
     {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,9 +15,6 @@ namespace Binance.WebSocket.UserData
     public class MultiUserDataWebSocketClient : UserDataWebSocketClient, IMultiUserDataWebSocketClient
     {
         #region Private Fields
-
-        private readonly IDictionary<IBinanceApiUser, string> _listenKeys
-            = new Dictionary<IBinanceApiUser, string>();
 
         private Timer _keepAliveTimer;
 
@@ -41,15 +37,15 @@ namespace Binance.WebSocket.UserData
         /// <param name="webSocket">The WebSocket stream.</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public MultiUserDataWebSocketClient(IBinanceApi api, IWebSocketStream webSocket, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<SingleUserDataWebSocketClient> logger = null)
-            : base(api, webSocket, options, logger)
+        public MultiUserDataWebSocketClient(IBinanceApi api, IWebSocketStream webSocket, IOptions<UserDataWebSocketManagerOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)
+            : base(api, webSocket, logger)
         {
             webSocket.Open += (s, e) =>
             {
                 var period =
                     Math.Min(
                         Math.Max(
-                            _options?.KeepAliveTimerPeriod ?? UserDataKeepAliveTimer.PeriodDefault,
+                            options?.Value.KeepAliveTimerPeriod ?? UserDataKeepAliveTimer.PeriodDefault,
                             KeepAliveTimerPeriodMin),
                         KeepAliveTimerPeriodMax);
 
@@ -66,7 +62,7 @@ namespace Binance.WebSocket.UserData
                 {
                     // TODO: Close user stream... what if disconnected... ?
 
-                    await _api.UserStreamCloseAsync(_.Key, _.Value, CancellationToken.None)
+                    await _api.UserStreamCloseAsync(_.Value, _.Key, CancellationToken.None)
                         .ConfigureAwait(false);
 
                     // TODO: Unsubscribe listen key...
@@ -88,23 +84,25 @@ namespace Binance.WebSocket.UserData
 
             try
             {
-                if (!_listenKeys.ContainsKey(user))
+                var listenKey = _listenKeys.SingleOrDefault(_ => _.Value == user).Key;
+
+                if (listenKey == null)
                 {
-                    _listenKeys[user] = await _api.UserStreamStartAsync(user, token)
+                    listenKey = await _api.UserStreamStartAsync(user, token)
                         .ConfigureAwait(false);
 
-                    if (string.IsNullOrWhiteSpace(_listenKeys[user]))
-                        throw new Exception($"{nameof(IUserDataWebSocketClient)}: Failed to get listen key from API.");
+                    if (string.IsNullOrWhiteSpace(listenKey))
+                        throw new Exception($"{nameof(MultiUserDataWebSocketClient)}: Failed to get listen key from API.");
                 }
 
-                SubscribeStream(_listenKeys[user], callback);
+                Subscribe(listenKey, user, callback);
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
                 if (!token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{nameof(SingleUserDataWebSocketClient)}.{nameof(SubscribeAsync)}");
+                    Logger?.LogError(e, $"{nameof(MultiUserDataWebSocketClient)}.{nameof(SubscribeAsync)}");
                     throw;
                 }
             }
@@ -117,7 +115,7 @@ namespace Binance.WebSocket.UserData
             await Task.CompletedTask;
         }
 
-        public override async Task SubscribeAndStreamAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token)
+        public async Task SubscribeAndStreamAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token)
         {
             await SubscribeAsync(user, callback, token)
                 .ConfigureAwait(false);
@@ -127,15 +125,6 @@ namespace Binance.WebSocket.UserData
         }
 
         #endregion Public Methods
-
-        #region Protected Methods
-
-        protected override IBinanceApiUser GetUserForEvent(WebSocketStreamEventArgs args)
-        {
-            return _listenKeys.First(_ => _.Value == args.StreamName).Key;
-        }
-
-        #endregion Protected Methods
 
         #region Private Methods
 
@@ -149,14 +138,14 @@ namespace Binance.WebSocket.UserData
             {
                 try
                 {
-                    await _api.UserStreamKeepAliveAsync(_.Key, _.Value, (CancellationToken)state)
+                    await _api.UserStreamKeepAliveAsync(_.Value, _.Key, (CancellationToken)state)
                         .ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
                     // TODO: ...
 
-                    Logger?.LogWarning(e, $"{nameof(SingleUserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: \"{e.Message}\"");
+                    Logger?.LogWarning(e, $"{nameof(MultiUserDataWebSocketClient)}.{nameof(OnKeepAliveTimer)}: \"{e.Message}\"");
                 }
             }
         }

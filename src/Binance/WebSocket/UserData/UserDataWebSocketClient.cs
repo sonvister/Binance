@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace Binance.WebSocket.UserData
 {
-    public abstract class UserDataWebSocketClient : BinanceWebSocketClient<UserDataEventArgs>, IUserDataWebSocketClient
+    public class UserDataWebSocketClient : BinanceWebSocketClient<UserDataEventArgs>, IUserDataWebSocketClient
     {
         #region Public Constants
 
@@ -36,7 +34,8 @@ namespace Binance.WebSocket.UserData
 
         protected readonly IBinanceApi _api;
 
-        protected readonly UserDataWebSocketClientOptions _options;
+        protected readonly IDictionary<string, IBinanceApiUser> _listenKeys
+            = new Dictionary<string, IBinanceApiUser>();
 
         #endregion Protected Fields
 
@@ -47,32 +46,58 @@ namespace Binance.WebSocket.UserData
         /// </summary>
         /// <param name="api">The Binance API.</param>
         /// <param name="webSocket">The WebSocket stream.</param>
-        /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        protected UserDataWebSocketClient(IBinanceApi api, IWebSocketStream webSocket, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)
+        protected UserDataWebSocketClient(IBinanceApi api, IWebSocketStream webSocket, ILogger<UserDataWebSocketClient> logger = null)
             : base(webSocket, logger)
         {
             Throw.IfNull(api, nameof(api));
 
             _api = api;
-            _options = options?.Value;
         }
 
         #endregion Construtors
 
         #region Public Methods
 
-        public abstract Task SubscribeAndStreamAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token);
+        public void Subscribe(string listenKey, IBinanceApiUser user, Action<UserDataEventArgs> callback)
+        {
+            Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
+            Throw.IfNull(user, nameof(user));
+
+            if (_listenKeys.ContainsKey(listenKey))
+                return;
+
+            Logger?.LogInformation($"{nameof(UserDataWebSocketClient)}.{nameof(Subscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            SubscribeStream(listenKey, callback);
+
+            _listenKeys[listenKey] = user;
+        }
+
+        public void Unsubscribe(string listenKey, Action<UserDataEventArgs> callback)
+        {
+            Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
+
+            Logger?.LogInformation($"{nameof(UserDataWebSocketClient)}.{nameof(Unsubscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            UnsubscribeStream(listenKey, callback);
+
+            _listenKeys.Remove(listenKey);
+        }
 
         #endregion Public Methods
 
         #region Protected Methods
 
-        protected abstract IBinanceApiUser GetUserForEvent(WebSocketStreamEventArgs args);
-
         protected override void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<UserDataEventArgs>> callbacks)
         {
-            var user = GetUserForEvent(args);
+            if (!_listenKeys.ContainsKey(args.StreamName))
+            {
+                Logger?.LogError($"{nameof(UserDataWebSocketClient)}.{nameof(OnWebSocketEvent)}: Unknown listen key (\"{args.StreamName}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                return; // ignore.
+            }
+
+            var user = _listenKeys[args.StreamName];
 
             Logger?.LogDebug($"{nameof(UserDataWebSocketClient)}: \"{args.Json}\"");
 

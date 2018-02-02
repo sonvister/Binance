@@ -23,6 +23,8 @@ namespace Binance.WebSocket.UserData
 
         private readonly IUserDataKeepAliveTimerProvider _timerProvider;
 
+        private readonly UserDataWebSocketManagerOptions _options;
+
         private IBinanceApiUser User;
 
         private string _listenKey;
@@ -47,19 +49,20 @@ namespace Binance.WebSocket.UserData
         /// <param name="timerProvider">The keep-alive timer provider.</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public UserDataWebSocketManager(IBinanceApi api, IWebSocketStreamProvider streamProvider, IUserDataKeepAliveTimerProvider timerProvider, IOptions<UserDataWebSocketClientOptions> options = null, ILogger<SingleUserDataWebSocketClient> logger = null)
-            : base(api, streamProvider?.CreateStream(), options, logger)
+        public UserDataWebSocketManager(IBinanceApi api, IWebSocketStreamProvider streamProvider, IUserDataKeepAliveTimerProvider timerProvider, IOptions<UserDataWebSocketManagerOptions> options = null, ILogger<UserDataWebSocketClient> logger = null)
+            : base(api, streamProvider?.CreateStream(), logger)
         {
             Throw.IfNull(timerProvider, nameof(timerProvider));
 
             _timerProvider = timerProvider;
+            _options = options?.Value;
         }
 
         #endregion Construtors
 
         #region Public Methods
 
-        public override async Task SubscribeAndStreamAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token)
+        public async Task SubscribeAndStreamAsync(IBinanceApiUser user, Action<UserDataEventArgs> callback, CancellationToken token)
         {
             Throw.IfNull(user, nameof(user));
 
@@ -104,7 +107,7 @@ namespace Binance.WebSocket.UserData
 
                 timer.Add(User, _listenKey);
 
-                SubscribeStream(_listenKey, callback);
+                Subscribe(_listenKey, User, callback);
 
                 try
                 {
@@ -140,14 +143,5 @@ namespace Binance.WebSocket.UserData
         }
 
         #endregion Public Methods
-
-        #region Protected Methods
-
-        protected override IBinanceApiUser GetUserForEvent(WebSocketStreamEventArgs args)
-        {
-            return User;
-        }
-
-        #endregion Protected Methods
     }
 }

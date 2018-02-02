@@ -71,7 +71,7 @@ namespace Binance.WebSocket
             if (!Subscribers.ContainsKey(args.StreamName))
             {
                 Logger?.LogDebug($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(WebSocketCallback)} - Ignoring event for non-subscribed stream: \"{args.StreamName}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                return;
+                return; // ignore.
             }
 
             OnWebSocketEvent(args, Subscribers[args.StreamName]);
