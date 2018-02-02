@@ -79,10 +79,17 @@ namespace Binance.Api
             // Configure request burst rate limiter.
             RateLimiter.Configure(TimeSpan.FromSeconds(Options.RequestRateLimit.BurstDurationSeconds), Options.RequestRateLimit.BurstCount);
 
+            var uri = new Uri(EndpointUrl);
+
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri(EndpointUrl)
+                BaseAddress = uri
             };
+
+            // Singleton HttpClient doesn't respect DNS changes.
+            // https://github.com/dotnet/corefx/issues/11224
+            var sp = ServicePointManager.FindServicePoint(uri);
+            sp.ConnectionLeaseTimeout = 60 * 1000; // 1 minute.
 
             var version = GetType().Assembly.GetName().Version;
 
