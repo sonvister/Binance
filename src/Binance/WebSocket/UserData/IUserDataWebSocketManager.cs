@@ -26,7 +26,7 @@ namespace Binance.WebSocket.UserData
         /// <summary>
         /// Get the web socket client.
         /// </summary>
-        IUserDataWebSocketClient Client { get; } // TODO
+        ISingleUserDataWebSocketClient Client { get; }
 
         /// <summary>
         /// Subscribe to the specified user and begin streaming.

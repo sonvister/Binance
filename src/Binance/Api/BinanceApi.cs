@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
@@ -866,6 +865,8 @@ namespace Binance.Api
         /// <param name="asset"></param>
         private BinanceApiException NewBinanceWApiException(string methodName, string json, string asset)
         {
+            asset = asset.FormatSymbol();
+
             var errorCode = 0;
             string errorMessage = "[NO MSG]";
 

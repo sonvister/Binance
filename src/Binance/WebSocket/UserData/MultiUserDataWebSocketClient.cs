@@ -46,8 +46,8 @@ namespace Binance.WebSocket.UserData
                     Math.Min(
                         Math.Max(
                             options?.Value.KeepAliveTimerPeriod ?? UserDataKeepAliveTimer.PeriodDefault,
-                            KeepAliveTimerPeriodMin),
-                        KeepAliveTimerPeriodMax);
+                            UserDataWebSocketManager.KeepAliveTimerPeriodMin),
+                        UserDataWebSocketManager.KeepAliveTimerPeriodMax);
 
                 _keepAliveTimer = new Timer(OnKeepAliveTimer, CancellationToken.None, period, period);
             };
@@ -58,7 +58,7 @@ namespace Binance.WebSocket.UserData
 
                 _keepAliveTimer.Dispose();
 
-                foreach (var _ in _listenKeys)
+                foreach (var _ in ListenKeys)
                 {
                     // TODO: Close user stream... what if disconnected... ?
 
@@ -84,7 +84,7 @@ namespace Binance.WebSocket.UserData
 
             try
             {
-                var listenKey = _listenKeys.SingleOrDefault(_ => _.Value == user).Key;
+                var listenKey = ListenKeys.SingleOrDefault(_ => _.Value == user).Key;
 
                 if (listenKey == null)
                 {
@@ -134,7 +134,7 @@ namespace Binance.WebSocket.UserData
         /// <param name="state"></param>
         private async void OnKeepAliveTimer(object state)
         {
-            foreach (var _ in _listenKeys)
+            foreach (var _ in ListenKeys)
             {
                 try
                 {

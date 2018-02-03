@@ -13,13 +13,6 @@ namespace Binance.WebSocket.UserData
 {
     public class UserDataWebSocketClient : BinanceWebSocketClient<UserDataEventArgs>, IUserDataWebSocketClient
     {
-        #region Public Constants
-
-        public static readonly int KeepAliveTimerPeriodMax = 3600000; // 1 hour
-        public static readonly int KeepAliveTimerPeriodMin =   60000; // 1 minute
-
-        #endregion Public Constants
-
         #region Public Events
 
         public event EventHandler<AccountUpdateEventArgs> AccountUpdate;
@@ -32,12 +25,16 @@ namespace Binance.WebSocket.UserData
 
         #region Protected Fields
 
-        protected readonly IBinanceApi _api;
-
-        protected readonly IDictionary<string, IBinanceApiUser> _listenKeys
+        protected readonly IDictionary<string, IBinanceApiUser> ListenKeys
             = new Dictionary<string, IBinanceApiUser>();
 
         #endregion Protected Fields
+
+        #region Private Fields
+
+        protected readonly IBinanceApi _api; // TODO
+
+        #endregion Private Fields
 
         #region Constructors
 
@@ -59,30 +56,43 @@ namespace Binance.WebSocket.UserData
 
         #region Public Methods
 
-        public void Subscribe(string listenKey, IBinanceApiUser user, Action<UserDataEventArgs> callback)
+        public virtual void Subscribe(string listenKey, IBinanceApiUser user, Action<UserDataEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
             Throw.IfNull(user, nameof(user));
 
-            if (_listenKeys.ContainsKey(listenKey))
-                return;
-
             Logger?.LogInformation($"{nameof(UserDataWebSocketClient)}.{nameof(Subscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
+            // Subscribe callback (if provided) to listen key.
             SubscribeStream(listenKey, callback);
 
-            _listenKeys[listenKey] = user;
+            // If listen key is new.
+            if (!ListenKeys.ContainsKey(listenKey))
+            {
+                // If a listen key exists with user.
+                if (ListenKeys.Any(_ => _.Value == user))
+                    throw new InvalidOperationException($"{nameof(UserDataWebSocketClient)}.{nameof(Subscribe)}: A listen key is already subscribed for this user.");
+
+                // Add listen key and user (for stream event handling).
+                ListenKeys[listenKey] = user;
+            }
         }
 
-        public void Unsubscribe(string listenKey, Action<UserDataEventArgs> callback)
+        public virtual void Unsubscribe(string listenKey, Action<UserDataEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
 
             Logger?.LogInformation($"{nameof(UserDataWebSocketClient)}.{nameof(Unsubscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
+            // Unsubscribe callback (if provided) from listen key.
             UnsubscribeStream(listenKey, callback);
 
-            _listenKeys.Remove(listenKey);
+            // If listen key was removed from subscribers (no callbacks).
+            if (!Subscribers.ContainsKey(listenKey))
+            {
+                // Remove listen key (and user).
+                ListenKeys.Remove(listenKey);
+            }
         }
 
         #endregion Public Methods
@@ -91,13 +101,13 @@ namespace Binance.WebSocket.UserData
 
         protected override void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<UserDataEventArgs>> callbacks)
         {
-            if (!_listenKeys.ContainsKey(args.StreamName))
+            if (!ListenKeys.ContainsKey(args.StreamName))
             {
                 Logger?.LogError($"{nameof(UserDataWebSocketClient)}.{nameof(OnWebSocketEvent)}: Unknown listen key (\"{args.StreamName}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 return; // ignore.
             }
 
-            var user = _listenKeys[args.StreamName];
+            var user = ListenKeys[args.StreamName];
 
             Logger?.LogDebug($"{nameof(UserDataWebSocketClient)}: \"{args.Json}\"");
 
