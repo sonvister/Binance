@@ -12,7 +12,7 @@ namespace Binance.WebSocket.UserData
     /// <summary>
     /// A <see cref="IMultiUserDataWebSocketClient"/> implementation.
     /// </summary>
-    public class MultiUserDataWebSocketClient : UserDataWebSocketClient, IMultiUserDataWebSocketClient
+    internal class MultiUserDataWebSocketClient : UserDataWebSocketClient, IMultiUserDataWebSocketClient
     {
         #region Private Fields
 
