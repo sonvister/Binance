@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1517441739039;
+        public static readonly long LastUpdateAt = 1517697976584;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH;
@@ -82,6 +82,7 @@ namespace Binance
         public static readonly Asset MOD = new Asset("MOD", 8);
         public static readonly Asset MTH = new Asset("MTH", 8);
         public static readonly Asset MTL = new Asset("MTL", 8);
+        public static readonly Asset NANO = new Asset("NANO", 8);
         public static readonly Asset NAV = new Asset("NAV", 8);
         public static readonly Asset NEBL = new Asset("NEBL", 8);
         public static readonly Asset NEO = new Asset("NEO", 8);
@@ -103,6 +104,7 @@ namespace Binance
         public static readonly Asset SNGLS = new Asset("SNGLS", 8);
         public static readonly Asset SNM = new Asset("SNM", 8);
         public static readonly Asset SNT = new Asset("SNT", 8);
+        public static readonly Asset STEEM = new Asset("STEEM", 8);
         public static readonly Asset STORJ = new Asset("STORJ", 8);
         public static readonly Asset STRAT = new Asset("STRAT", 8);
         public static readonly Asset SUB = new Asset("SUB", 8);
@@ -218,6 +220,7 @@ namespace Binance
             { "MOD", MOD },
             { "MTH", MTH },
             { "MTL", MTL },
+            { "NANO", NANO },
             { "NAV", NAV },
             { "NEBL", NEBL },
             { "NEO", NEO },
@@ -239,6 +242,7 @@ namespace Binance
             { "SNGLS", SNGLS },
             { "SNM", SNM },
             { "SNT", SNT },
+            { "STEEM", STEEM },
             { "STORJ", STORJ },
             { "STRAT", STRAT },
             { "SUB", SUB },
