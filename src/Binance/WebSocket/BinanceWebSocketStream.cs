@@ -33,9 +33,29 @@ namespace Binance.WebSocket
 
         public IWebSocketClient Client { get; }
 
-        public IEnumerable<string> SubscribedStreams => _subscribers.Keys;
+        public IEnumerable<string> SubscribedStreams
+        {
+            get
+            {
+                // TODO
+                //lock (_sync)
+                //{
+                    return _subscribers.Keys.ToArray();
+                //}
+            }
+        }
 
-        public bool IsCombined => _subscribers.Keys.Count > 1;
+        public bool IsCombined
+        {
+            get
+            {
+                // TODO
+                //lock (_sync)
+                //{
+                    return _subscribers.Count > 1;
+                //}
+            }
+        }
 
         #endregion Public Properties
 
@@ -55,6 +75,8 @@ namespace Binance.WebSocket
         private readonly ILogger<BinanceWebSocketStream> _logger;
 
         private readonly IDictionary<string, ICollection<Action<WebSocketStreamEventArgs>>> _subscribers;
+
+        //private readonly object _sync = new object(); // TODO
 
         #endregion Private Fields
 
@@ -92,22 +114,27 @@ namespace Binance.WebSocket
 
             _logger?.LogDebug($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: \"{stream}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-            if (!_subscribers.ContainsKey(stream))
-            {
-                if (Client.IsStreaming)
+            // TODO
+            //lock (_sync)
+            //{
+                if (!_subscribers.ContainsKey(stream))
                 {
-                    _logger?.LogWarning($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: {nameof(IWebSocketClient)} is already streaming.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    if (Client.IsStreaming)
+                    {
+                        _logger?.LogError($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: {nameof(IWebSocketClient)} is streaming.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Subscribing (a stream) must be done when not streaming.");
+                    }
+
+                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Adding stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    _subscribers[stream] = new List<Action<WebSocketStreamEventArgs>>();
                 }
 
-                _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Adding stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                _subscribers[stream] = new List<Action<WebSocketStreamEventArgs>>();
-            }
-
-            if (!_subscribers[stream].Contains(callback))
-            {
-                _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Adding callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                _subscribers[stream].Add(callback);
-            }
+                if (!_subscribers[stream].Contains(callback))
+                {
+                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Adding callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    _subscribers[stream].Add(callback);
+                }
+            //}
         }
 
         public void Unsubscribe(string stream, Action<WebSocketStreamEventArgs> callback)
@@ -116,28 +143,34 @@ namespace Binance.WebSocket
 
             _logger?.LogDebug($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: \"{stream}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-            if (!_subscribers.ContainsKey(stream))
-            {
-                _logger?.LogWarning($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Not subscribed to stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                return; // ignore.
-            }
-
-            if (_subscribers[stream].Contains(callback))
-            {
-                _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Removing callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                _subscribers[stream].Remove(callback);
-            }
-
-            if (!_subscribers[stream].Any())
-            {
-                if (Client.IsStreaming)
+            // TODO
+            //lock (_sync)
+            //{
+                if (!_subscribers.ContainsKey(stream))
                 {
-                    _logger?.LogWarning($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: {nameof(IWebSocketClient)} is already streaming.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    _logger?.LogDebug($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Ignoring non-subscribed stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    return; // ignore.
                 }
 
-                _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Removing stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                _subscribers.Remove(stream);
-            }
+                if (_subscribers[stream].Contains(callback))
+                {
+                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Removing callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    _subscribers[stream].Remove(callback);
+                }
+
+                // Unsubscribe stream if there are no callbacks.
+                if (!_subscribers[stream].Any())
+                {
+                    if (Client.IsStreaming)
+                    {
+                        _logger?.LogError($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: {nameof(IWebSocketClient)} is streaming.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Unsubscribing (a stream) must be done when not streaming.");
+                    }
+
+                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Removing stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    _subscribers.Remove(stream);
+                }
+            //}
         }
 
         public async Task StreamAsync(CancellationToken token)
@@ -148,7 +181,7 @@ namespace Binance.WebSocket
             token.ThrowIfCancellationRequested();
 
             if (Client.IsStreaming)
-                throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}: Already streaming ({nameof(IWebSocketClient)}.{nameof(IWebSocketClient.StreamAsync)} Task is not completed).");
+                throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}:: Already streaming ({nameof(IWebSocketClient)}.{nameof(IWebSocketClient.StreamAsync)} Task is not completed).");
 
             try
             {
@@ -164,41 +197,75 @@ namespace Binance.WebSocket
                 {
                     try
                     {
-                        if (IsCombined)
-                        {
-                            var jObject = JObject.Parse(json);
+                        string streamName;
 
-                            var stream = jObject["stream"].Value<string>();
+                        Action<WebSocketStreamEventArgs>[] callbacks = null;
 
-                            if (!_subscribers.ContainsKey(stream))
+                        // TODO: Avoid locking... allowing for eventual consistency of callbacks.
+                        //lock (_sync)
+                        //{
+                            if (_subscribers.Count > 1) // using combined streams.
                             {
-                                _logger?.LogDebug($"{nameof(BinanceWebSocketStream)}: No subscriber exists for stream: \"{stream}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                                var jObject = JObject.Parse(json);
+
+                                // Get stream name.
+                                streamName = jObject["stream"]?.Value<string>();
+                                if (streamName == null)
+                                {
+                                    _logger?.LogError($"{nameof(BinanceWebSocketStream)}: No 'stream' name in message: \"{json}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                                    return; // ignore.
+                                }
+
+                                // Get JSON data.
+                                var data = jObject["data"]?.ToString(Formatting.None);
+                                if (data == null)
+                                {
+                                    _logger?.LogError($"{nameof(BinanceWebSocketStream)}: No JSON 'data' in message: \"{json}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                                    return; // ignore.
+                                }
+
+                                json = data;
+                            }
+                            else
+                            {
+                                // Get stream name.
+                                streamName = _subscribers.Keys.FirstOrDefault();
+                                if (streamName == null)
+                                {
+                                    _logger?.LogError($"{nameof(BinanceWebSocketStream)}: No subscribed streams.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                                    return; // ignore.
+                                }
+                            }
+
+                            if (_subscribers.TryGetValue(streamName, out var subscribers))
+                            {
+                                // Get subscribed callbacks.
+                                callbacks = subscribers?.ToArray();
+                            }
+                            else
+                            {
+                                _logger?.LogError($"{nameof(BinanceWebSocketStream)}: No subscribers for stream: \"{streamName}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                                 return; // ignore.
                             }
+                        //}
 
-                            var args = new WebSocketStreamEventArgs(stream, jObject["data"].ToString(Formatting.None), token);
-
-                            foreach (var callback in _subscribers[stream])
-                            {
-                                callback(args);
-                            }
-                        }
-                        else
+                        if (callbacks != null)
                         {
-                            var args = new WebSocketStreamEventArgs(_subscribers.Keys.Single(), json, token);
+                            // Create event with stream name and JSON data.
+                            var args = new WebSocketStreamEventArgs(streamName, json, token);
 
-                            foreach (var callback in _subscribers.Values.Single())
+                            foreach (var callback in callbacks)
                             {
                                 callback(args);
                             }
                         }
                     }
-                    catch (OperationCanceledException) { }
+                    catch (OperationCanceledException) { /* ignored */ }
                     catch (Exception e)
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            _logger?.LogError(e, $"{nameof(BinanceWebSocketStream)}: Unhandled {nameof(StreamAsync)} exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                            _logger?.LogError(e, $"{nameof(BinanceWebSocketStream)}: Failed processing JSON message.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                         }
                     }
                 },
@@ -225,7 +292,7 @@ namespace Binance.WebSocket
                 await Client.StreamAsync(uri, token)
                     .ConfigureAwait(false);
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException) { /* ignored */ }
             catch (Exception e)
             {
                 if (!token.IsCancellationRequested)
@@ -261,7 +328,7 @@ namespace Binance.WebSocket
             _maxBufferCount = count;
             if (_maxBufferCount > 1)
             {
-                _logger?.LogTrace($"{nameof(BinanceWebSocketStream)} - Maximum buffer block count: {_maxBufferCount}");
+                _logger?.LogTrace($"{nameof(BinanceWebSocketStream)}.{nameof(OnClientMessage)}: - Maximum buffer block count: {_maxBufferCount}");
             }
         }
 
