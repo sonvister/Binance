@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Binance.Account.Orders;
 using Binance.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -51,7 +50,6 @@ namespace Binance.Tests.Api
             var user = new BinanceApiUser("api-key");
 
             await Assert.ThrowsAsync<ArgumentNullException>("clientOrder", () => _api.PlaceAsync(null));
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _api.PlaceAsync(new LimitOrder(user) { Symbol = Symbol.BTC_USDT, Quantity = 0.01m }));
         }
 
         [Fact]
@@ -60,7 +58,6 @@ namespace Binance.Tests.Api
             var user = new BinanceApiUser("api-key");
 
             await Assert.ThrowsAsync<ArgumentNullException>("clientOrder", () => _api.TestPlaceAsync(null));
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _api.TestPlaceAsync(new LimitOrder(user) { Symbol = Symbol.BTC_USDT, Quantity = 0.01m }));
         }
 
         [Fact]

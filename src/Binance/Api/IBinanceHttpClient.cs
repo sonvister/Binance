@@ -47,35 +47,31 @@ namespace Binance.Api
         /// </summary>
         /// <param name="request"></param>
         /// <param name="token"></param>
-        /// <param name="rateLimiter"></param>
         /// <returns></returns>
-        Task<string> GetAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null);
+        Task<string> GetAsync(BinanceHttpRequest request, CancellationToken token = default);
 
         /// <summary>
         /// Post request.
         /// </summary>
         /// <param name="request"></param>
         /// <param name="token"></param>
-        /// <param name="rateLimiter"></param>
         /// <returns></returns>
-        Task<string> PostAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null);
+        Task<string> PostAsync(BinanceHttpRequest request, CancellationToken token = default);
 
         /// <summary>
         /// Put request.
         /// </summary>
         /// <param name="request"></param>
         /// <param name="token"></param>
-        /// <param name="rateLimiter"></param>
         /// <returns></returns>
-        Task<string> PutAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null);
+        Task<string> PutAsync(BinanceHttpRequest request, CancellationToken token = default);
 
         /// <summary>
         /// Delete request.
         /// </summary>
         /// <param name="request"></param>
         /// <param name="token"></param>
-        /// <param name="rateLimiter"></param>
         /// <returns></returns>
-        Task<string> DeleteAsync(BinanceHttpRequest request, CancellationToken token = default, IApiRateLimiter rateLimiter = null);
+        Task<string> DeleteAsync(BinanceHttpRequest request, CancellationToken token = default);
     }
 }
