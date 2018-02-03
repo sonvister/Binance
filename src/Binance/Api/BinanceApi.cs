@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
@@ -646,9 +647,7 @@ namespace Binance.Api
             // ReSharper disable once InvertIf
             if (!success)
             {
-                var message = $"{nameof(BinanceApi)}.{nameof(WithdrawAsync)} failed: \"{msg ?? "[No Message]"}\"";
-                _logger?.LogError(message);
-                throw new BinanceApiException(message);
+                throw NewBinanceWApiException(nameof(WithdrawAsync), json, withdrawRequest.Asset);
             }
 
             return id;
@@ -694,9 +693,7 @@ namespace Binance.Api
             // ReSharper disable once InvertIf
             if (!success)
             {
-                var message = $"{nameof(BinanceApi)}.{nameof(GetDepositsAsync)} unsuccessful (asset: \"{asset}\").";
-                _logger?.LogError(message);
-                throw new BinanceApiException(message);
+                throw NewBinanceWApiException(nameof(GetDepositsAsync), json, asset);
             }
 
             return deposits;
@@ -743,9 +740,7 @@ namespace Binance.Api
             // ReSharper disable once InvertIf
             if (!success)
             {
-                var message = $"{nameof(BinanceApi)}.{nameof(GetWithdrawalsAsync)} unsuccessful (asset: \"{asset}\").";
-                _logger?.LogError(message);
-                throw new BinanceApiException(message);
+                throw NewBinanceWApiException(nameof(GetWithdrawalsAsync), json, asset);
             }
 
             return withdrawals;
@@ -781,9 +776,7 @@ namespace Binance.Api
             // ReSharper disable once InvertIf
             if (!success)
             {
-                var message = $"{nameof(BinanceApi)}.{nameof(GetDepositAddressAsync)} unsuccessful (asset: \"{asset}\").";
-                _logger?.LogError(message);
-                throw new BinanceApiException(message);
+                throw NewBinanceWApiException(nameof(GetDepositAddressAsync), json, asset);
             }
 
             return depositAddress;
@@ -863,6 +856,42 @@ namespace Binance.Api
             _logger?.LogError(e, message);
 
             return new BinanceApiException(message, e);
+        }
+
+        /// <summary>
+        /// Throw WAPI exception.
+        /// </summary>
+        /// <param name="methodName"></param>
+        /// <param name="json"></param>
+        /// <param name="asset"></param>
+        private BinanceApiException NewBinanceWApiException(string methodName, string json, string asset)
+        {
+            var errorCode = 0;
+            string errorMessage = "[NO MSG]";
+
+            var jObject = JObject.Parse(json);
+
+            var error = jObject["msg"].Value<string>();
+
+            if (!string.IsNullOrWhiteSpace(error) && error.IsJsonObject())
+            {
+                try // to parse server error response.
+                {
+                    var jError = JObject.Parse(error);
+
+                    errorCode = jError["code"]?.Value<int>() ?? 0;
+                    errorMessage = jError["msg"]?.Value<string>();
+                }
+                catch (Exception e)
+                {
+                    _logger?.LogError(e, $"{nameof(BinanceApi)}.{methodName} failed to parse server error response: \"{error}\"");
+                    throw;
+                }
+            }
+
+            var message = $"{nameof(BinanceApi)}.{methodName}: Failed (asset: \"{asset}\") - \"{errorMessage}\"{(errorCode != 0 ? $" ({errorCode})" : " [NO CODE]")}";
+            _logger?.LogError(message);
+            return new BinanceApiException(message);
         }
 
         #endregion Private Methods
