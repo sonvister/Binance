@@ -763,7 +763,7 @@ namespace Binance.Api
                 if (success)
                 {
                     depositAddress = new DepositAddress(
-                        jObject["asset"].Value<string>(),
+                        asset,
                         jObject["address"].Value<string>(),
                         jObject["addressTag"]?.Value<string>());
                 }

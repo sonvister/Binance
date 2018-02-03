@@ -34,7 +34,7 @@
             Throw.IfNullOrWhiteSpace(asset, nameof(asset));
             Throw.IfNullOrWhiteSpace(address, nameof(address));
 
-            Asset = asset;
+            Asset = asset.FormatSymbol();
             Address = address;
             AddressTag = addressTag;
         }
