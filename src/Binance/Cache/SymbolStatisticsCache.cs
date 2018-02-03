@@ -114,12 +114,12 @@ namespace Binance.Cache
 
         protected override async ValueTask<SymbolStatisticsCacheEventArgs> OnAction(SymbolStatisticsEventArgs @event)
         {
-            if (_statistics.Count == 0)
+            try
             {
-                Logger?.LogInformation($"{nameof(SymbolStatisticsCache)}: Initializing symbol statistics...");
-
-                if (!_symbols.Any())
+                if (_statistics.Count == 0 && !_symbols.Any())
                 {
+                    Logger?.LogInformation($"{nameof(SymbolStatisticsCache)}.{nameof(OnAction)}: Initializing all symbol statistics...");
+
                     var statistics = await Api.Get24HourStatisticsAsync(@event.Token)
                         .ConfigureAwait(false);
 
@@ -131,18 +131,30 @@ namespace Binance.Cache
                         }
                     }
                 }
-            }
 
-            lock (_sync)
-            {
-                foreach (var stats in @event.Statistics)
+                lock (_sync)
                 {
-                    _statistics[stats.Symbol] = stats;
-                }
+                    foreach (var stats in @event.Statistics)
+                    {
+                        _statistics[stats.Symbol] = stats;
+                    }
 
-                return !_symbols.Any()
-                    ? new SymbolStatisticsCacheEventArgs(_statistics.Values.ToArray())
-                    : new SymbolStatisticsCacheEventArgs(_symbols.Select(s => _statistics[s]).ToArray());
+                    if (!_symbols.Any())
+                    {
+                        return new SymbolStatisticsCacheEventArgs(_statistics.Values.ToArray());
+                    }
+
+                    var statistics = _symbols
+                        .Where(s => _statistics.ContainsKey(s))
+                        .Select(s => _statistics[s]);
+
+                    return new SymbolStatisticsCacheEventArgs(statistics.ToArray());
+                }
+            }
+            catch (Exception e)
+            {
+                Logger?.LogError(e, $"{nameof(SymbolStatisticsCache)}.{nameof(OnAction)}: Failed.");
+                return null;
             }
         }
 
