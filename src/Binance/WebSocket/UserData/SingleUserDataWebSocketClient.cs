@@ -29,6 +29,7 @@ namespace Binance.WebSocket.UserData
         {
             Throw.IfNull(user, nameof(user));
 
+            // Ensure only one user is subscribed.
             if (ListenKeys.Count > 0 && ListenKeys.Single().Value != user)
                 throw new InvalidOperationException($"{nameof(SingleUserDataWebSocketClient)}: Can only subscribe to a single a user.");
 
