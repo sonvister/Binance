@@ -51,8 +51,8 @@ namespace Binance.Tests.Api
 
             stopwatch.Stop();
 
-            Assert.True(stopwatch.ElapsedMilliseconds >= duration.TotalMilliseconds - 60);
-            Assert.False(stopwatch.ElapsedMilliseconds > duration.TotalMilliseconds + 60);
+            Assert.True(stopwatch.ElapsedMilliseconds >= duration.TotalMilliseconds - 100);
+            Assert.False(stopwatch.ElapsedMilliseconds > duration.TotalMilliseconds + 100);
         }
 
         [Fact]
@@ -76,8 +76,8 @@ namespace Binance.Tests.Api
 
             stopwatch.Stop();
 
-            Assert.True(stopwatch.ElapsedMilliseconds >= burstDuration.TotalMilliseconds - 60);
-            Assert.False(stopwatch.ElapsedMilliseconds > burstDuration.TotalMilliseconds + 60);
+            Assert.True(stopwatch.ElapsedMilliseconds >= burstDuration.TotalMilliseconds - 100);
+            Assert.False(stopwatch.ElapsedMilliseconds > burstDuration.TotalMilliseconds + 100);
         }
 
         [Fact]
@@ -126,8 +126,8 @@ namespace Binance.Tests.Api
 
             stopwatch.Stop();
 
-            Assert.True(stopwatch.ElapsedMilliseconds > duration.TotalMilliseconds + burstDuration.TotalMilliseconds - 60);
-            Assert.False(stopwatch.ElapsedMilliseconds > duration.TotalMilliseconds + burstDuration.TotalMilliseconds + 60);
+            Assert.True(stopwatch.ElapsedMilliseconds > duration.TotalMilliseconds + burstDuration.TotalMilliseconds - 100);
+            Assert.False(stopwatch.ElapsedMilliseconds > duration.TotalMilliseconds + burstDuration.TotalMilliseconds + 100);
         }
     }
 }
