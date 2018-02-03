@@ -22,7 +22,14 @@ namespace Binance24HourStatistics
     /// </summary>
     internal class Program
     {
-        private static async Task Main()
+        private static async Task Main(string[] args)
+        {
+            await ExampleMain();
+
+            //await CombinedStreamsExample.ExampleMain();
+        }
+
+        private static async Task ExampleMain()
         {
             try
             {

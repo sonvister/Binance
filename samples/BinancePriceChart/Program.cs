@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
 using Binance.Cache;
@@ -21,7 +22,14 @@ namespace BinancePriceChart
     /// </summary>
     internal class Program
     {
-        private static void Main()
+        private static async Task Main(string[] args)
+        {
+            ExampleMain(); await Task.CompletedTask;
+
+            //await CombinedStreamsExample.ExampleMain();
+        }
+
+        private static void ExampleMain()
         {
             try
             {
