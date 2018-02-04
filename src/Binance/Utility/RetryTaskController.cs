@@ -35,7 +35,7 @@ namespace Binance.Utility
             {
                 while (!_cts.IsCancellationRequested)
                 {
-                    try { await action(_cts.Token); }
+                    try { await action(_cts.Token).ConfigureAwait(false); }
                     catch (OperationCanceledException) { }
                     catch (Exception e)
                     {
@@ -48,7 +48,8 @@ namespace Binance.Utility
 
                     if (!_cts.IsCancellationRequested)
                     {
-                        await Task.Delay(RetryDelayMilliseconds, _cts.Token);
+                        await Task.Delay(RetryDelayMilliseconds, _cts.Token)
+                            .ConfigureAwait(false);
                     }
                 }
             });
@@ -63,7 +64,8 @@ namespace Binance.Utility
 
             _cts.Cancel();
 
-            await Task;
+            await Task // wait for task to complete.
+                .ConfigureAwait(false);
 
             _cts.Dispose();
             _cts = null;

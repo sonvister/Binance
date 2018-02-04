@@ -31,7 +31,7 @@ namespace Binance.Utility
 
             Task = Task.Run(async () =>
             {
-                try { await action(_cts.Token); }
+                try { await action(_cts.Token).ConfigureAwait(false); }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
@@ -53,7 +53,8 @@ namespace Binance.Utility
 
             _cts.Cancel();
 
-            await Task; // wait for task to complete.
+            await Task // wait for task to complete.
+                .ConfigureAwait(false);
 
             _cts.Dispose();
             _cts = null;
