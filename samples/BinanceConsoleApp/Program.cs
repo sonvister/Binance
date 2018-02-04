@@ -34,6 +34,7 @@ namespace BinanceConsoleApp
 
         public static ITradeCache TradeCache;
         public static IOrderBookCache OrderBookCache;
+        public static ISymbolStatisticsCache StatsCache;
         public static ICandlestickCache CandlestickCache;
         public static IAggregateTradeCache AggregateTradeCache;
         public static IUserDataWebSocketManager UserDataManager;
@@ -179,6 +180,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  top <symbol>                                          display order book top price/qty for a symbol or all symbols.");
                 Console.WriteLine("  live depth|book <symbol>                              enable order book live feed for a symbol.");
                 Console.WriteLine("  live candles|kLines <symbol> <interval>               enable candlestick live feed for a symbol and interval.");
+                Console.WriteLine("  live stats <symbol>                                   enable 24-hour statistics live feed for a symbol.");
                 Console.WriteLine("  live aggTrades <symbol>                               enable aggregate trades live feed for a symbol.");
                 Console.WriteLine("  live trades <symbol>                                  enable trades live feed for a symbol.");
                 Console.WriteLine("  live account|user                                     enable user data live feed (api key required).");
@@ -356,6 +358,13 @@ namespace BinanceConsoleApp
                     Console.WriteLine("  ...live order book feed disabled.");
                 }
                 OrderBookCache = null;
+
+                if (StatsCache != null)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("  ...live statistics feed disabled.");
+                }
+                StatsCache = null;
 
                 if (CandlestickCache != null)
                 {
