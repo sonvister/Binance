@@ -57,7 +57,7 @@ namespace Binance.Cache
                 throw new ArgumentException($"{nameof(CandlestickCache)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
 
             if (_symbol != null)
-                throw new InvalidOperationException($"{nameof(CandlestickCache)}.{nameof(Subscribe)}: Already subscribed to symbol: \"{_symbol}\"");
+                throw new InvalidOperationException($"{nameof(CandlestickCache)}.{nameof(Subscribe)}: Already subscribed to a symbol: \"{_symbol}\"");
 
             _symbol = symbol.FormatSymbol();
             _interval = interval;
