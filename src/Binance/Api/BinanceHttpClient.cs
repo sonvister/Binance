@@ -62,13 +62,12 @@ namespace Binance.Api
 
         /// <summary>
         /// Constructor.
-        /// RECOMMENDED: Use static Instance with dependency injection.
         /// </summary>
         /// <param name="timestampProvider">The timestamp provider.</param>
         /// <param name="rateLimiter">The rate limiter (auto configured).</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        public BinanceHttpClient(ITimestampProvider timestampProvider = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
+        internal BinanceHttpClient(ITimestampProvider timestampProvider = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
         {
             TimestampProvider = timestampProvider ?? new TimestampProvider();
             RateLimiter = rateLimiter ?? new ApiRateLimiter();
@@ -84,7 +83,9 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"{nameof(BinanceHttpClient)}: Failed to configure request rate limiter.");
+                var message = $"{nameof(BinanceHttpClient)}: Failed to configure request rate limiter.";
+                _logger?.LogError(e, message);
+                throw new BinanceApiException(message, e);
             }
 
             var uri = new Uri(EndpointUrl);
@@ -98,21 +99,25 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                throw new Exception($"{nameof(BinanceHttpClient)}: Failed to create HttpClient.", e);
+                var message = $"{nameof(BinanceHttpClient)}: Failed to create HttpClient.";
+                _logger?.LogError(e, message);
+                throw new BinanceApiException(message, e);
             }
 
-            if (Options.ServicePointManagerConnectionLeaseTimeout > 0)
+            if (Options.ServicePointManagerConnectionLeaseTimeoutMilliseconds > 0)
             {
                 try
                 {
                     // Singleton HttpClient doesn't respect DNS changes.
                     // https://github.com/dotnet/corefx/issues/11224
                     var sp = ServicePointManager.FindServicePoint(uri);
-                    sp.ConnectionLeaseTimeout = Options.ServicePointManagerConnectionLeaseTimeout;
+                    sp.ConnectionLeaseTimeout = Options.ServicePointManagerConnectionLeaseTimeoutMilliseconds;
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, $"{nameof(BinanceHttpClient)}: Failed to set {nameof(ServicePointManager)}.ConnectionLeaseTimeout.");
+                    var message = $"{nameof(BinanceHttpClient)}: Failed to set {nameof(ServicePointManager)}.ConnectionLeaseTimeout.";
+                    _logger?.LogError(e, message);
+                    throw new BinanceApiException(message, e);
                 }
             }
 
@@ -126,7 +131,9 @@ namespace Binance.Api
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"{nameof(BinanceHttpClient)}: Failed to set User-Agent.");
+                var message = $"{nameof(BinanceHttpClient)}: Failed to set User-Agent.";
+                _logger?.LogError(e, message);
+                throw new BinanceApiException(message, e);
             }
         }
 
