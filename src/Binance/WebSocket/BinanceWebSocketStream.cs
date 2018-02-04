@@ -178,6 +178,7 @@ namespace Binance.WebSocket
             // TODO
             //lock (_sync)
             //{
+                _logger?.LogDebug($"{nameof(BinanceWebSocketStream)}.{nameof(UnsubscribeAll)}: Removing all streams.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 _subscribers.Clear();
             //}
         }

@@ -68,6 +68,7 @@ namespace Binance.WebSocket
         {
             foreach (var stream in Subscribers.Keys)
             {
+                Logger?.LogDebug($"{GetType().Name}.{nameof(UnsubscribeAll)}: Unsubscribe stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 WebSocket.Unsubscribe(stream, WebSocketCallback);
             }
 
