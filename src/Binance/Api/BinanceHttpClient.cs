@@ -74,28 +74,59 @@ namespace Binance.Api
             Options = options?.Value ?? new BinanceApiOptions();
             _logger = logger;
 
-            // Configure request rate limiter.
-            RateLimiter.Configure(TimeSpan.FromMinutes(Options.RequestRateLimit.DurationMinutes), Options.RequestRateLimit.Count);
-            // Configure request burst rate limiter.
-            RateLimiter.Configure(TimeSpan.FromSeconds(Options.RequestRateLimit.BurstDurationSeconds), Options.RequestRateLimit.BurstCount);
+            try
+            {
+                // Configure request rate limiter.
+                RateLimiter.Configure(TimeSpan.FromMinutes(Options.RequestRateLimit.DurationMinutes), Options.RequestRateLimit.Count);
+                // Configure request burst rate limiter.
+                RateLimiter.Configure(TimeSpan.FromSeconds(Options.RequestRateLimit.BurstDurationSeconds), Options.RequestRateLimit.BurstCount);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"{nameof(BinanceHttpClient)}: Failed to configure request rate limiter.");
+            }
 
             var uri = new Uri(EndpointUrl);
 
-            _httpClient = new HttpClient
+            try
             {
-                BaseAddress = uri
-            };
+                _httpClient = new HttpClient
+                {
+                    BaseAddress = uri
+                };
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"{nameof(BinanceHttpClient)}: Failed to create HttpClient.", e);
+            }
 
-            // Singleton HttpClient doesn't respect DNS changes.
-            // https://github.com/dotnet/corefx/issues/11224
-            var sp = ServicePointManager.FindServicePoint(uri);
-            sp.ConnectionLeaseTimeout = 60 * 1000; // 1 minute.
+            if (Options.ServicePointManagerConnectionLeaseTimeout > 0)
+            {
+                try
+                {
+                    // Singleton HttpClient doesn't respect DNS changes.
+                    // https://github.com/dotnet/corefx/issues/11224
+                    var sp = ServicePointManager.FindServicePoint(uri);
+                    sp.ConnectionLeaseTimeout = Options.ServicePointManagerConnectionLeaseTimeout;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, $"{nameof(BinanceHttpClient)}: Failed to set {nameof(ServicePointManager)}.ConnectionLeaseTimeout.");
+                }
+            }
 
-            var version = GetType().Assembly.GetName().Version;
+            try
+            {
+                var version = GetType().Assembly.GetName().Version;
 
-            var versionString = $"{version.Major}.{version.Minor}.{version.Build}{(version.Revision > 0 ? $".{version.Revision}" : string.Empty)}";
+                var versionString = $"{version.Major}.{version.Minor}.{version.Build}{(version.Revision > 0 ? $".{version.Revision}" : string.Empty)}";
 
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", $"Binance/{versionString} (.NET; +https://github.com/sonvister/Binance)");
+                _httpClient.DefaultRequestHeaders.Add("User-Agent", $"Binance/{versionString} (.NET; +https://github.com/sonvister/Binance)");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"{nameof(BinanceHttpClient)}: Failed to set User-Agent.");
+            }
         }
 
         #endregion Constructors
