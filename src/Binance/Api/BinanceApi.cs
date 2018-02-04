@@ -259,6 +259,27 @@ namespace Binance.Api
             }
         }
 
+        public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, DateTime startTime, DateTime endTime, CancellationToken token = default)
+        {
+            if (startTime.Kind != DateTimeKind.Utc)
+                throw new ArgumentException("Date/Time must be UTC.", nameof(startTime));
+            if (endTime.Kind != DateTimeKind.Utc)
+                throw new ArgumentException("Date/Time must be UTC.", nameof(endTime));
+
+            if (endTime < startTime)
+                throw new ArgumentException($"Time ({nameof(endTime)}) must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
+
+            // NOTE: Limit does not apply when using start and end time.
+            var json = await HttpClient.GetAggregateTradesAsync(symbol, NullId, default, startTime.ToTimestamp(), endTime.ToTimestamp(), token)
+                .ConfigureAwait(false);
+
+            try { return _aggregateTradeSerializer.DeserializeMany(json, symbol); }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetAggregateTradesInAsync), json, e);
+            }
+        }
+
         public virtual async Task<IEnumerable<Candlestick>> GetCandlesticksAsync(string symbol, CandlestickInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
         {
             var json = await HttpClient.GetCandlesticksAsync(symbol, interval, limit, startTime, endTime, token)

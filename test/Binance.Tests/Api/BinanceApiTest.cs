@@ -31,13 +31,15 @@ namespace Binance.Tests.Api
         }
 
         [Fact]
-        public async Task GetAggregateTradeInThrows()
+        public async Task GetAggregateTradesThrows()
         {
-            await Assert.ThrowsAsync<ArgumentException>("startTime", () => _api.GetAggregateTradesInAsync(Symbol.BTC_USDT, -1, 1));
-            await Assert.ThrowsAsync<ArgumentException>("startTime", () => _api.GetAggregateTradesInAsync(Symbol.BTC_USDT, 0, 1));
-            await Assert.ThrowsAsync<ArgumentException>("endTime", () => _api.GetAggregateTradesInAsync(Symbol.BTC_USDT, 1, -1));
-            await Assert.ThrowsAsync<ArgumentException>("endTime", () => _api.GetAggregateTradesInAsync(Symbol.BTC_USDT, 1, 0));
-            await Assert.ThrowsAsync<ArgumentException>("endTime", () => _api.GetAggregateTradesInAsync(Symbol.BTC_USDT, 2, 1));
+            var startTime = DateTime.UtcNow.AddHours(-1);
+            var endTime = DateTime.UtcNow;
+            var localTime = DateTime.Now;
+
+            await Assert.ThrowsAsync<ArgumentException>("startTime", () => _api.GetAggregateTradesAsync(Symbol.BTC_USDT, localTime, endTime));
+            await Assert.ThrowsAsync<ArgumentException>("endTime", () => _api.GetAggregateTradesAsync(Symbol.BTC_USDT, startTime, localTime));
+            await Assert.ThrowsAsync<ArgumentException>("endTime", () => _api.GetAggregateTradesAsync(Symbol.BTC_USDT, endTime, startTime));
         }
 
         #endregion Market Data

@@ -80,20 +80,14 @@ namespace Binance.Api
         /// </summary>
         /// <param name="api"></param>
         /// <param name="symbol"></param>
-        /// <param name="startTime"></param>
-        /// <param name="endTime"></param>
+        /// <param name="timeInterval"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(this IBinanceApi api, string symbol, DateTime startTime, DateTime endTime, CancellationToken token = default)
+        public static Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(this IBinanceApi api, string symbol, (DateTime, DateTime) timeInterval, CancellationToken token = default)
         {
             Throw.IfNull(api, nameof(api));
 
-            if (startTime.Kind != DateTimeKind.Utc)
-                throw new ArgumentException("Date/Time must be UTC.", nameof(startTime));
-            if (endTime.Kind != DateTimeKind.Utc)
-                throw new ArgumentException("Date/Time must be UTC.", nameof(endTime));
-
-            return GetAggregateTradesAsync(api, symbol, (new DateTimeOffset(startTime).ToUnixTimeMilliseconds(), new DateTimeOffset(endTime).ToUnixTimeMilliseconds()), token);
+            return api.GetAggregateTradesAsync(symbol, timeInterval.Item1, timeInterval.Item2, token);
         }
 
         /// <summary>
@@ -108,7 +102,7 @@ namespace Binance.Api
         {
             Throw.IfNull(api, nameof(api));
 
-            return api.GetAggregateTradesInAsync(symbol, timeInterval.Item1, timeInterval.Item2, token);
+            return api.GetAggregateTradesAsync(symbol, timeInterval.Item1.ToDateTime(), timeInterval.Item2.ToDateTime(), token);
         }
 
         /// <summary>

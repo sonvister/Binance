@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
@@ -101,7 +102,18 @@ namespace Binance.Api
         /// <param name="endTime">Timestamp in ms to get aggregate trades until INCLUSIVE.</param>
         /// <param name="token"></param>
         /// <returns></returns>
+        [Obsolete("GetAggregateTradesInAsync is obsolete, please use GetAggregateTradesAsync(string, DateTime, DateTime) instead.")]
         Task<IEnumerable<AggregateTrade>> GetAggregateTradesInAsync(string symbol, long startTime, long endTime, CancellationToken token = default);
+
+        /// <summary>
+        /// Get compressed, aggregate trades. Trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="startTime">Time to get aggregate trades from INCLUSIVE.</param>
+        /// <param name="endTime">Time to get aggregate trades until INCLUSIVE.</param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, DateTime startTime, DateTime endTime, CancellationToken token = default);
 
         /// <summary>
         /// Get candlesticks for a symbol. Candlesticks/K-Lines are uniquely identified by their open time.
