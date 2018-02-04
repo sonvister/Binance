@@ -89,8 +89,6 @@ namespace Binance.Cache
 
             _actionBlock = new ActionBlock<TEventArgs>(async @event =>
             {
-                Logger?.LogTrace($"{GetType().Name}: Beginning {nameof(OnAction)}...  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
-
                 TCacheEventArgs eventArgs = null;
 
                 try
