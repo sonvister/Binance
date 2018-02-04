@@ -41,6 +41,9 @@ namespace BinanceConsoleApp
         public static Task LiveTask;
         public static CancellationTokenSource LiveTokenSource;
 
+        public static Task LiveUserDataTask;
+        public static CancellationTokenSource LiveUserDataTokenSource;
+
         public static readonly object ConsoleSync = new object();
 
         public static bool IsOrdersTestOnly = true;
@@ -314,70 +317,67 @@ namespace BinanceConsoleApp
 
         internal static async Task DisableLiveTask()
         {
+            // Cancel streaming operation(s).
             LiveTokenSource?.Cancel();
+            LiveUserDataTokenSource?.Cancel();
 
             // Wait for live task to complete.
             if (LiveTask != null && !LiveTask.IsCompleted)
                 await LiveTask;
 
-            LiveTokenSource?.Dispose();
+            // Wait for live task to complete.
+            if (LiveUserDataTask != null && !LiveUserDataTask.IsCompleted)
+                await LiveUserDataTask;
 
-            // Unsubscribe all streams from global web socket stream.
+            LiveTokenSource?.Dispose();
+            LiveTokenSource = null;
+            LiveTask = null;
+
+            LiveUserDataTokenSource?.Dispose();
+            LiveUserDataTokenSource = null;
+            LiveUserDataTask = null;
+
+            // Unsubscribe all combined streams from global web socket stream.
             var webSocket = ServiceProvider.GetService<IWebSocketStream>();
             webSocket.UnsubscribeAll();
 
-            if (TradeCache != null)
+            lock (ConsoleSync)
             {
-                lock (ConsoleSync)
+                if (TradeCache != null)
                 {
                     Console.WriteLine();
                     Console.WriteLine("  ...live trades feed disabled.");
                 }
-            }
-            TradeCache = null;
+                TradeCache = null;
 
-            if (OrderBookCache != null)
-            {
-                lock (ConsoleSync) 
+                if (OrderBookCache != null)
                 {
                     Console.WriteLine();
                     Console.WriteLine("  ...live order book feed disabled.");
                 }
-            }
-            OrderBookCache = null;
+                OrderBookCache = null;
 
-            if (CandlestickCache != null)
-            {
-                lock (ConsoleSync)
+                if (CandlestickCache != null)
                 {
                     Console.WriteLine();
                     Console.WriteLine("  ...live candlestick feed disabled.");
                 }
-            }
-            CandlestickCache = null;
+                CandlestickCache = null;
 
-            if (AggregateTradeCache != null)
-            {
-                lock (ConsoleSync)
+                if (AggregateTradeCache != null)
                 {
                     Console.WriteLine();
                     Console.WriteLine("  ...live aggregate trades feed disabled.");
                 }
-            }
-            AggregateTradeCache = null;
+                AggregateTradeCache = null;
 
-            if (UserDataManager != null)
-            {
-                lock (ConsoleSync)
+                if (UserDataManager != null)
                 {
                     Console.WriteLine();
                     Console.WriteLine("  ...live account feed disabled.");
                 }
+                UserDataManager = null;
             }
-            UserDataManager = null;
-
-            LiveTokenSource = null;
-            LiveTask = null;
         }
 
         internal static void Display(DepositAddress address)

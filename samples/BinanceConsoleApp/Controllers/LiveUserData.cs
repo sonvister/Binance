@@ -27,11 +27,11 @@ namespace BinanceConsoleApp.Controllers
                 && !endpoint.Equals("user", StringComparison.OrdinalIgnoreCase))
                 return Task.FromResult(false);
 
-            if (Program.LiveTask != null)
+            if (Program.LiveUserDataTask != null)
             {
                 lock (Program.ConsoleSync)
                 {
-                    Console.WriteLine("! A live task is currently active ...use 'live off' to disable.");
+                    Console.WriteLine("! A live user data task is currently active ...use 'live off' to disable.");
                 }
                 return Task.FromResult(true);
             }
@@ -42,15 +42,15 @@ namespace BinanceConsoleApp.Controllers
                 return Task.FromResult(true);
             }
 
-            Program.LiveTokenSource = new CancellationTokenSource();
+            Program.LiveUserDataTokenSource = new CancellationTokenSource();
 
             Program.UserDataManager = Program.ServiceProvider.GetService<IUserDataWebSocketManager>();
             Program.UserDataManager.AccountUpdate += OnAccountUpdateEvent;
             Program.UserDataManager.OrderUpdate += OnOrderUpdateEvent;
             Program.UserDataManager.TradeUpdate += OnTradeUpdateEvent;
 
-            Program.LiveTask = Program.UserDataManager.SubscribeAndStreamAsync(
-                Program.User, Program.LiveTokenSource.Token);
+            Program.LiveUserDataTask = Program.UserDataManager.SubscribeAndStreamAsync(
+                Program.User, Program.LiveUserDataTokenSource.Token);
 
             lock (Program.ConsoleSync)
             {
