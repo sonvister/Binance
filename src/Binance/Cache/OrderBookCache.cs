@@ -51,12 +51,29 @@ namespace Binance.Cache
             if (limit < 0)
                 throw new ArgumentException($"{nameof(OrderBookCache)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
 
+            if (_symbol != null)
+                throw new InvalidOperationException($"{nameof(OrderBookCache)}.{nameof(Subscribe)}: Already subscribed to symbol: \"{_symbol}\"");
+
             _symbol = symbol.FormatSymbol();
             _limit = limit;
 
             base.LinkTo(Client, callback);
 
-            Client.Subscribe(symbol, limit, ClientCallback);
+            Client.Subscribe(_symbol, limit, ClientCallback);
+        }
+
+        public void Unsubscribe()
+        {
+            if (_symbol == null)
+                return;
+
+            Client.Unsubscribe(_symbol, _limit, ClientCallback);
+
+            UnLink();
+
+            _orderBookClone = _orderBook = null;
+
+            _symbol = null;
         }
 
         public override void LinkTo(IDepthWebSocketClient client, Action<OrderBookCacheEventArgs> callback = null)

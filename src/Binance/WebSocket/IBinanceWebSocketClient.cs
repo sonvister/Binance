@@ -18,5 +18,10 @@ namespace Binance.WebSocket
         /// The web socket stream.
         /// </summary>
         IWebSocketStream WebSocket { get; }
+
+        /// <summary>
+        /// Unsubscribe all streams.
+        /// </summary>
+        void UnsubscribeAll();
     }
 }

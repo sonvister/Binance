@@ -173,6 +173,15 @@ namespace Binance.WebSocket
             //}
         }
 
+        public void UnsubscribeAll()
+        {
+            // TODO
+            //lock (_sync)
+            //{
+                _subscribers.Clear();
+            //}
+        }
+
         public async Task StreamAsync(CancellationToken token)
         {
             if (!token.CanBeCanceled)

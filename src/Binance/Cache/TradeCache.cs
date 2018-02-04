@@ -59,14 +59,34 @@ namespace Binance.Cache
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (limit < 0)
-                throw new ArgumentException($"{nameof(TradeCache)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
+                throw new ArgumentException($"{nameof(TradeCache)}.{nameof(Subscribe)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
+
+            if (_symbol != null)
+                throw new InvalidOperationException($"{nameof(TradeCache)}.{nameof(Subscribe)}: Already subscribed to symbol: \"{_symbol}\"");
 
             _symbol = symbol.FormatSymbol();
             _limit = limit;
 
             base.LinkTo(Client, callback);
 
-            Client.Subscribe(symbol, ClientCallback);
+            Client.Subscribe(_symbol, ClientCallback);
+        }
+
+        public void Unsubscribe()
+        {
+            if (_symbol == null)
+                return;
+
+            Client.Unsubscribe(_symbol, ClientCallback);
+
+            UnLink();
+
+            lock (_sync)
+            {
+                _trades.Clear();
+            }
+
+            _symbol = null;
         }
 
         public override void LinkTo(ITradeWebSocketClient client, Action<TradeCacheEventArgs> callback = null)

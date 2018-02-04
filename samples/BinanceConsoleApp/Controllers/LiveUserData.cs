@@ -49,10 +49,8 @@ namespace BinanceConsoleApp.Controllers
             Program.UserDataManager.OrderUpdate += OnOrderUpdateEvent;
             Program.UserDataManager.TradeUpdate += OnTradeUpdateEvent;
 
-            Program.LiveTask = Task.Run(() =>
-            {
-                Program.UserDataManager.SubscribeAndStreamAsync(Program.User, Program.LiveTokenSource.Token);
-            }, token);
+            Program.LiveTask = Program.UserDataManager.SubscribeAndStreamAsync(
+                Program.User, Program.LiveTokenSource.Token);
 
             lock (Program.ConsoleSync)
             {

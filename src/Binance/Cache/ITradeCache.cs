@@ -39,12 +39,17 @@ namespace Binance.Cache
         #region Methods
 
         /// <summary>
-        /// 
+        /// Subscribe to a symbol.
         /// </summary>
-        /// <param name="symbol"></param>
-        /// <param name="limit"></param>
-        /// <param name="callback"></param>
+        /// <param name="symbol">The symbol.</param>
+        /// <param name="limit">The number of trades to cache.</param>
+        /// <param name="callback">The callback (optional).</param>
         void Subscribe(string symbol, int limit, Action<TradeCacheEventArgs> callback);
+
+        /// <summary>
+        /// Unsubscribe from the currently subscribed symbol.
+        /// </summary>
+        void Unsubscribe();
 
         /// <summary>
         /// Link to a subscribed <see cref="ITradeWebSocketClient"/>.

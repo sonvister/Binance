@@ -132,8 +132,6 @@ namespace Binance.Cache
 
         public virtual void UnLink()
         {
-            Client = null;
-
             _callback = null;
 
             _isLinked = false;

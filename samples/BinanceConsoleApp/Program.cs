@@ -11,6 +11,7 @@ using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
+using Binance.WebSocket;
 using Binance.WebSocket.UserData;
 using BinanceConsoleApp.Controllers;
 using Microsoft.Extensions.Configuration;
@@ -70,6 +71,9 @@ namespace BinanceConsoleApp
                 // Configure services.
                ServiceProvider = new ServiceCollection()
                     .AddBinance()
+                    // Use a single web socket stream (combined streams).
+                    .AddSingleton<IWebSocketStream, BinanceWebSocketStream>()
+                    // Change low-level web socket client implementation.
                     //.AddTransient<IWebSocketClient, WebSocket4NetClient>()
                     //.AddTransient<IWebSocketClient, WebSocketSharpClient>()
                     .AddOptions()
@@ -317,6 +321,10 @@ namespace BinanceConsoleApp
                 await LiveTask;
 
             LiveTokenSource?.Dispose();
+
+            // Unsubscribe all streams from global web socket stream.
+            var webSocket = ServiceProvider.GetService<IWebSocketStream>();
+            webSocket.UnsubscribeAll();
 
             if (TradeCache != null)
             {

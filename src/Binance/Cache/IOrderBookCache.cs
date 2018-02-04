@@ -49,6 +49,11 @@ namespace Binance.Cache
         void Subscribe(string symbol, int limit, Action<OrderBookCacheEventArgs> callback);
 
         /// <summary>
+        /// Unsubscribe from the currently subscribed symbol and limit.
+        /// </summary>
+        void Unsubscribe();
+
+        /// <summary>
         /// Link to a subscribed <see cref="IDepthWebSocketClient"/>.
         /// </summary>
         /// <param name="client"></param>

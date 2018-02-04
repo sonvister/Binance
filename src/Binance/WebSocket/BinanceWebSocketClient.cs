@@ -62,6 +62,20 @@ namespace Binance.WebSocket
 
         #endregion Constructors
 
+        #region Public Methods
+
+        public void UnsubscribeAll()
+        {
+            foreach (var stream in Subscribers.Keys)
+            {
+                WebSocket.Unsubscribe(stream, WebSocketCallback);
+            }
+
+            Subscribers.Clear();
+        }
+
+        #endregion Public Methods
+
         #region Protected Methods
 
         protected abstract void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<TEventArgs>> callbacks);

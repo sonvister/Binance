@@ -17,7 +17,16 @@ namespace Binance.Cache
 
         public IEnumerable<SymbolStatistics> Statistics
         {
-            get { lock (_sync) { return _symbols.Select(s => _statistics[s]).ToArray(); } }
+            get
+            {
+                lock (_sync)
+                {
+                    return _symbols
+                        .Where(s => _statistics.ContainsKey(s))
+                        .Select(s => _statistics[s])
+                        .ToArray();
+                }
+            }
         }
 
         #endregion Public Properties
@@ -90,6 +99,16 @@ namespace Binance.Cache
 
                 Client.Subscribe(symbol, ClientCallback);
             }
+        }
+
+        public void Unsubscribe()
+        {
+            Client.UnsubscribeAll();
+
+            UnLink();
+
+            _statistics.Clear();
+            _symbols.Clear();
         }
 
         public override void LinkTo(ISymbolStatisticsWebSocketClient client, Action<SymbolStatisticsCacheEventArgs> callback = null)

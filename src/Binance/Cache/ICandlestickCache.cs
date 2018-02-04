@@ -43,6 +43,11 @@ namespace Binance.Cache
         void Subscribe(string symbol, CandlestickInterval interval, int limit, Action<CandlestickCacheEventArgs> callback);
 
         /// <summary>
+        /// Unsubscribe from the currently subscribed symbol and interval.
+        /// </summary>
+        void Unsubscribe();
+
+        /// <summary>
         /// Link to a subscribed <see cref="ICandlestickWebSocketClient"/>.
         /// </summary>
         /// <param name="client"></param>

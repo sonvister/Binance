@@ -10,10 +10,10 @@ namespace BinanceConsoleApp.Controllers
 {
     internal class LiveAggregateTrades : IHandleCommand
     {
-        public Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             var args = command.Split(' ');
 
@@ -30,25 +30,29 @@ namespace BinanceConsoleApp.Controllers
             }
 
             if (!endpoint.Equals("aggTrades", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             if (Program.LiveTask != null)
             {
-                lock (Program.ConsoleSync)
-                {
-                    Console.WriteLine("! A live task is currently active ...use 'live off' to disable.");
-                }
-                return Task.FromResult(true);
+                Program.LiveTokenSource.Cancel();
+                await Program.LiveTask;
+                Program.LiveTokenSource.Dispose();
             }
 
             Program.LiveTokenSource = new CancellationTokenSource();
 
-            Program.AggregateTradeCache = Program.ServiceProvider.GetService<IAggregateTradeCache>();
-
-            Program.LiveTask = Task.Run(() =>
+            if (Program.AggregateTradeCache == null)
             {
-                Program.AggregateTradeCache.SubscribeAndStreamAsync(symbol, e => { Program.Display(e.LatestTrade()); }, Program.LiveTokenSource.Token);
-            }, token);
+                Program.AggregateTradeCache = Program.ServiceProvider.GetService<IAggregateTradeCache>();
+            }
+            else
+            {
+                Program.AggregateTradeCache.Unsubscribe();
+            }
+
+            Program.AggregateTradeCache.Subscribe(symbol, 1, evt => { Program.Display(evt.LatestTrade()); });
+
+            Program.LiveTask = Program.AggregateTradeCache.StreamAsync(Program.LiveTokenSource.Token);
 
             lock (Program.ConsoleSync)
             {
@@ -56,7 +60,7 @@ namespace BinanceConsoleApp.Controllers
                 Console.WriteLine($"  ...live aggregate trades feed enabled for symbol: {symbol} ...use 'live off' to disable.");
             }
 
-            return Task.FromResult(true);
+            return true;
         }
     }
 }

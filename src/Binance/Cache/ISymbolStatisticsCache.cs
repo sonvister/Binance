@@ -61,6 +61,11 @@ namespace Binance.Cache
         void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback, params string[] symbols);
 
         /// <summary>
+        /// Unsubscribe from the currently subscribed symbol or symbols.
+        /// </summary>
+        void Unsubscribe();
+
+        /// <summary>
         /// Link to a subscribed <see cref="ISymbolStatisticsWebSocketClient"/>.
         /// </summary>
         /// <param name="client"></param>

@@ -12,10 +12,10 @@ namespace BinanceConsoleApp.Controllers
 {
     internal class LiveCandlesticks : IHandleCommand
     {
-        public Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             var args = command.Split(' ');
 
@@ -33,15 +33,13 @@ namespace BinanceConsoleApp.Controllers
 
             if (!endpoint.Equals("kLines", StringComparison.OrdinalIgnoreCase)
                 && !endpoint.Equals("candles", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             if (Program.LiveTask != null)
             {
-                lock (Program.ConsoleSync)
-                {
-                    Console.WriteLine("! A live task is currently active ...use 'live off' to disable.");
-                }
-                return Task.FromResult(true);
+                Program.LiveTokenSource.Cancel();
+                await Program.LiveTask;
+                Program.LiveTokenSource.Dispose();
             }
 
             var interval = CandlestickInterval.Hour;
@@ -52,13 +50,19 @@ namespace BinanceConsoleApp.Controllers
 
             Program.LiveTokenSource = new CancellationTokenSource();
 
-            Program.CandlestickCache = Program.ServiceProvider.GetService<ICandlestickCache>();
-            Program.CandlestickCache.Client.Candlestick += OnCandlestickEvent;
-
-            Program.LiveTask = Task.Run(() =>
+            if (Program.CandlestickCache == null)
             {
-                Program.CandlestickCache.SubscribeAndStreamAsync(symbol, interval, e => { Program.Display(e.Candlesticks.Last()); }, Program.LiveTokenSource.Token);
-            }, token);
+                Program.CandlestickCache = Program.ServiceProvider.GetService<ICandlestickCache>();
+                Program.CandlestickCache.Client.Candlestick += OnCandlestickEvent;
+            }
+            else
+            {
+                Program.CandlestickCache.Unsubscribe();
+            }
+
+            Program.CandlestickCache.Subscribe(symbol, interval, evt => { Program.Display(evt.Candlesticks.Last()); });
+
+            Program.LiveTask = Program.CandlestickCache.StreamAsync(Program.LiveTokenSource.Token);
 
             lock (Program.ConsoleSync)
             {
@@ -66,7 +70,7 @@ namespace BinanceConsoleApp.Controllers
                 Console.WriteLine($"  ...live candlestick feed enabled for symbol: {symbol}, interval: {interval} ...use 'live off' to disable.");
             }
 
-            return Task.FromResult(true);
+            return true;
         }
 
         private static void OnCandlestickEvent(object sender, CandlestickEventArgs e)

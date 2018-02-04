@@ -11,11 +11,11 @@ namespace BinanceConsoleApp.Controllers
 {
     internal class LiveOrderBook : IHandleCommand
     {
-        public Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase) &&
                 !command.Equals("live", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             var args = command.Split(' ');
 
@@ -33,26 +33,30 @@ namespace BinanceConsoleApp.Controllers
 
             if (!endpoint.Equals("depth", StringComparison.OrdinalIgnoreCase)
                 && !endpoint.Equals("book", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             if (Program.LiveTask != null)
             {
-                lock (Program.ConsoleSync)
-                {
-                    Console.WriteLine("! A live task is currently active ...use 'live off' to disable.");
-                }
-                return Task.FromResult(true);
+                Program.LiveTokenSource.Cancel();
+                await Program.LiveTask;
+                Program.LiveTokenSource.Dispose();
             }
 
             Program.LiveTokenSource = new CancellationTokenSource();
 
-            Program.OrderBookCache = Program.ServiceProvider.GetService<IOrderBookCache>();
-            Program.OrderBookCache.Update += OnOrderBookUpdated;
-
-            Program.LiveTask = Task.Run(() =>
+            if (Program.OrderBookCache == null)
             {
-                Program.OrderBookCache.SubscribeAndStreamAsync(symbol, 5, Program.LiveTokenSource.Token);
-            }, token);
+                Program.OrderBookCache = Program.ServiceProvider.GetService<IOrderBookCache>();
+                Program.OrderBookCache.Update += OnOrderBookUpdated;
+            }
+            else
+            {
+                Program.OrderBookCache.Unsubscribe();
+            }
+
+            Program.OrderBookCache.Subscribe(symbol, 5);
+
+            Program.LiveTask = Program.OrderBookCache.StreamAsync(Program.LiveTokenSource.Token);
 
             lock (Program.ConsoleSync)
             {
@@ -60,7 +64,7 @@ namespace BinanceConsoleApp.Controllers
                 Console.WriteLine($"  ...live order book enabled for symbol: {symbol} ...use 'live off' to disable.");
             }
 
-            return Task.FromResult(true);
+            return true;
         }
 
         private static void OnOrderBookUpdated(object sender, OrderBookCacheEventArgs e)

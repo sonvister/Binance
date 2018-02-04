@@ -56,13 +56,33 @@ namespace Binance.Cache
             if (limit < 0)
                 throw new ArgumentException($"{nameof(CandlestickCache)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
 
+            if (_symbol != null)
+                throw new InvalidOperationException($"{nameof(CandlestickCache)}.{nameof(Subscribe)}: Already subscribed to symbol: \"{_symbol}\"");
+
             _symbol = symbol.FormatSymbol();
             _interval = interval;
             _limit = limit;
 
             base.LinkTo(Client, callback);
 
-            Client.Subscribe(symbol, interval, ClientCallback);
+            Client.Subscribe(_symbol, _interval, ClientCallback);
+        }
+
+        public void Unsubscribe()
+        {
+            if (_symbol == null)
+                return;
+
+            Client.Unsubscribe(_symbol, _interval, ClientCallback);
+
+            UnLink();
+
+            lock (_sync)
+            {
+                _candlesticks.Clear();
+            }
+
+            _symbol = null;
         }
 
         public override void LinkTo(ICandlestickWebSocketClient client, Action<CandlestickCacheEventArgs> callback = null)

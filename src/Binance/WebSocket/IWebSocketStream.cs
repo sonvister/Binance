@@ -55,6 +55,11 @@ namespace Binance.WebSocket
         void Unsubscribe(string stream, Action<WebSocketStreamEventArgs> callback);
 
         /// <summary>
+        /// Unsubscribe all streams (and callbacks).
+        /// </summary>
+        void UnsubscribeAll();
+
+        /// <summary>
         /// Initiate a web socket connection and begin receiving messages.
         /// Runtime exceptions are thrown by this method and must be handled
         /// by the caller, otherwise the <see cref="Task"/> continues receiving
