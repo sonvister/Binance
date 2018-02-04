@@ -56,7 +56,6 @@ namespace Binance
             services.AddTransient<ISymbolStatisticsWebSocketClient, SymbolStatisticsWebSocketClient>();
             services.AddTransient<IUserDataWebSocketClient, UserDataWebSocketClient>();
             services.AddTransient<ISingleUserDataWebSocketClient, SingleUserDataWebSocketClient>();
-            services.AddTransient<IMultiUserDataWebSocketClient, MultiUserDataWebSocketClient>();
             services.AddTransient<IUserDataKeepAliveTimer, UserDataKeepAliveTimer>();
             services.AddTransient<IUserDataKeepAliveTimerProvider, UserDataKeepAliveTimerProvider>();
             services.AddTransient<IUserDataWebSocketManager, UserDataWebSocketManager>();
