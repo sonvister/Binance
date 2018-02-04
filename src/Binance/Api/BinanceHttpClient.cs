@@ -62,12 +62,13 @@ namespace Binance.Api
 
         /// <summary>
         /// Constructor.
+        /// RECOMMENDED: Use static Instance with dependency injection.
         /// </summary>
         /// <param name="timestampProvider">The timestamp provider.</param>
         /// <param name="rateLimiter">The rate limiter (auto configured).</param>
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
-        internal BinanceHttpClient(ITimestampProvider timestampProvider = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
+        public BinanceHttpClient(ITimestampProvider timestampProvider = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
         {
             TimestampProvider = timestampProvider ?? new TimestampProvider();
             RateLimiter = rateLimiter ?? new ApiRateLimiter();
