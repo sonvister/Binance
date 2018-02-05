@@ -32,9 +32,9 @@ namespace BinanceConsoleApp.Controllers
 
             IEnumerable<AggregateTrade> trades = null;
 
-            // If live order book is active (for symbol), get cached data.
-            if (Program.AggregateTradeCache != null && Program.AggregateTradeCache.Trades.FirstOrDefault()?.Symbol == symbol)
-                trades = Program.AggregateTradeCache.Trades.Reverse().Take(limit); // get local cache.
+            // TODO: If live aggregate trades cache is active (for symbol), get cached data.
+            //if (Program.AggregateTradeCache != null && Program.AggregateTradeCache.Trades.FirstOrDefault()?.Symbol == symbol)
+            //    trades = Program.AggregateTradeCache.Trades.Reverse().Take(limit); // get local cache.
 
             if (trades == null)
                 trades = (await Program.Api.GetAggregateTradesAsync(symbol, limit, token)).Reverse();

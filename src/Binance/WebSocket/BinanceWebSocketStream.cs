@@ -148,8 +148,8 @@ namespace Binance.WebSocket
             //{
                 if (!_subscribers.ContainsKey(stream))
                 {
-                    _logger?.LogDebug($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Ignoring non-subscribed stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    return; // ignore.
+                    _logger?.LogError($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Not subscribed to stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Not subscribed to stream (\"{stream}\").");
                 }
 
                 if (_subscribers[stream].Contains(callback))
@@ -191,7 +191,10 @@ namespace Binance.WebSocket
             token.ThrowIfCancellationRequested();
 
             if (Client.IsStreaming)
-                throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}:: Already streaming ({nameof(IWebSocketClient)}.{nameof(IWebSocketClient.StreamAsync)} Task is not completed).");
+                throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: Already streaming ({nameof(IWebSocketClient)}.{nameof(IWebSocketClient.StreamAsync)} Task is not completed).");
+
+            if (!_subscribers.Any())
+                throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: Not subscribed to any streams.");
 
             try
             {

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Cache;
-using Binance.Cache.Events;
 using Binance.Market;
+using Binance.WebSocket;
+using Binance.WebSocket.Events;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers
@@ -25,38 +27,52 @@ namespace BinanceConsoleApp.Controllers
                 endpoint = args[1];
             }
 
+            if (!endpoint.Equals("depth", StringComparison.OrdinalIgnoreCase)
+                && !endpoint.Equals("book", StringComparison.OrdinalIgnoreCase))
+                return false;
+
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
             {
                 symbol = args[2];
             }
 
-            if (!endpoint.Equals("depth", StringComparison.OrdinalIgnoreCase)
-                && !endpoint.Equals("book", StringComparison.OrdinalIgnoreCase))
-                return false;
+            bool enable = true;
+            if (args.Length > 3)
+            {
+                if (args[3].Equals("off", StringComparison.OrdinalIgnoreCase))
+                    enable = false;
+            }
 
             if (Program.LiveTask != null)
             {
                 Program.LiveTokenSource.Cancel();
-                await Program.LiveTask;
+                if (!Program.LiveTask.IsCompleted)
+                    await Program.LiveTask;
                 Program.LiveTokenSource.Dispose();
             }
 
             Program.LiveTokenSource = new CancellationTokenSource();
 
-            if (Program.OrderBookCache == null)
+            if (Program.OrderBookClient == null)
             {
-                Program.OrderBookCache = Program.ServiceProvider.GetService<IOrderBookCache>();
-                Program.OrderBookCache.Update += OnOrderBookUpdated;
+                Program.OrderBookClient = Program.ServiceProvider.GetService<IDepthWebSocketClient>();
+                Program.OrderBookClient.DepthUpdate += OnOrderBookUpdated;
+            }
+
+            if (enable)
+            {
+                Program.OrderBookClient.Subscribe(symbol, 5);
             }
             else
             {
-                Program.OrderBookCache.Unsubscribe();
+                Program.OrderBookClient.Unsubscribe(symbol, 5);
             }
 
-            Program.OrderBookCache.Subscribe(symbol, 5);
-
-            Program.LiveTask = Program.OrderBookCache.StreamAsync(Program.LiveTokenSource.Token);
+            if (Program.OrderBookClient.WebSocket.SubscribedStreams.Any())
+            {
+                Program.LiveTask = Program.OrderBookClient.StreamAsync(Program.LiveTokenSource.Token);
+            }
 
             lock (Program.ConsoleSync)
             {
@@ -67,13 +83,9 @@ namespace BinanceConsoleApp.Controllers
             return true;
         }
 
-        private static void OnOrderBookUpdated(object sender, OrderBookCacheEventArgs e)
+        private static void OnOrderBookUpdated(object sender, DepthUpdateEventArgs e)
         {
-            // NOTE: object 'sender' is IOrderBookCache (live order book)...
-            //       e.OrderBook is a clone/snapshot of the live order book.
-            var top = e.OrderBook.Top;
-            if (top == null)
-                return;
+            var top = OrderBookTop.Create(e.Symbol, e.Bids.First(), e.Asks.First());
 
             lock (Program.ConsoleSync)
             {

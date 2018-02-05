@@ -9,7 +9,6 @@ using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api;
 using Binance.Application;
-using Binance.Cache;
 using Binance.Market;
 using Binance.WebSocket;
 using Binance.WebSocket.UserData;
@@ -32,15 +31,16 @@ namespace BinanceConsoleApp
         public static IBinanceApi Api;
         public static IBinanceApiUser User;
 
-        public static ITradeCache TradeCache;
-        public static IOrderBookCache OrderBookCache;
-        public static ISymbolStatisticsCache StatsCache;
-        public static ICandlestickCache CandlestickCache;
-        public static IAggregateTradeCache AggregateTradeCache;
-        public static IUserDataWebSocketManager UserDataManager;
+        public static ITradeWebSocketClient TradeClient;
+        public static IAggregateTradeWebSocketClient AggregateTradeClient;
+        public static ICandlestickWebSocketClient CandlestickClient;
+        public static IDepthWebSocketClient OrderBookClient;
+        public static ISymbolStatisticsWebSocketClient StatsClient;
 
         public static Task LiveTask;
         public static CancellationTokenSource LiveTokenSource;
+
+        public static IUserDataWebSocketManager UserDataManager;
 
         public static Task LiveUserDataTask;
         public static CancellationTokenSource LiveUserDataTokenSource;
@@ -178,13 +178,13 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  symbols|pairs [refresh]                               display all symbols (currency pairs).");
                 Console.WriteLine("  price <symbol>                                        display current price for a symbol or all symbols.");
                 Console.WriteLine("  top <symbol>                                          display order book top price/qty for a symbol or all symbols.");
-                Console.WriteLine("  live depth|book <symbol>                              enable order book live feed for a symbol.");
-                Console.WriteLine("  live candles|kLines <symbol> <interval>               enable candlestick live feed for a symbol and interval.");
-                Console.WriteLine("  live stats <symbol>                                   enable 24-hour statistics live feed for a symbol.");
-                Console.WriteLine("  live aggTrades <symbol>                               enable aggregate trades live feed for a symbol.");
-                Console.WriteLine("  live trades <symbol>                                  enable trades live feed for a symbol.");
-                Console.WriteLine("  live account|user                                     enable user data live feed (api key required).");
-                Console.WriteLine("  live off                                              disable the websocket live feed (only one supported by app).");
+                Console.WriteLine("  live depth|book <symbol> [off]                        enable/disable order book live feed for a symbol.");
+                Console.WriteLine("  live candles|kLines <symbol> <interval> [off]         enable/disable candlestick live feed for a symbol and interval.");
+                Console.WriteLine("  live stats <symbol> [off]                             enable/disable 24-hour statistics live feed for a symbol.");
+                Console.WriteLine("  live aggTrades <symbol> [off]                         enable/disable aggregate trades live feed for a symbol.");
+                Console.WriteLine("  live trades <symbol> [off]                            enable/disable trades live feed for a symbol.");
+                Console.WriteLine("  live account|user [off]                               enable/disable user data live feed (api key required).");
+                Console.WriteLine("  live off                                              disable all web socket live feeds.");
                 Console.WriteLine();
                 Console.WriteLine(" Account (authentication required):");
                 Console.WriteLine("  market <side> <symbol> <qty>                          create a market order.");
@@ -345,40 +345,40 @@ namespace BinanceConsoleApp
 
             lock (ConsoleSync)
             {
-                if (TradeCache != null)
+                if (TradeClient != null)
                 {
                     Console.WriteLine();
                     Console.WriteLine("  ...live trades feed disabled.");
                 }
-                TradeCache = null;
+                TradeClient = null;
 
-                if (OrderBookCache != null)
+                if (OrderBookClient != null)
                 {
                     Console.WriteLine();
                     Console.WriteLine("  ...live order book feed disabled.");
                 }
-                OrderBookCache = null;
+                OrderBookClient = null;
 
-                if (StatsCache != null)
+                if (StatsClient != null)
                 {
                     Console.WriteLine();
                     Console.WriteLine("  ...live statistics feed disabled.");
                 }
-                StatsCache = null;
+                StatsClient = null;
 
-                if (CandlestickCache != null)
+                if (CandlestickClient != null)
                 {
                     Console.WriteLine();
                     Console.WriteLine("  ...live candlestick feed disabled.");
                 }
-                CandlestickCache = null;
+                CandlestickClient = null;
 
-                if (AggregateTradeCache != null)
+                if (AggregateTradeClient != null)
                 {
                     Console.WriteLine();
                     Console.WriteLine("  ...live aggregate trades feed disabled.");
                 }
-                AggregateTradeCache = null;
+                AggregateTradeClient = null;
 
                 if (UserDataManager != null)
                 {
@@ -413,6 +413,20 @@ namespace BinanceConsoleApp
                 Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
                 Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
                 Console.WriteLine();
+            }
+        }
+
+        internal static void Display(SymbolStatistics[] statistics)
+        {
+            lock (ConsoleSync)
+            {
+                foreach (var stats in statistics)
+                {
+                    Console.WriteLine($"  24-hour statistics for {stats.Symbol}:");
+                    Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
+                    Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
+                    Console.WriteLine();
+                }
             }
         }
 

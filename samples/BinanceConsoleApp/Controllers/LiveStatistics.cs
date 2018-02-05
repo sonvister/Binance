@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Cache;
+using Binance.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers
@@ -22,36 +24,50 @@ namespace BinanceConsoleApp.Controllers
                 endpoint = args[1];
             }
 
+            if (!endpoint.Equals("stats", StringComparison.OrdinalIgnoreCase))
+                return false;
+
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
             {
                 symbol = args[2];
             }
 
-            if (!endpoint.Equals("stats", StringComparison.OrdinalIgnoreCase))
-                return false;
+            bool enable = true;
+            if (args.Length > 3)
+            {
+                if (args[3].Equals("off", StringComparison.OrdinalIgnoreCase))
+                    enable = false;
+            }
 
             if (Program.LiveTask != null)
             {
                 Program.LiveTokenSource.Cancel();
-                await Program.LiveTask;
+                if (!Program.LiveTask.IsCompleted)
+                    await Program.LiveTask;
                 Program.LiveTokenSource.Dispose();
             }
 
             Program.LiveTokenSource = new CancellationTokenSource();
 
-            if (Program.StatsCache == null)
+            if (Program.StatsClient == null)
             {
-                Program.StatsCache = Program.ServiceProvider.GetService<ISymbolStatisticsCache>();
+                Program.StatsClient = Program.ServiceProvider.GetService<ISymbolStatisticsWebSocketClient>();
+            }
+
+            if (enable)
+            {
+                Program.StatsClient.Subscribe(symbol, evt => { Program.Display(evt.Statistics); });
             }
             else
             {
-                Program.StatsCache.Unsubscribe();
+                Program.StatsClient.Unsubscribe(symbol);
             }
 
-            Program.StatsCache.Subscribe(evt => { Program.Display(evt.Statistics[0]); }, symbol);
-
-            Program.LiveTask = Program.StatsCache.StreamAsync(Program.LiveTokenSource.Token);
+            if (Program.StatsClient.WebSocket.SubscribedStreams.Any())
+            {
+                Program.LiveTask = Program.StatsClient.StreamAsync(Program.LiveTokenSource.Token);
+            }
 
             lock (Program.ConsoleSync)
             {

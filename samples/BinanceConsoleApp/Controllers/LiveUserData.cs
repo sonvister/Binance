@@ -10,10 +10,10 @@ namespace BinanceConsoleApp.Controllers
 {
     internal class LiveUserData : IHandleCommand
     {
-        public Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             var args = command.Split(' ');
 
@@ -25,7 +25,25 @@ namespace BinanceConsoleApp.Controllers
 
             if (!endpoint.Equals("account", StringComparison.OrdinalIgnoreCase)
                 && !endpoint.Equals("user", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
+
+            bool enable = true;
+            if (args.Length > 2)
+            {
+                if (args[2].Equals("off", StringComparison.OrdinalIgnoreCase))
+                    enable = false;
+            }
+
+            if (!enable && Program.LiveUserDataTask != null)
+            {
+                Program.LiveUserDataTokenSource.Cancel();
+                if (!Program.LiveUserDataTask.IsCompleted)
+                    await Program.LiveUserDataTask;
+                Program.LiveUserDataTokenSource.Dispose();
+                Program.LiveUserDataTokenSource = null;
+                Program.UserDataManager = null;
+                return true;
+            }
 
             if (Program.LiveUserDataTask != null)
             {
@@ -33,13 +51,13 @@ namespace BinanceConsoleApp.Controllers
                 {
                     Console.WriteLine("! A live user data task is currently active ...use 'live off' to disable.");
                 }
-                return Task.FromResult(true);
+                return true;
             }
 
             if (Program.User == null)
             {
                 Program.PrintApiNotice();
-                return Task.FromResult(true);
+                return true;
             }
 
             Program.LiveUserDataTokenSource = new CancellationTokenSource();
@@ -58,7 +76,7 @@ namespace BinanceConsoleApp.Controllers
                 Console.WriteLine("  ...live account feed enabled ...use 'live off' to disable.");
             }
 
-            return Task.FromResult(true);
+            return true;
         }
 
         private static void OnAccountUpdateEvent(object sender, AccountUpdateEventArgs e)

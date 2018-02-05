@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Binance;
 using Binance.Cache;
 using Binance.Market;
+using Binance.WebSocket;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,21 +26,14 @@ namespace BinanceConsoleApp.Controllers
                 endpoint = args[1];
             }
 
-            string symbol = Symbol.BTC_USDT;
-            if (args.Length > 2)
-            {
-                symbol = args[2];
-            }
-
             if (!endpoint.Equals("kLines", StringComparison.OrdinalIgnoreCase)
                 && !endpoint.Equals("candles", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            if (Program.LiveTask != null)
+            string symbol = Symbol.BTC_USDT;
+            if (args.Length > 2)
             {
-                Program.LiveTokenSource.Cancel();
-                await Program.LiveTask;
-                Program.LiveTokenSource.Dispose();
+                symbol = args[2];
             }
 
             var interval = CandlestickInterval.Hour;
@@ -48,21 +42,42 @@ namespace BinanceConsoleApp.Controllers
                 interval = args[3].ToCandlestickInterval();
             }
 
+            bool enable = true;
+            if (args.Length > 4)
+            {
+                if (args[4].Equals("off", StringComparison.OrdinalIgnoreCase))
+                    enable = false;
+            }
+
+            if (Program.LiveTask != null)
+            {
+                Program.LiveTokenSource.Cancel();
+                if (!Program.LiveTask.IsCompleted)
+                    await Program.LiveTask;
+                Program.LiveTokenSource.Dispose();
+            }
+
             Program.LiveTokenSource = new CancellationTokenSource();
 
-            if (Program.CandlestickCache == null)
+            if (Program.CandlestickClient == null)
             {
-                Program.CandlestickCache = Program.ServiceProvider.GetService<ICandlestickCache>();
-                Program.CandlestickCache.Client.Candlestick += OnCandlestickEvent;
+                Program.CandlestickClient = Program.ServiceProvider.GetService<ICandlestickWebSocketClient>();
+                Program.CandlestickClient.Candlestick += OnCandlestickEvent;
+            }
+
+            if (enable)
+            {
+                Program.CandlestickClient.Subscribe(symbol, interval, evt => { Program.Display(evt.Candlestick); });
             }
             else
             {
-                Program.CandlestickCache.Unsubscribe();
+                Program.CandlestickClient.Unsubscribe(symbol, interval);
             }
 
-            Program.CandlestickCache.Subscribe(symbol, interval, evt => { Program.Display(evt.Candlesticks.Last()); });
-
-            Program.LiveTask = Program.CandlestickCache.StreamAsync(Program.LiveTokenSource.Token);
+            if (Program.CandlestickClient.WebSocket.SubscribedStreams.Any())
+            {
+                Program.LiveTask = Program.CandlestickClient.StreamAsync(Program.LiveTokenSource.Token);
+            }
 
             lock (Program.ConsoleSync)
             {

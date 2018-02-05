@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Cache;
-using Binance.Cache.Events;
+using Binance.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers
@@ -23,36 +24,50 @@ namespace BinanceConsoleApp.Controllers
                 endpoint = args[1];
             }
 
+            if (!endpoint.Equals("aggTrades", StringComparison.OrdinalIgnoreCase))
+                return false;
+
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
             {
                 symbol = args[2];
             }
 
-            if (!endpoint.Equals("aggTrades", StringComparison.OrdinalIgnoreCase))
-                return false;
+            bool enable = true;
+            if (args.Length > 3)
+            {
+                if (args[3].Equals("off", StringComparison.OrdinalIgnoreCase))
+                    enable = false;
+            }
 
             if (Program.LiveTask != null)
             {
                 Program.LiveTokenSource.Cancel();
-                await Program.LiveTask;
+                if (!Program.LiveTask.IsCompleted)
+                    await Program.LiveTask;
                 Program.LiveTokenSource.Dispose();
             }
 
             Program.LiveTokenSource = new CancellationTokenSource();
 
-            if (Program.AggregateTradeCache == null)
+            if (Program.AggregateTradeClient == null)
             {
-                Program.AggregateTradeCache = Program.ServiceProvider.GetService<IAggregateTradeCache>();
+                Program.AggregateTradeClient = Program.ServiceProvider.GetService<IAggregateTradeWebSocketClient>();
+            }
+
+            if (enable)
+            {
+                Program.AggregateTradeClient.Subscribe(symbol, evt => { Program.Display(evt.Trade); });
             }
             else
             {
-                Program.AggregateTradeCache.Unsubscribe();
+                Program.AggregateTradeClient.Unsubscribe(symbol);
             }
 
-            Program.AggregateTradeCache.Subscribe(symbol, 1, evt => { Program.Display(evt.LatestTrade()); });
-
-            Program.LiveTask = Program.AggregateTradeCache.StreamAsync(Program.LiveTokenSource.Token);
+            if (Program.AggregateTradeClient.WebSocket.SubscribedStreams.Any())
+            {
+                Program.LiveTask = Program.AggregateTradeClient.StreamAsync(Program.LiveTokenSource.Token);
+            }
 
             lock (Program.ConsoleSync)
             {

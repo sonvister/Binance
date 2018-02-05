@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
@@ -40,9 +39,9 @@ namespace BinanceConsoleApp.Controllers
 
             IEnumerable<Candlestick> candlesticks = null;
 
-            // If live order book is active (for symbol), get cached data.
-            if (Program.CandlestickCache != null && Program.CandlestickCache.Candlesticks.FirstOrDefault()?.Symbol == symbol)
-                candlesticks = Program.CandlestickCache.Candlesticks.Reverse().Take(limit); // get local cache.
+            // TODO: If live candlestick cache is active (for symbol), get cached data.
+            //if (Program.CandlestickCache != null && Program.CandlestickCache.Candlesticks.FirstOrDefault()?.Symbol == symbol)
+            //    candlesticks = Program.CandlestickCache.Candlesticks.Reverse().Take(limit); // get local cache.
 
             if (candlesticks == null)
                 candlesticks = await Program.Api.GetCandlesticksAsync(symbol, interval, limit, token: token);
