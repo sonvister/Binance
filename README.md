@@ -44,11 +44,11 @@ To get the source code for a particular release, first select the corresponding 
 [Microsoft Visual Studio Community 2017](https://www.visualstudio.com/vs/community/)
 
 ## Documentation
-[**Wiki**](https://github.com/sonvister/Binance/wiki)\
+Documentation for this library: [**Wiki**](https://github.com/sonvister/Binance/wiki)\
 *NOTE: Some information is currently out-of-date ...will be updated soon.*
 
-Binance API information: [Binance Official Documentation](https://github.com/binance-exchange/binance-official-api-docs)\
-Binance API questions: [Binance API Telegram](https://t.me/binance_api_english)
+Binance REST/WebSocket API information: [Binance Official Documentation](https://github.com/binance-exchange/binance-official-api-docs)\
+Binance REST/WebSocket API questions: [Binance API Telegram](https://t.me/binance_api_english) (*not for questions about this library*)
 
 ## Donate
 DCR: Dsog2jYLS65Y3N2jDQSxsiBYC3SRqq7TGd4\
