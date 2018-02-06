@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Account;
@@ -69,8 +70,6 @@ namespace BinanceConsoleApp
                 var manager = services.GetService<IUserDataWebSocketManager>();
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
 
-                using (var controller1 = new RetryTaskController())
-                using (var controller2 = new RetryTaskController())
                 using (var user = userProvider.CreateUser(key, secret))
                 {
                     // Query and display order book and current asset balance.
@@ -78,14 +77,11 @@ namespace BinanceConsoleApp
                     var orderBook = await api.GetOrderBookAsync(symbol, _limit);
                     Display(orderBook, balance);
 
-                    // Subscribe to symbol to display latest order book and asset balance.
-                    controller1.Begin(
+                    Func<CancellationToken, Task> action1 =
                         tkn => cache.SubscribeAndStreamAsync(symbol,
-                            evt => Display(evt.OrderBook, balance), tkn),
-                        err => Console.WriteLine(err.Message));
+                            evt => Display(evt.OrderBook, balance), tkn);
 
-                    // Subscribe to user account information and begin streaming.
-                    controller2.Begin(
+                    Func<CancellationToken, Task> action2 =
                         tkn => manager.SubscribeAndStreamAsync(user,
                             evt =>
                             {
@@ -97,15 +93,26 @@ namespace BinanceConsoleApp
                                     // Display latest order book and asset balance.
                                     Display(cache.OrderBook, balance);
                                 }
-                            }, tkn),
-                        err => Console.WriteLine(err.Message));
+                            }, tkn);
 
-                    // Verify we are NOT using a combined streams (DEMONSTRATION ONLY).
-                    if (cache.Client.WebSocket.IsCombined || cache.Client.WebSocket == manager.Client.WebSocket)
-                        throw new Exception("Using combined streams :(");
+                    Action<Exception> onError = err => Console.WriteLine(err.Message);
 
-                    message = "...press any key to continue.";
-                    Console.ReadKey(true); // wait for user input.
+                    using (var controller1 = new RetryTaskController(action1, onError))
+                    using (var controller2 = new RetryTaskController(action2, onError))
+                    {
+                        // Subscribe to symbol to display latest order book and asset balance.
+                        controller1.Begin();
+
+                        // Subscribe to user account information and begin streaming.
+                        controller2.Begin();
+
+                        // Verify we are NOT using a combined streams (DEMONSTRATION ONLY).
+                        if (cache.Client.WebSocket.IsCombined || cache.Client.WebSocket == manager.Client.WebSocket)
+                            throw new Exception("Using combined streams :(");
+
+                        message = "...press any key to continue.";
+                        Console.ReadKey(true); // wait for user input.
+                    }
                 }
             }
             catch (Exception e)

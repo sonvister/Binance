@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Api;
@@ -48,40 +49,44 @@ namespace BinanceMarketDepth
 
                 var api = services.GetService<IBinanceApi>();
 
+                // Query and display the order books.
+                var btcOrderBook = await api.GetOrderBookAsync(Symbol.BTC_USDT, limit);
+                var ethOrderBook = await api.GetOrderBookAsync(Symbol.ETH_BTC, limit);
+                Display(btcOrderBook, ethOrderBook);
+
                 var btcCache = services.GetService<IOrderBookCache>();
                 var ethCache = services.GetService<IOrderBookCache>();
 
-                using (var controller1 = new RetryTaskController())
-                using (var controller2 = new RetryTaskController())
-                {
-                    // Query and display the order books.
-                    var btcOrderBook = await api.GetOrderBookAsync(Symbol.BTC_USDT, limit);
-                    var ethOrderBook = await api.GetOrderBookAsync(Symbol.ETH_BTC, limit);
-                    Display(btcOrderBook, ethOrderBook);
+                Func<CancellationToken, Task> action1 =
+                    tkn => btcCache.SubscribeAndStreamAsync(Symbol.BTC_USDT, limit,
+                        evt =>
+                        {
+                            btcOrderBook = evt.OrderBook;
+                            Display(btcOrderBook, ethOrderBook);
+                        }, tkn);
 
+                Func<CancellationToken, Task> action2 =
+                    tkn => ethCache.SubscribeAndStreamAsync(Symbol.ETH_BTC, limit,
+                        evt =>
+                        {
+                            ethOrderBook = evt.OrderBook;
+                            Display(btcOrderBook, ethOrderBook);
+                        }, tkn);
+
+                Action<Exception> onError = err => Console.WriteLine(err.Message);
+
+                using (var controller1 = new RetryTaskController(action1, onError))
+                using (var controller2 = new RetryTaskController(action2, onError))
+                {
                     //////////////////////////////////////////////////////////////////////
                     // Using multiple controllers and multiple (non-combined) web sockets.
                     // NOTE: IWebSocketStream must be left as Transient in DI setup.
 
                     // Monitor order book and display updates in real-time.
-                    controller1.Begin(
-                        tkn => btcCache.SubscribeAndStreamAsync(Symbol.BTC_USDT, limit,
-                            evt =>
-                            {
-                                btcOrderBook = evt.OrderBook;
-                                Display(btcOrderBook, ethOrderBook);
-                            }, tkn),
-                        err => Console.WriteLine(err.Message));
+                    controller1.Begin();
 
                     // Monitor order book and display updates in real-time.
-                    controller2.Begin(
-                        tkn => ethCache.SubscribeAndStreamAsync(Symbol.ETH_BTC, limit,
-                            evt =>
-                            {
-                                ethOrderBook = evt.OrderBook;
-                                Display(btcOrderBook, ethOrderBook);
-                            }, tkn),
-                        err => Console.WriteLine(err.Message));
+                    controller2.Begin();
 
                     // Verify we are not using a shared/combined stream (not necessary).
                     if (btcCache.Client.WebSocket.IsCombined || ethCache.Client.WebSocket.IsCombined || btcCache.Client.WebSocket == ethCache.Client.WebSocket)

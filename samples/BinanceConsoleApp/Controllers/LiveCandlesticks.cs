@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
-using Binance.Cache;
 using Binance.Market;
 using Binance.WebSocket;
 using Binance.WebSocket.Events;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers
 {
     internal class LiveCandlesticks : IHandleCommand
     {
-        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             var args = command.Split(' ');
 
@@ -28,12 +25,20 @@ namespace BinanceConsoleApp.Controllers
 
             if (!endpoint.Equals("kLines", StringComparison.OrdinalIgnoreCase)
                 && !endpoint.Equals("candles", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
             {
                 symbol = args[2];
+                if (!Symbol.IsValid(symbol))
+                {
+                    lock (Program.ConsoleSync)
+                    {
+                        Console.WriteLine($"  Invalid symbol: \"{symbol}\"");
+                    }
+                    return Task.FromResult(true);
+                }
             }
 
             var interval = CandlestickInterval.Hour;
@@ -49,43 +54,31 @@ namespace BinanceConsoleApp.Controllers
                     enable = false;
             }
 
-            if (Program.LiveTask != null)
-            {
-                Program.LiveTokenSource.Cancel();
-                if (!Program.LiveTask.IsCompleted)
-                    await Program.LiveTask;
-                Program.LiveTokenSource.Dispose();
-            }
-
-            Program.LiveTokenSource = new CancellationTokenSource();
-
-            if (Program.CandlestickClient == null)
-            {
-                Program.CandlestickClient = Program.ServiceProvider.GetService<ICandlestickWebSocketClient>();
-                Program.CandlestickClient.Candlestick += OnCandlestickEvent;
-            }
-
             if (enable)
             {
-                Program.CandlestickClient.Subscribe(symbol, interval, evt => { Program.Display(evt.Candlestick); });
+                Program.ClientManager.CandlestickClient.Subscribe(symbol, interval, evt => { Program.Display(evt.Candlestick); });
+                //Program.ClientManager.CandlestickClient.Candlestick += OnCandlestickEvent; // TODO
+
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"  ...live candlestick feed ENABLED for symbol: {symbol}, interval: {interval}");
+                    Console.WriteLine();
+                }
             }
             else
             {
-                Program.CandlestickClient.Unsubscribe(symbol, interval);
+                Program.ClientManager.CandlestickClient.Unsubscribe(symbol, interval);
+
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"  ...live candlestick feed DISABLED for symbol: {symbol}, interval: {interval}");
+                    Console.WriteLine();
+                }
             }
 
-            if (Program.CandlestickClient.WebSocket.SubscribedStreams.Any())
-            {
-                Program.LiveTask = Program.CandlestickClient.StreamAsync(Program.LiveTokenSource.Token);
-            }
-
-            lock (Program.ConsoleSync)
-            {
-                Console.WriteLine();
-                Console.WriteLine($"  ...live candlestick feed enabled for symbol: {symbol}, interval: {interval} ...use 'live off' to disable.");
-            }
-
-            return true;
+            return Task.FromResult(true);
         }
 
         private static void OnCandlestickEvent(object sender, CandlestickEventArgs e)

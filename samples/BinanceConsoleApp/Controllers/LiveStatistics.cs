@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
-using Binance.Cache;
 using Binance.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers
 {
     internal class LiveStatistics : IHandleCommand
     {
-        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             var args = command.Split(' ');
 
@@ -25,12 +22,20 @@ namespace BinanceConsoleApp.Controllers
             }
 
             if (!endpoint.Equals("stats", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
             {
                 symbol = args[2];
+                if (!Symbol.IsValid(symbol))
+                {
+                    lock (Program.ConsoleSync)
+                    {
+                        Console.WriteLine($"  Invalid symbol: \"{symbol}\"");
+                    }
+                    return Task.FromResult(true);
+                }
             }
 
             bool enable = true;
@@ -40,42 +45,30 @@ namespace BinanceConsoleApp.Controllers
                     enable = false;
             }
 
-            if (Program.LiveTask != null)
-            {
-                Program.LiveTokenSource.Cancel();
-                if (!Program.LiveTask.IsCompleted)
-                    await Program.LiveTask;
-                Program.LiveTokenSource.Dispose();
-            }
-
-            Program.LiveTokenSource = new CancellationTokenSource();
-
-            if (Program.StatsClient == null)
-            {
-                Program.StatsClient = Program.ServiceProvider.GetService<ISymbolStatisticsWebSocketClient>();
-            }
-
             if (enable)
             {
-                Program.StatsClient.Subscribe(symbol, evt => { Program.Display(evt.Statistics); });
+                Program.ClientManager.StatisticsClient.Subscribe(symbol, evt => { Program.Display(evt.Statistics); });
+
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"  ...live statistics feed ENABLED for symbol: {symbol}");
+                    Console.WriteLine();
+                }
             }
             else
             {
-                Program.StatsClient.Unsubscribe(symbol);
+                Program.ClientManager.StatisticsClient.Unsubscribe(symbol);
+
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"  ...live statistics feed DISABLED for symbol: {symbol}");
+                    Console.WriteLine();
+                }
             }
 
-            if (Program.StatsClient.WebSocket.SubscribedStreams.Any())
-            {
-                Program.LiveTask = Program.StatsClient.StreamAsync(Program.LiveTokenSource.Token);
-            }
-
-            lock (Program.ConsoleSync)
-            {
-                Console.WriteLine();
-                Console.WriteLine($"  ...live statistics feed enabled for symbol: {symbol} ...use 'live off' to disable.");
-            }
-
-            return true;
+            return Task.FromResult(true);
         }
     }
 }

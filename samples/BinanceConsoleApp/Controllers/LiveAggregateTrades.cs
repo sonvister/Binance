@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
-using Binance.Cache;
 using Binance.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers
 {
     internal class LiveAggregateTrades : IHandleCommand
     {
-        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             var args = command.Split(' ');
 
@@ -25,12 +22,20 @@ namespace BinanceConsoleApp.Controllers
             }
 
             if (!endpoint.Equals("aggTrades", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
             {
                 symbol = args[2];
+                if (!Symbol.IsValid(symbol))
+                {
+                    lock (Program.ConsoleSync)
+                    {
+                        Console.WriteLine($"  Invalid symbol: \"{symbol}\"");
+                    }
+                    return Task.FromResult(true);
+                }
             }
 
             bool enable = true;
@@ -40,42 +45,30 @@ namespace BinanceConsoleApp.Controllers
                     enable = false;
             }
 
-            if (Program.LiveTask != null)
-            {
-                Program.LiveTokenSource.Cancel();
-                if (!Program.LiveTask.IsCompleted)
-                    await Program.LiveTask;
-                Program.LiveTokenSource.Dispose();
-            }
-
-            Program.LiveTokenSource = new CancellationTokenSource();
-
-            if (Program.AggregateTradeClient == null)
-            {
-                Program.AggregateTradeClient = Program.ServiceProvider.GetService<IAggregateTradeWebSocketClient>();
-            }
-
             if (enable)
             {
-                Program.AggregateTradeClient.Subscribe(symbol, evt => { Program.Display(evt.Trade); });
+                Program.ClientManager.AggregateTradeClient.Subscribe(symbol, evt => { Program.Display(evt.Trade); });
+
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"  ...live aggregate trades feed ENABLED for symbol: {symbol}");
+                    Console.WriteLine();
+                }
             }
-            else
+            else // disable.
             {
-                Program.AggregateTradeClient.Unsubscribe(symbol);
+                Program.ClientManager.AggregateTradeClient.Unsubscribe(symbol);
+
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"  ...live aggregate trades feed DISABLED for symbol: {symbol}");
+                    Console.WriteLine();
+                }
             }
 
-            if (Program.AggregateTradeClient.WebSocket.SubscribedStreams.Any())
-            {
-                Program.LiveTask = Program.AggregateTradeClient.StreamAsync(Program.LiveTokenSource.Token);
-            }
-
-            lock (Program.ConsoleSync)
-            {
-                Console.WriteLine();
-                Console.WriteLine($"  ...live aggregate trades feed enabled for symbol: {symbol} ...use 'live off' to disable.");
-            }
-
-            return true;
+            return Task.FromResult(true);
         }
     }
 }

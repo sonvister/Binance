@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
@@ -49,14 +50,18 @@ namespace Binance24HourStatistics
 
                 var client = services.GetService<ISymbolStatisticsWebSocketClient>();
 
-                using (var controller = new RetryTaskController())
+                Func<CancellationToken, Task> action;
+                if (symbols.Length == 1)
+                    action = tkn => client.SubscribeAndStreamAsync(symbols[0], evt => Display(evt.Statistics[0]), tkn);
+                else
+                    action = tkn => client.StreamAsync(tkn);
+
+                using (var controller = new RetryTaskController(action, err => Console.WriteLine(err.Message)))
                 {
                     if (symbols.Length == 1)
                     {
                         // Monitor latest candlestick for a symbol and display.
-                        controller.Begin(
-                            tkn => client.SubscribeAndStreamAsync(symbols[0], evt => Display(evt.Statistics[0]), tkn),
-                            err => Console.WriteLine(err.Message));
+                        controller.Begin();
                     }
                     else
                     {
@@ -70,9 +75,7 @@ namespace Binance24HourStatistics
                         }
 
                         // Begin streaming.
-                        controller.Begin(
-                            tkn => client.StreamAsync(tkn),
-                            err => Console.WriteLine(err.Message));
+                        controller.Begin();
                     }
 
                     message = "...press any key to continue.";
@@ -95,9 +98,7 @@ namespace Binance24HourStatistics
                     client.Subscribe(Symbol.BCH_USDT); // a.k.a. BCC.
 
                     // Begin streaming again.
-                    controller.Begin(
-                        tkn => client.StreamAsync(tkn),
-                        err => Console.WriteLine(err.Message));
+                    controller.Begin();
 
                     message = "...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.

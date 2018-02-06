@@ -61,8 +61,11 @@ namespace BinanceConsoleApp
                 var cache = services.GetService<IAccountInfoCache>();
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
 
-                using (var controller = new RetryTaskController())
                 using (var user = userProvider.CreateUser(key, secret))
+                using (var controller = new RetryTaskController(
+                    tkn => cache.SubscribeAndStreamAsync(user,
+                        evt => Display(evt.AccountInfo.GetBalance(asset)), tkn),
+                    err => Console.WriteLine(err.Message)))
                 {
                     // Query and display current account balance.
                     var account = await api.GetAccountInfoAsync(user);
@@ -70,10 +73,7 @@ namespace BinanceConsoleApp
                     Display(account.GetBalance(asset));
 
                     // Display updated account balance.
-                    controller.Begin(
-                        tkn => cache.SubscribeAndStreamAsync(user, 
-                            evt => Display(evt.AccountInfo.GetBalance(asset)), tkn),
-                        err => Console.WriteLine(err.Message));
+                    controller.Begin();
 
                     Console.WriteLine("...press any key to continue.");
                     Console.ReadKey(true);

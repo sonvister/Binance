@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
@@ -64,20 +65,20 @@ namespace BinanceMarketDepth
 
                 var cache = services.GetService<IOrderBookCache>();
 
-                using (var controller = new RetryTaskController())
+                Func<CancellationToken, Task> action;
+                action = tkn => cache.SubscribeAndStreamAsync(symbol, limit, evt => Display(evt.OrderBook), tkn);
+                //action = tkn => cache.StreamAsync(tkn);
+
+                using (var controller = new RetryTaskController(action, err => Console.WriteLine(err.Message)))
                 {
                     // Monitor order book and display updates in real-time.
                     // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
                     //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
-                    controller.Begin(
-                        tkn => cache.SubscribeAndStreamAsync(symbol, limit, evt => Display(evt.OrderBook), tkn),
-                        err => Console.WriteLine(err.Message));
+                    controller.Begin();
 
                     // Alternative usage (if sharing IBinanceWebSocket for combined streams).
                     //cache.Subscribe(symbol, limit, evt => Display(evt.OrderBook));
-                    //controller.Begin(
-                    //    tkn => cache.StreamAsync(tkn),
-                    //    err => Console.WriteLine(err.Message));
+                    //controller.Begin();
 
                     Console.ReadKey(true);
                 }

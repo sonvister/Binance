@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Api;
@@ -54,7 +55,13 @@ namespace Binance24HourStatistics
 
                 var cache = services.GetService<ISymbolStatisticsCache>();
 
-                using (var controller = new RetryTaskController())
+                Func<CancellationToken, Task> action;
+                if (symbols.Length == 1)
+                    action = tkn => cache.SubscribeAndStreamAsync(symbols[0], evt => Display(evt.Statistics), tkn);
+                else
+                    action = tkn => cache.StreamAsync(tkn);
+
+                using (var controller = new RetryTaskController(action, err => Console.WriteLine(err.Message)))
                 {
                     var api = services.GetService<IBinanceApi>();
 
@@ -64,17 +71,13 @@ namespace Binance24HourStatistics
                     // Monitor 24-hour statistics of a symbol and display updates in real-time.
                     if (symbols.Length == 1)
                     {
-                        controller.Begin(
-                            tkn => cache.SubscribeAndStreamAsync(symbols[0], evt => Display(evt.Statistics), tkn),
-                            err => Console.WriteLine(err.Message));
+                        controller.Begin();
                     }
                     else
                     {
                         // Alternative usage (if sharing IBinanceWebSocket for combined streams).
                         cache.Subscribe(evt => Display(evt.Statistics), symbols);
-                        controller.Begin(
-                            tkn => cache.StreamAsync(tkn),
-                            err => Console.WriteLine(err.Message));
+                        controller.Begin();
                     }
 
                     Console.ReadKey(true);

@@ -53,7 +53,9 @@ namespace BinanceMarketDepth
                 var btcCache = services.GetService<IOrderBookCache>();
                 var ethCache = services.GetService<IOrderBookCache>();
 
-                using (var controller = new RetryTaskController())
+                using (var controller = new RetryTaskController(
+                    tkn => btcCache.StreamAsync(tkn),
+                    err => Console.WriteLine(err.Message)))
                 {
                     // Query and display the order books.
                     var btcOrderBook = await api.GetOrderBookAsync(Symbol.BTC_USDT, limit);
@@ -84,9 +86,8 @@ namespace BinanceMarketDepth
                     if (!btcCache.Client.WebSocket.IsCombined || btcCache.Client.WebSocket != ethCache.Client.WebSocket)
                         throw new Exception("Not using combined streams :(");
 
-                    controller.Begin(
-                        tkn => btcCache.StreamAsync(tkn),
-                        err => Console.WriteLine(err.Message));
+                    // Begin streaming.
+                    controller.Begin();
 
                     Console.ReadKey(true);
                 }

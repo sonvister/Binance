@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
@@ -62,18 +63,18 @@ namespace BinancePriceChart
 
                 var cache = services.GetService<ICandlestickCache>();
 
-                using (var controller = new RetryTaskController())
+                Func<CancellationToken, Task> action;
+                action = tkn => cache.SubscribeAndStreamAsync(symbol, interval, limit, evt => Display(evt.Candlesticks), tkn);
+                //action = tkn => cache.StreamAsync(tkn);
+
+                using (var controller = new RetryTaskController(action, err => Console.WriteLine(err.Message)))
                 {
                     // Monitor latest aggregate trades and display updates in real-time.
-                    controller.Begin(
-                        tkn => cache.SubscribeAndStreamAsync(symbol, interval, limit, evt => Display(evt.Candlesticks), tkn),
-                        err => Console.WriteLine(err.Message));
+                    controller.Begin();
 
                     // Alternative usage (if sharing IBinanceWebSocket for combined streams).
                     //cache.Subscribe(symbol, interval, limit, evt => Display(evt.Candlesticks));
-                    //controller.Begin(
-                    //    tkn => cache.StreamAsync(tkn),
-                    //    err => Console.WriteLine(err.Message));
+                    //controller.Begin();
 
                     Console.ReadKey(true);
                 }

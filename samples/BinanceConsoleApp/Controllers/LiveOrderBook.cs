@@ -7,17 +7,16 @@ using Binance.Cache;
 using Binance.Market;
 using Binance.WebSocket;
 using Binance.WebSocket.Events;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers
 {
     internal class LiveOrderBook : IHandleCommand
     {
-        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase) &&
                 !command.Equals("live", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             var args = command.Split(' ');
 
@@ -29,12 +28,20 @@ namespace BinanceConsoleApp.Controllers
 
             if (!endpoint.Equals("depth", StringComparison.OrdinalIgnoreCase)
                 && !endpoint.Equals("book", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
             {
                 symbol = args[2];
+                if (!Symbol.IsValid(symbol))
+                {
+                    lock (Program.ConsoleSync)
+                    {
+                        Console.WriteLine($"  Invalid symbol: \"{symbol}\"");
+                    }
+                    return Task.FromResult(true);
+                }
             }
 
             bool enable = true;
@@ -44,46 +51,33 @@ namespace BinanceConsoleApp.Controllers
                     enable = false;
             }
 
-            if (Program.LiveTask != null)
-            {
-                Program.LiveTokenSource.Cancel();
-                if (!Program.LiveTask.IsCompleted)
-                    await Program.LiveTask;
-                Program.LiveTokenSource.Dispose();
-            }
-
-            Program.LiveTokenSource = new CancellationTokenSource();
-
-            if (Program.OrderBookClient == null)
-            {
-                Program.OrderBookClient = Program.ServiceProvider.GetService<IDepthWebSocketClient>();
-                Program.OrderBookClient.DepthUpdate += OnOrderBookUpdated;
-            }
-
             if (enable)
             {
-                Program.OrderBookClient.Subscribe(symbol, 5);
+                Program.ClientManager.DepthClient.Subscribe(symbol, 5, evt => OnDepthUpdate(evt));
+
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"  ...live order book (depth) ENABLED for symbol: {symbol}");
+                    Console.WriteLine();
+                }
             }
             else
             {
-                Program.OrderBookClient.Unsubscribe(symbol, 5);
+                Program.ClientManager.DepthClient.Unsubscribe(symbol, 5);
+
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"  ...live order book (depth) DISABLED for symbol: {symbol}");
+                    Console.WriteLine();
+                }
             }
 
-            if (Program.OrderBookClient.WebSocket.SubscribedStreams.Any())
-            {
-                Program.LiveTask = Program.OrderBookClient.StreamAsync(Program.LiveTokenSource.Token);
-            }
-
-            lock (Program.ConsoleSync)
-            {
-                Console.WriteLine();
-                Console.WriteLine($"  ...live order book enabled for symbol: {symbol} ...use 'live off' to disable.");
-            }
-
-            return true;
+            return Task.FromResult(true);
         }
 
-        private static void OnOrderBookUpdated(object sender, DepthUpdateEventArgs e)
+        private static void OnDepthUpdate(DepthUpdateEventArgs e)
         {
             var top = OrderBookTop.Create(e.Symbol, e.Bids.First(), e.Asks.First());
 

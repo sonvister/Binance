@@ -3,6 +3,7 @@ using Binance.Api;
 using Binance.Cache;
 using Binance.Serialization;
 using Binance.WebSocket;
+using Binance.WebSocket.Manager;
 using Binance.WebSocket.UserData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -59,6 +60,7 @@ namespace Binance
             services.AddTransient<IUserDataKeepAliveTimer, UserDataKeepAliveTimer>();
             services.AddTransient<IUserDataKeepAliveTimerProvider, UserDataKeepAliveTimerProvider>();
             services.AddTransient<IUserDataWebSocketManager, UserDataWebSocketManager>();
+            services.AddTransient<IBinanceWebSocketClientManager, BinanceWebSocketClientManager>();
 
             // Serialization
             services.AddSingleton<IOrderBookTopSerializer, OrderBookTopSerializer>();

@@ -11,6 +11,7 @@ using Binance.Api;
 using Binance.Application;
 using Binance.Market;
 using Binance.WebSocket;
+using Binance.WebSocket.Manager;
 using Binance.WebSocket.UserData;
 using BinanceConsoleApp.Controllers;
 using Microsoft.Extensions.Configuration;
@@ -31,15 +32,7 @@ namespace BinanceConsoleApp
         public static IBinanceApi Api;
         public static IBinanceApiUser User;
 
-        public static ITradeWebSocketClient TradeClient;
-        public static IAggregateTradeWebSocketClient AggregateTradeClient;
-        public static ICandlestickWebSocketClient CandlestickClient;
-        public static IDepthWebSocketClient OrderBookClient;
-        public static ISymbolStatisticsWebSocketClient StatsClient;
-
-        public static Task LiveTask;
-        public static CancellationTokenSource LiveTokenSource;
-
+        public static IBinanceWebSocketClientManager ClientManager;
         public static IUserDataWebSocketManager UserDataManager;
 
         public static Task LiveUserDataTask;
@@ -75,7 +68,7 @@ namespace BinanceConsoleApp
                 // Configure services.
                ServiceProvider = new ServiceCollection()
                     .AddBinance()
-                    // Use a single web socket stream (combined streams).
+                    // Use a single web socket stream for combined streams (optional).
                     .AddSingleton<IWebSocketStream, BinanceWebSocketStream>()
                     // Change low-level web socket client implementation.
                     //.AddTransient<IWebSocketClient, WebSocket4NetClient>()
@@ -112,6 +105,17 @@ namespace BinanceConsoleApp
 
                 Api = ServiceProvider.GetService<IBinanceApi>();
 
+                ClientManager = ServiceProvider.GetService<IBinanceWebSocketClientManager>();
+                ClientManager.Error += (s, e) =>
+                {
+                    lock (ConsoleSync)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine($"! Client Manager Error: \"{e.Exception.Message}\"");
+                        Console.WriteLine();
+                    }
+                };
+
                 // Instantiate all assembly command handlers.
                 foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
                 {
@@ -142,6 +146,8 @@ namespace BinanceConsoleApp
                 cts.Dispose();
 
                 User?.Dispose();
+
+                ClientManager?.Dispose();
 
                 lock (ConsoleSync)
                 {
@@ -319,21 +325,15 @@ namespace BinanceConsoleApp
 
         internal static async Task DisableLiveTask()
         {
-            // Cancel streaming operation(s).
-            LiveTokenSource?.Cancel();
-            LiveUserDataTokenSource?.Cancel();
+            // Cancel streaming operation(s) and unsubscribe all.
+            await ClientManager.UnsubscribeAllAsync();
 
-            // Wait for live task to complete.
-            if (LiveTask != null && !LiveTask.IsCompleted)
-                await LiveTask;
+            // Cancel streaming operation(s).
+            LiveUserDataTokenSource?.Cancel();
 
             // Wait for live task to complete.
             if (LiveUserDataTask != null && !LiveUserDataTask.IsCompleted)
                 await LiveUserDataTask;
-
-            LiveTokenSource?.Dispose();
-            LiveTokenSource = null;
-            LiveTask = null;
 
             LiveUserDataTokenSource?.Dispose();
             LiveUserDataTokenSource = null;
@@ -345,41 +345,6 @@ namespace BinanceConsoleApp
 
             lock (ConsoleSync)
             {
-                if (TradeClient != null)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("  ...live trades feed disabled.");
-                }
-                TradeClient = null;
-
-                if (OrderBookClient != null)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("  ...live order book feed disabled.");
-                }
-                OrderBookClient = null;
-
-                if (StatsClient != null)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("  ...live statistics feed disabled.");
-                }
-                StatsClient = null;
-
-                if (CandlestickClient != null)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("  ...live candlestick feed disabled.");
-                }
-                CandlestickClient = null;
-
-                if (AggregateTradeClient != null)
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("  ...live aggregate trades feed disabled.");
-                }
-                AggregateTradeClient = null;
-
                 if (UserDataManager != null)
                 {
                     Console.WriteLine();

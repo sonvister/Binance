@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
@@ -57,18 +58,18 @@ namespace BinanceTradeHistory
 
                 var cache = services.GetService<IAggregateTradeCache>();
 
-                using (var controller = new RetryTaskController())
+                Func<CancellationToken, Task> action;
+                action = tkn => cache.SubscribeAndStreamAsync(symbol, limit, evt => Display(evt.Trades), tkn);
+                //action = tkn => cache.StreamAsync(tkn);
+
+                using (var controller = new RetryTaskController(action, err => Console.WriteLine(err.Message)))
                 {
                     // Monitor latest aggregate trades and display updates in real-time.
-                    controller.Begin(
-                        tkn => cache.SubscribeAndStreamAsync(symbol, limit, evt => Display(evt.Trades), tkn),
-                        err => Console.WriteLine(err.Message));
+                    controller.Begin();
 
                     // Alternative usage (if sharing IBinanceWebSocket for combined streams).
                     //cache.Subscribe(symbol, limit, evt => Display(evt.Trades));
-                    //controller.Begin(
-                    //    tkn => cache.StreamAsync(tkn),
-                    //    err => Console.WriteLine(err.Message));
+                    //controller.Begin();
 
                     Console.ReadKey(true);
                 }
