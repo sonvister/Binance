@@ -44,7 +44,7 @@ namespace Binance.WebSocket
 
         public virtual void Subscribe(Action<SymbolStatisticsEventArgs> callback)
         {
-            Logger?.LogInformation($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Subscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Subscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             SubscribeStream(GetStreamName(null), callback);
         }
@@ -55,14 +55,14 @@ namespace Binance.WebSocket
 
             symbol = symbol.FormatSymbol();
 
-            Logger?.LogInformation($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             SubscribeStream(GetStreamName(symbol), callback);
         }
 
         public virtual void Unsubscribe(Action<SymbolStatisticsEventArgs> callback)
         {
-            Logger?.LogInformation($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Unsubscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Unsubscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             UnsubscribeStream(GetStreamName(null), callback);
         }
@@ -73,7 +73,7 @@ namespace Binance.WebSocket
 
             symbol = symbol.FormatSymbol();
 
-            Logger?.LogInformation($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             UnsubscribeStream(GetStreamName(symbol), callback);
         }

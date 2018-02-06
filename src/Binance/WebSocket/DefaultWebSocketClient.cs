@@ -169,7 +169,7 @@ namespace Binance.WebSocket
                 }
 
                 IsStreaming = false;
-                Logger?.LogInformation($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogDebug($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
         }
 

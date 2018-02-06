@@ -47,7 +47,7 @@ namespace Binance.WebSocket
 
             symbol = symbol.FormatSymbol();
 
-            Logger?.LogInformation($"{nameof(TradeWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogDebug($"{nameof(TradeWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             SubscribeStream(GetStreamName(symbol), callback);
         }
@@ -58,7 +58,7 @@ namespace Binance.WebSocket
 
             symbol = symbol.FormatSymbol();
 
-            Logger?.LogInformation($"{nameof(TradeWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogDebug($"{nameof(TradeWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             UnsubscribeStream(GetStreamName(symbol), callback);
         }

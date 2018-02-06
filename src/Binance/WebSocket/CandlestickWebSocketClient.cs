@@ -47,7 +47,7 @@ namespace Binance.WebSocket
 
             symbol = symbol.FormatSymbol();
 
-            Logger?.LogInformation($"{nameof(CandlestickWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" \"{interval.AsString()}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogDebug($"{nameof(CandlestickWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" \"{interval.AsString()}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             SubscribeStream(GetStreamName(symbol, interval), callback);
         }
@@ -58,7 +58,7 @@ namespace Binance.WebSocket
 
             symbol = symbol.FormatSymbol();
 
-            Logger?.LogInformation($"{nameof(CandlestickWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" \"{interval.AsString()}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogDebug($"{nameof(CandlestickWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" \"{interval.AsString()}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             UnsubscribeStream(GetStreamName(symbol, interval), callback);
         }

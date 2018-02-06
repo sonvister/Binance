@@ -50,7 +50,7 @@ namespace Binance.WebSocket.UserData
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
             Throw.IfNull(user, nameof(user));
 
-            Logger?.LogInformation($"{nameof(UserDataWebSocketClient)}.{nameof(Subscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogDebug($"{nameof(UserDataWebSocketClient)}.{nameof(Subscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             // Subscribe callback (if provided) to listen key.
             SubscribeStream(listenKey, callback);
@@ -72,7 +72,7 @@ namespace Binance.WebSocket.UserData
         {
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
 
-            Logger?.LogInformation($"{nameof(UserDataWebSocketClient)}.{nameof(Unsubscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogDebug($"{nameof(UserDataWebSocketClient)}.{nameof(Unsubscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             // Unsubscribe callback (if provided) from listen key.
             UnsubscribeStream(listenKey, callback);
