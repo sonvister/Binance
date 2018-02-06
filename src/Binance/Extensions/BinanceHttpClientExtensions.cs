@@ -27,8 +27,11 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             return await client.GetAsync("/api/v1/ping", token)
                 .ConfigureAwait(false);
@@ -44,8 +47,11 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             return await client.GetAsync("/api/v1/exchangeInfo", token)
                 .ConfigureAwait(false);
@@ -61,8 +67,11 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             return await client.GetAsync("/api/v1/time", token)
                 .ConfigureAwait(false);
@@ -85,9 +94,12 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            await client.RateLimiter
-                .DelayAsync(limit >= 1000 ? 10 : limit >= 500 ? 5 : 1, token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter
+                    .DelayAsync(limit >= 1000 ? 10 : limit >= 500 ? 5 : 1, token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v1/depth");
 
@@ -115,8 +127,11 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v1/trades");
 
@@ -144,8 +159,11 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            await client.RateLimiter.DelayAsync(5, token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(5, token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v1/historicalTrades")
             {
@@ -181,8 +199,11 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v1/aggTrades");
 
@@ -232,8 +253,11 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v1/klines");
 
@@ -268,8 +292,11 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             return await client.GetCandlesticksAsync(symbol, interval.ToCandlestickInterval(), limit, startTime, endTime, token)
                 .ConfigureAwait(false);
@@ -286,9 +313,12 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
-            await client.RateLimiter
-                .DelayAsync(string.IsNullOrWhiteSpace(symbol) ? Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading) / 2 : 1, token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter
+                    .DelayAsync(string.IsNullOrWhiteSpace(symbol) ? Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading) / 2 : 1, token)
+                    .ConfigureAwait(false);
+            }
 
             // When symbol is not provided use number of symbols that are TRADING for weight.
             var request = new BinanceHttpRequest("/api/v1/ticker/24hr");
@@ -313,8 +343,11 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v3/ticker/price");
 
@@ -339,8 +372,11 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v1/ticker/bookTicker");
 
@@ -360,8 +396,11 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                   .ConfigureAwait(false);
+            }
 
             return await client.GetAsync("/api/v1/ticker/bookTicker", token)
                 .ConfigureAwait(false);
@@ -402,8 +441,11 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            await user.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (user.RateLimiter != null)
+            {
+                await user.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest($"/api/v3/order{(isTestOnly ? "/test" : string.Empty)}")
             {
@@ -473,8 +515,11 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            await user.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (user.RateLimiter != null)
+            {
+                await user.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v3/order")
             {
@@ -523,8 +568,11 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            await user.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (user.RateLimiter != null)
+            {
+                await user.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v3/order")
             {
@@ -569,9 +617,12 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            await client.RateLimiter
-                .DelayAsync(string.IsNullOrWhiteSpace(symbol) ? Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading) / 2 : 1, token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter
+                    .DelayAsync(string.IsNullOrWhiteSpace(symbol) ? Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading) / 2 : 1, token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v3/openOrders")
             {
@@ -612,8 +663,11 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            await client.RateLimiter.DelayAsync(5, token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(5, token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v3/allOrders")
             {
@@ -654,8 +708,11 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            await client.RateLimiter.DelayAsync(5, token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(5, token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v3/account")
             {
@@ -692,8 +749,11 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            await client.RateLimiter.DelayAsync(5, token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(5, token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v3/myTrades")
             {
@@ -744,8 +804,11 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/wapi/v3/withdraw.html")
             {
@@ -792,8 +855,11 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/wapi/v3/depositHistory.html")
             {
@@ -842,8 +908,11 @@ namespace Binance.Api
             if (recvWindow <= 0)
                 recvWindow = client.Options.RecvWindowDefault ?? 0;
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/wapi/v3/withdrawHistory.html")
             {
@@ -885,8 +954,11 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(asset, nameof(asset));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/wapi/v3/depositAddress.html")
             {
@@ -913,8 +985,11 @@ namespace Binance.Api
         {
             Throw.IfNull(client, nameof(client));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/wapi/v3/accountStatus.html")
             {
@@ -957,8 +1032,11 @@ namespace Binance.Api
         {
             Throw.IfNullOrWhiteSpace(apiKey, nameof(apiKey));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v1/userDataStream")
             {
@@ -997,8 +1075,11 @@ namespace Binance.Api
             Throw.IfNullOrWhiteSpace(apiKey, nameof(apiKey));
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v1/userDataStream")
             {
@@ -1042,8 +1123,11 @@ namespace Binance.Api
             Throw.IfNullOrWhiteSpace(apiKey, nameof(apiKey));
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
 
-            await client.RateLimiter.DelayAsync(token: token)
-                .ConfigureAwait(false);
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
 
             var request = new BinanceHttpRequest("/api/v1/userDataStream")
             {

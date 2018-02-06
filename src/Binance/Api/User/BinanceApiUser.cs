@@ -49,7 +49,7 @@ namespace Binance.Api
                 _hmac = new HMACSHA256(Encoding.UTF8.GetBytes(apiSecret));
             }
 
-            RateLimiter = rateLimiter;
+            RateLimiter = rateLimiter ?? new ApiRateLimiter();
             var opt = options?.Value ?? new BinanceApiOptions();
 
             // Configure order rate limiter.
