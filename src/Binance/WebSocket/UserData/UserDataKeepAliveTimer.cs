@@ -127,32 +127,39 @@ namespace Binance.WebSocket.UserData
 
         private async void OnTimer(object state)
         {
-            KeyValuePair<IBinanceApiUser, string>[] listenKeys;
-
-            lock (_sync)
+            try
             {
-                if (_listenKeys.Count == 0)
-                    return;
+                KeyValuePair<IBinanceApiUser, string>[] listenKeys;
 
-                listenKeys = _listenKeys.ToArray();
+                lock (_sync)
+                {
+                    if (_listenKeys.Count == 0)
+                        return;
+
+                    listenKeys = _listenKeys.ToArray();
+                }
+
+                foreach (var _ in listenKeys)
+                {
+                    try
+                    {
+                        _logger?.LogDebug($"{nameof(UserDataKeepAliveTimer)}.{nameof(OnTimer)}: Keep-alive user stream (\"{_.Value}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                        var token = (CancellationToken)state;
+
+                        await _api.UserStreamKeepAliveAsync(_.Key, _.Value, token)
+                            .ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (Exception e)
+                    {
+                        _logger?.LogError(e, $"{nameof(UserDataKeepAliveTimer)}.{nameof(OnTimer)}: Failed to ping user data stream.");
+                    }
+                }
             }
-
-            foreach (var _ in listenKeys)
+            catch (Exception e)
             {
-                try
-                {
-                    _logger?.LogDebug($"{nameof(UserDataKeepAliveTimer)}.{nameof(OnTimer)}: Keep-alive user stream (\"{_.Value}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                    var token = (CancellationToken)state;
-
-                    await _api.UserStreamKeepAliveAsync(_.Key, _.Value, token)
-                        .ConfigureAwait(false);
-                }
-                catch (OperationCanceledException) { /* ignored */ }
-                catch (Exception e)
-                {
-                    _logger?.LogError(e, $"{nameof(UserDataKeepAliveTimer)}.{nameof(OnTimer)}: Failed to ping user data stream.");
-                }
+                _logger?.LogError(e, $"{nameof(UserDataKeepAliveTimer)}.{nameof(OnTimer)}: Failed.");
             }
         }
 

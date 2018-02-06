@@ -10,7 +10,13 @@ namespace Binance.WebSocket.Manager
     /// </summary>
     public sealed class BinanceWebSocketManager : IBinanceWebSocketManager, IDisposable
     {
+        #region Public Events
+
         public event EventHandler<WebSocketManagerErrorEventArgs> Error;
+
+        #endregion Public Events
+
+        #region Public Properties
 
         public IAggregateTradeWebSocketClient AggregateTradeClient => _aggregateTradeClientAdapter;
 
@@ -23,6 +29,8 @@ namespace Binance.WebSocket.Manager
         public ITradeWebSocketClient TradeClient => _tradeClientAdapter;
 
         public bool IsAutoStreamingDisabled { get; set; }
+
+        #endregion Public Properties
 
         #region Private Fields
 

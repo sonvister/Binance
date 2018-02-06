@@ -11,8 +11,15 @@ namespace Binance.WebSocket.Manager
     /// The familiar client interfaces presented imply synchronous operation,
     /// but the subscribe/unsubscribe operations are done asynchronously.
     /// </summary>
-    public interface IBinanceWebSocketManager : IWebSocketManager, IDisposable
+    public interface IBinanceWebSocketManager : IDisposable
     {
+        /// <summary>
+        /// The error event. Raised when exceptions occur from client task
+        /// controller actions or from client adapter subscribe/unsubscribe
+        /// (async) operations.
+        /// </summary>
+        event EventHandler<WebSocketManagerErrorEventArgs> Error;
+
         /// <summary>
         /// Get the <see cref="IAggregateTradeWebSocketClient"/> interface.
         /// </summary>
