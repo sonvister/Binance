@@ -12,17 +12,16 @@ namespace Binance.WebSocket.UserData
         /// Constructor.
         /// </summary>
         public SingleUserDataWebSocketClient()
-            : this (new BinanceApi(), new WebSocketStreamProvider())
+            : this (new WebSocketStreamProvider())
         { }
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="api"></param>
         /// <param name="streamProvider"></param>
         /// <param name="logger"></param>
-        public SingleUserDataWebSocketClient(IBinanceApi api, IWebSocketStreamProvider streamProvider, ILogger<SingleUserDataWebSocketClient> logger = null)
-            : base(api, streamProvider.CreateStream(), logger)
+        public SingleUserDataWebSocketClient(IWebSocketStreamProvider streamProvider, ILogger<SingleUserDataWebSocketClient> logger = null)
+            : base(streamProvider.CreateStream(), logger)
         { }
 
         public override void Subscribe(string listenKey, IBinanceApiUser user, Action<UserDataEventArgs> callback)

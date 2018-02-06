@@ -30,27 +30,16 @@ namespace Binance.WebSocket.UserData
 
         #endregion Protected Fields
 
-        #region Private Fields
-
-        protected readonly IBinanceApi _api; // TODO
-
-        #endregion Private Fields
-
         #region Constructors
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="api">The Binance API.</param>
         /// <param name="webSocket">The WebSocket stream.</param>
         /// <param name="logger">The logger.</param>
-        protected UserDataWebSocketClient(IBinanceApi api, IWebSocketStream webSocket, ILogger<UserDataWebSocketClient> logger = null)
+        protected UserDataWebSocketClient(IWebSocketStream webSocket, ILogger<UserDataWebSocketClient> logger = null)
             : base(webSocket, logger)
-        {
-            Throw.IfNull(api, nameof(api));
-
-            _api = api;
-        }
+        { }
 
         #endregion Construtors
 
