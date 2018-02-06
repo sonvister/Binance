@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
@@ -50,18 +49,14 @@ namespace BinanceTradeHistory
 
                 var client = services.GetService<IAggregateTradeWebSocketClient>();
 
-                Func<CancellationToken, Task> action;
-                if (symbols.Length == 1)
-                    action = tkn => client.SubscribeAndStreamAsync(symbols[0], evt => Display(evt.Trade), tkn);
-                else
-                    action = tkn => client.StreamAsync(tkn);
-
-                using (var controller = new RetryTaskController(action, err => Console.WriteLine(err.Message)))
+                using (var controller = new RetryTaskController(
+                    tkn => client.StreamAsync(tkn),
+                    err => Console.WriteLine(err.Message)))
                 {
                     if (symbols.Length == 1)
                     {
-                        // Monitor latest aggregate trade for a symbol and display.
-                        controller.Begin();
+                        // Subscribe to symbol with callback.
+                        client.Subscribe(symbols[0], evt => Display(evt.Trade));
                     }
                     else
                     {
@@ -73,10 +68,10 @@ namespace BinanceTradeHistory
                         {
                             client.Subscribe(symbol); // using event instead of callbacks.
                         }
-
-                        // Begin streaming.
-                        controller.Begin();
                     }
+
+                    // Begin streaming.
+                    controller.Begin();
 
                     message = "...press any key to continue.";
                     Console.ReadKey(true); // wait for user input.

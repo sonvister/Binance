@@ -54,18 +54,14 @@ namespace BinanceMarketDepth
 
                 var client = services.GetService<IDepthWebSocketClient>();
 
-                Func<CancellationToken, Task> action;
-                if (symbols.Length == 1)
-                    action = tkn => client.SubscribeAndStreamAsync(symbols[0], evt => Display(OrderBookTop.Create(evt.Symbol, evt.Bids.First(), evt.Asks.First())), tkn);
-                else
-                    action = tkn => client.StreamAsync(tkn);
-
-                using (var controller = new RetryTaskController(action, err => Console.WriteLine(err.Message)))
+                using (var controller = new RetryTaskController(
+                    tkn => client.StreamAsync(tkn),
+                    err => Console.WriteLine(err.Message)))
                 {
                     if (symbols.Length == 1)
                     {
-                        // Monitor latest candlestick for a symbol and display.
-                        controller.Begin();
+                        // Subscribe to symbol with callback.
+                        client.Subscribe(symbols[0], evt => Display(OrderBookTop.Create(evt.Symbol, evt.Bids.First(), evt.Asks.First())));
                     }
                     else
                     {
@@ -77,10 +73,10 @@ namespace BinanceMarketDepth
                         {
                             client.Subscribe(symbol, limit); // using event instead of callbacks.
                         }
-
-                        // Begin streaming.
-                        controller.Begin();
                     }
+
+                    // Begin streaming.
+                    controller.Begin();
 
                     message = "...press any key to continue.";
                     Console.ReadKey(true); // wait for user input.

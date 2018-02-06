@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance.Market;
 using Binance.WebSocket;
@@ -11,14 +10,11 @@ namespace Binance.Tests.WebSocket
     public class CandlesticksWebSocketClientTest
     {
         [Fact]
-        public async Task StreamThrows()
+        public void SubscribeThrows()
         {
             var client = new CandlestickWebSocketClient(new Mock<IWebSocketStream>().Object);
 
-            using (var cts = new CancellationTokenSource())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => client.SubscribeAndStreamAsync(null, CandlestickInterval.Hour, cts.Token));
-            }
+            Assert.Throws<ArgumentNullException>("symbol", () => client.Subscribe(null, CandlestickInterval.Hour));
         }
     }
 }

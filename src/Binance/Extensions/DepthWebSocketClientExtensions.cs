@@ -75,55 +75,5 @@ namespace Binance.WebSocket
 
             return client.WebSocket.StreamAsync(token);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="symbol"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Task SubscribeAndStreamAsync(this IDepthWebSocketClient client, string symbol, CancellationToken token)
-            => client.SubscribeAndStreamAsync(symbol, default, null, token);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="symbol"></param>
-        /// <param name="limit"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Task SubscribeAndStreamAsync(this IDepthWebSocketClient client, string symbol, int limit, CancellationToken token)
-            => client.SubscribeAndStreamAsync(symbol, limit, null, token);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="symbol"></param>
-        /// <param name="callback"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Task SubscribeAndStreamAsync(this IDepthWebSocketClient client, string symbol, Action<DepthUpdateEventArgs> callback, CancellationToken token)
-            => SubscribeAndStreamAsync(client, symbol, default, callback, token);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="symbol"></param>
-        /// <param name="limit"></param>
-        /// <param name="callback"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Task SubscribeAndStreamAsync(this IDepthWebSocketClient client, string symbol, int limit, Action<DepthUpdateEventArgs> callback, CancellationToken token)
-        {
-            Throw.IfNull(client, nameof(client));
-
-            client.Subscribe(symbol, limit, callback);
-
-            return StreamAsync(client, token);
-        }
     }
 }

@@ -68,9 +68,9 @@ namespace Binance24HourStatistics
                     // Query and display the 24-hour statistics.
                     Display(await Get24HourStatisticsAsync(api, symbols));
 
-                    // Monitor 24-hour statistics of a symbol and display updates in real-time.
                     if (symbols.Length == 1)
                     {
+                        // Monitor 24-hour statistics of a symbol and display updates in real-time.
                         controller.Begin();
                     }
                     else
