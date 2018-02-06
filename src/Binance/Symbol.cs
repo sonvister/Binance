@@ -19,7 +19,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1517764152091;
+        public static readonly long LastUpdateAt = 1517884656128;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Symbol BCH_USDT;
@@ -120,6 +120,7 @@ namespace Binance
         public static readonly Symbol TRIG_BTC = new Symbol(SymbolStatus.Trading, Asset.TRIG, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000010m, 100000.00000000m, 0.00000010m), 0.00100000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol TRX_BTC = new Symbol(SymbolStatus.Trading, Asset.TRX, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol VEN_BTC = new Symbol(SymbolStatus.Trading, Asset.VEN, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol VIA_BTC = new Symbol(SymbolStatus.Trading, Asset.VIA, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000010m, 100000.00000000m, 0.00000010m), 0.00100000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol VIB_BTC = new Symbol(SymbolStatus.Trading, Asset.VIB, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol VIBE_BTC = new Symbol(SymbolStatus.Trading, Asset.VIBE, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol WABI_BTC = new Symbol(SymbolStatus.Trading, Asset.WABI, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -226,6 +227,7 @@ namespace Binance
         public static readonly Symbol TRIG_ETH = new Symbol(SymbolStatus.Trading, Asset.TRIG, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.01000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol TRX_ETH = new Symbol(SymbolStatus.Trading, Asset.TRX, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol VEN_ETH = new Symbol(SymbolStatus.Trading, Asset.VEN, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol VIA_ETH = new Symbol(SymbolStatus.Trading, Asset.VIA, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.01000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol VIBE_ETH = new Symbol(SymbolStatus.Trading, Asset.VIBE, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000010m, 100000.00000000m, 0.00000010m), 0.02000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol VIB_ETH = new Symbol(SymbolStatus.Trading, Asset.VIB, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol WABI_ETH = new Symbol(SymbolStatus.Trading, Asset.WABI, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -275,6 +277,7 @@ namespace Binance
         public static readonly Symbol STEEM_BNB = new Symbol(SymbolStatus.Trading, Asset.STEEM, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol TRIG_BNB = new Symbol(SymbolStatus.Trading, Asset.TRIG, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol VEN_BNB = new Symbol(SymbolStatus.Trading, Asset.VEN, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00010000m, 100000.00000000m, 0.00010000m), 1.00000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol VIA_BNB = new Symbol(SymbolStatus.Trading, Asset.VIA, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol WABI_BNB = new Symbol(SymbolStatus.Trading, Asset.WABI, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol WAVES_BNB = new Symbol(SymbolStatus.Trading, Asset.WAVES, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00010000m, 100000.00000000m, 0.00010000m), 1.00000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol WTC_BNB = new Symbol(SymbolStatus.Trading, Asset.WTC, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00010000m, 100000.00000000m, 0.00010000m), 1.00000000m, true, new [] {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -540,6 +543,9 @@ namespace Binance
             { "VENBNB", VEN_BNB },
             { "VENBTC", VEN_BTC },
             { "VENETH", VEN_ETH },
+            { "VIABNB", VIA_BNB },
+            { "VIABTC", VIA_BTC },
+            { "VIAETH", VIA_ETH },
             { "VIBBTC", VIB_BTC },
             { "VIBEBTC", VIBE_BTC },
             { "VIBEETH", VIBE_ETH },
@@ -680,6 +686,26 @@ namespace Binance
         #endregion Constructors
 
         #region Public Methods
+
+        /// <summary>
+        /// Verify that symbol is valid. If fails, but known to be valid,
+        /// call UpdateCacheAsync() to get the latest symbols.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
+        public static bool IsValid(string symbol)
+        {
+            if (string.IsNullOrWhiteSpace(symbol))
+                return false;
+
+            symbol = symbol.FormatSymbol();
+
+            lock (_sync)
+            {
+                return Cache.ContainsKey(symbol)
+                    && Cache[symbol].ToString() == symbol;
+            }
+        }
 
         /// <summary>
         /// Update the symbol cache and asset cache.

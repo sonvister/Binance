@@ -167,6 +167,26 @@ namespace Binance
         #region Public Methods
 
         /// <summary>
+        /// Verify that symbol is valid. If fails, but known to be valid,
+        /// call UpdateCacheAsync() to get the latest symbols.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
+        public static bool IsValid(string symbol)
+        {
+            if (string.IsNullOrWhiteSpace(symbol))
+                return false;
+
+            symbol = symbol.FormatSymbol();
+
+            lock (_sync)
+            {
+                return Cache.ContainsKey(symbol)
+                    && Cache[symbol].ToString() == symbol;
+            }
+        }
+
+        /// <summary>
         /// Update the symbol cache and asset cache.
         /// </summary>
         /// <param name="api"></param>
