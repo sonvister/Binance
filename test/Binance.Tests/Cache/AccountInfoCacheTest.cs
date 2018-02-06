@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Cache;
-using Binance.WebSocket;
 using Binance.WebSocket.UserData;
 using Moq;
 using Xunit;

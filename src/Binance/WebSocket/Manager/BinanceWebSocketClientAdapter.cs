@@ -13,14 +13,14 @@ namespace Binance.WebSocket.Manager
 
         public event EventHandler<EventArgs> Open
         {
-            add { Client.Open += value; }
-            remove { Client.Open -= value; }
+            add => Client.Open += value;
+            remove => Client.Open -= value;
         }
 
         public event EventHandler<EventArgs> Close
         {
-            add { Client.Close += value; }
-            remove { Client.Close -= value; }
+            add => Client.Close += value;
+            remove => Client.Close -= value;
         }
 
         #endregion Public Events
@@ -51,7 +51,7 @@ namespace Binance.WebSocket.Manager
 
         #region Constructors
 
-        public BinanceWebSocketClientAdapter(IBinanceWebSocketManager manager, TWebSocketClient client, ILogger<IBinanceWebSocketManager> logger = null, Action<Exception> onError = null)
+        protected BinanceWebSocketClientAdapter(IBinanceWebSocketManager manager, TWebSocketClient client, ILogger<IBinanceWebSocketManager> logger = null, Action<Exception> onError = null)
         {
             Throw.IfNull(manager, nameof(manager));
             Throw.IfNull(client, nameof(client));

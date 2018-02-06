@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Binance.Market;
 using Binance.WebSocket;
 using Moq;

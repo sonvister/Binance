@@ -233,6 +233,7 @@ namespace Binance.Api
                     }
                 }
 
+                // ReSharper disable once SwitchStatementMissingSomeCases
                 switch (response.StatusCode)
                 {
                     case (HttpStatusCode)429:

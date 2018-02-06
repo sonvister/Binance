@@ -49,16 +49,12 @@ namespace Binance.Tests.Api
         [Fact]
         public async Task PlaceThrows()
         {
-            var user = new BinanceApiUser("api-key");
-
             await Assert.ThrowsAsync<ArgumentNullException>("clientOrder", () => _api.PlaceAsync(null));
         }
 
         [Fact]
         public async Task TestPlaceThrows()
         {
-            var user = new BinanceApiUser("api-key");
-
             await Assert.ThrowsAsync<ArgumentNullException>("clientOrder", () => _api.TestPlaceAsync(null));
         }
 

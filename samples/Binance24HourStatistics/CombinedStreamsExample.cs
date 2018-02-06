@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
-using Binance.Cache;
 using Binance.Market;
 using Binance.Utility;
 using Binance.WebSocket;
@@ -73,7 +72,7 @@ namespace Binance24HourStatistics
                     // Begin streaming.
                     controller.Begin();
 
-                    message = "...press any key to continue.";
+                    _message = "...press any key to continue.";
                     Console.ReadKey(true); // wait for user input.
 
                     //*//////////////////////////////////////////////////
@@ -95,7 +94,7 @@ namespace Binance24HourStatistics
                     // Begin streaming again.
                     controller.Begin();
 
-                    message = "...press any key to exit.";
+                    _message = "...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
                     ///////////////////////////////////////////////////*/
                 }
@@ -109,11 +108,11 @@ namespace Binance24HourStatistics
             }
         }
 
-        private static string message;
+        private static string _message;
 
         private static readonly object _sync = new object();
 
-        private static IDictionary<string, SymbolStatistics> _statistics
+        private static readonly IDictionary<string, SymbolStatistics> _statistics
             = new SortedDictionary<string, SymbolStatistics>();
 
         private static Task _displayTask = Task.CompletedTask;
@@ -146,7 +145,7 @@ namespace Binance24HourStatistics
                                 Console.WriteLine();
                             }
 
-                            Console.WriteLine(message);
+                            Console.WriteLine(_message);
                         });
                 }
             }

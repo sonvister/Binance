@@ -1,5 +1,6 @@
 ﻿using System;
 
+// ReSharper disable once CheckNamespace
 namespace Binance
 {
     public static class InclusiveRangeExtensions
@@ -22,6 +23,7 @@ namespace Binance
         /// </summary>
         /// <param name="range"></param>
         /// <param name="value"></param>
+        /// <param name="paramName"></param>
         public static void Validate(this InclusiveRange range, decimal value, string paramName = null)
         {
             Throw.IfNull(range, nameof(range));
@@ -70,6 +72,7 @@ namespace Binance
         /// </summary>
         /// <param name="range"></param>
         /// <param name="value"></param>
+        /// <param name="midpointRounding"></param>
         /// <returns></returns>
         public static decimal GetValidValue(this InclusiveRange range, decimal value, MidpointRounding midpointRounding = MidpointRounding.ToEven)
         {
@@ -92,7 +95,7 @@ namespace Binance
                 return lower + range.Increment;
 
             // Round to nearest even increment...
-            return (lower % (range.Increment * 2) == 0)
+            return lower % (range.Increment * 2) == 0
                 ? lower // ...if lower is even.
                 : lower + range.Increment;
         }

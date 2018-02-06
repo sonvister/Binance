@@ -2,6 +2,7 @@
 using System.Threading;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
+// ReSharper disable InconsistentlySynchronizedField
 
 namespace Binance.WebSocket.Manager
 {
@@ -11,8 +12,8 @@ namespace Binance.WebSocket.Manager
 
         public event EventHandler<TradeEventArgs> Trade
         {
-            add { Client.Trade += value; }
-            remove { Client.Trade -= value; }
+            add => Client.Trade += value;
+            remove => Client.Trade -= value;
         }
 
         #endregion Public Events

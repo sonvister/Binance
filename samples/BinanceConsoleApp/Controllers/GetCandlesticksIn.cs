@@ -30,9 +30,9 @@ namespace BinanceConsoleApp.Controllers
 
             var interval =args[2].ToCandlestickInterval();
 
-            long.TryParse(args[3], out long startTime);
+            long.TryParse(args[3], out var startTime);
 
-            long.TryParse(args[4], out long endTime);
+            long.TryParse(args[4], out var endTime);
 
             var candlesticks = await Program.Api.GetCandlesticksAsync(symbol, interval, (startTime, endTime), token: token);
 

@@ -233,6 +233,7 @@ namespace Binance
                 }
             }
 
+            // ReSharper disable once PossibleMultipleEnumeration
             Asset.UpdateCache(symbols);
         }
 

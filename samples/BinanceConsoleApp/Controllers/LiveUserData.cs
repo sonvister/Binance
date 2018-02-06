@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.WebSocket;
 using Binance.WebSocket.Events;
 using Binance.WebSocket.UserData;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +26,7 @@ namespace BinanceConsoleApp.Controllers
                 && !endpoint.Equals("user", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            bool enable = true;
+            var enable = true;
             if (args.Length > 2)
             {
                 if (args[2].Equals("off", StringComparison.OrdinalIgnoreCase))

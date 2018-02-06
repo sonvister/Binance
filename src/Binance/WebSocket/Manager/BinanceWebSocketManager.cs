@@ -8,7 +8,7 @@ namespace Binance.WebSocket.Manager
     /// <summary>
     /// Multiple <see cref="IBinanceWebSocketClient"/> controller with automatic stream reconnect.
     /// </summary>
-    public sealed class BinanceWebSocketManager : IBinanceWebSocketManager, IDisposable
+    public sealed class BinanceWebSocketManager : IBinanceWebSocketManager
     {
         #region Public Events
 
@@ -34,12 +34,6 @@ namespace Binance.WebSocket.Manager
 
         #region Private Fields
 
-        private readonly IAggregateTradeWebSocketClient _aggregateTradeClient;
-        private readonly ICandlestickWebSocketClient _candlestickClient;
-        private readonly IDepthWebSocketClient _depthClient;
-        private readonly ISymbolStatisticsWebSocketClient _statisticsClient;
-        private readonly ITradeWebSocketClient _tradeClient;
-
         private readonly AggregateTradeWebSocketClientAdapter _aggregateTradeClientAdapter;
         private readonly CandlestickWebSocketClientAdapter _candlestickClientAdapter;
         private readonly DepthWebSocketClientAdapter _depthClientAdapter;
@@ -48,10 +42,8 @@ namespace Binance.WebSocket.Manager
 
         private readonly ILogger<IBinanceWebSocketManager> _logger;
 
-        private IDictionary<IWebSocketStream, WebSocketStreamController> _controllers
+        private readonly IDictionary<IWebSocketStream, WebSocketStreamController> _controllers
             = new Dictionary<IWebSocketStream, WebSocketStreamController>();
-
-        private readonly object _sync = new object();
 
         #endregion Private Fields
 
@@ -65,68 +57,68 @@ namespace Binance.WebSocket.Manager
             ITradeWebSocketClient tradeClient,
             ILogger<IBinanceWebSocketManager> logger = null)
         {
-            _aggregateTradeClient = aggregateTradeClient;
-            _candlestickClient = candlestickClient;
-            _depthClient = depthClient;
-            _statisticsClient = statisticsClient;
-            _tradeClient = tradeClient;
+            Throw.IfNull(aggregateTradeClient, nameof(aggregateTradeClient));
+            Throw.IfNull(candlestickClient, nameof(candlestickClient));
+            Throw.IfNull(depthClient, nameof(depthClient));
+            Throw.IfNull(statisticsClient, nameof(statisticsClient));
+            Throw.IfNull(tradeClient, nameof(tradeClient));
 
             _logger = logger;
 
 
             _aggregateTradeClientAdapter = new AggregateTradeWebSocketClientAdapter(
-                this, _aggregateTradeClient, _logger,
+                this, aggregateTradeClient, _logger,
                 err => RaiseErrorEvent(_aggregateTradeClientAdapter, err,
                     $"{nameof(IAggregateTradeWebSocketClient)}: Adapter failed."));
 
             _candlestickClientAdapter = new CandlestickWebSocketClientAdapter(
-                this, _candlestickClient, _logger,
+                this, candlestickClient, _logger,
                 err => RaiseErrorEvent(_candlestickClientAdapter, err,
                     $"{nameof(ICandlestickWebSocketClient)}: Adapter failed."));
 
             _depthClientAdapter = new DepthWebSocketClientAdapter(
-                this, _depthClient, _logger,
+                this, depthClient, _logger,
                 err => RaiseErrorEvent(_depthClientAdapter, err,
                     $"{nameof(IDepthWebSocketClient)}: Adapter failed."));
 
             _statisticsClientAdapter = new SymbolStatisticsWebSocketClientAdapter(
-                this, _statisticsClient, _logger,
+                this, statisticsClient, _logger,
                 err => RaiseErrorEvent(_statisticsClientAdapter, err,
                     $"{nameof(ISymbolStatisticsWebSocketClient)}: Adapter failed."));
 
             _tradeClientAdapter = new TradeWebSocketClientAdapter(
-                this, _tradeClient, _logger,
+                this, tradeClient, _logger,
                 err => RaiseErrorEvent(_tradeClientAdapter, err,
                     $"{nameof(ITradeWebSocketClient)}: Adapter failed."));
 
 
-            _controllers[_aggregateTradeClient.WebSocket] =
+            _controllers[aggregateTradeClient.WebSocket] =
                 new WebSocketStreamController(
-                    _aggregateTradeClient.WebSocket,
+                    aggregateTradeClient.WebSocket,
                     err => RaiseErrorEvent(_aggregateTradeClientAdapter, err,
                         $"{nameof(IAggregateTradeWebSocketClient)}: Controller failed."));
 
-            _controllers[_candlestickClient.WebSocket] =
+            _controllers[candlestickClient.WebSocket] =
                 new WebSocketStreamController(
-                    _candlestickClient.WebSocket,
+                    candlestickClient.WebSocket,
                     err => RaiseErrorEvent(_candlestickClientAdapter, err,
                         $"{nameof(ICandlestickWebSocketClient)}: Controller failed."));
 
-            _controllers[_depthClient.WebSocket] =
+            _controllers[depthClient.WebSocket] =
                 new WebSocketStreamController(
-                    _depthClient.WebSocket,
+                    depthClient.WebSocket,
                     err => RaiseErrorEvent(_depthClientAdapter, err,
                         $"{nameof(IDepthWebSocketClient)}: Controller failed."));
 
-            _controllers[_statisticsClient.WebSocket] =
+            _controllers[statisticsClient.WebSocket] =
                 new WebSocketStreamController(
-                    _statisticsClient.WebSocket,
+                    statisticsClient.WebSocket,
                     err => RaiseErrorEvent(_statisticsClientAdapter, err,
                         $"{nameof(ISymbolStatisticsWebSocketClient)}: Controller failed."));
 
-            _controllers[_tradeClient.WebSocket] =
+            _controllers[tradeClient.WebSocket] =
                 new WebSocketStreamController(
-                    _tradeClient.WebSocket,
+                    tradeClient.WebSocket,
                     err => RaiseErrorEvent(_tradeClientAdapter, err,
                         $"{nameof(ITradeWebSocketClient)}: Controller failed."));
         }
@@ -167,7 +159,7 @@ namespace Binance.WebSocket.Manager
 
         private bool _disposed;
 
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (_disposed)
                 return;

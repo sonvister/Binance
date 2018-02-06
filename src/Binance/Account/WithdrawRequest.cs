@@ -36,6 +36,18 @@ namespace Binance.Account
         /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Get the withdraw request ID.
+        /// Set after response is received.
+        /// </summary>
+        public string Id { get; internal set; }
+
+        /// <summary>
+        /// Get the withdraw request message.
+        /// Set after response is received.
+        /// </summary>
+        public string Message { get; internal set; }
+
         #endregion Public Properties
 
         #region Constructors

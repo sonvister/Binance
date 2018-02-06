@@ -4,7 +4,7 @@ namespace Binance
     public static class ChronologicalExtensions
     {
         /// <summary>
-        /// Convert <see cref="DateTime"/> (UTC) to Unix time milliseconds.
+        /// Convert <see cref="System.DateTime"/> (UTC) to Unix time milliseconds.
         /// </summary>
         /// <param name="chronological"></param>
         /// <returns></returns>

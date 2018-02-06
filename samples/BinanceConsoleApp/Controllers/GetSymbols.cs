@@ -19,7 +19,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (args.Length > 1 && args[1].Equals("refresh", StringComparison.OrdinalIgnoreCase))
             {
-                await Symbol.UpdateCacheAsync(Program.Api);
+                await Symbol.UpdateCacheAsync(Program.Api, token);
             }
 
             var symbols = Symbol.Cache.Values;

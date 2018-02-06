@@ -24,27 +24,27 @@ namespace Binance.WebSocket.UserData
 
         public event EventHandler<AccountUpdateEventArgs> AccountUpdate
         {
-            add { Client.AccountUpdate += value; }
-            remove { Client.AccountUpdate -= value; }
+            add => Client.AccountUpdate += value;
+            remove => Client.AccountUpdate -= value;
         }
 
         public event EventHandler<OrderUpdateEventArgs> OrderUpdate
         {
-            add { Client.OrderUpdate += value; }
-            remove { Client.OrderUpdate -= value; }
+            add => Client.OrderUpdate += value;
+            remove => Client.OrderUpdate -= value;
         }
 
         public event EventHandler<AccountTradeUpdateEventArgs> TradeUpdate
         {
-            add { Client.TradeUpdate += value; }
-            remove { Client.TradeUpdate -= value; }
+            add => Client.TradeUpdate += value;
+            remove => Client.TradeUpdate -= value;
         }
 
         #endregion Public Events
 
         #region Public Properties
 
-        public ISingleUserDataWebSocketClient Client { get; private set; }
+        public ISingleUserDataWebSocketClient Client { get; }
 
         #endregion Public Properties
 
@@ -58,7 +58,7 @@ namespace Binance.WebSocket.UserData
 
         private readonly ILogger<UserDataWebSocketClient> _logger;
 
-        private IBinanceApiUser User;
+        private IBinanceApiUser _user;
 
         private string _listenKey;
 
@@ -108,20 +108,20 @@ namespace Binance.WebSocket.UserData
 
             token.ThrowIfCancellationRequested();
 
-            if (User != null && !User.Equals(user))
+            if (_user != null && !_user.Equals(user))
                 throw new InvalidOperationException($"{nameof(UserDataWebSocketManager)}: Already subscribed to a user.");
 
             try
             {
-                if (User != null && _listenKey != null)
+                if (_user != null && _listenKey != null)
                 {
                     _logger?.LogDebug($"{nameof(UserDataWebSocketManager)}.{nameof(SubscribeAndStreamAsync)}: Closing user stream (\"{_listenKey}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-                    await _api.UserStreamCloseAsync(User, _listenKey, token)
+                    await _api.UserStreamCloseAsync(_user, _listenKey, token)
                         .ConfigureAwait(false);
                 }
 
-                User = user;
+                _user = user;
 
                 _logger?.LogDebug($"{nameof(UserDataWebSocketManager)}.{nameof(SubscribeAndStreamAsync)}: Starting user stream...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
@@ -142,9 +142,9 @@ namespace Binance.WebSocket.UserData
 
                 var timer = _timerProvider.CreateTimer(period);
 
-                timer.Add(User, _listenKey);
+                timer.Add(_user, _listenKey);
 
-                Client.Subscribe(_listenKey, User, callback);
+                Client.Subscribe(_listenKey, _user, callback);
 
                 try
                 {
@@ -162,11 +162,11 @@ namespace Binance.WebSocket.UserData
 
                 _logger?.LogDebug($"{nameof(UserDataWebSocketManager)}.{nameof(SubscribeAndStreamAsync)}: Closing user stream (\"{_listenKey}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-                await _api.UserStreamCloseAsync(User, _listenKey, token)
+                await _api.UserStreamCloseAsync(_user, _listenKey, token)
                     .ConfigureAwait(false);
 
                 _listenKey = null;
-                User = null;
+                _user = null;
             }
             catch (OperationCanceledException) { }
             catch (Exception e)

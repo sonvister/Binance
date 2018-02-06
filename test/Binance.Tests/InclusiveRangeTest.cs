@@ -138,6 +138,7 @@ namespace Binance.Tests
             // 1.234 => 1.230 given range of [0.01 - 10.00] with increment of 0.01.
             Assert.Equal(1.230m, range.GetValidValue(1.234m));
             // 2.345 => 2.340 given range of [0.01 - 10.00] with increment of 0.01 (midpoint rounding to even).
+            // ReSharper disable once RedundantArgumentDefaultValue
             Assert.Equal(2.340m, range.GetValidValue(2.345m, MidpointRounding.ToEven));
             // 2.345 => 2.350 given range of [0.01 - 10.00] with increment of 0.01 (midpoint rounding away from 0).
             Assert.Equal(2.350m, range.GetValidValue(2.345m, MidpointRounding.AwayFromZero));

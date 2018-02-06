@@ -163,12 +163,14 @@ namespace Binance.Cache
             lock (_sync)
             {
                 _trades.Clear();
+                // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var trade in trades)
                 {
                     _trades.Enqueue(trade);
                 }
             }
 
+            // ReSharper disable once PossibleMultipleEnumeration
             Logger?.LogInformation($"{nameof(TradeCache)} ({_symbol}): Synchronization complete (latest trade ID: {trades.Last().Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
         }
 

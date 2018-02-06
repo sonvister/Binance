@@ -24,6 +24,7 @@ namespace Binance
         /// </summary>
         /// <param name="asset"></param>
         /// <param name="amount"></param>
+        /// <param name="paramName"></param>
         public static void ValidateAmount(this Asset asset, decimal amount, string paramName = null)
         {
             if (amount < 0)

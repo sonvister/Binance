@@ -149,12 +149,14 @@ namespace Binance.Cache
             lock (_sync)
             {
                 _candlesticks.Clear();
+                // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var candlestick in candlesticks)
                 {
                     _candlesticks.Add(candlestick);
                 }
             }
 
+            // ReSharper disable once PossibleMultipleEnumeration
             Logger?.LogInformation($"{nameof(CandlestickCache)} ({_symbol}): Synchronization complete (latest open time: {candlesticks.Last().OpenTime}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
         }
 

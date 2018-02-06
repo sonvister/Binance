@@ -648,16 +648,14 @@ namespace Binance.Api
                 .ConfigureAwait(false);
 
             bool success;
-            string msg;
-            string id;
 
             try
             {
                 var jObject = JObject.Parse(json);
 
                 success = jObject["success"].Value<bool>();
-                msg = jObject["msg"]?.Value<string>();
-                id = jObject["id"]?.Value<string>();
+                withdrawRequest.Message = jObject["msg"]?.Value<string>();
+                withdrawRequest.Id = jObject["id"]?.Value<string>();
             }
             catch (Exception e)
             {
@@ -670,7 +668,7 @@ namespace Binance.Api
                 throw NewBinanceWApiException(nameof(WithdrawAsync), json, withdrawRequest.Asset);
             }
 
-            return id;
+            return withdrawRequest.Id;
         }
 
         public virtual async Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceApiUser user, string asset, DepositStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default)
@@ -889,7 +887,7 @@ namespace Binance.Api
             asset = asset.FormatSymbol();
 
             var errorCode = 0;
-            string errorMessage = "[NO MSG]";
+            var errorMessage = "[NO MSG]";
 
             var jObject = JObject.Parse(json);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -163,12 +164,14 @@ namespace Binance.Cache
             lock (_sync)
             {
                 _trades.Clear();
+                // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var trade in trades)
                 {
                     _trades.Enqueue(trade);
                 }
             }
 
+            // ReSharper disable once PossibleMultipleEnumeration
             Logger?.LogInformation($"{nameof(AggregateTradeCache)} ({_symbol}): Synchronization complete (latest trade ID: {trades.Last().Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
         }
 

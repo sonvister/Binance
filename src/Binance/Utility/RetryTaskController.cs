@@ -31,30 +31,30 @@ namespace Binance.Utility
 
             IsActive = true;
 
-            _cts = new CancellationTokenSource();
+            Cts = new CancellationTokenSource();
 
             Task = Task.Run(async () =>
             {
-                while (!_cts.IsCancellationRequested)
+                while (!Cts.IsCancellationRequested)
                 {
-                    try { await _action(_cts.Token).ConfigureAwait(false); }
+                    try { await Action(Cts.Token).ConfigureAwait(false); }
                     catch (OperationCanceledException) { }
                     catch (Exception e)
                     {
-                        if (!_cts.IsCancellationRequested)
+                        if (!Cts.IsCancellationRequested)
                         {
                             try
                             {
-                                _onError?.Invoke(e);
+                                ErrorAction?.Invoke(e);
                                 OnError(e);
                             }
                             catch { /* ignored */}
                         }
                     }
 
-                    if (!_cts.IsCancellationRequested)
+                    if (!Cts.IsCancellationRequested)
                     {
-                        await Task.Delay(RetryDelayMilliseconds, _cts.Token)
+                        await Task.Delay(RetryDelayMilliseconds, Cts.Token)
                             .ConfigureAwait(false);
                     }
                 }

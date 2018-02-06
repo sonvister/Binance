@@ -5,7 +5,7 @@ namespace Binance.WebSocket.UserData
 {
     public sealed class UserDataKeepAliveTimerProvider : IUserDataKeepAliveTimerProvider
     {
-        private IServiceProvider _services;
+        private readonly IServiceProvider _services;
 
         public UserDataKeepAliveTimerProvider()
         { }
@@ -19,10 +19,9 @@ namespace Binance.WebSocket.UserData
 
         public IUserDataKeepAliveTimer CreateTimer()
         {
-            if (_services == null)
-                return new UserDataKeepAliveTimer();
-
-            return _services.GetService<IUserDataKeepAliveTimer>();
+            return _services == null
+                ? new UserDataKeepAliveTimer()
+                : _services.GetService<IUserDataKeepAliveTimer>();
         }
     }
 }

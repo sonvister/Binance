@@ -17,14 +17,14 @@ namespace Binance.WebSocket
 
         public event EventHandler<EventArgs> Open
         {
-            add { WebSocket.Client.Open += value; }
-            remove { WebSocket.Client.Open -= value; }
+            add => WebSocket.Client.Open += value;
+            remove => WebSocket.Client.Open -= value;
         }
 
         public event EventHandler<EventArgs> Close
         {
-            add { WebSocket.Client.Close += value; }
-            remove { WebSocket.Client.Close -= value; }
+            add => WebSocket.Client.Close += value;
+            remove => WebSocket.Client.Close -= value;
         }
 
         #endregion Public Events
@@ -109,6 +109,7 @@ namespace Binance.WebSocket
                 WebSocket.Subscribe(stream, WebSocketCallback);
             }
 
+            // ReSharper disable once InvertIf
             if (callback != null && !Subscribers[stream].Contains(callback))
             {
                 Logger?.LogDebug($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(SubscribeStream)}: Adding callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
@@ -134,7 +135,8 @@ namespace Binance.WebSocket
                 }
             }
 
-            if (callback == null || (Subscribers.ContainsKey(stream) && !Subscribers[stream].Any()))
+            // ReSharper disable once InvertIf
+            if (callback == null || Subscribers.ContainsKey(stream) && !Subscribers[stream].Any())
             {
                 WebSocket.Unsubscribe(stream, WebSocketCallback);
 

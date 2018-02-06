@@ -19,7 +19,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1517948784339;
+        public static readonly long LastUpdateAt = 1517953055226;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Symbol BCH_USDT;
@@ -760,6 +760,7 @@ namespace Binance
                 }
             }
 
+            // ReSharper disable once PossibleMultipleEnumeration
             Asset.UpdateCache(symbols);
         }
 

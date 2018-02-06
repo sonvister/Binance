@@ -175,7 +175,7 @@ namespace Binance.WebSocket.UserData
                 throw new ObjectDisposedException(nameof(UserDataKeepAliveTimer));
         }
 
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (_disposed)
                 return;

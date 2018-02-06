@@ -23,7 +23,7 @@ namespace Binance24HourStatistics
     /// </summary>
     internal class Program
     {
-        private static async Task Main(string[] args)
+        private static async Task Main()
         {
             await ExampleMain();
 

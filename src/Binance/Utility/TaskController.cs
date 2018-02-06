@@ -16,9 +16,9 @@ namespace Binance.Utility
 
         #region Protected Fields
 
-        protected Func<CancellationToken, Task> _action;
-        protected Action<Exception> _onError;
-        protected CancellationTokenSource _cts;
+        protected Func<CancellationToken, Task> Action;
+        protected Action<Exception> ErrorAction;
+        protected CancellationTokenSource Cts;
 
         #endregion Protected Fields
 
@@ -28,8 +28,8 @@ namespace Binance.Utility
         {
             Throw.IfNull(action, nameof(action));
 
-            _action = action;
-            _onError = onError;
+            Action = action;
+            ErrorAction = onError;
         }
 
         #endregion Constructors
@@ -45,19 +45,19 @@ namespace Binance.Utility
 
             IsActive = true;
 
-            _cts = new CancellationTokenSource();
+            Cts = new CancellationTokenSource();
 
             Task = Task.Run(async () =>
             {
-                try { await _action(_cts.Token).ConfigureAwait(false); }
+                try { await Action(Cts.Token).ConfigureAwait(false); }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
-                    if (!_cts.IsCancellationRequested)
+                    if (!Cts.IsCancellationRequested)
                     {
                         try
                         {
-                            _onError?.Invoke(e);
+                            ErrorAction?.Invoke(e);
                             OnError(e);
                         }
                         catch { /* ignored */}
@@ -75,7 +75,7 @@ namespace Binance.Utility
 
             IsActive = false;
 
-            _cts?.Cancel();
+            Cts?.Cancel();
 
             if (Task != null && !Task.IsCompleted)
             {
@@ -83,8 +83,8 @@ namespace Binance.Utility
                     .ConfigureAwait(false);
             }
 
-            _cts?.Dispose();
-            _cts = null;
+            Cts?.Dispose();
+            Cts = null;
         }
 
         #endregion Public Methods

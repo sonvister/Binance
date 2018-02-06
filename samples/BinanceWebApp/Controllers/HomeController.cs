@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using BinanceWebApp.Models;
 using Binance.Api;
+using BinanceWebApp.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BinanceWebApp.Controllers
 {

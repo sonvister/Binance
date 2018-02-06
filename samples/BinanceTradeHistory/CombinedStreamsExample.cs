@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
-using Binance.Cache;
 using Binance.Market;
 using Binance.Utility;
 using Binance.WebSocket;
@@ -73,7 +72,7 @@ namespace BinanceTradeHistory
                     // Begin streaming.
                     controller.Begin();
 
-                    message = "...press any key to continue.";
+                    _message = "...press any key to continue.";
                     Console.ReadKey(true); // wait for user input.
 
                     //*//////////////////////////////////////////////////
@@ -95,7 +94,7 @@ namespace BinanceTradeHistory
                     // Begin streaming again.
                     controller.Begin();
 
-                    message = "...press any key to exit.";
+                    _message = "...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
                     ///////////////////////////////////////////////////*/
                 }
@@ -109,11 +108,11 @@ namespace BinanceTradeHistory
             }
         }
 
-        private static string message;
+        private static string _message;
 
         private static readonly object _sync = new object();
 
-        private static IDictionary<string, AggregateTrade> _trades
+        private static readonly IDictionary<string, AggregateTrade> _trades
             = new SortedDictionary<string, AggregateTrade>();
 
         private static Task _displayTask = Task.CompletedTask;
@@ -144,7 +143,7 @@ namespace BinanceTradeHistory
                                 Console.WriteLine();
                             }
 
-                            Console.WriteLine(message);
+                            Console.WriteLine(_message);
                         });
                 }
             }

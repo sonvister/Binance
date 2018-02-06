@@ -9,7 +9,6 @@ using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
 using Binance.Utility;
-using Binance.WebSocket;
 using Binance.WebSocket.Events;
 using Binance.WebSocket.UserData;
 using Microsoft.Extensions.Configuration;
@@ -85,8 +84,7 @@ namespace BinanceConsoleApp
                         tkn => manager.SubscribeAndStreamAsync(user,
                             evt =>
                             {
-                                var accountUpdateEvent = (evt as AccountUpdateEventArgs);
-                                if (accountUpdateEvent != null)
+                                if (evt is AccountUpdateEventArgs accountUpdateEvent)
                                 {
                                     // Update asset balance.
                                     balance = accountUpdateEvent.AccountInfo.GetBalance(asset);
@@ -110,7 +108,7 @@ namespace BinanceConsoleApp
                         if (cache.Client.WebSocket.IsCombined || cache.Client.WebSocket == manager.Client.WebSocket)
                             throw new Exception("Using combined streams :(");
 
-                        message = "...press any key to continue.";
+                        _message = "...press any key to continue.";
                         Console.ReadKey(true); // wait for user input.
                     }
                 }
@@ -124,7 +122,7 @@ namespace BinanceConsoleApp
             }
         }
 
-        private static string message;
+        private static string _message;
 
         private static readonly object _sync = new object();
 
@@ -150,7 +148,7 @@ namespace BinanceConsoleApp
                                 : $"  {balance.Asset}:  {balance.Free} (free)   {balance.Locked} (locked)");
                             Console.WriteLine();
 
-                            Console.WriteLine(message);
+                            Console.WriteLine(_message);
                         });
                 }
             }

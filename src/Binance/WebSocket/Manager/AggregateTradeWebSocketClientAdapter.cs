@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
+// ReSharper disable InconsistentlySynchronizedField
 
 namespace Binance.WebSocket.Manager
 {
-    internal sealed class AggregateTradeWebSocketClientAdapter : BinanceWebSocketClientAdapter<IAggregateTradeWebSocketClient>, IAggregateTradeWebSocketClient, IBinanceWebSocketClientAdapter
+    internal sealed class AggregateTradeWebSocketClientAdapter : BinanceWebSocketClientAdapter<IAggregateTradeWebSocketClient>, IAggregateTradeWebSocketClient
     {
         #region Public Events
 
         public event EventHandler<AggregateTradeEventArgs> AggregateTrade
         {
-            add { Client.AggregateTrade += value; }
-            remove { Client.AggregateTrade -= value; }
+            add => Client.AggregateTrade += value;
+            remove => Client.AggregateTrade -= value;
         }
 
         #endregion Public Events

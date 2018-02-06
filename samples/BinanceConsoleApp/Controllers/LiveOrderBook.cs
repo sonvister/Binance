@@ -44,7 +44,7 @@ namespace BinanceConsoleApp.Controllers
                 }
             }
 
-            bool enable = true;
+            var enable = true;
             if (args.Length > 3)
             {
                 if (args[3].Equals("off", StringComparison.OrdinalIgnoreCase))

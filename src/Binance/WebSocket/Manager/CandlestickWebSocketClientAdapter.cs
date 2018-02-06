@@ -3,6 +3,7 @@ using System.Threading;
 using Binance.Market;
 using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
+// ReSharper disable InconsistentlySynchronizedField
 
 namespace Binance.WebSocket.Manager
 {
@@ -12,8 +13,8 @@ namespace Binance.WebSocket.Manager
 
         public event EventHandler<CandlestickEventArgs> Candlestick
         {
-            add { Client.Candlestick += value; }
-            remove { Client.Candlestick -= value; }
+            add => Client.Candlestick += value;
+            remove => Client.Candlestick -= value;
         }
 
         #endregion Public Events

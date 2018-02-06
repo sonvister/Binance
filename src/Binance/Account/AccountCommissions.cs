@@ -62,6 +62,7 @@ namespace Binance.Account
         /// </summary>
         /// <param name="commission">The commission.</param>
         /// <param name="paramName">The parameter name.</param>
+        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private static void ThrowIfCommissionIsInvalid(decimal commission, string paramName)
         {
             if (commission < 0 || commission > 10000)

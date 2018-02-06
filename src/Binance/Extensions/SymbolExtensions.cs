@@ -67,8 +67,7 @@ namespace Binance
             if (!symbol.Quantity.IsValid(order.Quantity))
                 return false;
 
-            var limitOrder = (order as LimitOrder);
-            if (limitOrder == null)
+            if (!(order is LimitOrder limitOrder))
                 return true;
 
             if (!symbol.QuoteAsset.IsAmountValid(limitOrder.Price))
@@ -155,8 +154,7 @@ namespace Binance
             symbol.BaseAsset.ValidateAmount(order.Quantity, nameof(order.Quantity));
             symbol.Quantity.Validate(order.Quantity, nameof(order.Quantity));
 
-            var limitOrder = (order as LimitOrder);
-            if (limitOrder == null)
+            if (!(order is LimitOrder limitOrder))
                 return;
 
             symbol.QuoteAsset.ValidateAmount(limitOrder.Price, nameof(limitOrder.Price));
@@ -170,7 +168,7 @@ namespace Binance
         /// <summary>
         /// Validate price and quantity for a symbol.
         /// </summary>
-        /// <param name=""></param>
+        /// <param name="symbol"></param>
         /// <param name="price"></param>
         /// <param name="quantity"></param>
         public static void ValidatePriceQuantity(this Symbol symbol, decimal price, decimal quantity)

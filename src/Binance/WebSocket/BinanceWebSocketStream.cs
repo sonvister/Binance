@@ -17,14 +17,14 @@ namespace Binance.WebSocket
 
         public event EventHandler<EventArgs> Open
         {
-            add { Client.Open += value; }
-            remove { Client.Open -= value; }
+            add => Client.Open += value;
+            remove => Client.Open -= value;
         }
 
         public event EventHandler<EventArgs> Close
         {
-            add { Client.Close += value; }
-            remove { Client.Close -= value; }
+            add => Client.Close += value;
+            remove => Client.Close -= value;
         }
 
         #endregion Public Events
@@ -129,6 +129,7 @@ namespace Binance.WebSocket
                     _subscribers[stream] = new List<Action<WebSocketStreamEventArgs>>();
                 }
 
+                // ReSharper disable once InvertIf
                 if (!_subscribers[stream].Contains(callback))
                 {
                     _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Adding callback for stream: \"{stream}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
@@ -159,6 +160,7 @@ namespace Binance.WebSocket
                 }
 
                 // Unsubscribe stream if there are no callbacks.
+                // ReSharper disable once InvertIf
                 if (!_subscribers[stream].Any())
                 {
                     if (Client.IsStreaming)
@@ -212,7 +214,7 @@ namespace Binance.WebSocket
                     {
                         string streamName;
 
-                        Action<WebSocketStreamEventArgs>[] callbacks = null;
+                        Action<WebSocketStreamEventArgs>[] callbacks;
 
                         // TODO: Avoid locking... allowing for eventual consistency of callbacks.
                         //lock (_sync)
@@ -262,15 +264,15 @@ namespace Binance.WebSocket
                             }
                         //}
 
-                        if (callbacks != null)
-                        {
-                            // Create event with stream name and JSON data.
-                            var args = new WebSocketStreamEventArgs(streamName, json, token);
+                        if (callbacks == null)
+                            return;
 
-                            foreach (var callback in callbacks)
-                            {
-                                callback(args);
-                            }
+                        // Create event with stream name and JSON data.
+                        var args = new WebSocketStreamEventArgs(streamName, json, token);
+
+                        foreach (var callback in callbacks)
+                        {
+                            callback(args);
                         }
                     }
                     catch (OperationCanceledException) { /* ignored */ }

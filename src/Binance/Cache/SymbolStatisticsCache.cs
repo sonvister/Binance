@@ -107,7 +107,11 @@ namespace Binance.Cache
 
             UnLink();
 
-            _statistics.Clear();
+            lock (_sync)
+            {
+                _statistics.Clear();
+            }
+
             _symbols.Clear();
         }
 
@@ -135,6 +139,7 @@ namespace Binance.Cache
         {
             try
             {
+                // ReSharper disable once InconsistentlySynchronizedField
                 if (_statistics.Count == 0 && !_symbols.Any())
                 {
                     Logger?.LogInformation($"{nameof(SymbolStatisticsCache)}.{nameof(OnAction)}: Initializing all symbol statistics...");

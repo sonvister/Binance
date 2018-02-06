@@ -56,10 +56,11 @@ namespace Binance.WebSocket.UserData
             SubscribeStream(listenKey, callback);
 
             // If listen key is new.
+            // ReSharper disable once InvertIf
             if (!ListenKeys.ContainsKey(listenKey))
             {
                 // If a listen key exists with user.
-                if (ListenKeys.Any(_ => _.Value == user))
+                if (ListenKeys.Any(_ => _.Value.Equals(user)))
                     throw new InvalidOperationException($"{nameof(UserDataWebSocketClient)}.{nameof(Subscribe)}: A listen key is already subscribed for this user.");
 
                 // Add listen key and user (for stream event handling).

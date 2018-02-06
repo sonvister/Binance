@@ -17,7 +17,7 @@ namespace Binance.WebSocket.Manager
         /// <param name="webSocket"></param>
         /// <param name="onError"></param>
         public WebSocketStreamController(IWebSocketStream webSocket, Action<Exception> onError = null)
-            : base(tkn => webSocket.StreamAsync(tkn), onError)
+            : base(webSocket.StreamAsync, onError)
         {
             Throw.IfNull(webSocket, nameof(webSocket));
 

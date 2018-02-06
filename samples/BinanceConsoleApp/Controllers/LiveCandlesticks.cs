@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Binance;
 using Binance.Market;
 using Binance.WebSocket;
-using Binance.WebSocket.Events;
 using Binance.WebSocket.Manager;
 
 namespace BinanceConsoleApp.Controllers
@@ -48,7 +47,7 @@ namespace BinanceConsoleApp.Controllers
                 interval = args[3].ToCandlestickInterval();
             }
 
-            bool enable = true;
+            var enable = true;
             if (args.Length > 4)
             {
                 if (args[4].Equals("off", StringComparison.OrdinalIgnoreCase))
@@ -88,12 +87,12 @@ namespace BinanceConsoleApp.Controllers
             return true;
         }
 
-        private static void OnCandlestickEvent(object sender, CandlestickEventArgs e)
-        {
-            lock (Program.ConsoleSync)
-            {
-                Console.WriteLine($" Candlestick [{e.Candlestick.OpenTime}] - Is Final: {(e.IsFinal ? "YES" : "NO")}");
-            }
-        }
+        //private static void OnCandlestickEvent(object sender, CandlestickEventArgs e)
+        //{
+        //    lock (Program.ConsoleSync)
+        //    {
+        //        Console.WriteLine($" Candlestick [{e.Candlestick.OpenTime}] - Is Final: {(e.IsFinal ? "YES" : "NO")}");
+        //    }
+        //}
     }
 }

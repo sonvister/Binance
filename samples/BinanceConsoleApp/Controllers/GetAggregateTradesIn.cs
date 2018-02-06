@@ -26,9 +26,9 @@ namespace BinanceConsoleApp.Controllers
 
             var symbol = args[1];
 
-            long.TryParse(args[2], out long startTime);
+            long.TryParse(args[2], out var startTime);
 
-            long.TryParse(args[3], out long endTime);
+            long.TryParse(args[3], out var endTime);
 
             var trades = (await Program.Api.GetAggregateTradesAsync(symbol, (startTime, endTime), token))
                 .Reverse().ToArray();

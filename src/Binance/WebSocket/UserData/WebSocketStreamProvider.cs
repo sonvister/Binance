@@ -6,7 +6,7 @@ namespace Binance.WebSocket.UserData
 {
     public sealed class WebSocketStreamProvider : IWebSocketStreamProvider
     {
-        private IServiceProvider _services;
+        private readonly IServiceProvider _services;
 
         public WebSocketStreamProvider()
         { }
