@@ -3,13 +3,16 @@ using Binance.Utility;
 
 namespace Binance.WebSocket.Manager
 {
-    public interface IBinanceWebSocketClientManager : IDisposable
+    /// <summary>
+    /// A facade for managing multiple <see cref="IBinanceWebSocketClient"/>
+    /// implementations. Clients are controlled via adapter implementations
+    /// that automatically cancel streaming before subscribe/unsubscribe
+    /// and automaically re-enable streaming afterwards (if not disabled).
+    /// The familiar client interfaces presented imply synchronous operation,
+    /// but the subscribe/unsubscribe operations are done asynchronously.
+    /// </summary>
+    public interface IBinanceWebSocketManager : IWebSocketManager, IDisposable
     {
-        /// <summary>
-        /// The error event.
-        /// </summary>
-        event EventHandler<BinanceWebSocketClientManagerErrorEventArgs> Error;
-
         /// <summary>
         /// Get the <see cref="IAggregateTradeWebSocketClient"/> interface.
         /// </summary>

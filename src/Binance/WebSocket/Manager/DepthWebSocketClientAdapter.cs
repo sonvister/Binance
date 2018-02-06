@@ -19,7 +19,7 @@ namespace Binance.WebSocket.Manager
 
         #region Constructors
 
-        public DepthWebSocketClientAdapter(IBinanceWebSocketClientManager manager, IDepthWebSocketClient client, ILogger<IBinanceWebSocketClientManager> logger = null, Action<Exception> onError = null)
+        public DepthWebSocketClientAdapter(IBinanceWebSocketManager manager, IDepthWebSocketClient client, ILogger<IBinanceWebSocketManager> logger = null, Action<Exception> onError = null)
             : base(manager, client, logger, onError)
         { }
 

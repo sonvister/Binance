@@ -60,7 +60,7 @@ namespace Binance
             services.AddTransient<IUserDataKeepAliveTimer, UserDataKeepAliveTimer>();
             services.AddTransient<IUserDataKeepAliveTimerProvider, UserDataKeepAliveTimerProvider>();
             services.AddTransient<IUserDataWebSocketManager, UserDataWebSocketManager>();
-            services.AddTransient<IBinanceWebSocketClientManager, BinanceWebSocketClientManager>();
+            services.AddTransient<IBinanceWebSocketManager, BinanceWebSocketManager>();
 
             // Serialization
             services.AddSingleton<IOrderBookTopSerializer, OrderBookTopSerializer>();

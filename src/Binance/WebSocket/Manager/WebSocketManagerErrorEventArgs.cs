@@ -2,11 +2,11 @@
 
 namespace Binance.WebSocket.Manager
 {
-    public class BinanceWebSocketClientManagerErrorEventArgs : EventArgs
+    public class WebSocketManagerErrorEventArgs : EventArgs
     {
         #region Public Properties
 
-        public BinanceWebSocketClientManagerException Exception { get; }
+        public WebSocketManagerException Exception { get; }
 
         #endregion Public Properties
 
@@ -16,7 +16,7 @@ namespace Binance.WebSocket.Manager
         /// Constructor.
         /// </summary>
         /// <param name="exception"></param>
-        public BinanceWebSocketClientManagerErrorEventArgs(BinanceWebSocketClientManagerException exception)
+        public WebSocketManagerErrorEventArgs(WebSocketManagerException exception)
         {
             Throw.IfNull(exception, nameof(exception));
 

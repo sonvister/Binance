@@ -32,7 +32,7 @@ namespace BinanceConsoleApp
         public static IBinanceApi Api;
         public static IBinanceApiUser User;
 
-        public static IBinanceWebSocketClientManager ClientManager;
+        public static IBinanceWebSocketManager ClientManager;
         public static IUserDataWebSocketManager UserDataManager;
 
         public static Task LiveUserDataTask;
@@ -105,7 +105,7 @@ namespace BinanceConsoleApp
 
                 Api = ServiceProvider.GetService<IBinanceApi>();
 
-                ClientManager = ServiceProvider.GetService<IBinanceWebSocketClientManager>();
+                ClientManager = ServiceProvider.GetService<IBinanceWebSocketManager>();
                 ClientManager.Error += (s, e) =>
                 {
                     lock (ConsoleSync)

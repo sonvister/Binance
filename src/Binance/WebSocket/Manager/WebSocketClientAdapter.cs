@@ -34,11 +34,11 @@ namespace Binance.WebSocket.Manager
 
         protected ITaskController _controller => Manager.GetController(Client);
 
-        protected readonly IBinanceWebSocketClientManager Manager;
+        protected readonly IBinanceWebSocketManager Manager;
 
         protected readonly TWebSocketClient Client;
 
-        protected readonly ILogger<IBinanceWebSocketClientManager> Logger;
+        protected readonly ILogger<IBinanceWebSocketManager> Logger;
 
         protected readonly Action<Exception> OnError;
 
@@ -46,7 +46,7 @@ namespace Binance.WebSocket.Manager
 
         #region Constructors
 
-        public WebSocketClientAdapter(IBinanceWebSocketClientManager manager, TWebSocketClient client, ILogger<IBinanceWebSocketClientManager> logger = null, Action<Exception> onError = null)
+        public WebSocketClientAdapter(IBinanceWebSocketManager manager, TWebSocketClient client, ILogger<IBinanceWebSocketManager> logger = null, Action<Exception> onError = null)
         {
             Throw.IfNull(manager, nameof(manager));
             Throw.IfNull(client, nameof(client));

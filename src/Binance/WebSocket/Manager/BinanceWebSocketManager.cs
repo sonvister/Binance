@@ -8,9 +8,9 @@ namespace Binance.WebSocket.Manager
     /// <summary>
     /// Multiple <see cref="IBinanceWebSocketClient"/> controller with automatic stream reconnect.
     /// </summary>
-    public sealed class BinanceWebSocketClientManager : IBinanceWebSocketClientManager, IDisposable
+    public sealed class BinanceWebSocketManager : IBinanceWebSocketManager, IDisposable
     {
-        public event EventHandler<BinanceWebSocketClientManagerErrorEventArgs> Error;
+        public event EventHandler<WebSocketManagerErrorEventArgs> Error;
 
         public IAggregateTradeWebSocketClient AggregateTradeClient => _aggregateTradeClientAdapter;
 
@@ -38,7 +38,7 @@ namespace Binance.WebSocket.Manager
         private readonly SymbolStatisticsWebSocketClientAdapter _statisticsClientAdapter;
         private readonly TradeWebSocketClientAdapter _tradeClientAdapter;
 
-        private readonly ILogger<IBinanceWebSocketClientManager> _logger;
+        private readonly ILogger<IBinanceWebSocketManager> _logger;
 
         private IDictionary<IWebSocketStream, WebSocketStreamController> _controllers
             = new Dictionary<IWebSocketStream, WebSocketStreamController>();
@@ -49,13 +49,13 @@ namespace Binance.WebSocket.Manager
 
         #region Constructors
 
-        public BinanceWebSocketClientManager(
+        public BinanceWebSocketManager(
             IAggregateTradeWebSocketClient aggregateTradeClient,
             ICandlestickWebSocketClient candlestickClient,
             IDepthWebSocketClient depthClient,
             ISymbolStatisticsWebSocketClient statisticsClient,
             ITradeWebSocketClient tradeClient,
-            ILogger<IBinanceWebSocketClientManager> logger = null)
+            ILogger<IBinanceWebSocketManager> logger = null)
         {
             _aggregateTradeClient = aggregateTradeClient;
             _candlestickClient = candlestickClient;
@@ -142,14 +142,14 @@ namespace Binance.WebSocket.Manager
         /// <param name="message">The exception message (optional).</param>
         private void RaiseErrorEvent(IBinanceWebSocketClient client, Exception exception, string message = null)
         {
-            var args = new BinanceWebSocketClientManagerErrorEventArgs(
-                new BinanceWebSocketClientManagerException(client, message, exception));
+            var args = new WebSocketManagerErrorEventArgs(
+                new WebSocketManagerException(client, message, exception));
 
             try { Error?.Invoke(this, args); }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                _logger?.LogError(e, $"{nameof(BinanceWebSocketClientManager)}: Unhandled error event handler exception.");
+                _logger?.LogError(e, $"{nameof(BinanceWebSocketManager)}: Unhandled error event handler exception.");
             }
         }
 

@@ -19,7 +19,7 @@ namespace Binance.WebSocket.Manager
 
         #region Constructors
 
-        public SymbolStatisticsWebSocketClientAdapter(IBinanceWebSocketClientManager manager, ISymbolStatisticsWebSocketClient client, ILogger<IBinanceWebSocketClientManager> logger = null, Action<Exception> onError = null)
+        public SymbolStatisticsWebSocketClientAdapter(IBinanceWebSocketManager manager, ISymbolStatisticsWebSocketClient client, ILogger<IBinanceWebSocketManager> logger = null, Action<Exception> onError = null)
             : base(manager, client, logger, onError)
         { }
 

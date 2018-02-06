@@ -19,7 +19,7 @@ namespace Binance.WebSocket.Manager
 
         #region Constructors
 
-        public AggregateTradeWebSocketClientAdapter(IBinanceWebSocketClientManager manager, IAggregateTradeWebSocketClient client, ILogger<IBinanceWebSocketClientManager> logger = null, Action<Exception> onError = null)
+        public AggregateTradeWebSocketClientAdapter(IBinanceWebSocketManager manager, IAggregateTradeWebSocketClient client, ILogger<IBinanceWebSocketManager> logger = null, Action<Exception> onError = null)
             : base(manager, client, logger, onError)
         { }
 

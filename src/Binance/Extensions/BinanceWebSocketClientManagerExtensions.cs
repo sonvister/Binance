@@ -14,7 +14,7 @@ namespace Binance.WebSocket.Manager
         /// <param name="manager"></param>
         /// <param name="client"></param>
         /// <returns></returns>
-        public static IRetryTaskController GetController(this IBinanceWebSocketClientManager manager, IBinanceWebSocketClient client)
+        public static IRetryTaskController GetController(this IBinanceWebSocketManager manager, IBinanceWebSocketClient client)
         {
             Throw.IfNull(manager, nameof(manager));
             Throw.IfNull(client, nameof(client));
@@ -27,7 +27,7 @@ namespace Binance.WebSocket.Manager
         /// </summary>
         /// <param name="manager"></param>
         /// <returns></returns>
-        public static IEnumerable<IBinanceWebSocketClient> Clients(this IBinanceWebSocketClientManager manager)
+        public static IEnumerable<IBinanceWebSocketClient> Clients(this IBinanceWebSocketManager manager)
         {
             Throw.IfNull(manager, nameof(manager));
 
@@ -42,7 +42,7 @@ namespace Binance.WebSocket.Manager
         /// Begin all controller actions.
         /// </summary>
         /// <param name="manager"></param>
-        public static void BeginAll(this IBinanceWebSocketClientManager manager)
+        public static void BeginAll(this IBinanceWebSocketManager manager)
         {
             Throw.IfNull(manager, nameof(manager));
 
@@ -57,7 +57,7 @@ namespace Binance.WebSocket.Manager
         /// </summary>
         /// <param name="manager"></param>
         /// <returns></returns>
-        public static async Task CancelAllAsync(this IBinanceWebSocketClientManager manager)
+        public static async Task CancelAllAsync(this IBinanceWebSocketManager manager)
         {
             Throw.IfNull(manager, nameof(manager));
 
@@ -74,7 +74,7 @@ namespace Binance.WebSocket.Manager
         /// </summary>
         /// <param name="manager"></param>
         /// <returns></returns>
-        public static async Task UnsubscribeAllAsync(this IBinanceWebSocketClientManager manager)
+        public static async Task UnsubscribeAllAsync(this IBinanceWebSocketManager manager)
         {
             Throw.IfNull(manager, nameof(manager));
 
