@@ -27,119 +27,124 @@ namespace Binance.WebSocket.Manager
 
         #region Public Methods
 
-        public async void Subscribe(Action<SymbolStatisticsEventArgs> callback)
+        public void Subscribe(Action<SymbolStatisticsEventArgs> callback)
         {
-            CreateTaskCompletionSource();
-
-            try
+            lock (Sync)
             {
-                Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                await _controller.CancelAsync()
-                    .ConfigureAwait(false);
-
-                Client.Subscribe(callback);
-
-                if (!Manager.IsAutoStreamingDisabled && !_controller.IsActive)
+                Task = Task.ContinueWith(async _ =>
                 {
-                    Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    _controller.Begin();
-                }
 
-                TaskCompletionSource.SetResult(true);
-            }
-            catch (OperationCanceledException) { /* ignored */ }
-            catch (Exception e)
-            {
-                Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                TaskCompletionSource.SetException(e);
-                OnError?.Invoke(e);
+                    try
+                    {
+                        Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        await Controller.CancelAsync()
+                            .ConfigureAwait(false);
+
+                        Client.Subscribe(callback);
+
+                        if (!Manager.IsAutoStreamingDisabled && !Controller.IsActive)
+                        {
+                            Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                            Controller.Begin();
+                        }
+                    }
+                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (Exception e)
+                    {
+                        Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        OnError?.Invoke(e);
+                    }
+                });
             }
         }
 
-        public async void Subscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
+        public void Subscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
         {
-            CreateTaskCompletionSource();
-
-            try
+            lock (Sync)
             {
-                Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                await _controller.CancelAsync()
-                    .ConfigureAwait(false);
-
-                Client.Subscribe(symbol, callback);
-
-                if (!Manager.IsAutoStreamingDisabled && !_controller.IsActive)
+                Task = Task.ContinueWith(async _ =>
                 {
-                    Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    _controller.Begin();
-                }
+                    try
+                    {
+                        Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        await Controller.CancelAsync()
+                            .ConfigureAwait(false);
 
-                TaskCompletionSource.SetResult(true);
-            }
-            catch (OperationCanceledException) { /* ignored */ }
-            catch (Exception e)
-            {
-                Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                TaskCompletionSource.SetException(e);
-                OnError?.Invoke(e);
+                        Client.Subscribe(symbol, callback);
+
+                        if (!Manager.IsAutoStreamingDisabled && !Controller.IsActive)
+                        {
+                            Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                            Controller.Begin();
+                        }
+                    }
+                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (Exception e)
+                    {
+                        Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Subscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        OnError?.Invoke(e);
+                    }
+                });
             }
         }
 
-        public async void Unsubscribe(Action<SymbolStatisticsEventArgs> callback)
+        public void Unsubscribe(Action<SymbolStatisticsEventArgs> callback)
         {
-            CreateTaskCompletionSource();
-
-            try
+            lock (Sync)
             {
-                Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                await _controller.CancelAsync()
-                    .ConfigureAwait(false);
-
-                Client.Unsubscribe(callback);
-
-                if (!Manager.IsAutoStreamingDisabled && !_controller.IsActive)
+                Task = Task.ContinueWith(async _ =>
                 {
-                    Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    _controller.Begin();
-                }
+                    try
+                    {
+                        Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        await Controller.CancelAsync()
+                            .ConfigureAwait(false);
 
-                TaskCompletionSource.SetResult(true);
-            }
-            catch (OperationCanceledException) { /* ignored */ }
-            catch (Exception e)
-            {
-                Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                TaskCompletionSource.SetException(e);
-                OnError?.Invoke(e);
+                        Client.Unsubscribe(callback);
+
+                        if (!Manager.IsAutoStreamingDisabled && !Controller.IsActive)
+                        {
+                            Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                            Controller.Begin();
+                        }
+                    }
+                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (Exception e)
+                    {
+                        Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        OnError?.Invoke(e);
+                    }
+                });
             }
         }
 
-        public async void Unsubscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
+        public void Unsubscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
         {
-            CreateTaskCompletionSource();
-
-            try
+            lock (Sync)
             {
-                Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                await _controller.CancelAsync()
-                    .ConfigureAwait(false);
-
-                Client.Unsubscribe(symbol, callback);
-
-                if (!Manager.IsAutoStreamingDisabled && !_controller.IsActive)
+                Task = Task.ContinueWith(async _ =>
                 {
-                    Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    _controller.Begin();
-                }
+                    try
+                    {
+                        Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        await Controller.CancelAsync()
+                            .ConfigureAwait(false);
 
-                TaskCompletionSource.SetResult(true);
-            }
-            catch (OperationCanceledException) { /* ignored */ }
-            catch (Exception e)
-            {
-                Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                TaskCompletionSource.SetException(e);
-                OnError?.Invoke(e);
+                        Client.Unsubscribe(symbol, callback);
+
+                        if (!Manager.IsAutoStreamingDisabled && !Controller.IsActive)
+                        {
+                            Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                            Controller.Begin();
+                        }
+                    }
+                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (Exception e)
+                    {
+                        Logger?.LogError(e, $"{nameof(SymbolStatisticsWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        OnError?.Invoke(e);
+                    }
+                });
             }
         }
 

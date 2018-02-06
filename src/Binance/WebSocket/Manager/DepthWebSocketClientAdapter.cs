@@ -27,61 +27,63 @@ namespace Binance.WebSocket.Manager
 
         #region Public Methods
 
-        public async void Subscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback)
+        public void Subscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback)
         {
-            CreateTaskCompletionSource();
-
-            try
+            lock (Sync)
             {
-                Logger?.LogDebug($"{nameof(DepthWebSocketClientAdapter)}.{nameof(Subscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                await _controller.CancelAsync()
-                    .ConfigureAwait(false);
-
-                Client.Subscribe(symbol, limit, callback);
-
-                if (!Manager.IsAutoStreamingDisabled && !_controller.IsActive)
+                Task = Task.ContinueWith(async _ =>
                 {
-                    Logger?.LogDebug($"{nameof(DepthWebSocketClientAdapter)}.{nameof(Subscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    _controller.Begin();
-                }
+                    try
+                    {
+                        Logger?.LogDebug($"{nameof(DepthWebSocketClientAdapter)}.{nameof(Subscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        await Controller.CancelAsync()
+                            .ConfigureAwait(false);
 
-                TaskCompletionSource.SetResult(true);
-            }
-            catch (OperationCanceledException) { /* ignored */ }
-            catch (Exception e)
-            {
-                Logger?.LogError(e, $"{nameof(DepthWebSocketClientAdapter)}.{nameof(Subscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                TaskCompletionSource.SetException(e);
-                OnError?.Invoke(e);
+                        Client.Subscribe(symbol, limit, callback);
+
+                        if (!Manager.IsAutoStreamingDisabled && !Controller.IsActive)
+                        {
+                            Logger?.LogDebug($"{nameof(DepthWebSocketClientAdapter)}.{nameof(Subscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                            Controller.Begin();
+                        }
+                    }
+                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (Exception e)
+                    {
+                        Logger?.LogError(e, $"{nameof(DepthWebSocketClientAdapter)}.{nameof(Subscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        OnError?.Invoke(e);
+                    }
+                });
             }
         }
 
-        public async void Unsubscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback)
+        public void Unsubscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback)
         {
-            CreateTaskCompletionSource();
-
-            try
+            lock (Sync)
             {
-                Logger?.LogDebug($"{nameof(DepthWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                await _controller.CancelAsync()
-                    .ConfigureAwait(false);
-
-                Client.Unsubscribe(symbol, limit, callback);
-
-                if (!Manager.IsAutoStreamingDisabled && !_controller.IsActive)
+                Task = Task.ContinueWith(async _ =>
                 {
-                    Logger?.LogDebug($"{nameof(DepthWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    _controller.Begin();
-                }
+                    try
+                    {
+                        Logger?.LogDebug($"{nameof(DepthWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        await Controller.CancelAsync()
+                            .ConfigureAwait(false);
 
-                TaskCompletionSource.SetResult(true);
-            }
-            catch (OperationCanceledException) { /* ignored */ }
-            catch (Exception e)
-            {
-                Logger?.LogError(e, $"{nameof(DepthWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                TaskCompletionSource.SetException(e);
-                OnError?.Invoke(e);
+                        Client.Unsubscribe(symbol, limit, callback);
+
+                        if (!Manager.IsAutoStreamingDisabled && !Controller.IsActive)
+                        {
+                            Logger?.LogDebug($"{nameof(DepthWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                            Controller.Begin();
+                        }
+                    }
+                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (Exception e)
+                    {
+                        Logger?.LogError(e, $"{nameof(DepthWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        OnError?.Invoke(e);
+                    }
+                });
             }
         }
 

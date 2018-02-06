@@ -29,13 +29,15 @@ namespace Binance.WebSocket.Manager
 
         public IWebSocketStream WebSocket => Client.WebSocket;
 
-        public Task Task => TaskCompletionSource?.Task ?? Task.CompletedTask;
+        public Task Task { get; protected set; } = Task.CompletedTask;
+
+        protected readonly object Sync = new object();
 
         #endregion Public Properties
 
         #region Protected Properties & Fields
 
-        protected ITaskController _controller => Manager.GetController(Client);
+        protected ITaskController Controller => Manager.GetController(Client);
 
         protected readonly IBinanceWebSocketManager Manager;
 
@@ -45,15 +47,7 @@ namespace Binance.WebSocket.Manager
 
         protected readonly Action<Exception> OnError;
 
-        protected TaskCompletionSource<bool> TaskCompletionSource;
-
         #endregion Protected Properties & Fields
-
-        #region Private Fields
-
-        private readonly object _sync = new object();
-
-        #endregion Private Fields
 
         #region Constructors
 
@@ -72,52 +66,36 @@ namespace Binance.WebSocket.Manager
 
         #region Public Methods
 
-        public async void UnsubscribeAll()
+        public void UnsubscribeAll()
         {
-            CreateTaskCompletionSource();
-
-            try
+            lock (Sync)
             {
-                Logger?.LogDebug($"{GetType().Name}.{nameof(UnsubscribeAll)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                await _controller.CancelAsync()
-                    .ConfigureAwait(false);
-
-                Client.UnsubscribeAll();
-
-                if (!Manager.IsAutoStreamingDisabled && !_controller.IsActive)
+                Task = Task.ContinueWith(async _ =>
                 {
-                    Logger?.LogDebug($"{GetType().Name}.{nameof(UnsubscribeAll)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    _controller.Begin();
-                }
+                    try
+                    {
+                        Logger?.LogDebug($"{GetType().Name}.{nameof(UnsubscribeAll)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        await Controller.CancelAsync()
+                            .ConfigureAwait(false);
 
-                TaskCompletionSource.SetResult(true);
-            }
-            catch (OperationCanceledException) { /* ignored */ }
-            catch (Exception e)
-            {
-                Logger?.LogError(e, $"{GetType().Name}.{nameof(UnsubscribeAll)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                TaskCompletionSource.SetException(e);
-                OnError?.Invoke(e);
+                        Client.UnsubscribeAll();
+
+                        if (!Manager.IsAutoStreamingDisabled && !Controller.IsActive)
+                        {
+                            Logger?.LogDebug($"{GetType().Name}.{nameof(UnsubscribeAll)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                            Controller.Begin();
+                        }
+                    }
+                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (Exception e)
+                    {
+                        Logger?.LogError(e, $"{GetType().Name}.{nameof(UnsubscribeAll)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        OnError?.Invoke(e);
+                    }
+                });
             }
         }
 
         #endregion Public Methods
-
-        #region Protected Methods
-
-        protected void CreateTaskCompletionSource()
-        {
-            lock (_sync)
-            {
-                if (TaskCompletionSource != null && !TaskCompletionSource.Task.IsCompleted)
-                {
-                    throw new Exception($"{GetType().Name}.{nameof(CreateTaskCompletionSource)}: An asynchronous operation is already in progress.");
-                }
-
-                TaskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.None);
-            }
-        }
-
-        #endregion Protected Methods
     }
 }
