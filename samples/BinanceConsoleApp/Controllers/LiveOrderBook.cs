@@ -3,20 +3,20 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
-using Binance.Cache;
 using Binance.Market;
 using Binance.WebSocket;
 using Binance.WebSocket.Events;
+using Binance.WebSocket.Manager;
 
 namespace BinanceConsoleApp.Controllers
 {
     internal class LiveOrderBook : IHandleCommand
     {
-        public Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase) &&
                 !command.Equals("live", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             var args = command.Split(' ');
 
@@ -28,7 +28,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (!endpoint.Equals("depth", StringComparison.OrdinalIgnoreCase)
                 && !endpoint.Equals("book", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
@@ -40,7 +40,7 @@ namespace BinanceConsoleApp.Controllers
                     {
                         Console.WriteLine($"  Invalid symbol: \"{symbol}\"");
                     }
-                    return Task.FromResult(true);
+                    return true;
                 }
             }
 
@@ -55,6 +55,9 @@ namespace BinanceConsoleApp.Controllers
             {
                 Program.ClientManager.DepthClient.Subscribe(symbol, 5, evt => OnDepthUpdate(evt));
 
+                // Optionally, wait for asynchronous client adapter operation to complete.
+                await ((IBinanceWebSocketClientAdapter)Program.ClientManager.DepthClient).Task;
+
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
@@ -66,6 +69,9 @@ namespace BinanceConsoleApp.Controllers
             {
                 Program.ClientManager.DepthClient.Unsubscribe(symbol, 5);
 
+                // Optionally, wait for asynchronous client adapter operation to complete.
+                await ((IBinanceWebSocketClientAdapter)Program.ClientManager.DepthClient).Task;
+
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
@@ -74,7 +80,7 @@ namespace BinanceConsoleApp.Controllers
                 }
             }
 
-            return Task.FromResult(true);
+            return true;
         }
 
         private static void OnDepthUpdate(DepthUpdateEventArgs e)

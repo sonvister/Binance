@@ -125,13 +125,13 @@ namespace Binance.WebSocket
                         throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Subscribing (a stream) must be done when not streaming.");
                     }
 
-                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Adding stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Adding stream: \"{stream}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     _subscribers[stream] = new List<Action<WebSocketStreamEventArgs>>();
                 }
 
                 if (!_subscribers[stream].Contains(callback))
                 {
-                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Adding callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Subscribe)}: Adding callback for stream: \"{stream}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     _subscribers[stream].Add(callback);
                 }
             //}
@@ -148,13 +148,13 @@ namespace Binance.WebSocket
             //{
                 if (!_subscribers.ContainsKey(stream))
                 {
-                    _logger?.LogError($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Not subscribed to stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Not subscribed to stream (\"{stream}\").");
+                    _logger?.LogError($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Not subscribed to stream: \"{stream}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Not subscribed to stream: \"{stream}\"");
                 }
 
                 if (_subscribers[stream].Contains(callback))
                 {
-                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Removing callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Removing callback for stream: \"{stream}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     _subscribers[stream].Remove(callback);
                 }
 
@@ -167,7 +167,7 @@ namespace Binance.WebSocket
                         throw new InvalidOperationException($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Unsubscribing (a stream) must be done when not streaming.");
                     }
 
-                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Removing stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    _logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(Unsubscribe)}: Removing stream: \"{stream}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     _subscribers.Remove(stream);
                 }
             //}

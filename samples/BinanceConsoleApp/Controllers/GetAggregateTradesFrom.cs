@@ -16,24 +16,35 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string symbol = Symbol.BTC_USDT;
-            long fromId = 0;
-
-            if (args.Length > 1)
+            if (args.Length < 2)
             {
-                if (!long.TryParse(args[1], out fromId))
+                lock (Program.ConsoleSync)
                 {
-                    symbol = args[1];
-                    fromId = 0;
+                    Console.WriteLine("An aggregate trade ID is required.");
                 }
             }
 
-            if (args.Length > 2)
+            string symbol = Symbol.BTC_USDT;
+            var limit = 10;
+
+            if (!long.TryParse(args[1], out var fromId))
             {
-                long.TryParse(args[2], out fromId);
+                symbol = args[1];
+                fromId = 0;
+
+                if (args.Length > 2)
+                {
+                    long.TryParse(args[2], out fromId);
+                }
+            }
+            else
+            {
+                if (args.Length > 2)
+                {
+                    int.TryParse(args[2], out limit);
+                }
             }
 
-            var limit = 10;
             if (args.Length > 3)
             {
                 int.TryParse(args[3], out limit);

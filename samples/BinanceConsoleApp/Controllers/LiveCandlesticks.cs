@@ -5,15 +5,16 @@ using Binance;
 using Binance.Market;
 using Binance.WebSocket;
 using Binance.WebSocket.Events;
+using Binance.WebSocket.Manager;
 
 namespace BinanceConsoleApp.Controllers
 {
     internal class LiveCandlesticks : IHandleCommand
     {
-        public Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             var args = command.Split(' ');
 
@@ -25,7 +26,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (!endpoint.Equals("kLines", StringComparison.OrdinalIgnoreCase)
                 && !endpoint.Equals("candles", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
@@ -37,7 +38,7 @@ namespace BinanceConsoleApp.Controllers
                     {
                         Console.WriteLine($"  Invalid symbol: \"{symbol}\"");
                     }
-                    return Task.FromResult(true);
+                    return true;
                 }
             }
 
@@ -59,6 +60,9 @@ namespace BinanceConsoleApp.Controllers
                 Program.ClientManager.CandlestickClient.Subscribe(symbol, interval, evt => { Program.Display(evt.Candlestick); });
                 //Program.ClientManager.CandlestickClient.Candlestick += OnCandlestickEvent; // TODO
 
+                // Optionally, wait for asynchronous client adapter operation to complete.
+                await ((IBinanceWebSocketClientAdapter)Program.ClientManager.CandlestickClient).Task;
+
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
@@ -70,6 +74,9 @@ namespace BinanceConsoleApp.Controllers
             {
                 Program.ClientManager.CandlestickClient.Unsubscribe(symbol, interval);
 
+                // Optionally, wait for asynchronous client adapter operation to complete.
+                await ((IBinanceWebSocketClientAdapter)Program.ClientManager.CandlestickClient).Task;
+
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
@@ -78,7 +85,7 @@ namespace BinanceConsoleApp.Controllers
                 }
             }
 
-            return Task.FromResult(true);
+            return true;
         }
 
         private static void OnCandlestickEvent(object sender, CandlestickEventArgs e)

@@ -10,6 +10,7 @@ namespace Binance.WebSocket.Manager
     /// and automaically re-enable streaming afterwards (if not disabled).
     /// The familiar client interfaces presented imply synchronous operation,
     /// but the subscribe/unsubscribe operations are done asynchronously.
+    /// Cast client to IBinanceWebSocketClientAdapter for access to Task.
     /// </summary>
     public interface IBinanceWebSocketManager : IDisposable
     {

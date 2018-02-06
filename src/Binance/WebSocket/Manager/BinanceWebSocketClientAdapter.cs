@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Binance.Utility;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket.Manager
 {
-    internal abstract class WebSocketClientAdapter<TWebSocketClient> : IBinanceWebSocketClient
+    internal abstract class BinanceWebSocketClientAdapter<TWebSocketClient> : IBinanceWebSocketClient, IBinanceWebSocketClientAdapter
         where TWebSocketClient : IBinanceWebSocketClient
     {
         #region Public Events
@@ -28,6 +29,8 @@ namespace Binance.WebSocket.Manager
 
         public IWebSocketStream WebSocket => Client.WebSocket;
 
+        public Task Task => TaskCompletionSource?.Task ?? Task.CompletedTask;
+
         #endregion Public Properties
 
         #region Protected Properties & Fields
@@ -42,11 +45,19 @@ namespace Binance.WebSocket.Manager
 
         protected readonly Action<Exception> OnError;
 
+        protected TaskCompletionSource<bool> TaskCompletionSource;
+
         #endregion Protected Properties & Fields
+
+        #region Private Fields
+
+        private readonly object _sync = new object();
+
+        #endregion Private Fields
 
         #region Constructors
 
-        public WebSocketClientAdapter(IBinanceWebSocketManager manager, TWebSocketClient client, ILogger<IBinanceWebSocketManager> logger = null, Action<Exception> onError = null)
+        public BinanceWebSocketClientAdapter(IBinanceWebSocketManager manager, TWebSocketClient client, ILogger<IBinanceWebSocketManager> logger = null, Action<Exception> onError = null)
         {
             Throw.IfNull(manager, nameof(manager));
             Throw.IfNull(client, nameof(client));
@@ -63,6 +74,8 @@ namespace Binance.WebSocket.Manager
 
         public async void UnsubscribeAll()
         {
+            CreateTaskCompletionSource();
+
             try
             {
                 Logger?.LogDebug($"{GetType().Name}.{nameof(UnsubscribeAll)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
@@ -76,15 +89,35 @@ namespace Binance.WebSocket.Manager
                     Logger?.LogDebug($"{GetType().Name}.{nameof(UnsubscribeAll)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     _controller.Begin();
                 }
+
+                TaskCompletionSource.SetResult(true);
             }
             catch (OperationCanceledException) { /* ignored */ }
             catch (Exception e)
             {
                 Logger?.LogError(e, $"{GetType().Name}.{nameof(UnsubscribeAll)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                TaskCompletionSource.SetException(e);
                 OnError?.Invoke(e);
             }
         }
 
         #endregion Public Methods
+
+        #region Protected Methods
+
+        protected void CreateTaskCompletionSource()
+        {
+            lock (_sync)
+            {
+                if (TaskCompletionSource != null && !TaskCompletionSource.Task.IsCompleted)
+                {
+                    throw new Exception($"{GetType().Name}.{nameof(CreateTaskCompletionSource)}: An asynchronous operation is already in progress.");
+                }
+
+                TaskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.None);
+            }
+        }
+
+        #endregion Protected Methods
     }
 }

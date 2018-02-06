@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Api;
-using Binance.Market;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -19,29 +18,21 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string symbol = Symbol.BTC_USDT;
-            if (args.Length > 1)
+            if (args.Length < 5)
             {
-                symbol = args[1];
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine("A symbol, interval, start time, and end time are required.");
+                }
             }
 
-            var interval = CandlestickInterval.Hour;
-            if (args.Length > 2)
-            {
-                interval = args[2].ToCandlestickInterval();
-            }
+            var symbol = args[1];
 
-            long startTime = 0;
-            if (args.Length > 3)
-            {
-                long.TryParse(args[3], out startTime);
-            }
+            var interval =args[2].ToCandlestickInterval();
 
-            long endTime = 0;
-            if (args.Length > 4)
-            {
-                long.TryParse(args[4], out endTime);
-            }
+            long.TryParse(args[3], out long startTime);
+
+            long.TryParse(args[4], out long endTime);
 
             var candlesticks = await Program.Api.GetCandlesticksAsync(symbol, interval, (startTime, endTime), token: token);
 

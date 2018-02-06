@@ -3,15 +3,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.WebSocket;
+using Binance.WebSocket.Manager;
 
 namespace BinanceConsoleApp.Controllers
 {
     internal class LiveStatistics : IHandleCommand
     {
-        public Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             var args = command.Split(' ');
 
@@ -22,7 +23,7 @@ namespace BinanceConsoleApp.Controllers
             }
 
             if (!endpoint.Equals("stats", StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(false);
+                return false;
 
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
@@ -34,7 +35,7 @@ namespace BinanceConsoleApp.Controllers
                     {
                         Console.WriteLine($"  Invalid symbol: \"{symbol}\"");
                     }
-                    return Task.FromResult(true);
+                    return true;
                 }
             }
 
@@ -49,6 +50,9 @@ namespace BinanceConsoleApp.Controllers
             {
                 Program.ClientManager.StatisticsClient.Subscribe(symbol, evt => { Program.Display(evt.Statistics); });
 
+                // Optionally, wait for asynchronous client adapter operation to complete.
+                await ((IBinanceWebSocketClientAdapter)Program.ClientManager.StatisticsClient).Task;
+
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
@@ -60,6 +64,9 @@ namespace BinanceConsoleApp.Controllers
             {
                 Program.ClientManager.StatisticsClient.Unsubscribe(symbol);
 
+                // Optionally, wait for asynchronous client adapter operation to complete.
+                await ((IBinanceWebSocketClientAdapter)Program.ClientManager.StatisticsClient).Task;
+
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
@@ -68,7 +75,7 @@ namespace BinanceConsoleApp.Controllers
                 }
             }
 
-            return Task.FromResult(true);
+            return true;
         }
     }
 }

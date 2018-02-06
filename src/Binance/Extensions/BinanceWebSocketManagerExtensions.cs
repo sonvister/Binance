@@ -5,7 +5,7 @@ using Binance.Utility;
 // ReSharper disable once CheckNamespace
 namespace Binance.WebSocket.Manager
 {
-    public static class BinanceWebSocketClientManagerExtensions
+    public static class BinanceWebSocketManagerExtensions
     {
         /// <summary>
         /// Get the <see cref="IRetryTaskController"/> associated with the
@@ -87,6 +87,10 @@ namespace Binance.WebSocket.Manager
             foreach (var client in Clients(manager))
             {
                 client.UnsubscribeAll();
+
+                // Wait for adapter asynchronous operation to complete.
+                await ((IBinanceWebSocketClientAdapter)client).Task
+                    .ConfigureAwait(false);
             }
 
             manager.IsAutoStreamingDisabled = wasAutoStreamingDisabled; // restore.

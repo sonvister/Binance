@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket.Manager
 {
-    internal sealed class CandlestickWebSocketClientAdapter : WebSocketClientAdapter<ICandlestickWebSocketClient>, ICandlestickWebSocketClient
+    internal sealed class CandlestickWebSocketClientAdapter : BinanceWebSocketClientAdapter<ICandlestickWebSocketClient>, ICandlestickWebSocketClient
     {
         #region Public Events
 
@@ -30,6 +30,8 @@ namespace Binance.WebSocket.Manager
 
         public async void Subscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
         {
+            CreateTaskCompletionSource();
+
             try
             {
                 Logger?.LogDebug($"{nameof(CandlestickWebSocketClientAdapter)}.{nameof(Subscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
@@ -43,17 +45,22 @@ namespace Binance.WebSocket.Manager
                     Logger?.LogDebug($"{nameof(CandlestickWebSocketClientAdapter)}.{nameof(Subscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     _controller.Begin();
                 }
+
+                TaskCompletionSource.SetResult(true);
             }
             catch (OperationCanceledException) { /* ignored */ }
             catch (Exception e)
             {
                 Logger?.LogError(e, $"{nameof(CandlestickWebSocketClientAdapter)}.{nameof(Subscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                TaskCompletionSource.SetException(e);
                 OnError?.Invoke(e);
             }
         }
 
         public async void Unsubscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
         {
+            CreateTaskCompletionSource();
+
             try
             {
                 Logger?.LogDebug($"{nameof(CandlestickWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
@@ -67,11 +74,14 @@ namespace Binance.WebSocket.Manager
                     Logger?.LogDebug($"{nameof(CandlestickWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     _controller.Begin();
                 }
+
+                TaskCompletionSource.SetResult(true);
             }
             catch (OperationCanceledException) { /* ignored */ }
             catch (Exception e)
             {
                 Logger?.LogError(e, $"{nameof(CandlestickWebSocketClientAdapter)}.{nameof(Unsubscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                TaskCompletionSource.SetException(e);
                 OnError?.Invoke(e);
             }
         }

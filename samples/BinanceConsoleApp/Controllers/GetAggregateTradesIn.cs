@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance;
 using Binance.Api;
-using System.Linq;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -17,23 +16,19 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            string symbol = Symbol.BTC_USDT;
-            if (args.Length > 1)
+            if (args.Length < 4)
             {
-                symbol = args[1];
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine("A symbol, start time, and end time are required.");
+                }
             }
 
-            long startTime = 0;
-            if (args.Length > 2)
-            {
-                long.TryParse(args[2], out startTime);
-            }
+            var symbol = args[1];
 
-            long endTime = 0;
-            if (args.Length > 3)
-            {
-                long.TryParse(args[3], out endTime);
-            }
+            long.TryParse(args[2], out long startTime);
+
+            long.TryParse(args[3], out long endTime);
 
             var trades = (await Program.Api.GetAggregateTradesAsync(symbol, (startTime, endTime), token))
                 .Reverse().ToArray();
