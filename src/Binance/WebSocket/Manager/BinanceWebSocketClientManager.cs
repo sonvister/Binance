@@ -68,49 +68,59 @@ namespace Binance.WebSocket.Manager
 
             _aggregateTradeClientAdapter = new AggregateTradeWebSocketClientAdapter(
                 this, _aggregateTradeClient, _logger,
-                err => RaiseErrorEvent(_aggregateTradeClientAdapter, err));
+                err => RaiseErrorEvent(_aggregateTradeClientAdapter, err,
+                    $"{nameof(IAggregateTradeWebSocketClient)}: Adapter failed."));
 
             _candlestickClientAdapter = new CandlestickWebSocketClientAdapter(
                 this, _candlestickClient, _logger,
-                err => RaiseErrorEvent(_candlestickClientAdapter, err));
+                err => RaiseErrorEvent(_candlestickClientAdapter, err,
+                    $"{nameof(ICandlestickWebSocketClient)}: Adapter failed."));
 
             _depthClientAdapter = new DepthWebSocketClientAdapter(
                 this, _depthClient, _logger,
-                err => RaiseErrorEvent(_depthClientAdapter, err));
+                err => RaiseErrorEvent(_depthClientAdapter, err,
+                    $"{nameof(IDepthWebSocketClient)}: Adapter failed."));
 
             _statisticsClientAdapter = new SymbolStatisticsWebSocketClientAdapter(
                 this, _statisticsClient, _logger,
-                err => RaiseErrorEvent(_statisticsClientAdapter, err));
+                err => RaiseErrorEvent(_statisticsClientAdapter, err,
+                    $"{nameof(ISymbolStatisticsWebSocketClient)}: Adapter failed."));
 
             _tradeClientAdapter = new TradeWebSocketClientAdapter(
                 this, _tradeClient, _logger,
-                err => RaiseErrorEvent(_tradeClientAdapter, err));
+                err => RaiseErrorEvent(_tradeClientAdapter, err,
+                    $"{nameof(ITradeWebSocketClient)}: Adapter failed."));
 
 
             _controllers[_aggregateTradeClient.WebSocket] =
                 new WebSocketStreamController(
                     _aggregateTradeClient.WebSocket,
-                    err => RaiseErrorEvent(_aggregateTradeClientAdapter, err));
+                    err => RaiseErrorEvent(_aggregateTradeClientAdapter, err,
+                        $"{nameof(IAggregateTradeWebSocketClient)}: Controller failed."));
 
             _controllers[_candlestickClient.WebSocket] =
                 new WebSocketStreamController(
                     _candlestickClient.WebSocket,
-                    err => RaiseErrorEvent(_candlestickClientAdapter, err));
+                    err => RaiseErrorEvent(_candlestickClientAdapter, err,
+                        $"{nameof(ICandlestickWebSocketClient)}: Controller failed."));
 
             _controllers[_depthClient.WebSocket] =
                 new WebSocketStreamController(
                     _depthClient.WebSocket,
-                    err => RaiseErrorEvent(_depthClientAdapter, err));
+                    err => RaiseErrorEvent(_depthClientAdapter, err,
+                        $"{nameof(IDepthWebSocketClient)}: Controller failed."));
 
             _controllers[_statisticsClient.WebSocket] =
                 new WebSocketStreamController(
                     _statisticsClient.WebSocket,
-                    err => RaiseErrorEvent(_statisticsClientAdapter, err));
+                    err => RaiseErrorEvent(_statisticsClientAdapter, err,
+                        $"{nameof(ISymbolStatisticsWebSocketClient)}: Controller failed."));
 
             _controllers[_tradeClient.WebSocket] =
                 new WebSocketStreamController(
                     _tradeClient.WebSocket,
-                    err => RaiseErrorEvent(_tradeClientAdapter, err));
+                    err => RaiseErrorEvent(_tradeClientAdapter, err,
+                        $"{nameof(ITradeWebSocketClient)}: Controller failed."));
         }
 
         #endregion Constructors
