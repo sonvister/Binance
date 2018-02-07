@@ -45,7 +45,8 @@ To get the source code for a particular release, first select the corresponding 
 
 ## Documentation
 See: [**Wiki**](https://github.com/sonvister/Binance/wiki)\
-*NOTE: Some information is currently out-of-date ...will be updated soon.*
+*NOTE: Some documentation is out-of-date ...will be updated soon.*\
+*NOTE: The [samples](https://github.com/sonvister/Binance/blob/master/samples) demonstrate up-to-date usage of this library.*
 
 ### Binance Exchange API (*for reference*)
 REST/WebSocket details: [Binance Official Documentation](https://github.com/binance-exchange/binance-official-api-docs)\
