@@ -277,6 +277,74 @@ namespace Binance.Api
         }
 
         /// <summary>
+        /// Get current price of a currency pair or determine the exchange rate
+        /// (base price / quote price) of two assets using available markets.
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="baseAsset">The base asset.</param>
+        /// <param name="quoteAsset">The quote asset.</param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task<decimal> GetExchangeRateAsync(this IBinanceApi api, string baseAsset, string quoteAsset, CancellationToken token = default)
+        {
+            Throw.IfNull(api, nameof(api));
+            Throw.IfNullOrWhiteSpace(baseAsset, nameof(baseAsset));
+            Throw.IfNullOrWhiteSpace(quoteAsset, nameof(quoteAsset));
+
+            baseAsset = baseAsset.FormatSymbol();
+            quoteAsset = quoteAsset.FormatSymbol();
+
+            if (!Asset.IsValid(baseAsset))
+                throw new ArgumentException($"{nameof(IBinanceApi)}.{nameof(GetExchangeRateAsync)}: Invalid asset: \"{baseAsset}\"", nameof(baseAsset));
+            if (!Asset.IsValid(quoteAsset))
+                throw new ArgumentException($"{nameof(IBinanceApi)}.{nameof(GetExchangeRateAsync)}: Invalid asset: \"{quoteAsset}\"", nameof(quoteAsset));
+
+            if (baseAsset == quoteAsset)
+                return 1;
+
+            var symbol = $"{baseAsset}{quoteAsset}";
+
+            if (Symbol.IsValid(symbol))
+            {
+                var price = await api.GetPriceAsync(symbol, token)
+                    .ConfigureAwait(false);
+
+                return price.Value;
+            }
+
+            symbol = $"{quoteAsset}{baseAsset}";
+
+            if (Symbol.IsValid(symbol))
+            {
+                var price = await api.GetPriceAsync(symbol, token)
+                    .ConfigureAwait(false);
+
+                return 1 / price.Value;
+            }
+
+            var markets = new [] { "BTC", "ETH", "BNB", "USDT" };
+
+            foreach (var market in markets)
+            {
+                var s1 = $"{baseAsset}{market}";
+                var s2 = $"{quoteAsset}{market}";
+
+                if (Symbol.IsValid(s1) && Symbol.IsValid(s2))
+                {
+                    var t1 = api.GetPriceAsync(s1, token);
+                    var t2 = api.GetPriceAsync(s2, token);
+
+                    await Task.WhenAll(t1, t2)
+                        .ConfigureAwait(false);
+
+                    return t1.Result.Value / t2.Result.Value;
+                }
+            }
+
+            throw new Exception($"{nameof(IBinanceApi)}.{nameof(GetExchangeRateAsync)}: No symbols/markets available to calculate exchange rate.");
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="api"></param>

@@ -37,8 +37,11 @@ namespace BinanceConsoleApp.Controllers
             else
             {
                 var price = await Program.Api.GetPriceAsync(symbol, token);
-                Program.Display(price);
-                Console.WriteLine();
+                lock (Program.ConsoleSync)
+                {
+                    Program.Display(price);
+                    Console.WriteLine();
+                }
             }
 
             return true;

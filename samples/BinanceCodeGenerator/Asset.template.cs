@@ -104,6 +104,26 @@ namespace Binance
 
         #region Public Methods
 
+        /// <summary>
+        /// Verify that asset is valid. If fails, but known to be valid,
+        /// call Symbol.UpdateCacheAsync() to get the latest assets.
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <returns></returns>
+        public static bool IsValid(string asset)
+        {
+            if (string.IsNullOrWhiteSpace(asset))
+                return false;
+
+            asset = asset.FormatSymbol();
+
+            lock (_sync)
+            {
+                return Cache.ContainsKey(asset)
+                    && Cache[asset].ToString() == asset;
+            }
+        }
+
         public override bool Equals(object obj)
         {
             return Symbol.Equals(obj);
