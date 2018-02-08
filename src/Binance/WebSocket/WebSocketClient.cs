@@ -33,10 +33,10 @@ namespace Binance.WebSocket
         #region Constructors
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
         /// </summary>
         /// <param name="logger"></param>
-        protected WebSocketClient(ILogger<WebSocketClient> logger)
+        protected WebSocketClient(ILogger<WebSocketClient> logger = null)
         {
             Logger = logger;
         }
