@@ -13,7 +13,7 @@ namespace Binance.WebSocket
     {
         private volatile bool _isOpen;
 
-        public WebSocketSharpClient(ILogger<WebSocketSharpClient> logger)
+        public WebSocketSharpClient(ILogger<WebSocketSharpClient> logger = null)
             : base(logger)
         { }
 

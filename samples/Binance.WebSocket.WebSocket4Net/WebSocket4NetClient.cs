@@ -11,7 +11,7 @@ namespace Binance.WebSocket
     {
         private volatile bool _isOpen;
 
-        public WebSocket4NetClient(ILogger<WebSocket4NetClient> logger)
+        public WebSocket4NetClient(ILogger<WebSocket4NetClient> logger = null)
             : base(logger)
         { }
 
