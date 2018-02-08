@@ -87,6 +87,14 @@ namespace Binance.Utility
             Cts = null;
         }
 
+        public virtual async Task RestartAsync()
+        {
+            await CancelAsync()
+                .ConfigureAwait(false);
+
+            Begin();
+        }
+
         #endregion Public Methods
 
         #region Protected Methods

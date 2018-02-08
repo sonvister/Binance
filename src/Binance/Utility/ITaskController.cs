@@ -25,5 +25,11 @@ namespace Binance.Utility
         /// </summary>
         /// <returns></returns>
         Task CancelAsync();
+
+        /// <summary>
+        /// Restart the controller.
+        /// </summary>
+        /// <returns></returns>
+        Task RestartAsync();
     }
 }
