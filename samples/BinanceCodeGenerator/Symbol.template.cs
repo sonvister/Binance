@@ -93,7 +93,7 @@ namespace Binance
         public InclusiveRange Price { get; }
 
         /// <summary>
-        /// Get the minimum notional value.
+        /// Get the minimum notional value (price * quantity).
         /// </summary>
         public decimal NotionalMinimumValue { get; }
 
