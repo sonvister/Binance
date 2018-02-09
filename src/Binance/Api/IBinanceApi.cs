@@ -42,6 +42,13 @@ namespace Binance.Api
         /// <returns></returns>
         Task<IEnumerable<RateLimitInfo>> GetRateLimitInfoAsync(CancellationToken token = default);
 
+        /// <summary>
+        /// Get system status.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<BinanceStatus> GetSystemStatusAsync(CancellationToken token = default);
+
         #endregion Connectivity
 
         #region Market Data

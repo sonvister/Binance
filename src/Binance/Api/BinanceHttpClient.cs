@@ -16,7 +16,7 @@ namespace Binance.Api
         /// <summary>
         /// Get the base endpoint URL.
         /// </summary>
-        public static readonly string EndpointUrl = "https://www.binance.com";
+        public static readonly string EndpointUrl = "https://api.binance.com";
 
         /// <summary>
         /// Get the successful test response string.
@@ -94,7 +94,8 @@ namespace Binance.Api
             {
                 _httpClient = new HttpClient
                 {
-                    BaseAddress = uri
+                    BaseAddress = uri,
+                    Timeout = TimeSpan.FromSeconds(60)
                 };
             }
             catch (Exception e)
@@ -108,7 +109,7 @@ namespace Binance.Api
             {
                 try
                 {
-                    // Singleton HttpClient doesn't respect DNS changes.
+                    // FIX: Singleton HttpClient doesn't respect DNS changes.
                     // https://github.com/dotnet/corefx/issues/11224
                     var sp = ServicePointManager.FindServicePoint(uri);
                     sp.ConnectionLeaseTimeout = Options.ServicePointManagerConnectionLeaseTimeoutMilliseconds;
