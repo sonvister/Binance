@@ -335,8 +335,10 @@ namespace Binance.Api
 
             if (client.RateLimiter != null)
             {
+                var tradingSymbols = Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading);
+
                 await client.RateLimiter
-                    .DelayAsync(string.IsNullOrWhiteSpace(symbol) ? Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading) / 2 : 1, token)
+                    .DelayAsync(string.IsNullOrWhiteSpace(symbol) && tradingSymbols > 1 ? tradingSymbols / 2 : 1, token)
                     .ConfigureAwait(false);
             }
 
@@ -639,8 +641,10 @@ namespace Binance.Api
 
             if (client.RateLimiter != null)
             {
+                var tradingSymbols = Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading);
+
                 await client.RateLimiter
-                    .DelayAsync(string.IsNullOrWhiteSpace(symbol) ? Symbol.Cache.Values.Count(s => s.Status == SymbolStatus.Trading) / 2 : 1, token)
+                    .DelayAsync(string.IsNullOrWhiteSpace(symbol) && tradingSymbols > 1 ? tradingSymbols / 2 : 1, token)
                     .ConfigureAwait(false);
             }
 
