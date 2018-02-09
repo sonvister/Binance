@@ -77,6 +77,26 @@ namespace Binance.Api
                 .ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Get system status.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task<string> GetSystemStatusAsync(this IBinanceHttpClient client, CancellationToken token = default)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
+
+            return await client.GetAsync("/wapi/v3/systemStatus.html", token)
+                .ConfigureAwait(false);
+        }
+
         #endregion General
 
         #region Market Data

@@ -171,6 +171,32 @@ namespace Binance.Api
             return rateLimits;
         }
 
+        public virtual async Task<BinanceStatus> GetSystemStatusAsync(CancellationToken token = default)
+        {
+            var json = await HttpClient.GetSystemStatusAsync(token)
+                .ConfigureAwait(false);
+
+            try
+            {
+                var jObject = JObject.Parse(json);
+
+                var status = jObject["status"].Value<int>();
+                var msg = jObject["msg"].Value<string>();
+
+                switch (status)
+                {
+                    case 0: return BinanceStatus.Normal;
+                    case 1: return BinanceStatus.Maintenance;
+                    default:
+                        throw new BinanceApiException($"Unknown Status ({status}): \"{msg}\"");
+                }
+            }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetSystemStatusAsync), json, e);
+            }
+        }
+
         #endregion Connectivity
 
         #region Market Data
