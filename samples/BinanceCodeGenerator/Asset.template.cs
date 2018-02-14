@@ -76,6 +76,8 @@ namespace Binance
             // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
             BCH = BCC;
 
+            // <<insert asset initializations>>
+
             _sync = new object();
 
             Cache = new Dictionary<string, Asset>

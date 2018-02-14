@@ -118,6 +118,8 @@ namespace Binance
             BCH_BTC = BCC_BTC;
             BCH_ETH = BCC_ETH;
 
+            // <<insert symbol initializations>>
+
             _sync = new object();
 
             Cache = new Dictionary<string, Symbol>
