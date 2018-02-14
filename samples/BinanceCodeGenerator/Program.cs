@@ -55,7 +55,7 @@ namespace BinanceCodeGenerator
                 foreach (var symbol in group)
                 {
                     var orderTypes = string.Join(",", symbol.OrderTypes.Select(_ => "OrderType." + _));
-                    lines.Insert(index++, $"        public static readonly Symbol {symbol.BaseAsset}_{symbol.QuoteAsset} = new Symbol(SymbolStatus.{symbol.Status}, Asset.{symbol.BaseAsset}, Asset.{symbol.QuoteAsset}, ({symbol.Quantity.Minimum}m, {symbol.Quantity.Maximum}m, {symbol.Quantity.Increment}m), ({symbol.Price.Minimum}m, {symbol.Price.Maximum}m, {symbol.Price.Increment}m), {symbol.NotionalMinimumValue}m, {symbol.IsIcebergAllowed.ToString().ToLowerInvariant()}, new [] {{{orderTypes}}});");
+                    lines.Insert(index++, $"        public static readonly Symbol {symbol.BaseAsset}_{symbol.QuoteAsset} = new Symbol(SymbolStatus.{symbol.Status}, Asset.{symbol.BaseAsset}, Asset.{symbol.QuoteAsset}, ({symbol.Quantity.Minimum}m, {symbol.Quantity.Maximum}m, {symbol.Quantity.Increment}m), ({symbol.Price.Minimum}m, {symbol.Price.Maximum}m, {symbol.Price.Increment}m), {symbol.NotionalMinimumValue}m, {symbol.IsIcebergAllowed.ToString().ToLowerInvariant()}, new OrderType[] {{{orderTypes}}});");
                 }
 
                 lines.Insert(index++, string.Empty);
