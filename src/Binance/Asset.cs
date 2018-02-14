@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1518625487328;
+        public static readonly long LastUpdateAt = 1518635396495;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH;
