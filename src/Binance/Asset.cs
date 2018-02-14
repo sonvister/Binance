@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1518195432690;
+        public static readonly long LastUpdateAt = 1518623906281;
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
         public static readonly Asset BCH;
@@ -102,6 +102,7 @@ namespace Binance
         public static readonly Asset RDN = new Asset("RDN", 8);
         public static readonly Asset REQ = new Asset("REQ", 8);
         public static readonly Asset RLC = new Asset("RLC", 8);
+        public static readonly Asset RPX = new Asset("RPX", 8);
         public static readonly Asset SALT = new Asset("SALT", 8);
         public static readonly Asset SNGLS = new Asset("SNGLS", 8);
         public static readonly Asset SNM = new Asset("SNM", 8);
@@ -140,7 +141,7 @@ namespace Binance
 
         public static bool operator !=(Asset x, Asset y) => !(x == y);
 
-        public static implicit operator string(Asset asset) => asset.ToString();
+        public static implicit operator string(Asset asset) => asset?.ToString();
 
         public static implicit operator Asset(string s)
         {
@@ -159,123 +160,7 @@ namespace Binance
         /// <summary>
         /// Asset cache.
         /// </summary>
-        public static readonly IDictionary<string, Asset> Cache = new Dictionary<string, Asset>
-        {
-            { "ADA", ADA },
-            { "ADX", ADX },
-            { "AE", AE },
-            { "AION", AION },
-            { "AMB", AMB },
-            { "APPC", APPC },
-            { "ARK", ARK },
-            { "ARN", ARN },
-            { "AST", AST },
-            { "BAT", BAT },
-            { "BCC", BCC },
-            { "BCD", BCD },
-            { "BCPT", BCPT },
-            { "BLZ", BLZ },
-            { "BNB", BNB },
-            { "BNT", BNT },
-            { "BQX", BQX },
-            { "BRD", BRD },
-            { "BTC", BTC },
-            { "BTG", BTG },
-            { "BTS", BTS },
-            { "CDT", CDT },
-            { "CHAT", CHAT },
-            { "CMT", CMT },
-            { "CND", CND },
-            { "CTR", CTR },
-            { "DASH", DASH },
-            { "DGD", DGD },
-            { "DLT", DLT },
-            { "DNT", DNT },
-            { "EDO", EDO },
-            { "ELF", ELF },
-            { "ENG", ENG },
-            { "ENJ", ENJ },
-            { "EOS", EOS },
-            { "ETC", ETC },
-            { "ETH", ETH },
-            { "EVX", EVX },
-            { "FUEL", FUEL },
-            { "FUN", FUN },
-            { "GAS", GAS },
-            { "GTO", GTO },
-            { "GVT", GVT },
-            { "GXS", GXS },
-            { "HSR", HSR },
-            { "ICN", ICN },
-            { "ICX", ICX },
-            { "INS", INS },
-            { "IOST", IOST },
-            { "IOTA", IOTA },
-            { "KMD", KMD },
-            { "KNC", KNC },
-            { "LEND", LEND },
-            { "LINK", LINK },
-            { "LRC", LRC },
-            { "LSK", LSK },
-            { "LTC", LTC },
-            { "LUN", LUN },
-            { "MANA", MANA },
-            { "MCO", MCO },
-            { "MDA", MDA },
-            { "MOD", MOD },
-            { "MTH", MTH },
-            { "MTL", MTL },
-            { "NANO", NANO },
-            { "NAV", NAV },
-            { "NEBL", NEBL },
-            { "NEO", NEO },
-            { "NULS", NULS },
-            { "OAX", OAX },
-            { "OMG", OMG },
-            { "OST", OST },
-            { "PIVX", PIVX },
-            { "POE", POE },
-            { "POWR", POWR },
-            { "PPT", PPT },
-            { "QSP", QSP },
-            { "QTUM", QTUM },
-            { "RCN", RCN },
-            { "RDN", RDN },
-            { "REQ", REQ },
-            { "RLC", RLC },
-            { "SALT", SALT },
-            { "SNGLS", SNGLS },
-            { "SNM", SNM },
-            { "SNT", SNT },
-            { "STEEM", STEEM },
-            { "STORJ", STORJ },
-            { "STRAT", STRAT },
-            { "SUB", SUB },
-            { "TNB", TNB },
-            { "TNT", TNT },
-            { "TRIG", TRIG },
-            { "TRX", TRX },
-            { "USDT", USDT },
-            { "VEN", VEN },
-            { "VIA", VIA },
-            { "VIB", VIB },
-            { "VIBE", VIBE },
-            { "WABI", WABI },
-            { "WAVES", WAVES },
-            { "WINGS", WINGS },
-            { "WTC", WTC },
-            { "XLM", XLM },
-            { "XMR", XMR },
-            { "XRP", XRP },
-            { "XVG", XVG },
-            { "XZC", XZC },
-            { "YOYO", YOYO },
-            { "ZEC", ZEC },
-            { "ZRX", ZRX },
-            
-            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-            { "BCH", BCC }
-        };
+        public static IDictionary<string, Asset> Cache { get; }
 
         /// <summary>
         /// Get the asset symbol.
@@ -291,7 +176,7 @@ namespace Binance
 
         #region Private Fields
 
-        private static readonly object _sync = new object();
+        private static readonly object _sync;
 
         #endregion Private Fields
 
@@ -301,6 +186,127 @@ namespace Binance
         {
             // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
             BCH = BCC;
+
+            _sync = new object();
+
+            Cache = new Dictionary<string, Asset>
+            {
+                { "ADA", ADA },
+                { "ADX", ADX },
+                { "AE", AE },
+                { "AION", AION },
+                { "AMB", AMB },
+                { "APPC", APPC },
+                { "ARK", ARK },
+                { "ARN", ARN },
+                { "AST", AST },
+                { "BAT", BAT },
+                { "BCC", BCC },
+                { "BCD", BCD },
+                { "BCPT", BCPT },
+                { "BLZ", BLZ },
+                { "BNB", BNB },
+                { "BNT", BNT },
+                { "BQX", BQX },
+                { "BRD", BRD },
+                { "BTC", BTC },
+                { "BTG", BTG },
+                { "BTS", BTS },
+                { "CDT", CDT },
+                { "CHAT", CHAT },
+                { "CMT", CMT },
+                { "CND", CND },
+                { "CTR", CTR },
+                { "DASH", DASH },
+                { "DGD", DGD },
+                { "DLT", DLT },
+                { "DNT", DNT },
+                { "EDO", EDO },
+                { "ELF", ELF },
+                { "ENG", ENG },
+                { "ENJ", ENJ },
+                { "EOS", EOS },
+                { "ETC", ETC },
+                { "ETH", ETH },
+                { "EVX", EVX },
+                { "FUEL", FUEL },
+                { "FUN", FUN },
+                { "GAS", GAS },
+                { "GTO", GTO },
+                { "GVT", GVT },
+                { "GXS", GXS },
+                { "HSR", HSR },
+                { "ICN", ICN },
+                { "ICX", ICX },
+                { "INS", INS },
+                { "IOST", IOST },
+                { "IOTA", IOTA },
+                { "KMD", KMD },
+                { "KNC", KNC },
+                { "LEND", LEND },
+                { "LINK", LINK },
+                { "LRC", LRC },
+                { "LSK", LSK },
+                { "LTC", LTC },
+                { "LUN", LUN },
+                { "MANA", MANA },
+                { "MCO", MCO },
+                { "MDA", MDA },
+                { "MOD", MOD },
+                { "MTH", MTH },
+                { "MTL", MTL },
+                { "NANO", NANO },
+                { "NAV", NAV },
+                { "NEBL", NEBL },
+                { "NEO", NEO },
+                { "NULS", NULS },
+                { "OAX", OAX },
+                { "OMG", OMG },
+                { "OST", OST },
+                { "PIVX", PIVX },
+                { "POE", POE },
+                { "POWR", POWR },
+                { "PPT", PPT },
+                { "QSP", QSP },
+                { "QTUM", QTUM },
+                { "RCN", RCN },
+                { "RDN", RDN },
+                { "REQ", REQ },
+                { "RLC", RLC },
+                { "RPX", RPX },
+                { "SALT", SALT },
+                { "SNGLS", SNGLS },
+                { "SNM", SNM },
+                { "SNT", SNT },
+                { "STEEM", STEEM },
+                { "STORJ", STORJ },
+                { "STRAT", STRAT },
+                { "SUB", SUB },
+                { "TNB", TNB },
+                { "TNT", TNT },
+                { "TRIG", TRIG },
+                { "TRX", TRX },
+                { "USDT", USDT },
+                { "VEN", VEN },
+                { "VIA", VIA },
+                { "VIB", VIB },
+                { "VIBE", VIBE },
+                { "WABI", WABI },
+                { "WAVES", WAVES },
+                { "WINGS", WINGS },
+                { "WTC", WTC },
+                { "XLM", XLM },
+                { "XMR", XMR },
+                { "XRP", XRP },
+                { "XVG", XVG },
+                { "XZC", XZC },
+                { "YOYO", YOYO },
+                { "ZEC", ZEC },
+                { "ZRX", ZRX },
+            
+                // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
+                { "BCH", BCC }
+            };
         }
 
         /// <summary>
