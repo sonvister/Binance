@@ -30,7 +30,7 @@ namespace Binance
 
         public static bool operator !=(Asset x, Asset y) => !(x == y);
 
-        public static implicit operator string(Asset asset) => asset.ToString();
+        public static implicit operator string(Asset asset) => asset?.ToString();
 
         public static implicit operator Asset(string s)
         {
@@ -49,13 +49,7 @@ namespace Binance
         /// <summary>
         /// Asset cache.
         /// </summary>
-        public static readonly IDictionary<string, Asset> Cache = new Dictionary<string, Asset>
-        {
-            // <<insert asset definitions>>
-            
-            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-            { "BCH", BCC }
-        };
+        public static IDictionary<string, Asset> Cache { get; }
 
         /// <summary>
         /// Get the asset symbol.
@@ -71,7 +65,7 @@ namespace Binance
 
         #region Private Fields
 
-        private static readonly object _sync = new object();
+        private static readonly object _sync;
 
         #endregion Private Fields
 
@@ -81,6 +75,16 @@ namespace Binance
         {
             // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
             BCH = BCC;
+
+            _sync = new object();
+
+            Cache = new Dictionary<string, Asset>
+            {
+                // <<insert asset definitions>>
+            
+                // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
+                { "BCH", BCC }
+            };
         }
 
         /// <summary>

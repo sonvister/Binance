@@ -37,7 +37,7 @@ namespace Binance
 
         public static bool operator !=(Symbol x, Symbol y) => !(x == y);
 
-        public static implicit operator string(Symbol symbol) => symbol.ToString();
+        public static implicit operator string(Symbol symbol) => symbol?.ToString();
 
         public static implicit operator Symbol(string s)
         {
@@ -56,16 +56,7 @@ namespace Binance
         /// <summary>
         /// Symbol cache.
         /// </summary>
-        public static readonly IDictionary<string, Symbol> Cache = new Dictionary<string, Symbol>
-        {
-            // <<insert symbol definitions>>
-
-            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-            { "BCHUSDT", BCC_USDT },
-            { "BCHBNB", BCC_BNB },
-            { "BCHBTC", BCC_BTC },
-            { "BCHETH", BCC_ETH }
-        };
+        public static IDictionary<string, Symbol> Cache { get; }
 
         /// <summary>
         /// Get the symbol status.
@@ -113,7 +104,7 @@ namespace Binance
 
         private readonly string _symbol;
 
-        private static readonly object _sync = new object();
+        private static readonly object _sync;
 
         #endregion Private Fields
 
@@ -126,6 +117,19 @@ namespace Binance
             BCH_BNB = BCC_BNB;
             BCH_BTC = BCC_BTC;
             BCH_ETH = BCC_ETH;
+
+            _sync = new object();
+
+            Cache = new Dictionary<string, Symbol>
+            {
+                // <<insert symbol definitions>>
+
+                // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
+                { "BCHUSDT", BCC_USDT },
+                { "BCHBNB", BCC_BNB },
+                { "BCHBTC", BCC_BTC },
+                { "BCHETH", BCC_ETH }
+            };
         }
 
         /// <summary>
