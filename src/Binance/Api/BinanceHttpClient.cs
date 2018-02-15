@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Binance.Api
 {
-    public sealed class BinanceHttpClient : IBinanceHttpClient
+    public sealed class BinanceHttpClient : JsonProvider, IBinanceHttpClient
     {
         #region Public Constants
 
@@ -54,8 +54,6 @@ namespace Binance.Api
 
         private readonly HttpClient _httpClient;
 
-        private readonly ILogger<BinanceHttpClient> _logger;
-
         #endregion Private Fields
 
         #region Constructors
@@ -68,11 +66,11 @@ namespace Binance.Api
         /// <param name="options">The options.</param>
         /// <param name="logger">The logger.</param>
         internal BinanceHttpClient(ITimestampProvider timestampProvider = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null, ILogger<BinanceHttpClient> logger = null)
+            : base(logger)
         {
             TimestampProvider = timestampProvider ?? new TimestampProvider();
             RateLimiter = rateLimiter ?? new ApiRateLimiter();
             Options = options?.Value ?? new BinanceApiOptions();
-            _logger = logger;
 
             try
             {
@@ -84,7 +82,7 @@ namespace Binance.Api
             catch (Exception e)
             {
                 var message = $"{nameof(BinanceHttpClient)}: Failed to configure request rate limiter.";
-                _logger?.LogError(e, message);
+                Logger?.LogError(e, message);
                 throw new BinanceApiException(message, e);
             }
 
@@ -101,7 +99,7 @@ namespace Binance.Api
             catch (Exception e)
             {
                 var message = $"{nameof(BinanceHttpClient)}: Failed to create HttpClient.";
-                _logger?.LogError(e, message);
+                Logger?.LogError(e, message);
                 throw new BinanceApiException(message, e);
             }
 
@@ -117,7 +115,7 @@ namespace Binance.Api
                 catch (Exception e)
                 {
                     var message = $"{nameof(BinanceHttpClient)}: Failed to set {nameof(ServicePointManager)}.ConnectionLeaseTimeout.";
-                    _logger?.LogError(e, message);
+                    Logger?.LogError(e, message);
                     throw new BinanceApiException(message, e);
                 }
             }
@@ -133,7 +131,7 @@ namespace Binance.Api
             catch (Exception e)
             {
                 var message = $"{nameof(BinanceHttpClient)}: Failed to set User-Agent.";
-                _logger?.LogError(e, message);
+                Logger?.LogError(e, message);
                 throw new BinanceApiException(message, e);
             }
         }
@@ -193,7 +191,7 @@ namespace Binance.Api
 
             var requestMessage = request.CreateMessage(method);
 
-            _logger?.LogDebug($"{nameof(BinanceHttpClient)}.{nameof(RequestAsync)}: [{method.Method}] \"{requestMessage.RequestUri}\"");
+            Logger?.LogDebug($"{nameof(BinanceHttpClient)}.{nameof(RequestAsync)}: [{method.Method}] \"{requestMessage.RequestUri}\"");
 
             using (var response = await _httpClient.SendAsync(requestMessage, token).ConfigureAwait(false))
             {
@@ -202,7 +200,9 @@ namespace Binance.Api
                     var json = await response.Content.ReadAsStringAsync()
                         .ConfigureAwait(false);
 
-                    _logger?.LogDebug($"{nameof(BinanceHttpClient)}: \"{json}\"");
+                    //Logger?.LogDebug($"{nameof(BinanceHttpClient)}: \"{json}\"");
+
+                    RaiseMessageEvent(json, requestMessage.RequestUri.AbsolutePath);
 
                     return json;
                 }
@@ -230,9 +230,11 @@ namespace Binance.Api
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError(e, $"{nameof(BinanceHttpClient)}.{nameof(RequestAsync)} failed to parse server error response: \"{error}\"");
+                        Logger?.LogError(e, $"{nameof(BinanceHttpClient)}.{nameof(RequestAsync)} failed to parse server error response: \"{error}\"");
                     }
                 }
+
+                RaiseMessageEvent(error, requestMessage.RequestUri.AbsolutePath);
 
                 // ReSharper disable once SwitchStatementMissingSomeCases
                 switch (response.StatusCode)

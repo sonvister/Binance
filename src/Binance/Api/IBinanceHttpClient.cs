@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Binance.Api
 {
-    public interface IBinanceHttpClient : IDisposable
+    public interface IBinanceHttpClient : IJsonProvider, IDisposable
     {
         /// <summary>
         /// Get or set the timestamp provider.

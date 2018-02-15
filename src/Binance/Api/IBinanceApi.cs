@@ -109,7 +109,7 @@ namespace Binance.Api
         /// <param name="endTime">Timestamp in ms to get aggregate trades until INCLUSIVE.</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        [Obsolete("GetAggregateTradesInAsync is obsolete, please use GetAggregateTradesAsync(string, DateTime, DateTime) instead.")]
+        [Obsolete("GetAggregateTradesInAsync() is obsolete, please use GetAggregateTradesAsync(string, DateTime, DateTime) instead.")]
         Task<IEnumerable<AggregateTrade>> GetAggregateTradesInAsync(string symbol, long startTime, long endTime, CancellationToken token = default);
 
         /// <summary>
