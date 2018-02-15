@@ -5,7 +5,7 @@ namespace Binance.Utility
     public interface IWatchdogTimer
     {
         /// <summary>
-        /// Get or set the time interval.
+        /// Get or set the timeout interval.
         /// </summary>
         TimeSpan Interval { get; set; }
 

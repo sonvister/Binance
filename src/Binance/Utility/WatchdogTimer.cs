@@ -4,9 +4,18 @@ using System.Threading;
 
 namespace Binance.Utility
 {
+    /// <summary>
+    /// The default <see cref="IWatchdogTimer"/> implementation.
+    /// </summary>
     public sealed class WatchdogTimer : IWatchdogTimer, IDisposable
     {
+        #region Public Properties
+
         public TimeSpan Interval { get; set; }
+
+        #endregion Public Properties
+
+        #region Private Fields
 
         private Timer _timer;
 
@@ -14,21 +23,41 @@ namespace Binance.Utility
 
         private Action _onTimeout;
 
-        public WatchdogTimer(Action onTimeout)
+        #endregion Private Fields
+
+        #region Constructors
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="onTimeout">The timeout action (required).</param>
+        /// <param name="timerResolutionMilliseconds">The internal timer resolution (optional).</param>
+        public WatchdogTimer(Action onTimeout, int timerResolutionMilliseconds = 100)
         {
             Throw.IfNull(onTimeout, nameof(onTimeout));
+
+            if (timerResolutionMilliseconds <= 0)
+                throw new ArgumentException($"{nameof(WatchdogTimer)}: Timer resolution ({timerResolutionMilliseconds}) must be greater than 0 milliseconds.", nameof(timerResolutionMilliseconds));
 
             _onTimeout = onTimeout;
 
             _stopwatch = Stopwatch.StartNew();
 
-            _timer = new Timer(OnTimer, null, 100, 100);
+            _timer = new Timer(OnTimer, null, timerResolutionMilliseconds, timerResolutionMilliseconds);
         }
+
+        #endregion Constructors
+
+        #region Public Methods
 
         public void Kick()
         {
             _stopwatch.Restart();
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         private void OnTimer(object state)
         {
@@ -38,6 +67,8 @@ namespace Binance.Utility
                 _stopwatch.Restart();
             }
         }
+
+        #endregion Private Methods
 
         #region IDisposable
 
