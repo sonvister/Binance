@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
 
-namespace Binance.WebSocket.Events
+namespace Binance.Client.Events
 {
     /// <summary>
-    /// Binance web socket client event.
+    /// An abstract client event arguments base class.
     /// </summary>
     public abstract class ClientEventArgs : EventArgs, IChronological
     {

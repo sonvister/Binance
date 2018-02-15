@@ -2,8 +2,11 @@
 using System.Threading;
 using Binance.Account.Orders;
 
-namespace Binance.WebSocket.Events
+namespace Binance.Client.Events
 {
+    /// <summary>
+    /// Order update event arguments.
+    /// </summary>
     public sealed class OrderUpdateEventArgs : OrderExecutionEventArgs
     {
         #region Constructors

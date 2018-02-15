@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
+using Binance.Client.Events;
 using Binance.Market;
-using Binance.WebSocket.Events;
 using Xunit;
 
 namespace Binance.Tests.WebSocket.Events

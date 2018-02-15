@@ -2,19 +2,19 @@
 using System.Threading;
 using Binance.Market;
 
-namespace Binance.WebSocket.Events
+namespace Binance.Client.Events
 {
     /// <summary>
-    /// Trade web socket client event.
+    /// Aggregate trade client event arguments.
     /// </summary>
-    public sealed class TradeEventArgs : ClientEventArgs
+    public sealed class AggregateTradeEventArgs : ClientEventArgs
     {
         #region Public Properties
 
         /// <summary>
-        /// Get the trade.
+        /// Get the aggregate trade.
         /// </summary>
-        public Trade Trade { get; }
+        public AggregateTrade Trade { get; }
 
         #endregion Public Properties
 
@@ -25,8 +25,8 @@ namespace Binance.WebSocket.Events
         /// </summary>
         /// <param name="time">The event time.</param>
         /// <param name="token">The cancellation token.</param>
-        /// <param name="trade">The trade.</param>
-        public TradeEventArgs(DateTime time, CancellationToken token, Trade trade)
+        /// <param name="trade">The aggregate trade.</param>
+        public AggregateTradeEventArgs(DateTime time, CancellationToken token, AggregateTrade trade)
             : base(time, token)
         {
             Throw.IfNull(trade, nameof(trade));

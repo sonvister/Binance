@@ -3,10 +3,10 @@ using System.Threading;
 using Binance.Api;
 using Binance.Market;
 
-namespace Binance.WebSocket.Events
+namespace Binance.Client.Events
 {
     /// <summary>
-    /// Candlestick/K-Line web socket client event.
+    /// Candlestick/K-Line client event arguments.
     /// </summary>
     public sealed class CandlestickEventArgs : ClientEventArgs
     {

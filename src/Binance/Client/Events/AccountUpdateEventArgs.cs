@@ -2,10 +2,10 @@
 using System.Threading;
 using Binance.Account;
 
-namespace Binance.WebSocket.Events
+namespace Binance.Client.Events
 {
     /// <summary>
-    /// User data web socket client event.
+    /// User data client event arguments.
     /// </summary>
     public sealed class AccountUpdateEventArgs : UserDataEventArgs
     {

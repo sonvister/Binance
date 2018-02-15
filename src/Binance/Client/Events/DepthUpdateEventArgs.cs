@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Binance.WebSocket.Events
+namespace Binance.Client.Events
 {
     /// <summary>
-    /// Depth web socket client event.
+    /// Depth client event arguments.
     /// </summary>
     public sealed class DepthUpdateEventArgs : ClientEventArgs
     {

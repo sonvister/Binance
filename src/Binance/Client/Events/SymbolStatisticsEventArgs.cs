@@ -2,19 +2,19 @@
 using System.Threading;
 using Binance.Market;
 
-namespace Binance.WebSocket.Events
+namespace Binance.Client.Events
 {
     /// <summary>
-    /// Aggregate trade web socket client event.
+    /// Symbol statistics client event arguments.
     /// </summary>
-    public sealed class AggregateTradeEventArgs : ClientEventArgs
+    public sealed class SymbolStatisticsEventArgs : ClientEventArgs
     {
         #region Public Properties
 
         /// <summary>
-        /// Get the aggregate trade.
+        /// Get the symbol statistics.
         /// </summary>
-        public AggregateTrade Trade { get; }
+        public SymbolStatistics[] Statistics { get; }
 
         #endregion Public Properties
 
@@ -25,13 +25,13 @@ namespace Binance.WebSocket.Events
         /// </summary>
         /// <param name="time">The event time.</param>
         /// <param name="token">The cancellation token.</param>
-        /// <param name="trade">The aggregate trade.</param>
-        public AggregateTradeEventArgs(DateTime time, CancellationToken token, AggregateTrade trade)
+        /// <param name="statistics">The symbol statistics.</param>
+        public SymbolStatisticsEventArgs(DateTime time, CancellationToken token, params SymbolStatistics[] statistics)
             : base(time, token)
         {
-            Throw.IfNull(trade, nameof(trade));
+            Throw.IfNull(statistics, nameof(statistics));
 
-            Trade = trade;
+            Statistics = statistics;
         }
 
         #endregion Constructors
