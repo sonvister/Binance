@@ -1,24 +1,18 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.WebSocket.Events;
 
 namespace Binance.WebSocket
 {
     /// <summary>
-    /// A web socket client interface for <see cref="IWebSocketStream"/>.
+    /// A low-level web socket client JSON provider interface.
     /// </summary>
-    public interface IWebSocketClient
+    public interface IWebSocketClient : IJsonProvider
     {
         /// <summary>
         /// The open event.
         /// </summary>
         event EventHandler<EventArgs> Open;
-
-        /// <summary>
-        /// The message received event.
-        /// </summary>
-        event EventHandler<WebSocketClientEventArgs> Message;
 
         /// <summary>
         /// The close event.
