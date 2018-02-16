@@ -2,7 +2,6 @@
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 using WebSocketSharp;
 
@@ -60,14 +59,14 @@ namespace Binance.WebSocket
 
                     if (!string.IsNullOrWhiteSpace(json))
                     {
-                        RaiseMessageEvent(new WebSocketClientEventArgs(json));
+                        RaiseMessageEvent(json, uri.AbsolutePath);
                     }
                     else
                     {
                         Logger?.LogWarning($"{nameof(WebSocketSharpClient)}.OnMessage: Received empty JSON message.");
                     }
                 }
-                catch (OperationCanceledException) { }
+                //catch (OperationCanceledException) { /* ignored */ }
                 catch (Exception e)
                 {
                     if (!token.IsCancellationRequested)
@@ -99,7 +98,7 @@ namespace Binance.WebSocket
                 if (exception != null)
                     throw exception;
             }
-            catch (OperationCanceledException) { }
+            //catch (OperationCanceledException) { /* ignored */ }
             catch (Exception e)
             {
                 if (!token.IsCancellationRequested)

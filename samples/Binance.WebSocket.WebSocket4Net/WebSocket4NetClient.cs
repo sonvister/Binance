@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace
@@ -53,14 +52,14 @@ namespace Binance.WebSocket
 
                     if (!string.IsNullOrWhiteSpace(json))
                     {
-                        RaiseMessageEvent(new WebSocketClientEventArgs(json));
+                        RaiseMessageEvent(json, uri.AbsolutePath);
                     }
                     else
                     {
                         Logger?.LogWarning($"{nameof(WebSocket4NetClient)}.MessageReceived: Received empty JSON message.");
                     }
                 }
-                catch (OperationCanceledException) { }
+                //catch (OperationCanceledException) { /* ignored */ }
                 catch (Exception e)
                 {
                     if (!token.IsCancellationRequested)
@@ -92,7 +91,7 @@ namespace Binance.WebSocket
                 if (exception != null)
                     throw exception;
             }
-            catch (OperationCanceledException) { }
+            //catch (OperationCanceledException) { /* ignored */ }
             catch (Exception e)
             {
                 if (!token.IsCancellationRequested)
