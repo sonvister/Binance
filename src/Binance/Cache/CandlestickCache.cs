@@ -5,16 +5,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Cache.Events;
+using Binance.Client;
+using Binance.Client.Events;
 using Binance.Market;
-using Binance.WebSocket;
-using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
-
-// ReSharper disable InconsistentlySynchronizedField
 
 namespace Binance.Cache
 {
-    public sealed class CandlestickCache : WebSocketClientCache<ICandlestickWebSocketClient, CandlestickEventArgs, CandlestickCacheEventArgs>, ICandlestickCache
+    /// <summary>
+    /// The default <see cref="ICandlestickCache"/> implementation.
+    /// </summary>
+    public sealed class CandlestickCache : JsonClientCache<ICandlestickClient, CandlestickEventArgs, CandlestickCacheEventArgs>, ICandlestickCache
     {
         #region Public Properties
 
@@ -39,7 +40,21 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public CandlestickCache(IBinanceApi api, ICandlestickWebSocketClient client, ILogger<CandlestickCache> logger = null)
+        /// <summary>
+        /// Default constructor provides default <see cref="IBinanceApi"/>
+        /// and default <see cref="ICandlestickClient"/>, but no logger.
+        /// </summary>
+        public CandlestickCache()
+            : this(new BinanceApi(), new CandlestickClient())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="api">The Binance api (required).</param>
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public CandlestickCache(IBinanceApi api, ICandlestickClient client, ILogger<CandlestickCache> logger = null)
             : base(api, client, logger)
         {
             _candlesticks = new List<Candlestick>();
@@ -63,47 +78,47 @@ namespace Binance.Cache
             _interval = interval;
             _limit = limit;
 
-            base.LinkTo(Client, callback);
-
-            Client.Subscribe(_symbol, _interval, ClientCallback);
+            OnSubscribe(callback);
+            SubscribeToClient();
         }
 
-        public void Unsubscribe()
+        public override void Unsubscribe()
         {
             if (_symbol == null)
                 return;
 
-            Client.Unsubscribe(_symbol, _interval, ClientCallback);
-
-            UnLink();
+            UnsubscribeFromClient();
+            OnUnsubscribe();
 
             lock (_sync)
             {
                 _candlesticks.Clear();
             }
 
-            _symbol = null;
-        }
-
-        public override void LinkTo(ICandlestickWebSocketClient client, Action<CandlestickCacheEventArgs> callback = null)
-        {
-            // Confirm client is subscribed to only one stream.
-            if (client.WebSocket.IsCombined)
-                throw new InvalidOperationException($"{nameof(CandlestickCache)} can only link to {nameof(ICandlestickWebSocketClient)} events from a single stream (not combined streams).");
-
-            base.LinkTo(client, callback);
-            Client.Candlestick += OnClientEvent;
-        }
-
-        public override void UnLink()
-        {
-            Client.Candlestick -= OnClientEvent;
-            base.UnLink();
+            _symbol = default;
+            _interval = default;
+            _limit = default;
         }
 
         #endregion Public Methods
 
         #region Protected Methods
+
+        protected override void SubscribeToClient()
+        {
+            if (_symbol == null)
+                return;
+
+            Client.Subscribe(_symbol, _interval, ClientCallback);
+        }
+
+        protected override void UnsubscribeFromClient()
+        {
+            if (_symbol == null)
+                return;
+
+            Client.Unsubscribe(_symbol, _interval, ClientCallback);
+        }
 
         protected override async ValueTask<CandlestickCacheEventArgs> OnAction(CandlestickEventArgs @event)
         {
@@ -115,11 +130,11 @@ namespace Binance.Cache
 
             Logger?.LogDebug($"{nameof(CandlestickCache)} ({_symbol}): Updating candlestick (open time: {@event.Candlestick.OpenTime}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
-            // Get the candlestick with matching open time.
-            var candlestick = _candlesticks.FirstOrDefault(c => c.OpenTime == @event.Candlestick.OpenTime);
-
             lock (_sync)
             {
+                // Get the candlestick with matching open time.
+                var candlestick = _candlesticks.FirstOrDefault(c => c.OpenTime == @event.Candlestick.OpenTime);
+
                 _candlesticks.Remove(candlestick ?? _candlesticks.First());
                 _candlesticks.Add(@event.Candlestick);
             }

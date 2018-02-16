@@ -3,14 +3,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Cache.Events;
+using Binance.Client;
+using Binance.Client.Events;
 using Binance.Market;
-using Binance.WebSocket;
-using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public sealed class OrderBookCache : WebSocketClientCache<IDepthWebSocketClient, DepthUpdateEventArgs, OrderBookCacheEventArgs>, IOrderBookCache
+    /// <summary>
+    /// The default <see cref="IOrderBookCache"/> implementation.
+    /// </summary>
+    public sealed class OrderBookCache : JsonClientCache<IDepthClient, DepthUpdateEventArgs, OrderBookCacheEventArgs>, IOrderBookCache
     {
         #region Public Events
 
@@ -36,7 +39,21 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public OrderBookCache(IBinanceApi api, IDepthWebSocketClient client, ILogger<OrderBookCache> logger = null)
+        /// <summary>
+        /// Default constructor provides default <see cref="IBinanceApi"/>
+        /// and default <see cref="IDepthClient"/>, but no logger.
+        /// </summary>
+        public OrderBookCache()
+            : this(new BinanceApi(), new DepthClient())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="api">The Binance api (required).</param>
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public OrderBookCache(IBinanceApi api, IDepthClient client, ILogger<OrderBookCache> logger = null)
             : base(api, client, logger)
         { }
 
@@ -57,44 +74,42 @@ namespace Binance.Cache
             _symbol = symbol.FormatSymbol();
             _limit = limit;
 
-            base.LinkTo(Client, callback);
-
-            Client.Subscribe(_symbol, limit, ClientCallback);
+            OnSubscribe(callback);
+            SubscribeToClient();
         }
 
-        public void Unsubscribe()
+        public override void Unsubscribe()
         {
             if (_symbol == null)
                 return;
 
-            Client.Unsubscribe(_symbol, _limit, ClientCallback);
-
-            UnLink();
+            UnsubscribeFromClient();
+            OnUnsubscribe();
 
             _orderBookClone = _orderBook = null;
 
             _symbol = null;
         }
 
-        public override void LinkTo(IDepthWebSocketClient client, Action<OrderBookCacheEventArgs> callback = null)
-        {
-            // Confirm client is subscribed to only one stream.
-            if (client.WebSocket.IsCombined)
-                throw new InvalidOperationException($"{nameof(OrderBookCache)} can only link to {nameof(IDepthWebSocketClient)} events from a single stream (not combined streams).");
-
-            base.LinkTo(client, callback);
-            Client.DepthUpdate += OnClientEvent;
-        }
-
-        public override void UnLink()
-        {
-            Client.DepthUpdate -= OnClientEvent;
-            base.UnLink();
-        }
-
         #endregion Public Methods
 
         #region Protected Methods
+
+        protected override void SubscribeToClient()
+        {
+            if (_symbol == null)
+                return;
+
+            Client.Subscribe(_symbol, _limit, ClientCallback);
+        }
+
+        protected override void UnsubscribeFromClient()
+        {
+            if (_symbol == null)
+                return;
+
+            Client.Unsubscribe(_symbol, _limit, ClientCallback);
+        }
 
         /// <summary>
         /// 
@@ -157,7 +172,7 @@ namespace Binance.Cache
             Logger?.LogInformation($"{nameof(OrderBookCache)} ({_symbol}): Synchronizing order book...  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
             // Get order book snapshot with the maximum limit.
-            _orderBook = await Api.GetOrderBookAsync(_symbol, 1000, token)
+            _orderBook = await Api.GetOrderBookAsync(_symbol, 1000, token) // TODO
                 .ConfigureAwait(false);
 
             Logger?.LogInformation($"{nameof(OrderBookCache)} ({_symbol}): Synchronization complete (last update ID: {_orderBook.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");

@@ -5,16 +5,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Cache.Events;
+using Binance.Client;
+using Binance.Client.Events;
 using Binance.Market;
-using Binance.WebSocket;
-using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
-
-// ReSharper disable InconsistentlySynchronizedField
 
 namespace Binance.Cache
 {
-    public sealed class TradeCache : WebSocketClientCache<ITradeWebSocketClient, TradeEventArgs, TradeCacheEventArgs>, ITradeCache
+    /// <summary>
+    /// The default <see cref="ITradeCache"/> implemenation.
+    /// </summary>
+    public sealed class TradeCache : JsonClientCache<ITradeClient, TradeEventArgs, TradeCacheEventArgs>, ITradeCache
     {
         #region Public Events
 
@@ -44,7 +45,21 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public TradeCache(IBinanceApi api, ITradeWebSocketClient client, ILogger<TradeCache> logger = null)
+        /// <summary>
+        /// Default constructor provides default <see cref="IBinanceApi"/>
+        /// and default <see cref="ITradeClient"/>, but no logger.
+        /// </summary>
+        public TradeCache()
+            : this(new BinanceApi(), new TradeClient())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="api">The Binance api (required).</param>
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public TradeCache(IBinanceApi api, ITradeClient client, ILogger<TradeCache> logger = null)
             : base(api, client, logger)
         {
             _trades = new Queue<Trade>();
@@ -67,19 +82,17 @@ namespace Binance.Cache
             _symbol = symbol.FormatSymbol();
             _limit = limit;
 
-            base.LinkTo(Client, callback);
-
-            Client.Subscribe(_symbol, ClientCallback);
+            OnSubscribe(callback);
+            SubscribeToClient();
         }
 
-        public void Unsubscribe()
+        public override void Unsubscribe()
         {
             if (_symbol == null)
                 return;
 
-            Client.Unsubscribe(_symbol, ClientCallback);
-
-            UnLink();
+            UnsubscribeFromClient();
+            OnUnsubscribe();
 
             lock (_sync)
             {
@@ -89,25 +102,25 @@ namespace Binance.Cache
             _symbol = null;
         }
 
-        public override void LinkTo(ITradeWebSocketClient client, Action<TradeCacheEventArgs> callback = null)
-        {
-            // Confirm client is subscribed to only one stream.
-            if (client.WebSocket.IsCombined)
-                throw new InvalidOperationException($"{nameof(TradeCache)} can only link to {nameof(ITradeWebSocketClient)} events from a single stream (not combined streams).");
-
-            base.LinkTo(client, callback);
-            Client.Trade += OnClientEvent;
-        }
-
-        public override void UnLink()
-        {
-            Client.Trade -= OnClientEvent;
-            base.UnLink();
-        }
-
         #endregion Public Methods
 
         #region Protected Methods
+
+        protected override void SubscribeToClient()
+        {
+            if (_symbol == null)
+                return;
+
+            Client.Subscribe(_symbol, ClientCallback);
+        }
+
+        protected override void UnsubscribeFromClient()
+        {
+            if (_symbol == null)
+                return;
+
+            Client.Unsubscribe(_symbol, ClientCallback);
+        }
 
         protected override async ValueTask<TradeCacheEventArgs> OnAction(TradeEventArgs @event)
         {
@@ -123,15 +136,15 @@ namespace Binance.Cache
                     .ConfigureAwait(false);
             }
 
-            // Ignore trades older than the latest trade in queue.
-            if (@event.Trade.Id <= _trades.Last().Id)
-            {
-                Logger?.LogDebug($"{nameof(TradeCache)} ({_symbol}): Ignoring event (trade ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
-                return null;
-            }
-
             lock (_sync)
             {
+                // Ignore trades older than the latest trade in queue.
+                if (@event.Trade.Id <= _trades.Last().Id)
+                {
+                    Logger?.LogDebug($"{nameof(TradeCache)} ({_symbol}): Ignoring event (trade ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                    return null;
+                }
+
                 var removed = _trades.Dequeue();
                 Logger?.LogDebug($"{nameof(TradeCache)} ({_symbol}): REMOVE trade (ID: {removed.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 

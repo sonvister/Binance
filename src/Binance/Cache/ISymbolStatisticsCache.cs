@@ -1,37 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using Binance.Cache.Events;
+using Binance.Client;
 using Binance.Market;
-using Binance.WebSocket;
 
 namespace Binance.Cache
 {
-    public interface ISymbolStatisticsCache
+    public interface ISymbolStatisticsCache : IJsonClientCache<ISymbolStatisticsClient, SymbolStatisticsCacheEventArgs>
     {
-        #region Events
-
-        /// <summary>
-        /// SymbolStatistics cache update event.
-        /// </summary>
-        event EventHandler<SymbolStatisticsCacheEventArgs> Update;
-
-        #endregion Events
-
-        #region  Properties
-
         /// <summary>
         /// The symbol statistics. Can be empty if not yet synchronized.
         /// </summary>
         IEnumerable<SymbolStatistics> Statistics { get; }
-
-        /// <summary>
-        /// The client that provides symbol statistics synchronization.
-        /// </summary>
-        ISymbolStatisticsWebSocketClient Client { get; }
-
-        #endregion Properties
-
-        #region Methods
 
         /// <summary>
         /// Get statistics for a symbol.
@@ -59,25 +39,5 @@ namespace Binance.Cache
         /// <param name="callback"></param>
         /// <param name="symbols"></param>
         void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback, params string[] symbols);
-
-        /// <summary>
-        /// Unsubscribe from the currently subscribed symbol or symbols.
-        /// </summary>
-        void Unsubscribe();
-
-        /// <summary>
-        /// Link to a subscribed <see cref="ISymbolStatisticsWebSocketClient"/>.
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="callback"></param>
-        /// <returns></returns>
-        void LinkTo(ISymbolStatisticsWebSocketClient client, Action<SymbolStatisticsCacheEventArgs> callback = null);
-
-        /// <summary>
-        /// Unlink from client.
-        /// </summary>
-        void UnLink();
-
-        #endregion Methods
     }
 }

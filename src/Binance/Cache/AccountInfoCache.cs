@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Api;
 using Binance.Cache.Events;
-using Binance.WebSocket.Events;
-using Binance.WebSocket.UserData;
+using Binance.Client;
+using Binance.Client.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public sealed class AccountInfoCache : WebSocketClientCache<IUserDataWebSocketManager, UserDataEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
+    public sealed class AccountInfoCache : JsonClientCache<IUserDataClient, UserDataEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
     {
         #region Public Properties
 
@@ -18,44 +17,83 @@ namespace Binance.Cache
 
         #endregion Public Properties
 
+        #region Private Properties
+
+        private string _listenKey;
+
+        private IBinanceApiUser _user;
+
+        #endregion Private Properties
+
         #region Constructors
 
-        public AccountInfoCache(IBinanceApi api, IUserDataWebSocketManager manager, ILogger<AccountInfoCache> logger = null)
-            : base(api, manager, logger)
+        /// <summary>
+        /// Default constructor provides default <see cref="IBinanceApi"/>
+        /// and default <see cref="IUserDataClient"/>, but no logger.
+        /// </summary>
+        public AccountInfoCache()
+            : this(new BinanceApi(), new UserDataClient())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="api">The Binance api (required).</param>
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public AccountInfoCache(IBinanceApi api, IUserDataClient client, ILogger<AccountInfoCache> logger = null)
+            : base(api, client, logger)
         { }
 
         #endregion Constructors
 
         #region Public Methods
 
-        public Task SubscribeAndStreamAsync(IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback, CancellationToken token = default)
+        public void Subscribe(string listenKey, IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback)
         {
+            Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
             Throw.IfNull(user, nameof(user));
 
-            base.LinkTo(Client, callback);
+            _listenKey = listenKey;
+            _user = user;
 
-            return Client.SubscribeAndStreamAsync(user, ClientCallback, token);
+            OnSubscribe(callback);
+            SubscribeToClient();
         }
 
-        public override void LinkTo(IUserDataWebSocketManager manager, Action<AccountInfoCacheEventArgs> callback = null)
+        public override void Unsubscribe()
         {
-            // Confirm client is subscribed to only one stream.
-            if (manager.Client.WebSocket.IsCombined)
-                throw new InvalidOperationException($"{nameof(AccountInfoCache)} can only link to {nameof(IUserDataWebSocketClient)} events from a single stream (not combined streams).");
+            if (_listenKey == null)
+                return;
 
-            base.LinkTo(manager, callback);
-            Client.AccountUpdate += OnClientEvent;
-        }
+            UnsubscribeFromClient();
+            OnUnsubscribe();
 
-        public override void UnLink()
-        {
-            Client.AccountUpdate -= OnClientEvent;
-            base.UnLink();
+            AccountInfo = null;
+
+            _listenKey = default;
+            _user = default;
         }
 
         #endregion Public Methods
 
         #region Protected Methods
+
+        protected override void SubscribeToClient()
+        {
+            if (_listenKey == null)
+                return;
+
+            Client.Subscribe(_listenKey, _user, ClientCallback);
+        }
+
+        protected override void UnsubscribeFromClient()
+        {
+            if (_listenKey == null)
+                return;
+
+            Client.Unsubscribe(_listenKey, ClientCallback);
+        }
 
         protected override ValueTask<AccountInfoCacheEventArgs> OnAction(UserDataEventArgs @event)
         {

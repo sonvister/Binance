@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Cache;
 using Binance.Market;
@@ -13,17 +11,14 @@ namespace Binance.Tests.Cache
     public class CandlestickCacheTest
     {
         [Fact]
-        public async Task StreamThrows()
+        public void SubscribeThrows()
         {
             var api = new Mock<IBinanceApi>().Object;
             var client = new Mock<ICandlestickWebSocketClient>().Object;
 
             var cache = new CandlestickCache(api, client);
 
-            using (var cts = new CancellationTokenSource())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => cache.SubscribeAndStreamAsync(null, CandlestickInterval.Day, cts.Token));
-            }
+            Assert.Throws<ArgumentNullException>("symbol", () => cache.Subscribe(null, CandlestickInterval.Day));
         }
     }
 }

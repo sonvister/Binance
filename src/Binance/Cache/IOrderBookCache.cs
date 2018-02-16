@@ -1,44 +1,21 @@
 ﻿using System;
 using Binance.Cache.Events;
+using Binance.Client;
 using Binance.Market;
-using Binance.WebSocket;
 
 namespace Binance.Cache
 {
-    /// <summary>
-    /// A live depth of market with update events to maintain an order book cache.
-    /// </summary>
-    public interface IOrderBookCache
+    public interface IOrderBookCache : IJsonClientCache<IDepthClient, OrderBookCacheEventArgs>
     {
-        #region Events
-
-        /// <summary>
-        /// Order book cache update event.
-        /// </summary>
-        event EventHandler<OrderBookCacheEventArgs> Update;
-
         /// <summary>
         /// Order book out-of-sync event.
         /// </summary>
         event EventHandler<EventArgs> OutOfSync;
 
-        #endregion Events
-
-        #region Properties
-
         /// <summary>
         /// The order book. Can be null if not yet synchronized or out-of-sync.
         /// </summary>
         OrderBook OrderBook { get; }
-        
-        /// <summary>
-        /// The client that provides order book synchronization.
-        /// </summary>
-        IDepthWebSocketClient Client { get; }
-
-        #endregion Properties
-
-        #region Methods
 
         /// <summary>
         /// Subscribe the web socket client to the symbol and link this cache to client.
@@ -47,24 +24,5 @@ namespace Binance.Cache
         /// <param name="limit">The limit (optional, uses partial depth stream). Valid values are: 5, 10, or 20.</param>
         /// <param name="callback">An event callback (optional).</param>
         void Subscribe(string symbol, int limit, Action<OrderBookCacheEventArgs> callback);
-
-        /// <summary>
-        /// Unsubscribe from the currently subscribed symbol and limit.
-        /// </summary>
-        void Unsubscribe();
-
-        /// <summary>
-        /// Link to a subscribed <see cref="IDepthWebSocketClient"/>.
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="callback"></param>
-        void LinkTo(IDepthWebSocketClient client, Action<OrderBookCacheEventArgs> callback = null);
-
-        /// <summary>
-        /// Unlink from client.
-        /// </summary>
-        void UnLink();
-
-        #endregion Methods
     }
 }

@@ -4,14 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Cache.Events;
+using Binance.Client;
+using Binance.Client.Events;
 using Binance.Market;
-using Binance.WebSocket;
-using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public sealed class SymbolStatisticsCache : WebSocketClientCache<ISymbolStatisticsWebSocketClient, SymbolStatisticsEventArgs, SymbolStatisticsCacheEventArgs>, ISymbolStatisticsCache
+    /// <summary>
+    /// The default <see cref="ISymbolStatisticsCache"/> implementation.
+    /// </summary>
+    public sealed class SymbolStatisticsCache : JsonClientCache<ISymbolStatisticsClient, SymbolStatisticsEventArgs, SymbolStatisticsCacheEventArgs>, ISymbolStatisticsCache
     {
         #region Public Properties
 
@@ -44,7 +47,21 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public SymbolStatisticsCache(IBinanceApi api, ISymbolStatisticsWebSocketClient client, ILogger<SymbolStatisticsCache> logger = null)
+        /// <summary>
+        /// Default constructor provides default <see cref="IBinanceApi"/>
+        /// and default <see cref="ISymbolStatisticsClient"/>, but no logger.
+        /// </summary>
+        public SymbolStatisticsCache()
+            : this(new BinanceApi(), new SymbolStatisticsClient())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="api">The Binance api (required).</param>
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public SymbolStatisticsCache(IBinanceApi api, ISymbolStatisticsClient client, ILogger<SymbolStatisticsCache> logger = null)
             : base(api, client, logger)
         { }
 
@@ -77,35 +94,36 @@ namespace Binance.Cache
 
         public void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback)
         {
-            base.LinkTo(Client, callback);
+            OnSubscribe(callback);
 
-            Client.Subscribe(ClientCallback);
+            SubscribeToClient();
         }
 
         public void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback, params string[] symbols)
         {
             Throw.IfNull(symbols, nameof(symbols));
 
-            base.LinkTo(Client, callback);
+            OnSubscribe(callback);
 
-            foreach (var symbol in symbols)
+            foreach (var s in symbols)
             {
-                Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+                Throw.IfNullOrWhiteSpace(s, nameof(s));
+
+                var symbol = s.FormatSymbol();
 
                 if (_symbols.Contains(symbol))
                     continue;
 
                 _symbols.Add(symbol);
-
-                Client.Subscribe(symbol, ClientCallback);
             }
+
+            SubscribeToClient();
         }
 
-        public void Unsubscribe()
+        public override void Unsubscribe()
         {
-            Client.UnsubscribeAll();
-
-            UnLink();
+            UnsubscribeFromClient();
+            OnUnsubscribe();
 
             lock (_sync)
             {
@@ -115,25 +133,45 @@ namespace Binance.Cache
             _symbols.Clear();
         }
 
-        public override void LinkTo(ISymbolStatisticsWebSocketClient client, Action<SymbolStatisticsCacheEventArgs> callback = null)
-        {
-            // Confirm client is subscribed to only one stream.
-            if (client.WebSocket.IsCombined)
-                throw new InvalidOperationException($"{nameof(SymbolStatisticsCache)} can only link to {nameof(ISymbolStatisticsWebSocketClient)} events from a single stream (not combined streams).");
-
-            base.LinkTo(client, callback);
-            Client.StatisticsUpdate += OnClientEvent;
-        }
-
-        public override void UnLink()
-        {
-            Client.StatisticsUpdate -= OnClientEvent;
-            base.UnLink();
-        }
-
         #endregion Public Methods
 
         #region Protected Methods
+
+        protected override void SubscribeToClient()
+        {
+            if (_symbols == null) // TODO
+                return;
+
+            if (!_symbols.Any())
+            {
+                Client.Subscribe(ClientCallback);
+            }
+            else
+            {
+                foreach (var symbol in _symbols)
+                {
+                    Client.Subscribe(symbol, ClientCallback);
+                }
+            }
+        }
+
+        protected override void UnsubscribeFromClient()
+        {
+            if (_symbols == null) // TODO
+                return;
+
+            if (!_symbols.Any())
+            {
+                Client.Unsubscribe(ClientCallback);
+            }
+            else
+            {
+                foreach (var symbol in _symbols)
+                {
+                    Client.Unsubscribe(symbol, ClientCallback);
+                }
+            }
+        }
 
         protected override async ValueTask<SymbolStatisticsCacheEventArgs> OnAction(SymbolStatisticsEventArgs @event)
         {

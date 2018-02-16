@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Cache;
-using Binance.WebSocket.UserData;
+using Binance.Client;
 using Moq;
 using Xunit;
 
@@ -12,16 +10,14 @@ namespace Binance.Tests.Cache
     public class AccountInfoCacheTest
     {
         [Fact]
-        public async Task StreamThrows()
+        public void SubscribeThrows()
         {
             var api = new Mock<IBinanceApi>().Object;
 
-            var cache = new AccountInfoCache(api, new Mock<IUserDataWebSocketManager>().Object);
+            var cache = new AccountInfoCache(api, new Mock<IUserDataClient>().Object);
 
-            using (var cts = new CancellationTokenSource())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>("user", () => cache.SubscribeAndStreamAsync(null, cts.Token));
-            }
+            Assert.Throws<ArgumentNullException>("listenKey", () => cache.Subscribe(null, null, null));
+            Assert.Throws<ArgumentNullException>("user", () => cache.Subscribe("<valid listen key>", null, null));
         }
     }
 }

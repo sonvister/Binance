@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Cache.Events;
+using Binance.Client;
+using Binance.Client.Events;
 using Binance.Market;
-using Binance.WebSocket;
-using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
-
-// ReSharper disable InconsistentlySynchronizedField
 
 namespace Binance.Cache
 {
-    public sealed class AggregateTradeCache : WebSocketClientCache<IAggregateTradeWebSocketClient, AggregateTradeEventArgs, AggregateTradeCacheEventArgs>, IAggregateTradeCache
+    /// <summary>
+    /// The default <see cref="IAggregateTradeCache"/> implemenation.
+    /// </summary>
+    public sealed class AggregateTradeCache : JsonClientCache<IAggregateTradeClient, AggregateTradeEventArgs, AggregateTradeCacheEventArgs>, IAggregateTradeCache
     {
         #region Public Events
 
@@ -45,7 +45,21 @@ namespace Binance.Cache
 
         #region Constructors
 
-        public AggregateTradeCache(IBinanceApi api, IAggregateTradeWebSocketClient client, ILogger<AggregateTradeCache> logger = null)
+        /// <summary>
+        /// Default constructor provides default <see cref="IBinanceApi"/>
+        /// and default <see cref="IAggregateTradeClient"/>, but no logger.
+        /// </summary>
+        public AggregateTradeCache()
+            : this(new BinanceApi(), new AggregateTradeClient())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="api">The Binance api (required).</param>
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public AggregateTradeCache(IBinanceApi api, IAggregateTradeClient client, ILogger<AggregateTradeCache> logger = null)
             : base(api, client, logger)
         {
             _trades = new Queue<AggregateTrade>();
@@ -68,47 +82,46 @@ namespace Binance.Cache
             _symbol = symbol.FormatSymbol();
             _limit = limit;
 
-            base.LinkTo(Client, callback);
-
-            Client.Subscribe(_symbol, ClientCallback);
+            OnSubscribe(callback);
+            SubscribeToClient();
         }
 
-        public void Unsubscribe()
+        public override void Unsubscribe()
         {
             if (_symbol == null)
                 return;
 
-            Client.Unsubscribe(_symbol, ClientCallback);
-
-            UnLink();
+            UnsubscribeFromClient();
+            OnUnsubscribe();
 
             lock (_sync)
             {
                 _trades.Clear();
             }
 
-            _symbol = null;
-        }
-
-        public override void LinkTo(IAggregateTradeWebSocketClient client, Action<AggregateTradeCacheEventArgs> callback = null)
-        {
-            // Confirm client is subscribed to only one stream.
-            if (client.WebSocket.IsCombined)
-                throw new InvalidOperationException($"{nameof(AggregateTradeCache)} can only link to {nameof(IAggregateTradeWebSocketClient)} events from a single stream (not combined streams).");
-
-            base.LinkTo(client, callback);
-            Client.AggregateTrade += OnClientEvent;
-        }
-
-        public override void UnLink()
-        {
-            Client.AggregateTrade -= OnClientEvent;
-            base.UnLink();
+            _symbol = default;
+            _limit = default;
         }
 
         #endregion Public Methods
 
         #region Protected Methods
+
+        protected override void SubscribeToClient()
+        {
+            if (_symbol == null)
+                return;
+
+            Client.Subscribe(_symbol, ClientCallback);
+        }
+
+        protected override void UnsubscribeFromClient()
+        {
+            if (_symbol == null)
+                return;
+
+            Client.Unsubscribe(_symbol, ClientCallback);
+        }
 
         protected override async ValueTask<AggregateTradeCacheEventArgs> OnAction(AggregateTradeEventArgs @event)
         {
@@ -124,15 +137,15 @@ namespace Binance.Cache
                     .ConfigureAwait(false);
             }
 
-            // Ignore trades older than the latest trade in queue.
-            if (@event.Trade.Id <= _trades.Last().Id)
-            {
-                Logger?.LogDebug($"{nameof(AggregateTradeCache)} ({_symbol}): Ignoring event (trade ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
-                return null;
-            }
-
             lock (_sync)
             {
+                // Ignore trades older than the latest trade in queue.
+                if (@event.Trade.Id <= _trades.Last().Id)
+                {
+                    Logger?.LogDebug($"{nameof(AggregateTradeCache)} ({_symbol}): Ignoring event (trade ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                    return null;
+                }
+
                 var removed = _trades.Dequeue();
                 Logger?.LogDebug($"{nameof(AggregateTradeCache)} ({_symbol}): REMOVE aggregate trade (ID: {removed.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
