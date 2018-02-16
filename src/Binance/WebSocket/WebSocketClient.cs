@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket
 {
-    public abstract class WebSocketClient : IWebSocketClient
+    public abstract class WebSocketClient : JsonProvider, IWebSocketClient
     {
         #region Public Events
 
         public event EventHandler<EventArgs> Open;
-
-        public event EventHandler<WebSocketClientEventArgs> Message;
 
         public event EventHandler<EventArgs> Close;
 
@@ -24,12 +21,6 @@ namespace Binance.WebSocket
 
         #endregion Public Properties
 
-        #region Protected Fields
-
-        protected readonly ILogger<WebSocketClient> Logger;
-
-        #endregion Protected Fields
-
         #region Constructors
 
         /// <summary>
@@ -37,9 +28,8 @@ namespace Binance.WebSocket
         /// </summary>
         /// <param name="logger"></param>
         protected WebSocketClient(ILogger<WebSocketClient> logger = null)
-        {
-            Logger = logger;
-        }
+            : base(logger)
+        { }
 
         #endregion Constructors
 
@@ -60,21 +50,7 @@ namespace Binance.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                Logger?.LogError(e, $"{GetType().Name}: Unhandled open event handler exception.");
-            }
-        }
-
-        /// <summary>
-        /// Raise message event.
-        /// </summary>
-        /// <param name="args"></param>
-        protected void RaiseMessageEvent(WebSocketClientEventArgs args)
-        {
-            try { Message?.Invoke(this, args); }
-            catch (OperationCanceledException) { }
-            catch (Exception e)
-            {
-                Logger?.LogError(e, $"{GetType().Name}: Unhandled message event handler exception.");
+                Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(Open)} event handler exception.");
             }
         }
 
@@ -87,7 +63,7 @@ namespace Binance.WebSocket
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                Logger?.LogError(e, $"{GetType().Name}: Unhandled close event handler exception.");
+                Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(Close)} event handler exception.");
             }
         }
 
