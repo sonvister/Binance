@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Binance.Cache.Events;
 
 // ReSharper disable once CheckNamespace
@@ -36,68 +34,5 @@ namespace Binance.Cache
         /// <returns></returns>
         public static void Subscribe(this ITradeCache cache, string symbol, Action<TradeCacheEventArgs> callback)
             => cache.Subscribe(symbol, default, callback);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cache"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Task StreamAsync(this ITradeCache cache, CancellationToken token)
-        {
-            Throw.IfNull(cache, nameof(cache));
-
-            return cache.Client.WebSocket.StreamAsync(token);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cache"></param>
-        /// <param name="symbol"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Task SubscribeAndStreamAsync(this ITradeCache cache, string symbol, CancellationToken token)
-            => SubscribeAndStreamAsync(cache, symbol, default, null, token);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cache"></param>
-        /// <param name="symbol"></param>
-        /// <param name="limit"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Task SubscribeAndStreamAsync(this ITradeCache cache, string symbol, int limit, CancellationToken token)
-            => SubscribeAndStreamAsync(cache, symbol, limit, null, token);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cache"></param>
-        /// <param name="symbol"></param>
-        /// <param name="callback"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Task SubscribeAndStreamAsync(this ITradeCache cache, string symbol, Action<TradeCacheEventArgs> callback, CancellationToken token)
-            => SubscribeAndStreamAsync(cache, symbol, default, callback, token);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cache"></param>
-        /// <param name="symbol"></param>
-        /// <param name="limit"></param>
-        /// <param name="callback"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Task SubscribeAndStreamAsync(this ITradeCache cache, string symbol, int limit, Action<TradeCacheEventArgs> callback, CancellationToken token)
-        {
-            Throw.IfNull(cache, nameof(cache));
-
-            cache.Subscribe(symbol, limit, callback);
-
-            return StreamAsync(cache, token);
-        }
     }
 }
