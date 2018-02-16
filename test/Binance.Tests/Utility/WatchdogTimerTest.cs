@@ -41,8 +41,8 @@ namespace Binance.Tests.Utility
 
             await Task.Delay(2000);
 
-            Assert.True(stopwatch.ElapsedMilliseconds <= interval.TotalMilliseconds + 100);
-            Assert.True(stopwatch.ElapsedMilliseconds >= interval.TotalMilliseconds - 100);
+            Assert.True(stopwatch.ElapsedMilliseconds <= interval.TotalMilliseconds + 200);
+            Assert.True(stopwatch.ElapsedMilliseconds >= interval.TotalMilliseconds - 200);
         }
 
         [Fact]
@@ -65,8 +65,8 @@ namespace Binance.Tests.Utility
                 watchdog.Kick();
             }
 
-            Assert.True(stopwatch.ElapsedMilliseconds <= (count * delay) + 100);
-            Assert.True(stopwatch.ElapsedMilliseconds >= (count * delay) - 100);
+            Assert.True(stopwatch.ElapsedMilliseconds <= (count * delay) + 200);
+            Assert.True(stopwatch.ElapsedMilliseconds >= (count * delay) - 200);
         }
     }
 }
