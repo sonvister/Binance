@@ -18,8 +18,4 @@
     <ProjectReference Include="..\..\src\Binance\Binance.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Client\" />
-  </ItemGroup>
-
 </Project>

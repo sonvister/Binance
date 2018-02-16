@@ -3,6 +3,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Client;
 using Binance.WebSocket;
 using Moq;
 using Xunit;
@@ -11,24 +12,6 @@ namespace Binance.Tests.Integration
 {
     public class DepthWebSocketClientTest
     {
-        [Fact]
-        public void SubscribeThrows()
-        {
-            var client = new DepthWebSocketClient(new Mock<IWebSocketStream>().Object);
-
-            Assert.Throws<ArgumentNullException>("symbol", () => client.Subscribe(null));
-        }
-
-        [Fact]
-        public void SubscribeTwiceIgnored()
-        {
-            var symbol = Symbol.LTC_USDT;
-            var client = new DepthWebSocketClient(new BinanceWebSocketStream());
-
-            client.Subscribe(symbol);
-            client.Subscribe(symbol);
-        }
-
 #if INTEGRATION
         [Fact]
         public async Task SubscribeCallback()

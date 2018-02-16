@@ -1,7 +1,6 @@
 ﻿using System;
 using Binance.Market;
 using Binance.WebSocket;
-using Moq;
 using Xunit;
 
 namespace Binance.Tests.WebSocket
@@ -11,7 +10,7 @@ namespace Binance.Tests.WebSocket
         [Fact]
         public void SubscribeThrows()
         {
-            var client = new CandlestickWebSocketClient(new Mock<IWebSocketStream>().Object);
+            var client = new CandlestickWebSocketClient();
 
             Assert.Throws<ArgumentNullException>("symbol", () => client.Subscribe(null, CandlestickInterval.Hour));
         }

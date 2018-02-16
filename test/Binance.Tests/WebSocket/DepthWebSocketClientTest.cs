@@ -1,6 +1,5 @@
 ﻿using System;
 using Binance.WebSocket;
-using Moq;
 using Xunit;
 
 namespace Binance.Tests.WebSocket
@@ -10,9 +9,19 @@ namespace Binance.Tests.WebSocket
         [Fact]
         public void SubscribeThrows()
         {
-            var client = new DepthWebSocketClient(new Mock<IWebSocketStream>().Object);
+            var client = new DepthWebSocketClient();
 
             Assert.Throws<ArgumentNullException>("symbol", () => client.Subscribe(null));
+        }
+
+        [Fact]
+        public void SubscribeTwiceIgnored()
+        {
+            var symbol = Symbol.LTC_USDT;
+            var client = new DepthWebSocketClient();
+
+            client.Subscribe(symbol);
+            client.Subscribe(symbol);
         }
     }
 }
