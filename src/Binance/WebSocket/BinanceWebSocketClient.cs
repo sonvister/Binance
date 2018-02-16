@@ -2,44 +2,54 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Binance.WebSocket.Events;
+using System.Threading.Tasks;
+using Binance.Client;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket
 {
     /// <summary>
-    /// Abstract Binance web socket client base class.
+    /// The Binance web socket client abstract base class.
     /// </summary>
-    public abstract class BinanceWebSocketClient<TEventArgs> : IBinanceWebSocketClient
+    public abstract class BinanceWebSocketClient<TClient, TEventArgs> : IBinanceWebSocketClient
+        where TClient : IJsonClient
         where TEventArgs : EventArgs
     {
         #region Public Events
 
         public event EventHandler<EventArgs> Open
         {
-            add => WebSocket.Client.Open += value;
-            remove => WebSocket.Client.Open -= value;
+            add => Stream.WebSocket.Open += value;
+            remove => Stream.WebSocket.Open -= value;
+        }
+
+        public event EventHandler<JsonMessageEventArgs> Message
+        {
+            add => Stream.WebSocket.Message += value;
+            remove => Stream.WebSocket.Message -= value;
         }
 
         public event EventHandler<EventArgs> Close
         {
-            add => WebSocket.Client.Close += value;
-            remove => WebSocket.Client.Close -= value;
+            add => Stream.WebSocket.Close += value;
+            remove => Stream.WebSocket.Close -= value;
         }
 
         #endregion Public Events
 
         #region Public Properties
 
-        public IWebSocketStream WebSocket { get; }
+        public TClient Client { get; }
+
+        public IBinanceWebSocketStream Stream { get; }
+
+        public IEnumerable<string> ObservedStreams => Client.ObservedStreams;
 
         #endregion Public Properties
 
         #region Protected Fields
 
-        protected readonly ILogger Logger;
-
-        protected readonly IDictionary<string, IList<Action<TEventArgs>>> Subscribers;
+        protected ILogger<BinanceWebSocketClient<TClient, TEventArgs>> Logger;
 
         #endregion Protected Fields
 
@@ -48,100 +58,71 @@ namespace Binance.WebSocket
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="webSocket"></param>
-        /// <param name="logger"></param>
-        protected BinanceWebSocketClient(IWebSocketStream webSocket, ILogger logger = null)
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="stream">The web socket stream (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        protected BinanceWebSocketClient(TClient client, IBinanceWebSocketStream stream, ILogger<BinanceWebSocketClient<TClient, TEventArgs>> logger = null)
         {
-            Throw.IfNull(webSocket, nameof(webSocket));
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNull(stream, nameof(stream));
 
-            WebSocket = webSocket;
+            Client = client;
+            Stream = stream;
             Logger = logger;
-
-            Subscribers = new Dictionary<string, IList<Action<TEventArgs>>>();
         }
 
         #endregion Constructors
 
         #region Public Methods
 
-        public void UnsubscribeAll()
-        {
-            foreach (var stream in Subscribers.Keys)
-            {
-                Logger?.LogDebug($"{GetType().Name}.{nameof(UnsubscribeAll)}: Unsubscribe stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                WebSocket.Unsubscribe(stream, WebSocketCallback);
-            }
+        public Task HandleMessageAsync(string stream, string json, CancellationToken token = default)
+            => Client.HandleMessageAsync(stream, json, token);
 
-            Subscribers.Clear();
+        public void Unsubscribe()
+        {
+            Stream.Unsubscribe(this);
+            Client.Unsubscribe();
         }
 
         #endregion Public Methods
 
         #region Protected Methods
 
-        protected abstract void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<TEventArgs>> callbacks);
-
-        private void WebSocketCallback(WebSocketStreamEventArgs args)
+        protected virtual void HandleSubscribe(Action subscribeAction)
         {
-            if (!Subscribers.ContainsKey(args.StreamName))
+            // Get a snapshot of the current client subscribed streams.
+            var streams = Client.ObservedStreams.ToArray();
+
+            // Invoke the subscribe action on the client.
+            subscribeAction();
+
+            // Get the streams not previously subscribed to by the client.
+            streams = Client.ObservedStreams.Except(streams).ToArray();
+
+            // If there are any new streams subscribed to by the client.
+            if (streams.Any())
             {
-                Logger?.LogDebug($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(WebSocketCallback)} - Ignoring event for non-subscribed stream: \"{args.StreamName}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                return; // ignore.
-            }
-
-            OnWebSocketEvent(args, Subscribers[args.StreamName]);
-        }
-
-        /// <summary>
-        /// Subscribe to a stream (with optional callback) if not already.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="callback"></param>
-        protected void SubscribeStream(string stream, Action<TEventArgs> callback)
-        {
-            Throw.IfNullOrWhiteSpace(stream, nameof(stream));
-
-            if (!Subscribers.ContainsKey(stream))
-            {
-                Logger?.LogDebug($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(SubscribeStream)}: Adding stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                Subscribers[stream] = new List<Action<TEventArgs>>();
-                WebSocket.Subscribe(stream, WebSocketCallback);
-            }
-
-            // ReSharper disable once InvertIf
-            if (callback != null && !Subscribers[stream].Contains(callback))
-            {
-                Logger?.LogDebug($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(SubscribeStream)}: Adding callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                Subscribers[stream].Add(callback);
+                // Automatically, subscribe the client to the streams.
+                Stream.Subscribe(this, streams);
             }
         }
 
-        /// <summary>
-        /// Unsubscribe from a stream.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="callback"></param>
-        protected void UnsubscribeStream(string stream, Action<TEventArgs> callback)
+        protected virtual void HandleUnsubscribe(Action unsubscribeAction)
         {
-            Throw.IfNullOrWhiteSpace(stream, nameof(stream));
+            // Get a snapshot of the current client subscribed streams.
+            var streams = Client.ObservedStreams.ToArray();
 
-            if (callback != null && Subscribers.ContainsKey(stream))
+            // Invoke the unsubscribe action on the client.
+            unsubscribeAction();
+
+            // Get the streams no longer subscribed to by the client.
+            streams = streams.Except(Client.ObservedStreams).ToArray();
+
+            // If there are any streams no longer subscribed to by the client.
+            if (streams.Any())
             {
-                if (Subscribers[stream].Contains(callback))
-                {
-                    Logger?.LogDebug($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(UnsubscribeStream)}: Removing callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    Subscribers[stream].Remove(callback);
-                }
-            }
-
-            // ReSharper disable once InvertIf
-            if (callback == null || Subscribers.ContainsKey(stream) && !Subscribers[stream].Any())
-            {
-                WebSocket.Unsubscribe(stream, WebSocketCallback);
-
-                Logger?.LogDebug($"{nameof(BinanceWebSocketClient<TEventArgs>)}.{nameof(UnsubscribeStream)}: Removing stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                Subscribers.Remove(stream);
+                // Automatically, unsubscribe the client from the streams.
+                Stream.Unsubscribe(this, streams);
             }
         }
 

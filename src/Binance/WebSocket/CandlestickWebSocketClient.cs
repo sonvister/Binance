@@ -1,40 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+using Binance.Client;
+using Binance.Client.Events;
 using Binance.Market;
-using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 
 namespace Binance.WebSocket
 {
     /// <summary>
-    /// A <see cref="ICandlestickWebSocketClient"/> implementation.
+    /// The default <see cref="ICandlestickWebSocketClient"/> implementation.
     /// </summary>
-    public class CandlestickWebSocketClient : BinanceWebSocketClient<CandlestickEventArgs>, ICandlestickWebSocketClient
+    public class CandlestickWebSocketClient : BinanceWebSocketClient<ICandlestickClient, CandlestickEventArgs>, ICandlestickWebSocketClient
     {
         #region Public Events
 
-        public event EventHandler<CandlestickEventArgs> Candlestick;
+        public event EventHandler<CandlestickEventArgs> Candlestick
+        {
+            add => Client.Candlestick += value;
+            remove => Client.Candlestick -= value;
+        }
 
         #endregion Public Events
 
         #region Constructors
 
         /// <summary>
-        /// Default constructor provides default web socket stream, but no logging.
+        /// Default constructor provides default <see cref="ICandlestickClient"/>
+        /// and default <see cref="IBinanceWebSocketStream"/>, but no logger.
         /// </summary>
         public CandlestickWebSocketClient()
-            : this(new BinanceWebSocketStream())
+            : this(new CandlestickClient(), new BinanceWebSocketStream())
         { }
 
         /// <summary>
-        /// Constructor.
+        /// The DI constructor.
         /// </summary>
-        /// <param name="webSocket"></param>
-        /// <param name="logger"></param>
-        public CandlestickWebSocketClient(IWebSocketStream webSocket, ILogger<CandlestickWebSocketClient> logger = null)
-            : base(webSocket, logger)
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="stream">The web socket stream (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public CandlestickWebSocketClient(ICandlestickClient client, IBinanceWebSocketStream stream, ILogger<CandlestickWebSocketClient> logger = null)
+            : base(client, stream, logger)
         { }
 
         #endregion Construtors
@@ -42,114 +46,11 @@ namespace Binance.WebSocket
         #region Public Methods
 
         public virtual void Subscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
-        {
-            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
-
-            symbol = symbol.FormatSymbol();
-
-            Logger?.LogDebug($"{nameof(CandlestickWebSocketClient)}.{nameof(Subscribe)}: \"{symbol}\" \"{interval.AsString()}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-            SubscribeStream(GetStreamName(symbol, interval), callback);
-        }
+            => HandleSubscribe(() => Client.Subscribe(symbol, interval, callback));
 
         public virtual void Unsubscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
-        {
-            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
-
-            symbol = symbol.FormatSymbol();
-
-            Logger?.LogDebug($"{nameof(CandlestickWebSocketClient)}.{nameof(Unsubscribe)}: \"{symbol}\" \"{interval.AsString()}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-            UnsubscribeStream(GetStreamName(symbol, interval), callback);
-        }
+            => HandleUnsubscribe(() => Client.Unsubscribe(symbol, interval, callback));
 
         #endregion Public Methods
-
-        #region Protected Methods
-
-        protected override void OnWebSocketEvent(WebSocketStreamEventArgs args, IEnumerable<Action<CandlestickEventArgs>> callbacks)
-        {
-            Logger?.LogDebug($"{nameof(CandlestickWebSocketClient)}: \"{args.Json}\"");
-
-            try
-            {
-                var jObject = JObject.Parse(args.Json);
-
-                var eventType = jObject["e"].Value<string>();
-
-                if (eventType == "kline")
-                {
-                    //var symbol = jObject["s"].Value<string>();
-                    var eventTime = jObject["E"].Value<long>().ToDateTime();
-
-                    var kLine = jObject["k"];
-
-                    var firstTradeId = kLine["f"].Value<long>();
-                    var lastTradeId = kLine["L"].Value<long>();
-
-                    var isFinal = kLine["x"].Value<bool>();
-
-                    var candlestick = new Candlestick(
-                        kLine["s"].Value<string>(),  // symbol
-                        kLine["i"].Value<string>()   // interval
-                            .ToCandlestickInterval(), 
-                        kLine["t"].Value<long>()     // open time
-                            .ToDateTime(),           
-                        kLine["o"].Value<decimal>(), // open
-                        kLine["h"].Value<decimal>(), // high
-                        kLine["l"].Value<decimal>(), // low
-                        kLine["c"].Value<decimal>(), // close
-                        kLine["v"].Value<decimal>(), // volume
-                        kLine["T"].Value<long>()     // close time
-                            .ToDateTime(),           
-                        kLine["q"].Value<decimal>(), // quote asset volume
-                        kLine["n"].Value<long>(),    // number of trades
-                        kLine["V"].Value<decimal>(), // taker buy base asset volume (volume of active buy)
-                        kLine["Q"].Value<decimal>()  // taker buy quote asset volume (quote volume of active buy)
-                    );
-
-                    var eventArgs = new CandlestickEventArgs(eventTime, args.Token, candlestick, firstTradeId, lastTradeId, isFinal);
-
-                    try
-                    {
-                        if (callbacks != null)
-                        {
-                            foreach (var callback in callbacks)
-                                callback(eventArgs);
-                        }
-                        Candlestick?.Invoke(this, eventArgs);
-                    }
-                    catch (OperationCanceledException) { }
-                    catch (Exception e)
-                    {
-                        if (!args.Token.IsCancellationRequested)
-                        {
-                            Logger?.LogError(e, $"{nameof(CandlestickWebSocketClient)}: Unhandled candlestick event handler exception.");
-                        }
-                    }
-                }
-                else
-                {
-                    Logger?.LogWarning($"{nameof(CandlestickWebSocketClient)}.{nameof(OnWebSocketEvent)}: Unexpected event type ({eventType}).");
-                }
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception e)
-            {
-                if (!args.Token.IsCancellationRequested)
-                {
-                    Logger?.LogError(e, $"{nameof(CandlestickWebSocketClient)}.{nameof(OnWebSocketEvent)}");
-                }
-            }
-        }
-
-        #endregion Protected Methods
-
-        #region Private Methods
-
-        private static string GetStreamName(string symbol, CandlestickInterval interval)
-            => $"{symbol.ToLowerInvariant()}@kline_{interval.AsString()}";
-
-        #endregion Private Methods
     }
 }
