@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.WebSocket.Events;
+using Binance.Client.Events;
 
 // ReSharper disable once CheckNamespace
 namespace Binance.WebSocket
@@ -73,7 +73,7 @@ namespace Binance.WebSocket
         {
             Throw.IfNull(client, nameof(client));
 
-            return client.WebSocket.StreamAsync(token);
+            return client.Stream.StreamAsync(token);
         }
     }
 }

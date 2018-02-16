@@ -1,4 +1,6 @@
-﻿using Binance.Api;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Binance.Api;
 
 // ReSharper disable once CheckNamespace
 namespace Binance.WebSocket.UserData
@@ -21,5 +23,18 @@ namespace Binance.WebSocket.UserData
         /// <param name="listenKey"></param>
         public static void Unsubscribe(this IUserDataWebSocketClient client, string listenKey)
             => client.Unsubscribe(listenKey, null);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task StreamAsync(this IUserDataWebSocketClient client, CancellationToken token)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            return client.Stream.StreamAsync(token);
+        }
     }
 }

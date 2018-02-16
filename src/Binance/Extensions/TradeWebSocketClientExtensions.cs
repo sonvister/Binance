@@ -33,7 +33,7 @@ namespace Binance.WebSocket
         {
             Throw.IfNull(client, nameof(client));
 
-            return client.WebSocket.StreamAsync(token);
+            return client.Stream.StreamAsync(token);
         }
     }
 }
