@@ -3,8 +3,6 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Utility;
-using Binance.WebSocket.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket
@@ -16,15 +14,6 @@ namespace Binance.WebSocket
         private const int ReceiveBufferSize = 16 * 1024;
 
         #endregion Private Constants
-
-        #region Public Properties
-
-        /// <summary>
-        /// Get or set the watchdog timer interval.
-        /// </summary>
-        public TimeSpan WatchdogTimerInterval { get; set; } = TimeSpan.FromMinutes(5);
-
-        #endregion Public Properties
 
         #region Private Properties
 
@@ -63,11 +52,6 @@ namespace Binance.WebSocket
             var webSocket = new ClientWebSocket();
             webSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
 
-            var watchdog = new WatchdogTimer(() => webSocket.Abort())
-            {
-                Interval = WatchdogTimerInterval
-            };
-
             try
             {
                 try
@@ -78,12 +62,10 @@ namespace Binance.WebSocket
                     if (webSocket.State != WebSocketState.Open)
                         throw new Exception($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket connect failed.");
 
-                    watchdog.Kick();
-
                     _isOpen = true;
                     RaiseOpenEvent();
                 }
-                catch (OperationCanceledException) { }
+                //catch (OperationCanceledException) { /* ignored */ }
                 catch (Exception e)
                 {
                     if (!token.IsCancellationRequested)
@@ -107,10 +89,8 @@ namespace Binance.WebSocket
                         WebSocketReceiveResult result;
                         do
                         {
-                            if (webSocket.State != WebSocketState.Open)
-                            {
-                                throw new Exception($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket is not open (state: {webSocket.State}).");
-                            }
+                            if (webSocket.State != WebSocketState.Open && webSocket.State != WebSocketState.CloseSent)
+                                break;
 
                             result = await webSocket
                                 .ReceiveAsync(buffer, token)
@@ -124,7 +104,6 @@ namespace Binance.WebSocket
                                         : $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket closed: \"{result.CloseStatusDescription ?? "[no reason provided]"}\"");
 
                                 case WebSocketMessageType.Text when result.Count > 0:
-                                    watchdog.Kick();
                                     stringBuilder.Append(Encoding.UTF8.GetString(bytes, 0, result.Count));
                                     break;
 
@@ -136,9 +115,9 @@ namespace Binance.WebSocket
                                     throw new ArgumentOutOfRangeException(nameof(result.MessageType), $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Unknown result message type ({result.MessageType}).");
                             }
                         }
-                        while (!result.EndOfMessage);
+                        while (result != null && !result.EndOfMessage);
                     }
-                    catch (OperationCanceledException) { }
+                    //catch (OperationCanceledException) { /* ignored */ }
                     catch (Exception e)
                     {
                         if (!token.IsCancellationRequested)
@@ -149,19 +128,19 @@ namespace Binance.WebSocket
                     }
 
                     if (token.IsCancellationRequested)
-                        continue;
+                    {
+                        break;
+                    }
 
                     if (webSocket.State == WebSocketState.Aborted)
                     {
-                        var message = $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Streaming aborted (no response for {WatchdogTimerInterval.TotalSeconds} seconds).";
-                        Logger?.LogError(message);
-                        throw new Exception(message);
+                        break;
                     }
 
                     var json = stringBuilder.ToString();
                     if (!string.IsNullOrWhiteSpace(json))
                     {
-                        RaiseMessageEvent(new WebSocketClientEventArgs(json));
+                        RaiseMessageEvent(json, uri.AbsolutePath);
                     }
                     else
                     {
@@ -171,8 +150,7 @@ namespace Binance.WebSocket
             }
             finally
             {
-                // NOTE: WebSocketState.CloseSent should not be encountered since CloseOutputAsync is not used.
-                if (webSocket.State == WebSocketState.Open || webSocket.State == WebSocketState.CloseReceived)
+                if (webSocket.State == WebSocketState.Open || webSocket.State == WebSocketState.CloseReceived || webSocket.State == WebSocketState.CloseSent)
                 {
                     try
                     {
@@ -185,7 +163,6 @@ namespace Binance.WebSocket
                     }
                 }
 
-                watchdog?.Dispose();
                 webSocket?.Dispose();
 
                 if (_isOpen)
