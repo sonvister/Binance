@@ -8,19 +8,20 @@ namespace BinanceConsoleApp.Controllers
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
-            if (!command.StartsWith("status ", StringComparison.OrdinalIgnoreCase))
+            if (!command.Equals("status", StringComparison.OrdinalIgnoreCase) &&
+                !command.StartsWith("status ", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             var args = command.Split(' ');
 
-            if (args.Length > 1 && args[1].Equals("account", StringComparison.OrdinalIgnoreCase))
+            if (args.Length < 2 || args[1].Equals("account", StringComparison.OrdinalIgnoreCase))
             {
                 var status = await Program.Api.GetAccountStatusAsync(Program.User, token);
 
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
-                    Console.WriteLine($"Account Status: \"{status}\"");
+                    Console.WriteLine($"Status [Account]: \"{status}\"");
                 }
             }
             else if (args.Length > 1 && args[1].Equals("system", StringComparison.OrdinalIgnoreCase))
@@ -30,14 +31,7 @@ namespace BinanceConsoleApp.Controllers
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
-                    Console.WriteLine($"System Status: \"{status}\"");
-                }
-            }
-            else
-            {
-                lock (Program.ConsoleSync)
-                {
-                    Console.WriteLine($"Specify either 'account' or 'system' for status.");
+                    Console.WriteLine($"Status [System]: \"{status}\"");
                 }
             }
 

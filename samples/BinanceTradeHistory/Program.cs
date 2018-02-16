@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
 using Binance.Cache;
-using Binance.Market;
+using Binance.Cache.Events;
 using Binance.Utility;
+using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,11 +21,10 @@ namespace BinanceTradeHistory
     /// </summary>
     internal class Program
     {
-        private static async Task Main()
+        private static void Main()
         {
-            ExampleMain(); await Task.CompletedTask;
-
-            //await CombinedStreamsExample.ExampleMain();
+            ExampleMain();
+            //CombinedStreamsExample.ExampleMain();
         }
 
         private static void ExampleMain()
@@ -42,13 +39,14 @@ namespace BinanceTradeHistory
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance()
+                    .AddBinance() // add default Binance services.
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var limit = 25;
@@ -56,23 +54,59 @@ namespace BinanceTradeHistory
                 try { limit = Convert.ToInt32(configuration.GetSection("TradeHistory")?["Limit"]); }
                 catch { /* ignored */ }
 
+                // Initialize cache.
                 var cache = services.GetService<IAggregateTradeCache>();
+                //var cache = services.GetService<INew_TradeCache>(); // TEST
+                // Initialize stream.
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
 
-                Func<CancellationToken, Task> action;
-                action = tkn => cache.SubscribeAndStreamAsync(symbol, limit, evt => Display(evt.Trades), tkn);
-                //action = tkn => cache.StreamAsync(tkn);
-
-                using (var controller = new RetryTaskController(action, err => Console.WriteLine(err.Message)))
+                // Initialize controller.
+                using (var controller = new RetryTaskController(
+                    tkn => webSocket.StreamAsync(tkn),
+                    err => Console.WriteLine(err.Message)))
                 {
-                    // Monitor latest aggregate trades and display updates in real-time.
+                    // Subscribe cache to symbol with limit and callback.
+                    cache.Subscribe(symbol, limit, Display);
+                    
+                    // Subscribe cache to stream (with observed streams).
+                    webSocket.Subscribe(cache);
+                    // NOTE: This must be done after cache subscribe.
+
+                    // Begin streaming.
                     controller.Begin();
 
-                    // Alternative usage (if sharing IBinanceWebSocket for combined streams).
-                    //cache.Subscribe(symbol, limit, evt => Display(evt.Trades));
-                    //controller.Begin();
-
+                    _message = "...press any key to continue.";
                     Console.ReadKey(true);
                 }
+
+                //*////////////////////////////////////////////////////////
+                // Alternative usage (with an existing IJsonStreamClient).
+                ///////////////////////////////////////////////////////////
+
+                // Initialize stream/client.
+                var client = services.GetService<IAggregateTradeWebSocketClient>();
+                //var client = services.GetService<ITradeWebSocketClient>(); // TEST
+
+                cache.Client = client; // link [new] client to cache.
+
+                // Initialize controller.
+                using (var controller = new RetryTaskController(
+                    tkn => client.StreamAsync(tkn),
+                    err => Console.WriteLine(err.Message)))
+                {
+                    // Subscribe cache to symbol with limit and callback.
+                    //cache.Subscribe(symbol, limit, Display);
+                    // NOTE: Cache is already subscribed to symbol (above).
+
+                    // NOTE: With IJsonStreamClient, stream is automagically subscribed.
+
+                    // Begin streaming.
+                    controller.Begin();
+
+                    _message = "...press any key to exit.";
+                    Console.ReadKey(true);
+                }
+                /////////////////////////////////////////////////////////*/
             }
             catch (Exception e)
             {
@@ -83,15 +117,32 @@ namespace BinanceTradeHistory
             }
         }
 
-        private static void Display(IEnumerable<AggregateTrade> trades)
+        private static string _message;
+
+        private static void Display(AggregateTradeCacheEventArgs args)
         {
             Console.SetCursorPosition(0, 0);
-            foreach (var trade in trades.Reverse())
+            foreach (var trade in args.Trades.Reverse())
             {
-                Console.WriteLine($"  {trade.Time.ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time.ToTimestamp()}         ");
+                Console.WriteLine($"  {trade.Time.ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time.ToTimestamp()}         ".PadRight(119));
             }
             Console.WriteLine();
-            Console.WriteLine("...press any key to exit.");
+            Console.WriteLine(_message.PadRight(119));
+        }
+
+        /// <summary>
+        /// TEST
+        /// </summary>
+        /// <param name="args"></param>
+        private static void Display(TradeCacheEventArgs args)
+        {
+            Console.SetCursorPosition(0, 0);
+            foreach (var trade in args.Trades.Reverse())
+            {
+                Console.WriteLine($"  {trade.Time.ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time.ToTimestamp()}         ".PadRight(119));
+            }
+            Console.WriteLine();
+            Console.WriteLine(_message.PadRight(119));
         }
     }
 }

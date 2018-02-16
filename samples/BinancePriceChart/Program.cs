@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
 using Binance.Cache;
+using Binance.Cache.Events;
 using Binance.Market;
 using Binance.Utility;
+using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,11 +22,10 @@ namespace BinancePriceChart
     /// </summary>
     internal class Program
     {
-        private static async Task Main()
+        private static void Main()
         {
-            ExampleMain(); await Task.CompletedTask;
-
-            //await CombinedStreamsExample.ExampleMain();
+            ExampleMain();
+            //CombinedStreamsExample.ExampleMain();
         }
 
         private static void ExampleMain()
@@ -42,13 +40,14 @@ namespace BinancePriceChart
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance()
+                    .AddBinance() // add default Binance services.
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging").GetSection("File"));
+                    .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var symbol = configuration.GetSection("PriceChart")?["Symbol"] ?? Symbol.BTC_USDT;
@@ -61,23 +60,57 @@ namespace BinancePriceChart
                 try { limit = Convert.ToInt32(configuration.GetSection("PriceChart")?["Limit"] ?? "25"); }
                 catch { /* ignored */ }
 
+                // Initialize cache.
                 var cache = services.GetService<ICandlestickCache>();
+                // Initialize stream.
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
 
-                Func<CancellationToken, Task> action;
-                action = tkn => cache.SubscribeAndStreamAsync(symbol, interval, limit, evt => Display(evt.Candlesticks), tkn);
-                //action = tkn => cache.StreamAsync(tkn);
-
-                using (var controller = new RetryTaskController(action, err => Console.WriteLine(err.Message)))
+                // Initialize controller.
+                using (var controller = new RetryTaskController(
+                    tkn => webSocket.StreamAsync(tkn),
+                    err => Console.WriteLine(err.Message)))
                 {
-                    // Monitor latest aggregate trades and display updates in real-time.
+                    // Subscribe cache to symbol and interval with limit and callback.
+                    cache.Subscribe(symbol, interval, limit, Display);
+
+                    // Subscribe cache to stream (with observed streams).
+                    webSocket.Subscribe(cache);
+                    // NOTE: This must be done after cache subscribe.
+
+                    // Begin streaming.
                     controller.Begin();
 
-                    // Alternative usage (if sharing IBinanceWebSocket for combined streams).
-                    //cache.Subscribe(symbol, interval, limit, evt => Display(evt.Candlesticks));
-                    //controller.Begin();
-
+                    _message = "...press any key to continue.";
                     Console.ReadKey(true);
                 }
+
+                //*////////////////////////////////////////////////////////
+                // Alternative usage (with an existing IJsonStreamClient).
+                ///////////////////////////////////////////////////////////
+
+                // Initialize stream/client.
+                var client = services.GetService<ICandlestickWebSocketClient>();
+
+                cache.Client = client; // link [new] client to cache.
+
+                // Initialize controller.
+                using (var controller = new RetryTaskController(
+                    tkn => client.StreamAsync(tkn),
+                    err => Console.WriteLine(err.Message)))
+                {
+                    // Subscribe cache to symbol and interval with limit and callback.
+                    //cache.Subscribe(symbol, interval, limit, Display);
+                    // NOTE: Cache is already subscribed to symbol (above).
+
+                    // NOTE: With IJsonStreamClient, stream is automagically subscribed.
+
+                    // Begin streaming.
+                    controller.Begin();
+
+                    _message = "...press any key to exit.";
+                    Console.ReadKey(true);
+                }
+                /////////////////////////////////////////////////////////////////*/
             }
             catch (Exception e)
             {
@@ -88,15 +121,17 @@ namespace BinancePriceChart
             }
         }
 
-        private static void Display(IEnumerable<Candlestick> candlesticks)
+        private static string _message;
+
+        private static void Display(CandlestickCacheEventArgs args)
         {
             Console.SetCursorPosition(0, 0);
-            foreach (var candlestick in candlesticks.Reverse())
+            foreach (var candlestick in args.Candlesticks.Reverse())
             {
-                Console.WriteLine($"  {candlestick.Symbol} - O: {candlestick.Open:0.00000000} | H: {candlestick.High:0.00000000} | L: {candlestick.Low:0.00000000} | C: {candlestick.Close:0.00000000} | V: {candlestick.Volume:0.00} - [{candlestick.OpenTime.ToTimestamp()}]");
+                Console.WriteLine($"  {candlestick.Symbol} - O: {candlestick.Open:0.00000000} | H: {candlestick.High:0.00000000} | L: {candlestick.Low:0.00000000} | C: {candlestick.Close:0.00000000} | V: {candlestick.Volume:0.00} - [{candlestick.OpenTime.ToTimestamp()}]".PadRight(119));
             }
             Console.WriteLine();
-            Console.WriteLine("...press any key to exit.");
+            Console.WriteLine(_message.PadRight(119));
         }
     }
 }

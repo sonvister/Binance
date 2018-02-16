@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
+using Binance.Client.Events;
 using Binance.Market;
 using Binance.WebSocket;
-using Binance.WebSocket.Events;
 using Binance.WebSocket.Manager;
 
 namespace BinanceConsoleApp.Controllers
@@ -53,7 +53,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (enable)
             {
-                Program.ClientManager.DepthClient.Subscribe(symbol, 5, evt => OnDepthUpdate(evt));
+                Program.ClientManager.DepthClient.Subscribe(symbol, 5, OnDepthUpdate);
 
                 // Optionally, wait for asynchronous client adapter operation to complete.
                 await ((IBinanceWebSocketClientAdapter)Program.ClientManager.DepthClient).Task;

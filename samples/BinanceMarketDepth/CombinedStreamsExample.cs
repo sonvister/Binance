@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
+using Binance.Client.Events;
 using Binance.Market;
 using Binance.Utility;
 using Binance.WebSocket;
@@ -22,7 +23,7 @@ namespace BinanceMarketDepth
     /// </summary>
     internal class CombinedStreamsExample
     {
-        public static async Task ExampleMain()
+        public static void ExampleMain()
         {
             try
             {
@@ -34,13 +35,14 @@ namespace BinanceMarketDepth
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance()
+                    .AddBinance() // add default Binance services.
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var symbols = configuration.GetSection("CombinedStreamsExample:Symbols").Get<string[]>()
@@ -50,6 +52,7 @@ namespace BinanceMarketDepth
 
                 var limit = 5;
 
+                // Create client.
                 var client = services.GetService<IDepthWebSocketClient>();
 
                 using (var controller = new RetryTaskController(
@@ -59,12 +62,12 @@ namespace BinanceMarketDepth
                     if (symbols.Length == 1)
                     {
                         // Subscribe to symbol with callback.
-                        client.Subscribe(symbols[0], evt => Display(OrderBookTop.Create(evt.Symbol, evt.Bids.First(), evt.Asks.First())));
+                        client.Subscribe(symbols[0], Display);
                     }
                     else
                     {
                         // Alternative usage (combined streams).
-                        client.DepthUpdate += (s, evt) => { Display(OrderBookTop.Create(evt.Symbol, evt.Bids.First(), evt.Asks.First())); };
+                        client.DepthUpdate += (s, evt) => { Display(evt); };
 
                         // Subscribe to all symbols.
                         foreach (var symbol in symbols)
@@ -81,23 +84,26 @@ namespace BinanceMarketDepth
 
                     //*//////////////////////////////////////////////////
                     // Example: Unsubscribe/Subscribe after streaming...
+                    /////////////////////////////////////////////////////
 
-                    // Cancel streaming.
-                    await controller.CancelAsync();
+                    // NOTE: When stream names are subscribed/unsubscribed, the
+                    //       websocket is aborted and a new connection is made.
+                    //       There is a small delay before streaming retarts to
+                    //       allow for multiple subscribe/unsubscribe changes.
 
                     // Unsubscribe a symbol.
                     client.Unsubscribe(symbols[0], limit);
 
-                    // Remove unsubscribed symbol and clear display (application specific).
-                    _orderBookTops.Remove(symbols[0]);
-                    Console.Clear();
-
                     // Subscribe to the real Bitcoin :D
                     client.Subscribe(Symbol.BCH_USDT, limit); // a.k.a. BCC.
 
-                    // Begin streaming again.
-                    controller.Begin();
-
+                    lock (_sync)
+                    {
+                        // Remove unsubscribed symbol and clear display (application specific).
+                        _orderBookTops.Remove(symbols[0]);
+                        Console.Clear();
+                    }
+                    
                     _message = "...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
                     ///////////////////////////////////////////////////*/
@@ -121,8 +127,10 @@ namespace BinanceMarketDepth
 
         private static Task _displayTask = Task.CompletedTask;
 
-        private static void Display(OrderBookTop orderBookTop)
+        private static void Display(DepthUpdateEventArgs args)
         {
+            var orderBookTop = OrderBookTop.Create(args.Symbol, args.Bids.First(), args.Asks.First());
+
             lock (_sync)
             {
                 _orderBookTops[orderBookTop.Symbol] = orderBookTop;
@@ -130,7 +138,7 @@ namespace BinanceMarketDepth
                 if (_displayTask.IsCompleted)
                 {
                     // Delay to allow multiple data updates between display updates.
-                    _displayTask = Task.Delay(100)
+                    _displayTask = Task.Delay(250)
                         .ContinueWith(_ =>
                         {
                             OrderBookTop[] latestTops;
@@ -143,11 +151,11 @@ namespace BinanceMarketDepth
 
                             foreach (var t in latestTops)
                             {
-                                Console.WriteLine($" {t.Symbol.PadLeft(8)}  -  Bid: {t.Bid.Price.ToString("0.00000000").PadLeft(13)} (qty: {t.Bid.Quantity})   |   Ask: {t.Ask.Price.ToString("0.00000000").PadLeft(13)} (qty: {t.Ask.Quantity})");
+                                Console.WriteLine($" {t.Symbol.PadLeft(8)}  -  Bid: {t.Bid.Price.ToString("0.00000000").PadLeft(13)} (qty: {t.Bid.Quantity})   |   Ask: {t.Ask.Price.ToString("0.00000000").PadLeft(13)} (qty: {t.Ask.Quantity})".PadRight(119));
                                 Console.WriteLine();
                             }
 
-                            Console.WriteLine(_message);
+                            Console.WriteLine(_message.PadRight(119));
                         });
                 }
             }

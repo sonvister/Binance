@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
+using Binance.Cache.Events;
 using Binance.Market;
 using Binance.Utility;
+using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,8 +27,7 @@ namespace Binance24HourStatistics
         private static async Task Main()
         {
             await ExampleMain();
-
-            //await CombinedStreamsExample.ExampleMain();
+            //CombinedStreamsExample.ExampleMain(); await Task.CompletedTask;
         }
 
         private static async Task ExampleMain()
@@ -42,43 +42,40 @@ namespace Binance24HourStatistics
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance()
+                    .AddBinance() // add default Binance services.
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var symbols = configuration.GetSection("Statistics:Symbols").Get<string[]>() ?? new string[] { Symbol.BTC_USDT };
 
+                // Initialize cache.
                 var cache = services.GetService<ISymbolStatisticsCache>();
+                // Initialize stream.
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
 
-                Func<CancellationToken, Task> action;
-                if (symbols.Length == 1)
-                    action = tkn => cache.SubscribeAndStreamAsync(symbols[0], evt => Display(evt.Statistics), tkn);
-                else
-                    action = tkn => cache.StreamAsync(tkn);
-
-                using (var controller = new RetryTaskController(action, err => Console.WriteLine(err.Message)))
+                using (var controller = new RetryTaskController(
+                    tkn => webSocket.StreamAsync(tkn),
+                    err => Console.WriteLine(err.Message)))
                 {
                     var api = services.GetService<IBinanceApi>();
 
                     // Query and display the 24-hour statistics.
                     Display(await Get24HourStatisticsAsync(api, symbols));
 
-                    if (symbols.Length == 1)
-                    {
-                        // Monitor 24-hour statistics of a symbol and display updates in real-time.
-                        controller.Begin();
-                    }
-                    else
-                    {
-                        // Alternative usage (if sharing IBinanceWebSocket for combined streams).
-                        cache.Subscribe(evt => Display(evt.Statistics), symbols);
-                        controller.Begin();
-                    }
+                    // Subscribe cache to symbols.
+                    cache.Subscribe(Display, symbols);
+                    // Subscribe web socket to cache (observed symbols).
+                    webSocket.Subscribe(cache);
+                    // NOTE: This mus be done after cache subscribe.
+
+                    // Begin streaming.
+                    controller.Begin();
 
                     Console.ReadKey(true);
                 }
@@ -104,7 +101,10 @@ namespace Binance24HourStatistics
             return statistics.ToArray();
         }
 
-        private static void Display(params SymbolStatistics[] statistics)
+        private static void Display(SymbolStatisticsCacheEventArgs args)
+            => Display(args.Statistics);
+
+        private static void Display(SymbolStatistics[] statistics)
         {
             Console.SetCursorPosition(0, 0);
 
@@ -118,5 +118,6 @@ namespace Binance24HourStatistics
 
             Console.WriteLine("...press any key to exit.");
         }
+
     }
 }

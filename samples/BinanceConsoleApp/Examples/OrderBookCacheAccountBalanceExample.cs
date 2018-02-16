@@ -7,9 +7,10 @@ using Binance.Account;
 using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
+using Binance.Client.Events;
 using Binance.Market;
 using Binance.Utility;
-using Binance.WebSocket.Events;
+using Binance.WebSocket;
 using Binance.WebSocket.UserData;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,13 +50,14 @@ namespace BinanceConsoleApp
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance()
+                    .AddBinance() // add default Binance services.
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 Console.Clear(); // clear the display.
 
@@ -66,7 +68,8 @@ namespace BinanceConsoleApp
 
                 var api = services.GetService<IBinanceApi>();
                 var cache = services.GetService<IOrderBookCache>();
-                var manager = services.GetService<IUserDataWebSocketManager>();
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
+                var manager = services.GetService<_IUserDataWebSocketManager>();
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
 
                 using (var user = userProvider.CreateUser(key, secret))
@@ -76,9 +79,13 @@ namespace BinanceConsoleApp
                     var orderBook = await api.GetOrderBookAsync(symbol, _limit);
                     Display(orderBook, balance);
 
-                    Func<CancellationToken, Task> action1 =
-                        tkn => cache.SubscribeAndStreamAsync(symbol,
-                            evt => Display(evt.OrderBook, balance), tkn);
+                    // Subscribe cache to symbol with callback.
+                    cache.Subscribe(symbol, evt => Display(evt.OrderBook, balance));
+                    // Subscribe stream to cache observed streams.
+                    webSocket.Subscribe(cache);
+                    // NOTE: This must be done after cache subscribe.
+
+                    Func<CancellationToken, Task> action1 = tkn => webSocket.StreamAsync(tkn);
 
                     Func<CancellationToken, Task> action2 =
                         tkn => manager.SubscribeAndStreamAsync(user,
@@ -105,8 +112,8 @@ namespace BinanceConsoleApp
                         controller2.Begin();
 
                         // Verify we are NOT using a combined streams (DEMONSTRATION ONLY).
-                        if (cache.Client.WebSocket.IsCombined || cache.Client.WebSocket == manager.Client.WebSocket)
-                            throw new Exception("Using combined streams :(");
+                        if (webSocket.IsCombined() || webSocket == manager.Client.Stream)
+                            throw new Exception("You ARE using combined streams :(");
 
                         _message = "...press any key to continue.";
                         Console.ReadKey(true); // wait for user input.
@@ -135,7 +142,7 @@ namespace BinanceConsoleApp
                 if (_displayTask.IsCompleted)
                 {
                     // Delay to allow multiple data updates between display updates.
-                    _displayTask = Task.Delay(100)
+                    _displayTask = Task.Delay(250)
                         .ContinueWith(_ =>
                         {
                             Console.SetCursorPosition(0, 0);

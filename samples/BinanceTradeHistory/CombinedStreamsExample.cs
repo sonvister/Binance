@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
+using Binance.Client.Events;
 using Binance.Market;
 using Binance.Utility;
 using Binance.WebSocket;
@@ -22,7 +23,7 @@ namespace BinanceTradeHistory
     /// </summary>
     internal class CombinedStreamsExample
     {
-        public static async Task ExampleMain()
+        public static void ExampleMain()
         {
             try
             {
@@ -34,38 +35,41 @@ namespace BinanceTradeHistory
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance()
+                    .AddBinance() // add default Binance services.
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var symbols = configuration.GetSection("CombinedStreamsExample:Symbols").Get<string[]>()
                     ?? new string[] { Symbol.BTC_USDT };
 
+                // Initialize client.
                 var client = services.GetService<IAggregateTradeWebSocketClient>();
 
+                // Initialize controller.
                 using (var controller = new RetryTaskController(
                     tkn => client.StreamAsync(tkn),
                     err => Console.WriteLine(err.Message)))
                 {
                     if (symbols.Length == 1)
                     {
-                        // Subscribe to symbol with callback.
-                        client.Subscribe(symbols[0], evt => Display(evt.Trade));
+                        // Subscribe client to symbol with callback.
+                        client.Subscribe(symbols[0], Display);
                     }
                     else
                     {
                         // Alternative usage (combined streams).
-                        client.AggregateTrade += (s, evt) => { Display(evt.Trade); };
+                        client.AggregateTrade += (s, evt) => { Display(evt); };
 
                         // Subscribe to all symbols.
                         foreach (var symbol in symbols)
                         {
-                            client.Subscribe(symbol); // using event instead of callbacks.
+                            client.Subscribe(symbol); // use event handler instead of callbacks.
                         }
                     }
 
@@ -77,22 +81,25 @@ namespace BinanceTradeHistory
 
                     //*//////////////////////////////////////////////////
                     // Example: Unsubscribe/Subscribe after streaming...
+                    /////////////////////////////////////////////////////
 
-                    // Cancel streaming.
-                    await controller.CancelAsync();
-                    
+                    // NOTE: When stream names are subscribed/unsubscribed, the
+                    //       websocket is aborted and a new connection is made.
+                    //       There is a small delay before streaming retarts to
+                    //       allow for multiple subscribe/unsubscribe changes.
+
                     // Unsubscribe a symbol.
                     client.Unsubscribe(symbols[0]);
-                    
-                    // Remove unsubscribed symbol and clear display (application specific).
-                    _trades.Remove(symbols[0]);
-                    Console.Clear();
 
                     // Subscribe to the real Bitcoin :D
                     client.Subscribe(Symbol.BCH_USDT); // a.k.a. BCC.
 
-                    // Begin streaming again.
-                    controller.Begin();
+                    // Remove unsubscribed symbol and clear display (application specific).
+                    lock (_sync)
+                    {
+                        _trades.Remove(symbols[0]);
+                        Console.Clear();
+                    }
 
                     _message = "...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
@@ -117,8 +124,10 @@ namespace BinanceTradeHistory
 
         private static Task _displayTask = Task.CompletedTask;
 
-        private static void Display(AggregateTrade trade)
+        private static void Display(AggregateTradeEventArgs args)
         {
+            var trade = args.Trade;
+
             lock (_sync)
             {
                 _trades[trade.Symbol] = trade;
@@ -126,7 +135,7 @@ namespace BinanceTradeHistory
                 if (_displayTask.IsCompleted)
                 {
                     // Delay to allow multiple data updates between display updates.
-                    _displayTask = Task.Delay(100)
+                    _displayTask = Task.Delay(250)
                         .ContinueWith(_ =>
                         {
                             AggregateTrade[] latestsTrades;
@@ -143,7 +152,7 @@ namespace BinanceTradeHistory
                                 Console.WriteLine();
                             }
 
-                            Console.WriteLine(_message);
+                            Console.WriteLine(_message.PadRight(119));
                         });
                 }
             }

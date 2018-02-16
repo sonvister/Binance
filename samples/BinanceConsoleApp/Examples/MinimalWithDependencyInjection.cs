@@ -12,7 +12,8 @@ namespace BinanceConsoleApp
         public static async Task ExampleMain(string[] args)
         {
             var services = new ServiceCollection()
-                .AddBinance().BuildServiceProvider();
+                .AddBinance() // add default Binance services.
+                .BuildServiceProvider();
 
             var api = services.GetService<IBinanceApi>();
 

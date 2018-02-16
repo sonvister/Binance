@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
+using Binance.Client.Events;
 using Binance.Market;
 using Binance.Utility;
 using Binance.WebSocket;
@@ -22,7 +23,7 @@ namespace BinancePriceChart
     /// </summary>
     internal class CombinedStreamsExample
     {
-        public static async Task ExampleMain()
+        public static void ExampleMain()
         {
             try
             {
@@ -34,13 +35,14 @@ namespace BinancePriceChart
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance()
+                    .AddBinance() // add default Binance services.
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var symbols = configuration.GetSection("CombinedStreamsExample:Symbols").Get<string[]>()
@@ -50,8 +52,10 @@ namespace BinancePriceChart
                 try { interval = configuration.GetSection("PriceChart")?["Interval"].ToCandlestickInterval() ?? CandlestickInterval.Minute; }
                 catch { /* ignored */ }
 
+                // Initialize client.
                 var client = services.GetService<ICandlestickWebSocketClient>();
 
+                // Initialize controller.
                 using (var controller = new RetryTaskController(
                     tkn => client.StreamAsync(tkn),
                     err => Console.WriteLine(err.Message)))
@@ -59,14 +63,14 @@ namespace BinancePriceChart
                     if (symbols.Length == 1)
                     {
                         // Subscribe to symbol with callback.
-                        client.Subscribe(symbols[0], interval, evt => Display(evt.Candlestick));
+                        client.Subscribe(symbols[0], interval, Display);
                     }
                     else
                     {
                         // Alternative usage (combined streams).
-                        client.Candlestick += (s, evt) => { Display(evt.Candlestick); };
+                        client.Candlestick += (s, evt) => { Display(evt); };
 
-                        // Subscribe to all symbols.
+                        // Subscribe to each of the symbols.
                         foreach (var symbol in symbols)
                         {
                             client.Subscribe(symbol, interval); // using event instead of callbacks.
@@ -81,22 +85,25 @@ namespace BinancePriceChart
 
                     //*//////////////////////////////////////////////////
                     // Example: Unsubscribe/Subscribe after streaming...
+                    /////////////////////////////////////////////////////
 
-                    // Cancel streaming.
-                    await controller.CancelAsync();
+                    // NOTE: When stream names are subscribed/unsubscribed, the
+                    //       websocket is aborted and a new connection is made.
+                    //       There is a small delay before streaming retarts to
+                    //       allow for multiple subscribe/unsubscribe changes.
 
                     // Unsubscribe a symbol.
                     client.Unsubscribe(symbols[0], interval);
 
-                    // Remove unsubscribed symbol and clear display (application specific).
-                    _candlesticks.Remove(symbols[0]);
-                    Console.Clear();
-
                     // Subscribe to the real Bitcoin :D
                     client.Subscribe(Symbol.BCH_USDT, interval); // a.k.a. BCC.
 
-                    // Begin streaming again.
-                    controller.Begin();
+                    lock (_sync)
+                    {
+                        // Remove unsubscribed symbol and clear display (application specific).
+                        _candlesticks.Remove(symbols[0]);
+                        Console.Clear();
+                    }
 
                     _message = "...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
@@ -121,16 +128,16 @@ namespace BinancePriceChart
 
         private static Task _displayTask = Task.CompletedTask;
 
-        private static void Display(Candlestick candlestick)
+        private static void Display(CandlestickEventArgs args)
         {
             lock (_sync)
             {
-                _candlesticks[candlestick.Symbol] = candlestick;
+                _candlesticks[args.Candlestick.Symbol] = args.Candlestick;
 
                 if (_displayTask.IsCompleted)
                 {
                     // Delay to allow multiple data updates between display updates.
-                    _displayTask = Task.Delay(100)
+                    _displayTask = Task.Delay(250)
                         .ContinueWith(_ =>
                         {
                             Candlestick[] latestCandlesticks;
@@ -147,7 +154,7 @@ namespace BinancePriceChart
                                 Console.WriteLine();
                             }
 
-                            Console.WriteLine(_message);
+                            Console.WriteLine(_message.PadRight(119));
                         });
                 }
             }

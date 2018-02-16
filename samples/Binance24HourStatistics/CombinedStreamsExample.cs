@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
+using Binance.Client.Events;
 using Binance.Market;
 using Binance.Utility;
 using Binance.WebSocket;
@@ -22,7 +23,7 @@ namespace Binance24HourStatistics
     /// </summary>
     internal class CombinedStreamsExample
     {
-        public static async Task ExampleMain()
+        public static void ExampleMain()
         {
             try
             {
@@ -34,18 +35,20 @@ namespace Binance24HourStatistics
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance()
+                    .AddBinance() // add default Binance services.
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var symbols = configuration.GetSection("CombinedStreamsExample:Symbols").Get<string[]>()
                     ?? new string[] { Symbol.BTC_USDT };
 
+                // Initialize the client.
                 var client = services.GetService<ISymbolStatisticsWebSocketClient>();
 
                 using (var controller = new RetryTaskController(
@@ -55,12 +58,12 @@ namespace Binance24HourStatistics
                     if (symbols.Length == 1)
                     {
                         // Subscribe to symbol with callback.
-                        client.Subscribe(symbols[0], evt => Display(evt.Statistics[0]));
+                        client.Subscribe(symbols[0], Display);
                     }
                     else
                     {
                         // Alternative usage (combined streams).
-                        client.StatisticsUpdate += (s, evt) => { Display(evt.Statistics[0]); };
+                        client.StatisticsUpdate += (s, evt) => { Display(evt); };
 
                         // Subscribe to all symbols.
                         foreach (var symbol in symbols)
@@ -77,22 +80,25 @@ namespace Binance24HourStatistics
 
                     //*//////////////////////////////////////////////////
                     // Example: Unsubscribe/Subscribe after streaming...
+                    /////////////////////////////////////////////////////
 
-                    // Cancel streaming.
-                    await controller.CancelAsync();
+                    // NOTE: When stream names are subscribed/unsubscribed, the
+                    //       websocket is aborted and a new connection is made.
+                    //       There is a small delay before streaming retarts to
+                    //       allow for multiple subscribe/unsubscribe changes.
 
                     // Unsubscribe a symbol.
                     client.Unsubscribe(symbols[0]);
 
-                    // Remove unsubscribed symbol and clear display (application specific).
-                    _statistics.Remove(symbols[0]);
-                    Console.Clear();
-
                     // Subscribe to the real Bitcoin :D
                     client.Subscribe(Symbol.BCH_USDT); // a.k.a. BCC.
 
-                    // Begin streaming again.
-                    controller.Begin();
+                    lock (_sync)
+                    {
+                        // Remove unsubscribed symbol and clear display (application specific).
+                        _statistics.Remove(symbols[0]);
+                        Console.Clear();
+                    }
 
                     _message = "...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
@@ -117,16 +123,16 @@ namespace Binance24HourStatistics
 
         private static Task _displayTask = Task.CompletedTask;
 
-        private static void Display(SymbolStatistics statsistics)
+        private static void Display(SymbolStatisticsEventArgs args)
         {
             lock (_sync)
             {
-                _statistics[statsistics.Symbol] = statsistics;
+                _statistics[args.Statistics[0].Symbol] = args.Statistics[0];
 
                 if (_displayTask.IsCompleted)
                 {
                     // Delay to allow multiple data updates between display updates.
-                    _displayTask = Task.Delay(100)
+                    _displayTask = Task.Delay(250)
                         .ContinueWith(_ =>
                         {
                             SymbolStatistics[] latestStatistics;
@@ -139,13 +145,13 @@ namespace Binance24HourStatistics
 
                             foreach (var stats in latestStatistics)
                             {
-                                Console.WriteLine($"  24-hour statistics for {stats.Symbol}:");
-                                Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
-                                Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
+                                Console.WriteLine($"  24-hour statistics for {stats.Symbol}:".PadRight(119));
+                                Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}".PadRight(119));
+                                Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}".PadRight(119));
                                 Console.WriteLine();
                             }
 
-                            Console.WriteLine(_message);
+                            Console.WriteLine(_message.PadRight(119));
                         });
                 }
             }

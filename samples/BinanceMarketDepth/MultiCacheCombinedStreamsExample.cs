@@ -34,15 +34,18 @@ namespace BinanceMarketDepth
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance()
+                    .AddBinance() // add default Binance services.
+
                     // Use a single web socket stream (combined streams).
-                    .AddSingleton<IWebSocketStream, BinanceWebSocketStream>()
+                    .AddSingleton<IBinanceWebSocketStream, BinanceWebSocketStream>()
+
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 Console.Clear(); // clear the display.
 
@@ -50,11 +53,16 @@ namespace BinanceMarketDepth
 
                 var api = services.GetService<IBinanceApi>();
 
+                // Create cache.
                 var btcCache = services.GetService<IOrderBookCache>();
                 var ethCache = services.GetService<IOrderBookCache>();
 
+                // Create stream.
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
+
+                // Initialize controller.
                 using (var controller = new RetryTaskController(
-                    tkn => btcCache.StreamAsync(tkn),
+                    tkn => webSocket.StreamAsync(tkn),
                     err => Console.WriteLine(err.Message)))
                 {
                     // Query and display the order books.
@@ -82,9 +90,14 @@ namespace BinanceMarketDepth
                             Display(btcOrderBook, ethOrderBook);
                         });
 
+                    // Subscribe cache to stream (with observed streams).
+                    webSocket.Subscribe(btcCache);
+                    webSocket.Subscribe(ethCache);
+                    // NOTE: This must be done after cache subscribe.
+
                     // Verify we are using a shared/combined stream (not necessary).
-                    if (!btcCache.Client.WebSocket.IsCombined || btcCache.Client.WebSocket != ethCache.Client.WebSocket)
-                        throw new Exception("Not using combined streams :(");
+                    if (!webSocket.IsCombined())
+                        throw new Exception("You are NOT using combined streams :(");
 
                     // Begin streaming.
                     controller.Begin();

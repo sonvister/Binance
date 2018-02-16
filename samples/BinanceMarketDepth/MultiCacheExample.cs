@@ -8,6 +8,7 @@ using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
 using Binance.Utility;
+using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,13 +35,14 @@ namespace BinanceMarketDepth
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance()
+                    .AddBinance() // add default Binance services.
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 Console.Clear(); // clear the display.
 
@@ -53,43 +55,50 @@ namespace BinanceMarketDepth
                 var ethOrderBook = await api.GetOrderBookAsync(Symbol.ETH_BTC, limit);
                 Display(btcOrderBook, ethOrderBook);
 
+                // Create cache.
                 var btcCache = services.GetService<IOrderBookCache>();
                 var ethCache = services.GetService<IOrderBookCache>();
 
-                Func<CancellationToken, Task> action1 =
-                    tkn => btcCache.SubscribeAndStreamAsync(Symbol.BTC_USDT, limit,
+                // Create stream.
+                var webSocket1 = services.GetService<IBinanceWebSocketStream>();
+                var webSocket2 = services.GetService<IBinanceWebSocketStream>();
+                // NOTE: IBinanceWebSocketStream must be setup as Transient with DI (default).
+
+                Func<CancellationToken, Task> action1 = tkn => webSocket1.StreamAsync(tkn);
+                Func<CancellationToken, Task> action2 = tkn => webSocket2.StreamAsync(tkn);
+
+                Action<Exception> onError = err => Console.WriteLine(err.Message);
+
+                // Initialize controller.
+                using (var controller1 = new RetryTaskController(action1, onError))
+                using (var controller2 = new RetryTaskController(action2, onError))
+                {
+                    btcCache.Subscribe(Symbol.BTC_USDT, limit,
                         evt =>
                         {
                             btcOrderBook = evt.OrderBook;
                             Display(btcOrderBook, ethOrderBook);
-                        }, tkn);
+                        });
 
-                Func<CancellationToken, Task> action2 =
-                    tkn => ethCache.SubscribeAndStreamAsync(Symbol.ETH_BTC, limit,
+                    ethCache.Subscribe(Symbol.ETH_BTC, limit,
                         evt =>
                         {
                             ethOrderBook = evt.OrderBook;
                             Display(btcOrderBook, ethOrderBook);
-                        }, tkn);
+                        });
 
-                Action<Exception> onError = err => Console.WriteLine(err.Message);
+                    // Subscribe cache to stream (with observed streams).
+                    webSocket1.Subscribe(btcCache);
+                    webSocket2.Subscribe(ethCache);
+                    // NOTE: This must be done after cache subscribe.
 
-                using (var controller1 = new RetryTaskController(action1, onError))
-                using (var controller2 = new RetryTaskController(action2, onError))
-                {
-                    //////////////////////////////////////////////////////////////////////
-                    // Using multiple controllers and multiple (non-combined) web sockets.
-                    // NOTE: IWebSocketStream must be left as Transient in DI setup.
-
-                    // Monitor order book and display updates in real-time.
+                    // Begin streaming.
                     controller1.Begin();
-
-                    // Monitor order book and display updates in real-time.
                     controller2.Begin();
 
-                    // Verify we are not using a shared/combined stream (not necessary).
-                    if (btcCache.Client.WebSocket.IsCombined || ethCache.Client.WebSocket.IsCombined || btcCache.Client.WebSocket == ethCache.Client.WebSocket)
-                        throw new Exception(":(");
+                    // Verify we are NOT using a shared/combined stream (not necessary).
+                    if (webSocket1.IsCombined() || webSocket2.IsCombined() || webSocket1 == webSocket2)
+                        throw new Exception("You ARE using combined streams :(");
 
                     Console.ReadKey(true);
                 }

@@ -9,6 +9,7 @@ namespace BinanceConsoleApp
     {
         public static async Task ExampleMain(string[] args)
         {
+            // Initialize with default services and no logger.
             var api = new BinanceApi();
 
             if (await api.PingAsync())

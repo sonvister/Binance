@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.WebSocket.Events;
+using Binance.Client.Events;
 using Binance.WebSocket.UserData;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,11 +36,14 @@ namespace BinanceConsoleApp.Controllers
             if (!enable && Program.LiveUserDataTask != null)
             {
                 Program.LiveUserDataTokenSource.Cancel();
+
                 if (!Program.LiveUserDataTask.IsCompleted)
                     await Program.LiveUserDataTask;
+
                 Program.LiveUserDataTokenSource.Dispose();
                 Program.LiveUserDataTokenSource = null;
                 Program.UserDataManager = null;
+
                 return true;
             }
 
@@ -61,7 +64,8 @@ namespace BinanceConsoleApp.Controllers
 
             Program.LiveUserDataTokenSource = new CancellationTokenSource();
 
-            Program.UserDataManager = Program.ServiceProvider.GetService<IUserDataWebSocketManager>();
+            Program.UserDataManager = Program.ServiceProvider.GetService<_IUserDataWebSocketManager>();
+
             Program.UserDataManager.AccountUpdate += OnAccountUpdateEvent;
             Program.UserDataManager.OrderUpdate += OnOrderUpdateEvent;
             Program.UserDataManager.TradeUpdate += OnTradeUpdateEvent;

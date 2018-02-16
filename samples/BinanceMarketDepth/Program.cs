@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
 using Binance.Cache;
-using Binance.Market;
+using Binance.Cache.Events;
 using Binance.Utility;
+using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,11 +23,13 @@ namespace BinanceMarketDepth
     {
         private static async Task Main()
         {
-            ExampleMain(); await Task.CompletedTask;
+            ExampleMain();
 
             //await MultiCacheExample.ExampleMain();
             //await MultiCacheCombinedStreamsExample.ExampleMain();
-            //await CombinedStreamsExample.ExampleMain();
+            //CombinedStreamsExample.ExampleMain();
+
+            await Task.CompletedTask;
         }
 
         private static void ExampleMain()
@@ -42,13 +44,14 @@ namespace BinanceMarketDepth
 
                 // Configure services.
                 var services = new ServiceCollection()
-                    .AddBinance()
+                    .AddBinance() // add default Binance services.
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging").GetSection("File"));
+                    .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 Console.Clear(); // clear the display.
 
@@ -63,25 +66,58 @@ namespace BinanceMarketDepth
                 else if (limit > 5) limit = 10;
                 else if (limit > 0) limit = 5;
 
+                // Initialize cache.
                 var cache = services.GetService<IOrderBookCache>();
+                // Initialize stream.
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
 
-                Func<CancellationToken, Task> action;
-                action = tkn => cache.SubscribeAndStreamAsync(symbol, limit, evt => Display(evt.OrderBook), tkn);
-                //action = tkn => cache.StreamAsync(tkn);
-
-                using (var controller = new RetryTaskController(action, err => Console.WriteLine(err.Message)))
+                using (var controller = new RetryTaskController(
+                    tkn => webSocket.StreamAsync(tkn),
+                    err => Console.WriteLine(err.Message)))
                 {
-                    // Monitor order book and display updates in real-time.
+                    // Subscribe cache to symbol with limit and callback.
                     // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
                     //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
+                    cache.Subscribe(symbol, limit, Display);
+
+                    // Subscribe cache to stream (with observed streams).
+                    webSocket.Subscribe(cache);
+                    // NOTE: This must be done after cache subscribe.
+
+                    // Begin streaming.
                     controller.Begin();
 
-                    // Alternative usage (if sharing IBinanceWebSocket for combined streams).
-                    //cache.Subscribe(symbol, limit, evt => Display(evt.OrderBook));
-                    //controller.Begin();
-
+                    _message = "...press any key to continue.";
                     Console.ReadKey(true);
                 }
+
+                //*////////////////////////////////////////////////////////
+                // Alternative usage (with an existing IJsonStreamClient).
+                ///////////////////////////////////////////////////////////
+
+                // Initialize stream/client.
+                var client = services.GetService<IDepthWebSocketClient>();
+
+                cache.Client = client; // link [new] client to cache.
+
+                // Initialize controller.
+                using (var controller = new RetryTaskController(
+                    tkn => client.StreamAsync(tkn),
+                    err => Console.WriteLine(err.Message)))
+                {
+                    // Subscribe cache to symbol with limit and callback.
+                    //cache.Subscribe(symbol, limit, Display);
+                    // NOTE: Cache is already subscribed to symbol (above).
+
+                    // NOTE: With IJsonStreamClient, stream is automagically subscribed.
+
+                    // Begin streaming.
+                    controller.Begin();
+
+                    _message = "...press any key to exit.";
+                    Console.ReadKey(true);
+                }
+                /////////////////////////////////////////////////////////*/
             }
             catch (Exception e)
             {
@@ -92,13 +128,15 @@ namespace BinanceMarketDepth
             }
         }
 
-        private static void Display(OrderBook orderBook)
+        private static string _message;
+
+        private static void Display(OrderBookCacheEventArgs args)
         {
             Console.SetCursorPosition(0, 0);
-            orderBook.Print(Console.Out, 10);
+            args.OrderBook.Print(Console.Out, 10); // limit to 10.
 
             Console.WriteLine();
-            Console.WriteLine("...press any key to exit.");
+            Console.WriteLine(_message.PadRight(119));
         }
     }
 }
