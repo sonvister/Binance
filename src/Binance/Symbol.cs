@@ -20,7 +20,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1518736166808;
+        public static readonly long LastUpdateAt = 1519171110384;
 
         // BTC
         public static readonly Symbol ADA_BTC = new Symbol(SymbolStatus.Trading, Asset.ADA, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
