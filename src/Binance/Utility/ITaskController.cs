@@ -6,6 +6,11 @@ namespace Binance.Utility
     public interface ITaskController : IDisposable
     {
         /// <summary>
+        /// The error event.
+        /// </summary>
+        event EventHandler<ErrorEventArgs> Error;
+
+        /// <summary>
         /// Get the flag indicating if this controller is active.
         /// </summary>
         bool IsActive { get; }
@@ -21,7 +26,12 @@ namespace Binance.Utility
         void Begin();
 
         /// <summary>
-        /// Cancel the controller <see cref="Task"/>.
+        /// Abort the controller action.
+        /// </summary>
+        void Abort();
+
+        /// <summary>
+        /// Abort and wait for <see cref="Task"/> to complete.
         /// </summary>
         /// <returns></returns>
         Task CancelAsync();

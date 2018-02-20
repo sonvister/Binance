@@ -26,12 +26,17 @@ namespace Binance.Utility
         {
             ThrowIfDisposed();
 
-            if (IsActive)
-                throw new InvalidOperationException($"{nameof(RetryTaskController)} - Task already running, use {nameof(CancelAsync)} to abort.");
+            lock (Sync)
+            {
+                if (IsActive)
+                    return;
 
-            IsActive = true;
+                IsActive = true;
 
-            Cts = new CancellationTokenSource();
+                Cts?.Dispose();
+
+                Cts = new CancellationTokenSource();
+            }
 
             Task = Task.Run(async () =>
             {
@@ -43,12 +48,10 @@ namespace Binance.Utility
                     {
                         if (!Cts.IsCancellationRequested)
                         {
-                            try
-                            {
-                                ErrorAction?.Invoke(e);
-                                OnError(e);
-                            }
-                            catch { /* ignored */}
+                            try { ErrorAction?.Invoke(e); }
+                            catch { /* ignored */ }
+
+                            OnError(e);
                         }
                     }
 

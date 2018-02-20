@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,6 +7,23 @@ namespace Binance.Utility
 {
     public class TaskController : ITaskController
     {
+        #region Public Events
+
+        public event EventHandler<ErrorEventArgs> Error
+        {
+            add
+            {
+                if (_error == null || !_error.GetInvocationList().Contains(value))
+                {
+                    _error += value;
+                }
+            }
+            remove => _error -= value;
+        }
+        private EventHandler<ErrorEventArgs> _error;
+
+        #endregion Public Events
+
         #region Public Properties
 
         public bool IsActive { get; protected set; }
@@ -19,6 +37,7 @@ namespace Binance.Utility
         protected Func<CancellationToken, Task> Action;
         protected Action<Exception> ErrorAction;
         protected CancellationTokenSource Cts;
+        protected readonly object Sync = new object();
 
         #endregion Protected Fields
 
@@ -40,12 +59,17 @@ namespace Binance.Utility
         {
             ThrowIfDisposed();
 
-            if (IsActive)
-                throw new InvalidOperationException($"{nameof(TaskController)} - Task already running, use {nameof(CancelAsync)} to abort.");
+            lock (Sync)
+            {
+                if (IsActive)
+                    return;
 
-            IsActive = true;
+                IsActive = true;
 
-            Cts = new CancellationTokenSource();
+                Cts?.Dispose();
+
+                Cts = new CancellationTokenSource();
+            }
 
             Task = Task.Run(async () =>
             {
@@ -55,36 +79,39 @@ namespace Binance.Utility
                 {
                     if (!Cts.IsCancellationRequested)
                     {
-                        try
-                        {
-                            ErrorAction?.Invoke(e);
-                            OnError(e);
-                        }
-                        catch { /* ignored */}
+                        try { ErrorAction?.Invoke(e); } 
+                        catch { /* ignored */ }
+
+                        OnError(e);
                     }
                 }
             });
         }
 
-        public virtual async Task CancelAsync()
+        public virtual void Abort()
         {
             ThrowIfDisposed();
 
-            if (!IsActive)
-                return;
+            lock (Sync)
+            {
+                if (!IsActive)
+                    return;
 
-            IsActive = false;
+                IsActive = false;
 
-            Cts?.Cancel();
+                Cts?.Cancel();
+            }
+        }
+
+        public virtual async Task CancelAsync()
+        {
+            Abort();
 
             if (Task != null && !Task.IsCompleted)
             {
                 await Task // wait for task to complete.
                     .ConfigureAwait(false);
             }
-
-            Cts?.Dispose();
-            Cts = null;
         }
 
         public virtual async Task RestartAsync()
@@ -99,7 +126,15 @@ namespace Binance.Utility
 
         #region Protected Methods
 
-        protected virtual void OnError(Exception e) { }
+        /// <summary>
+        /// Raise an error event.
+        /// </summary>
+        /// <param name="exception"></param>
+        protected void OnError(Exception exception)
+        {
+            try { _error?.Invoke(this, new ErrorEventArgs(exception)); }
+            catch (Exception) { /* ignored */ }
+        }
 
         #endregion Protected Methods
 
@@ -121,6 +156,8 @@ namespace Binance.Utility
             if (disposing)
             {
                 CancelAsync().GetAwaiter().GetResult();
+
+                Cts?.Dispose();
             }
 
             _disposed = true;

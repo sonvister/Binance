@@ -5,7 +5,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace Binance.Utility
 {
-    public sealed class SequentialBuffer<T>
+    public sealed class QueuedProcessor<T>
     {
         #region Private Fields
 
@@ -19,7 +19,7 @@ namespace Binance.Utility
         /// <summary>
         /// Constructor.
         /// </summary>
-        public SequentialBuffer(Func<T, CancellationToken, Task> actionAsync, CancellationToken token = default)
+        public QueuedProcessor(Func<T, CancellationToken, Task> actionAsync, CancellationToken token = default)
         {
             //_bufferBlock = new BufferBlock<T>(new DataflowBlockOptions
             //{
