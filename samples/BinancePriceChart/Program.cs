@@ -64,17 +64,18 @@ namespace BinancePriceChart
                 catch { /* ignored */ }
 
                 // Initialize manager.
-                var manager = services.GetService<ICandlestickWebSocketClientManager>();
+                using (var manager = services.GetService<ICandlestickWebSocketClientManager>())
+                {
+                    // Initialize cache.
+                    var cache = services.GetService<ICandlestickCache>();
+                    cache.Client = manager; // use manager as client.
 
-                // Initialize cache.
-                var cache = services.GetService<ICandlestickCache>();
-                cache.Client = manager; // use manager as client.
+                    // Subscribe cache to symbol and interval with limit and callback.
+                    cache.Subscribe(symbol, interval, limit, Display);
 
-                // Subscribe cache to symbol and interval with limit and callback.
-                cache.Subscribe(symbol, interval, limit, Display);
-
-                _message = "...press any key to continue.";
-                Console.ReadKey(true); // wait for user input.
+                    _message = "...press any key to continue.";
+                    Console.ReadKey(true); // wait for user input.
+                }
             }
             catch (Exception e)
             {

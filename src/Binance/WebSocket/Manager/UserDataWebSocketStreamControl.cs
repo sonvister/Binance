@@ -344,13 +344,20 @@ namespace Binance.WebSocket.Manager
 
             if (disposing)
             {
-                CloseAllStreamsAsync().GetAwaiter().GetResult();
+                try
+                {
+                    CloseAllStreamsAsync().GetAwaiter().GetResult();
 
-                _cts?.Cancel();
-                _timer?.Dispose();
-                _cts?.Dispose();
+                    _cts?.Cancel();
+                    _timer?.Dispose();
+                    _cts?.Dispose();
 
-                _syncLock?.Dispose();
+                    _syncLock?.Dispose();
+                }
+                catch (Exception e)
+                {
+                    _logger?.LogError(e, $"{nameof(UserDataWebSocketStreamControl)}.{nameof(Dispose)}: Failed.");
+                }
             }
 
             _disposed = true;

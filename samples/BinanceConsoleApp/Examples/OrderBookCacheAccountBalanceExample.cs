@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Account;
@@ -9,9 +8,10 @@ using Binance.Application;
 using Binance.Cache;
 using Binance.Client.Events;
 using Binance.Market;
+using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
-using Binance.WebSocket.UserData;
+using Binance.WebSocket.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,7 +29,7 @@ namespace BinanceConsoleApp
     {
         private static int _limit;
 
-        public static async Task ExampleMain(string[] args)
+        public static async Task AdvancedExampleMain(string[] args)
         {
             try
             {
@@ -68,11 +68,11 @@ namespace BinanceConsoleApp
 
                 var api = services.GetService<IBinanceApi>();
                 var cache = services.GetService<IOrderBookCache>();
-                var webSocket = services.GetService<IBinanceWebSocketStream>();
-                var manager = services.GetService<_IUserDataWebSocketManager>();
+                var stream = services.GetService<IBinanceWebSocketStream>();
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
 
                 using (var user = userProvider.CreateUser(key, secret))
+                using (var manager = services.GetService<IUserDataWebSocketClientManager>())
                 {
                     // Query and display order book and current asset balance.
                     var balance = (await api.GetAccountInfoAsync(user)).GetBalance(asset);
@@ -81,38 +81,27 @@ namespace BinanceConsoleApp
 
                     // Subscribe cache to symbol with callback.
                     cache.Subscribe(symbol, evt => Display(evt.OrderBook, balance));
+                    
                     // Subscribe stream to cache observed streams.
-                    webSocket.Subscribe(cache);
+                    stream.Subscribe(cache, cache.ObservedStreams);
                     // NOTE: This must be done after cache subscribe.
 
-                    Func<CancellationToken, Task> action1 = tkn => webSocket.StreamAsync(tkn);
+                    await manager.SubscribeAsync<AccountUpdateEventArgs>(user,
+                        evt =>
+                        {
+                            // Update asset balance.
+                            balance = evt.AccountInfo.GetBalance(asset);
+                            // Display latest order book and asset balance.
+                            Display(cache.OrderBook, balance);
+                        });
 
-                    Func<CancellationToken, Task> action2 =
-                        tkn => manager.SubscribeAndStreamAsync(user,
-                            evt =>
-                            {
-                                if (evt is AccountUpdateEventArgs accountUpdateEvent)
-                                {
-                                    // Update asset balance.
-                                    balance = accountUpdateEvent.AccountInfo.GetBalance(asset);
-                                    // Display latest order book and asset balance.
-                                    Display(cache.OrderBook, balance);
-                                }
-                            }, tkn);
-
-                    Action<Exception> onError = err => Console.WriteLine(err.Message);
-
-                    using (var controller1 = new RetryTaskController(action1, onError))
-                    using (var controller2 = new RetryTaskController(action2, onError))
+                    using (var controller = new RetryTaskController(stream.StreamAsync, HandleError))
                     {
                         // Subscribe to symbol to display latest order book and asset balance.
-                        controller1.Begin();
-
-                        // Subscribe to user account information and begin streaming.
-                        controller2.Begin();
+                        controller.Begin();
 
                         // Verify we are NOT using a combined streams (DEMONSTRATION ONLY).
-                        if (webSocket.IsCombined() || webSocket == manager.Client.Stream)
+                        if (stream.IsCombined() || stream == manager.Controller.Stream)
                             throw new Exception("You ARE using combined streams :(");
 
                         _message = "...press any key to continue.";
@@ -158,6 +147,14 @@ namespace BinanceConsoleApp
                             Console.WriteLine(_message);
                         });
                 }
+            }
+        }
+
+        private static void HandleError(Exception e)
+        {
+            lock (_sync)
+            {
+                Console.WriteLine(e.Message);
             }
         }
     }

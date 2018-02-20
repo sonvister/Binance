@@ -110,5 +110,26 @@ namespace Binance.WebSocket.Manager
         }
 
         #endregion Public Methods
+
+        #region IDisposble
+
+        private bool _disposed;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                _streamControl?.Dispose();
+            }
+
+            _disposed = true;
+
+            base.Dispose(disposing);
+        }
+
+        #endregion IDisposable
     }
 }

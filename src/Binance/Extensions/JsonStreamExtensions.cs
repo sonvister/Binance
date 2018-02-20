@@ -69,7 +69,7 @@ namespace Binance.Stream
         {
             Throw.IfNull(jsonStream, nameof(jsonStream));
 
-            jsonStream.Unsubscribe(observer, null);
+            jsonStream.Unsubscribe(observer, null); // TODO
         }
 
         /// <summary>

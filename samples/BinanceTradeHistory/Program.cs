@@ -58,17 +58,18 @@ namespace BinanceTradeHistory
                 catch { /* ignored */ }
 
                 // Initialize manager.
-                var manager = services.GetService<IAggregateTradeWebSocketClientManager>();
+                using (var manager = services.GetService<IAggregateTradeWebSocketClientManager>())
+                {
+                    // Initialize cache.
+                    var cache = services.GetService<IAggregateTradeCache>();
+                    cache.Client = manager; // use manager as client.
 
-                // Initialize cache.
-                var cache = services.GetService<IAggregateTradeCache>();
-                cache.Client = manager; // use manager as client.
+                    // Subscribe cache to symbol with limit and callback.
+                    cache.Subscribe(symbol, limit, Display);
 
-                // Subscribe cache to symbol with limit and callback.
-                cache.Subscribe(symbol, limit, Display);
-
-                _message = "...press any key to continue.";
-                Console.ReadKey(true);
+                    _message = "...press any key to continue.";
+                    Console.ReadKey(true);
+                }
             }
             catch (Exception e)
             {

@@ -66,20 +66,21 @@ namespace Binance24HourStatistics
                 Display(await Get24HourStatisticsAsync(api, symbols));
 
                 // Initialize manager (w/ internal controller).
-                var manager = services.GetService<ISymbolStatisticsWebSocketClientManager>();
+                using (var manager = services.GetService<ISymbolStatisticsWebSocketClientManager>())
+                {
+                    // Add error event handler.
+                    manager.Controller.Error += (s, e) => Console.WriteLine(e.Exception.Message);
 
-                // Add error event handler.
-                manager.Controller.Error += (s, e) => Console.WriteLine(e.Exception.Message);
+                    // Initialize cache.
+                    var cache = services.GetService<ISymbolStatisticsCache>();
+                    cache.Client = manager; // use manager as client.
+                                            //var cache = new SymbolStatisticsCache(api, manager); // or w/o logger.
 
-                // Initialize cache.
-                var cache = services.GetService<ISymbolStatisticsCache>();
-                cache.Client = manager; // use manager as client.
-                //var cache = new SymbolStatisticsCache(api, manager); // or w/o logger.
+                    // Subscribe cache to symbols (and automatically begin streaming).
+                    cache.Subscribe(Display, symbols);
 
-                // Subscribe cache to symbols (and automatically begin streaming).
-                cache.Subscribe(Display, symbols);
-
-                Console.ReadKey(true); // wait for user input.
+                    Console.ReadKey(true); // wait for user input.
+                }
             }
             catch (Exception e)
             {

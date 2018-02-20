@@ -28,7 +28,7 @@ namespace Binance.WebSocket.Manager
         event EventHandler<AccountTradeUpdateEventArgs> TradeUpdate;
 
         /// <summary>
-        /// 
+        /// Subscribe to user events.
         /// </summary>
         /// <typeparam name="TEventArgs"></typeparam>
         /// <param name="user"></param>
@@ -39,7 +39,7 @@ namespace Binance.WebSocket.Manager
             where TEventArgs : UserDataEventArgs;
 
         /// <summary>
-        /// 
+        /// Unsubscribe from user events.
         /// </summary>
         /// <typeparam name="TEventArgs"></typeparam>
         /// <param name="user"></param>
@@ -50,7 +50,7 @@ namespace Binance.WebSocket.Manager
             where TEventArgs : UserDataEventArgs;
 
         /// <summary>
-        /// 
+        /// Unsubscribe from all user events.
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
