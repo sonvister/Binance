@@ -2,6 +2,9 @@
 
 namespace Binance.WebSocket
 {
-    public interface ICandlestickWebSocketClient : ICandlestickClient, IBinanceWebSocketClient
+    /// <summary>
+    /// A candlestick web socket client.
+    /// </summary>
+    public interface ICandlestickWebSocketClient : IBinanceWebSocketClient, ICandlestickClient
     { }
 }

@@ -2,6 +2,9 @@
 
 namespace Binance.WebSocket
 {
-    public interface IAggregateTradeWebSocketClient : IAggregateTradeClient, IBinanceWebSocketClient
+    /// <summary>
+    /// An aggregate trade web socket client.
+    /// </summary>
+    public interface IAggregateTradeWebSocketClient : IBinanceWebSocketClient, IAggregateTradeClient
     { }
 }

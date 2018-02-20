@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket
 {
+    /// <summary>
+    /// The abstract <see cref="IWebSocketClient"/> implementation base class.
+    /// </summary>
     public abstract class WebSocketClient : JsonProvider, IWebSocketClient
     {
         #region Public Events
@@ -44,7 +47,7 @@ namespace Binance.WebSocket
         /// <summary>
         /// Raise open event.
         /// </summary>
-        protected void RaiseOpenEvent()
+        protected void OnOpen()
         {
             try { Open?.Invoke(this, EventArgs.Empty); }
             catch (OperationCanceledException) { }
@@ -57,7 +60,7 @@ namespace Binance.WebSocket
         /// <summary>
         /// Raise close event.
         /// </summary>
-        protected void RaiseCloseEvent()
+        protected void OnClose()
         {
             try { Close?.Invoke(this, EventArgs.Empty); }
             catch (OperationCanceledException) { }

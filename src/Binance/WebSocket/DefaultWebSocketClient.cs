@@ -7,6 +7,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket
 {
+    /// <summary>
+    /// The default <see cref="IWebSocketClient"/> implementation.
+    /// Alternative implementations exist for WebSocket4Net and WebSocketSharp.
+    /// </summary>
     public sealed class DefaultWebSocketClient : WebSocketClient
     {
         #region Private Constants
@@ -63,7 +67,7 @@ namespace Binance.WebSocket
                         throw new Exception($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket connect failed.");
 
                     _isOpen = true;
-                    RaiseOpenEvent();
+                    OnOpen();
                 }
                 //catch (OperationCanceledException) { /* ignored */ }
                 catch (Exception e)
@@ -127,20 +131,13 @@ namespace Binance.WebSocket
                         }
                     }
 
-                    if (token.IsCancellationRequested)
-                    {
+                    if (token.IsCancellationRequested || webSocket.State == WebSocketState.Aborted)
                         break;
-                    }
-
-                    if (webSocket.State == WebSocketState.Aborted)
-                    {
-                        break;
-                    }
 
                     var json = stringBuilder.ToString();
                     if (!string.IsNullOrWhiteSpace(json))
                     {
-                        RaiseMessageEvent(json, uri.AbsolutePath);
+                        OnMessage(json, uri.AbsolutePath);
                     }
                     else
                     {
@@ -168,7 +165,7 @@ namespace Binance.WebSocket
                 if (_isOpen)
                 {
                     _isOpen = false;
-                    RaiseCloseEvent();
+                    OnClose();
                 }
 
                 IsStreaming = false;

@@ -2,6 +2,9 @@
 
 namespace Binance.WebSocket
 {
-    public interface IDepthWebSocketClient : IDepthClient, IBinanceWebSocketClient
+    /// <summary>
+    /// A depth web socket client.
+    /// </summary>
+    public interface IDepthWebSocketClient : IBinanceWebSocketClient, IDepthClient
     { }
 }

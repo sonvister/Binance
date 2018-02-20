@@ -2,6 +2,9 @@
 
 namespace Binance.WebSocket
 {
-    public interface ITradeWebSocketClient : ITradeClient, IBinanceWebSocketClient
+    /// <summary>
+    /// A trade web socket client.
+    /// </summary>
+    public interface ITradeWebSocketClient : IBinanceWebSocketClient, ITradeClient
     { }
 }

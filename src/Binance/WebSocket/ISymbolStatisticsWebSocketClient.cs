@@ -2,6 +2,9 @@
 
 namespace Binance.WebSocket
 {
-    public interface ISymbolStatisticsWebSocketClient : ISymbolStatisticsClient, IBinanceWebSocketClient
+    /// <summary>
+    /// A symbol [24-hour] statistics web socket client.
+    /// </summary>
+    public interface ISymbolStatisticsWebSocketClient : IBinanceWebSocketClient, ISymbolStatisticsClient
     { }
 }

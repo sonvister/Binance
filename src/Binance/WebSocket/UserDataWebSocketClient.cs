@@ -4,7 +4,7 @@ using Binance.Client;
 using Binance.Client.Events;
 using Microsoft.Extensions.Logging;
 
-namespace Binance.WebSocket.UserData
+namespace Binance.WebSocket
 {
     /// <summary>
     /// The default <see cref="IUserDataWebSocketClient"/> implementation.
@@ -57,11 +57,16 @@ namespace Binance.WebSocket.UserData
 
         #region Public Methods
 
-        public virtual void Subscribe(string listenKey, IBinanceApiUser user, Action<UserDataEventArgs> callback)
+        public virtual void Subscribe<TEventArgs>(string listenKey, IBinanceApiUser user, Action<TEventArgs> callback)
+            where TEventArgs : UserDataEventArgs
             => HandleSubscribe(() => Client.Subscribe(listenKey, user, callback));
 
-        public virtual void Unsubscribe(string listenKey, Action<UserDataEventArgs> callback)
+        public virtual void Unsubscribe<TEventArgs>(string listenKey, Action<TEventArgs> callback)
+            where TEventArgs : UserDataEventArgs
             => HandleUnsubscribe(() => Client.Unsubscribe(listenKey, callback));
+
+        public virtual void HandleListenKeyChange(string oldListenKey, string newListenKey)
+            => Client.HandleListenKeyChange(oldListenKey, newListenKey);
 
         #endregion Public Methods
     }
