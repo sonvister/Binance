@@ -117,6 +117,7 @@ namespace Binance.Api
             {
                 // ReSharper disable once InconsistentlySynchronizedField
                 _hmac?.Dispose();
+                RateLimiter?.Dispose();
             }
 
             _disposed = true;

@@ -55,6 +55,8 @@ namespace Binance.Api
             if (count < 0)
                 throw new ArgumentException($"{nameof(IApiRateLimiter)} count must be greater than 0 (or equal to 0 to disable).", nameof(count));
 
+            ThrowIfDisposed();
+
             lock (_sync)
             {
                 if (count == 0)
@@ -86,6 +88,8 @@ namespace Binance.Api
             if (!IsEnabled)
                 return;
 
+            ThrowIfDisposed();
+
             IEnumerable<IRateLimiter> limiters;
 
             lock (_sync)
@@ -101,5 +105,42 @@ namespace Binance.Api
         }
 
         #endregion Public Methods
+
+        #region IDisposable
+
+        private bool _disposed;
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(ApiRateLimiter));
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                lock (_sync)
+                {
+                    foreach (var limiter in _limiters.Values)
+                    {
+                        limiter.Dispose();
+                    }
+                }
+            }
+
+            _disposed = true;
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion IDisposable
     }
 }

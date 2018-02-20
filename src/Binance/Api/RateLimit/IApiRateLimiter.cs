@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 // ReSharper disable once CheckNamespace
 namespace Binance.Api
 {
-    public interface IApiRateLimiter
+    public interface IApiRateLimiter : IDisposable
     {
         #region Properties
 

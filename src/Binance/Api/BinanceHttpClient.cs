@@ -202,7 +202,7 @@ namespace Binance.Api
 
                     //Logger?.LogDebug($"{nameof(BinanceHttpClient)}: \"{json}\"");
 
-                    RaiseMessageEvent(json, requestMessage.RequestUri.AbsolutePath);
+                    OnMessage(json, requestMessage.RequestUri.AbsolutePath);
 
                     return json;
                 }
@@ -234,7 +234,7 @@ namespace Binance.Api
                     }
                 }
 
-                RaiseMessageEvent(error, requestMessage.RequestUri.AbsolutePath);
+                OnMessage(error, requestMessage.RequestUri.AbsolutePath);
 
                 // ReSharper disable once SwitchStatementMissingSomeCases
                 switch (response.StatusCode)
@@ -263,6 +263,7 @@ namespace Binance.Api
             if (disposing)
             {
                 _httpClient?.Dispose();
+                RateLimiter?.Dispose();
             }
 
             _disposed = true;

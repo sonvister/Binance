@@ -67,6 +67,8 @@ namespace Binance.Api
             if (_count == 0)
                 return;
 
+            ThrowIfDisposed();
+
             // Acquire synchronization lock.
             await _syncLock.WaitAsync(token)
                 .ConfigureAwait(false);
@@ -132,5 +134,35 @@ namespace Binance.Api
         }
 
         #endregion Public Methods
+
+        #region IDisposable
+
+        private bool _disposed;
+
+        protected void ThrowIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(RateLimiter));
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                _syncLock?.Dispose();
+            }
+
+            _disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion IDisposable
     }
 }
