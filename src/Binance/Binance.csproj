@@ -3,22 +3,22 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net471</TargetFrameworks>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>0.2.0-alpha30</Version>
+    <Version>0.2.0-alpha35</Version>
     <PackageId>Binance</PackageId>
     <Authors>sonvister</Authors>
     <Company></Company>
     <Product>Binance</Product>
-    <AssemblyVersion>0.2.0.30</AssemblyVersion>
+    <AssemblyVersion>0.2.0.35</AssemblyVersion>
     <Description>A full-featured .NET Binance API designed for ease of use.</Description>
     <Copyright>Copyright © 2017-2018 sonvister</Copyright>
     <PackageTags>binance binance-api cryptocurrency exchange api api-client api-wrapper</PackageTags>
-    <PackageReleaseNotes>https://github.com/sonvister/Binance/releases/tag/v0.2.0-alpha30</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/sonvister/Binance/releases/tag/v0.2.0-alpha35</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/sonvister/Binance</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseUrl>https://raw.githubusercontent.com/sonvister/Binance/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://github.com/sonvister/Binance/blob/master/images/logo.png?raw=true</PackageIconUrl>
     <PackageProjectUrl>https://github.com/sonvister/Binance</PackageProjectUrl>
-    <FileVersion>0.2.0.30</FileVersion>
+    <FileVersion>0.2.0.35</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -30,6 +30,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Client\IUserDataStreamLookup.cs" />
+    <Compile Remove="Client\UserDataStreamLookup.cs" />
+    <Compile Remove="Extensions\UserDataKeepAliveTimerProviderExtensions.cs" />
+    <Compile Remove="Extensions\UserDataWebSocketManagerExtensions.cs" />
+    <Compile Remove="Manager\ControllerManager.cs" />
+    <Compile Remove="Manager\IJsonStreamControllerProvider.cs" />
+    <Compile Remove="Manager\JsonStreamControllerProvider.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
@@ -38,6 +48,14 @@
     <PackageReference Include="System.Net.WebSockets.Client" Version="4.3.2" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.8.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Extensions\UserDataKeepAliveTimerProviderExtensions.cs" />
+    <None Include="Extensions\UserDataWebSocketManagerExtensions.cs" />
+    <None Include="Manager\IJsonStreamControllerProvider.cs" />
+    <None Include="Manager\JsonStreamControllerProvider.cs" />
+    <None Include="Manager\ControllerManager.cs" />
   </ItemGroup>
 
 </Project>
