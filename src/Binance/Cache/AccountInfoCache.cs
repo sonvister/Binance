@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public sealed class AccountInfoCache : JsonClientCache<IUserDataClient, UserDataEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
+    public sealed class AccountInfoCache : JsonClientCache<IUserDataClient, AccountUpdateEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
     {
         #region Public Properties
 
@@ -84,7 +84,7 @@ namespace Binance.Cache
             if (_listenKey == null)
                 return;
 
-            Client.Subscribe(_listenKey, _user, ClientCallback);
+            Client.Subscribe<AccountUpdateEventArgs>(_listenKey, _user, ClientCallback);
         }
 
         protected override void UnsubscribeFromClient()
@@ -92,15 +92,12 @@ namespace Binance.Cache
             if (_listenKey == null)
                 return;
 
-            Client.Unsubscribe(_listenKey, ClientCallback);
+            Client.Unsubscribe<AccountUpdateEventArgs>(_listenKey, ClientCallback);
         }
 
-        protected override ValueTask<AccountInfoCacheEventArgs> OnAction(UserDataEventArgs @event)
+        protected override ValueTask<AccountInfoCacheEventArgs> OnAction(AccountUpdateEventArgs @event)
         {
-            if (!(@event is AccountUpdateEventArgs accountInfoEvent))
-                return new ValueTask<AccountInfoCacheEventArgs>();
-
-            AccountInfo = accountInfoEvent.AccountInfo;
+            AccountInfo = @event.AccountInfo;
 
             return new ValueTask<AccountInfoCacheEventArgs>(new AccountInfoCacheEventArgs(AccountInfo));
         }

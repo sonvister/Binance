@@ -55,7 +55,7 @@ namespace Binance.Cache
 
         private Action<TCacheEventArgs> _callback;
 
-        private SequentialBuffer<TEventArgs> _buffer;
+        private QueuedProcessor<TEventArgs> _buffer;
 
         #endregion Private Fields
 
@@ -108,7 +108,7 @@ namespace Binance.Cache
         protected virtual void OnSubscribe(Action<TCacheEventArgs> callback = null)
         {
             _callback = callback;
-            _buffer = new SequentialBuffer<TEventArgs>(ProcessEventAsync);
+            _buffer = new QueuedProcessor<TEventArgs>(ProcessEventAsync);
         }
 
         /// <summary>
