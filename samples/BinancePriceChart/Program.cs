@@ -50,7 +50,7 @@ namespace BinancePriceChart
                 // Configure logging.
                 services.GetService<ILoggerFactory>()
                     .AddFile(configuration.GetSection("Logging:File"));
-                // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var symbol = configuration.GetSection("PriceChart")?["Symbol"] ?? Symbol.BTC_USDT;
