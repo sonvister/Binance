@@ -1,4 +1,5 @@
 ﻿using System;
+using Binance.Client;
 using Binance.Market;
 using Binance.WebSocket;
 using Xunit;
