@@ -2,8 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Client.Events;
-using Binance.WebSocket.UserData;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BinanceConsoleApp.Controllers
 {
@@ -33,61 +31,42 @@ namespace BinanceConsoleApp.Controllers
                     enable = false;
             }
 
-            if (!enable && Program.LiveUserDataTask != null)
+            if (enable)
             {
-                Program.LiveUserDataTokenSource.Cancel();
+                await Program.UserDataManager.SubscribeAsync<AccountUpdateEventArgs>(Program.User, HandleAccountUpdateEvent);
+                await Program.UserDataManager.SubscribeAsync<OrderUpdateEventArgs>(Program.User, HandleOrderUpdateEvent);
+                await Program.UserDataManager.SubscribeAsync<AccountTradeUpdateEventArgs>(Program.User, HandleTradeUpdateEvent);
 
-                if (!Program.LiveUserDataTask.IsCompleted)
-                    await Program.LiveUserDataTask;
-
-                Program.LiveUserDataTokenSource.Dispose();
-                Program.LiveUserDataTokenSource = null;
-                Program.UserDataManager = null;
-
-                return true;
-            }
-
-            if (Program.LiveUserDataTask != null)
-            {
                 lock (Program.ConsoleSync)
                 {
-                    Console.WriteLine("! A live user data task is currently active ...use 'live off' to disable.");
+                    Console.WriteLine();
+                    Console.WriteLine($"  ...live user data feed ENABLED.");
+                    Console.WriteLine();
                 }
-                return true;
             }
-
-            if (Program.User == null)
+            else // disable.
             {
-                Program.PrintApiNotice();
-                return true;
-            }
+                await Program.UserDataManager.UnsubscribeAsync<AccountUpdateEventArgs>(Program.User, HandleAccountUpdateEvent);
+                await Program.UserDataManager.UnsubscribeAsync<OrderUpdateEventArgs>(Program.User, HandleOrderUpdateEvent);
+                await Program.UserDataManager.UnsubscribeAsync<AccountTradeUpdateEventArgs>(Program.User, HandleTradeUpdateEvent);
 
-            Program.LiveUserDataTokenSource = new CancellationTokenSource();
-
-            Program.UserDataManager = Program.ServiceProvider.GetService<_IUserDataWebSocketManager>();
-
-            Program.UserDataManager.AccountUpdate += OnAccountUpdateEvent;
-            Program.UserDataManager.OrderUpdate += OnOrderUpdateEvent;
-            Program.UserDataManager.TradeUpdate += OnTradeUpdateEvent;
-
-            Program.LiveUserDataTask = Program.UserDataManager.SubscribeAndStreamAsync(
-                Program.User, Program.LiveUserDataTokenSource.Token);
-
-            lock (Program.ConsoleSync)
-            {
-                Console.WriteLine();
-                Console.WriteLine("  ...live account feed enabled ...use 'live off' to disable.");
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"  ...live user data feed DISABLED.");
+                    Console.WriteLine();
+                }
             }
 
             return true;
         }
 
-        private static void OnAccountUpdateEvent(object sender, AccountUpdateEventArgs e)
+        private static void HandleAccountUpdateEvent(AccountUpdateEventArgs e)
         {
             Program.Display(e.AccountInfo);
         }
 
-        private static void OnOrderUpdateEvent(object sender, OrderUpdateEventArgs e)
+        private static void HandleOrderUpdateEvent(OrderUpdateEventArgs e)
         {
             lock (Program.ConsoleSync)
             {
@@ -98,7 +77,7 @@ namespace BinanceConsoleApp.Controllers
             }
         }
 
-        private static void OnTradeUpdateEvent(object sender, AccountTradeUpdateEventArgs e)
+        private static void HandleTradeUpdateEvent(AccountTradeUpdateEventArgs e)
         {
             lock (Program.ConsoleSync)
             {

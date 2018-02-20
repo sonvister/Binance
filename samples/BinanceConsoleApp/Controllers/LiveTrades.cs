@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
+using Binance.Client;
+using Binance.Client.Events;
 using Binance.WebSocket;
 
 namespace BinanceConsoleApp.Controllers
@@ -47,7 +49,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (enable)
             {
-                Program.ClientManager.TradeClient.Subscribe(symbol, evt => { Program.Display(evt.Trade); });
+                Program.ClientManager.TradeClient.Subscribe(symbol, Display);
 
                 lock (Program.ConsoleSync)
                 {
@@ -70,5 +72,8 @@ namespace BinanceConsoleApp.Controllers
 
             return Task.FromResult(true);
         }
+
+        private static void Display(TradeEventArgs args)
+            => Program.Display(args.Trade);
     }
 }

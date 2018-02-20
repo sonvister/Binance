@@ -22,7 +22,7 @@ namespace BinanceConsoleApp.Controllers
             if (!endpoint.Equals("off", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            await Program.DisableLiveTask();
+            await Program.DisableLiveTaskAsync();
 
             return true;
         }

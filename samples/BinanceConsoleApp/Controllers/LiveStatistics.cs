@@ -2,17 +2,17 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
-using Binance.WebSocket;
-using Binance.WebSocket.Manager;
+using Binance.Client;
+using Binance.Client.Events;
 
 namespace BinanceConsoleApp.Controllers
 {
     internal class LiveStatistics : IHandleCommand
     {
-        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             var args = command.Split(' ');
 
@@ -23,7 +23,7 @@ namespace BinanceConsoleApp.Controllers
             }
 
             if (!endpoint.Equals("stats", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
@@ -35,7 +35,7 @@ namespace BinanceConsoleApp.Controllers
                     {
                         Console.WriteLine($"  Invalid symbol: \"{symbol}\"");
                     }
-                    return true;
+                    return Task.FromResult(true);
                 }
             }
 
@@ -48,10 +48,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (enable)
             {
-                Program.ClientManager.StatisticsClient.Subscribe(symbol, evt => { Program.Display(evt.Statistics); });
-
-                // Optionally, wait for asynchronous client adapter operation to complete.
-                await ((IBinanceWebSocketClientAdapter)Program.ClientManager.StatisticsClient).Task;
+                Program.ClientManager.StatisticsClient.Subscribe(symbol, Display);
 
                 lock (Program.ConsoleSync)
                 {
@@ -64,9 +61,6 @@ namespace BinanceConsoleApp.Controllers
             {
                 Program.ClientManager.StatisticsClient.Unsubscribe(symbol);
 
-                // Optionally, wait for asynchronous client adapter operation to complete.
-                await ((IBinanceWebSocketClientAdapter)Program.ClientManager.StatisticsClient).Task;
-
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
@@ -75,7 +69,10 @@ namespace BinanceConsoleApp.Controllers
                 }
             }
 
-            return true;
+            return Task.FromResult(true);
         }
+
+        private static void Display(SymbolStatisticsEventArgs args)
+            => Program.Display(args.Statistics);
     }
 }

@@ -2,17 +2,18 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
+using Binance.Client;
+using Binance.Client.Events;
 using Binance.WebSocket;
-using Binance.WebSocket.Manager;
 
 namespace BinanceConsoleApp.Controllers
 {
     internal class LiveAggregateTrades : IHandleCommand
     {
-        public async Task<bool> HandleAsync(string command, CancellationToken token = default)
+        public Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
             if (!command.StartsWith("live ", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             var args = command.Split(' ');
 
@@ -23,7 +24,7 @@ namespace BinanceConsoleApp.Controllers
             }
 
             if (!endpoint.Equals("aggTrades", StringComparison.OrdinalIgnoreCase))
-                return false;
+                return Task.FromResult(false);
 
             string symbol = Symbol.BTC_USDT;
             if (args.Length > 2)
@@ -35,7 +36,7 @@ namespace BinanceConsoleApp.Controllers
                     {
                         Console.WriteLine($"  Invalid symbol: \"{symbol}\"");
                     }
-                    return true;
+                    return Task.FromResult(true);
                 }
             }
 
@@ -48,10 +49,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (enable)
             {
-                Program.ClientManager.AggregateTradeClient.Subscribe(symbol, evt => { Program.Display(evt.Trade); });
-
-                // Optionally, wait for asynchronous client adapter operation to complete.
-                await ((IBinanceWebSocketClientAdapter)Program.ClientManager.AggregateTradeClient).Task;
+                Program.ClientManager.AggregateTradeClient.Subscribe(symbol, Display);
 
                 lock (Program.ConsoleSync)
                 {
@@ -64,9 +62,6 @@ namespace BinanceConsoleApp.Controllers
             {
                 Program.ClientManager.AggregateTradeClient.Unsubscribe(symbol);
 
-                // Optionally, wait for asynchronous client adapter operation to complete.
-                await ((IBinanceWebSocketClientAdapter)Program.ClientManager.AggregateTradeClient).Task;
-
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
@@ -75,7 +70,10 @@ namespace BinanceConsoleApp.Controllers
                 }
             }
 
-            return true;
+            return Task.FromResult(true);
         }
+
+        private static void Display(AggregateTradeEventArgs args)
+            => Program.Display(args.Trade);
     }
 }
