@@ -18,7 +18,7 @@ namespace Binance.Client
         /// <param name="symbol"></param>
         /// <returns></returns>
         public static void Subscribe(this ISymbolStatisticsClient client, string symbol)
-            => client.Subscribe(symbol, null);
+            => client.Subscribe(null, symbol);
 
         /// <summary>
         /// 
@@ -33,6 +33,6 @@ namespace Binance.Client
         /// <param name="client"></param>
         /// <param name="symbol"></param>
         public static void Unsubscribe(this ISymbolStatisticsClient client, string symbol)
-            => client.Unsubscribe(symbol, null);
+            => client.Unsubscribe(null, symbol);
     }
 }

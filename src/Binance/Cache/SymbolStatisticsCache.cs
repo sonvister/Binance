@@ -148,10 +148,7 @@ namespace Binance.Cache
             }
             else
             {
-                foreach (var symbol in _symbols)
-                {
-                    Client.Subscribe(symbol, ClientCallback);
-                }
+                Client.Subscribe(ClientCallback, _symbols.ToArray());
             }
         }
 
@@ -166,10 +163,7 @@ namespace Binance.Cache
             }
             else
             {
-                foreach (var symbol in _symbols)
-                {
-                    Client.Unsubscribe(symbol, ClientCallback);
-                }
+                Client.Unsubscribe(ClientCallback, _symbols.ToArray());
             }
         }
 

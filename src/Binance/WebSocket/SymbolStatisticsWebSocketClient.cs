@@ -44,17 +44,11 @@ namespace Binance.WebSocket
 
         #region Public Methods
 
-        public virtual void Subscribe(Action<SymbolStatisticsEventArgs> callback)
-            => HandleSubscribe(() => Client.Subscribe(callback));
+        public virtual void Subscribe(Action<SymbolStatisticsEventArgs> callback, params string[] symbols)
+            => HandleSubscribe(() => Client.Subscribe(callback, symbols));
 
-        public virtual void Unsubscribe(Action<SymbolStatisticsEventArgs> callback)
-            => HandleUnsubscribe(() => Client.Unsubscribe(callback));
-
-        public virtual void Subscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
-            => HandleSubscribe(() => Client.Subscribe(symbol, callback));
-
-        public virtual void Unsubscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
-            => HandleUnsubscribe(() => Client.Unsubscribe(symbol, callback));
+        public virtual void Unsubscribe(Action<SymbolStatisticsEventArgs> callback, params string[] symbols)
+            => HandleUnsubscribe(() => Client.Unsubscribe(callback, symbols));
 
         #endregion Public Methods
     }

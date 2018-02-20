@@ -32,11 +32,8 @@
   <ItemGroup>
     <Compile Remove="Client\IUserDataStreamLookup.cs" />
     <Compile Remove="Client\UserDataStreamLookup.cs" />
-    <Compile Remove="Extensions\UserDataKeepAliveTimerProviderExtensions.cs" />
     <Compile Remove="Extensions\UserDataWebSocketManagerExtensions.cs" />
     <Compile Remove="Manager\ControllerManager.cs" />
-    <Compile Remove="Manager\IJsonStreamControllerProvider.cs" />
-    <Compile Remove="Manager\JsonStreamControllerProvider.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,10 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Extensions\UserDataKeepAliveTimerProviderExtensions.cs" />
     <None Include="Extensions\UserDataWebSocketManagerExtensions.cs" />
-    <None Include="Manager\IJsonStreamControllerProvider.cs" />
-    <None Include="Manager\JsonStreamControllerProvider.cs" />
     <None Include="Manager\ControllerManager.cs" />
   </ItemGroup>
 

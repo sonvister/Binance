@@ -7,7 +7,10 @@ using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Cache.Events;
+using Binance.Client.Events;
+using Binance.Manager;
 using Binance.Market;
+using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +30,8 @@ namespace Binance24HourStatistics
         private static async Task Main()
         {
             await ExampleMain();
-            //CombinedStreamsExample.ExampleMain(); await Task.CompletedTask;
+            //await AdvancedExampleMain();
+            //CombinedStreamsExample.AdvancedExampleMain(); await Task.CompletedTask;
         }
 
         private static async Task ExampleMain()
@@ -52,32 +56,92 @@ namespace Binance24HourStatistics
                     // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
-                var symbols = configuration.GetSection("Statistics:Symbols").Get<string[]>() ?? new string[] { Symbol.BTC_USDT };
+                var symbols = configuration.GetSection("Statistics:Symbols").Get<string[]>()
+                    ?? new string[] { Symbol.BTC_USDT };
+
+                // Initialize API.
+                var api = services.GetService<IBinanceApi>();
+
+                // Query and display the 24-hour statistics.
+                Display(await Get24HourStatisticsAsync(api, symbols));
+
+                // Initialize manager (w/ internal controller).
+                var manager = services.GetService<ISymbolStatisticsClientManager>();
+
+                // Add error event handler.
+                manager.Controller.Error += (s, e) => Console.WriteLine(e.Exception.Message);
 
                 // Initialize cache.
                 var cache = services.GetService<ISymbolStatisticsCache>();
-                // Initialize stream.
-                var webSocket = services.GetService<IBinanceWebSocketStream>();
+                cache.Client = manager; // use manager as client.
+                //var cache = new SymbolStatisticsCache(api, manager); // or w/o logger.
+
+                // Subscribe cache to symbols (and automatically begin streaming).
+                cache.Subscribe(Display, symbols);
+
+                Console.ReadKey(true); // wait for user input.
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine();
+                Console.WriteLine("  ...press any key to close window.");
+                Console.ReadKey(true);
+            }
+        }
+
+        private static async Task AdvancedExampleMain()
+        {
+            try
+            {
+                // Load configuration.
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", false, false)
+                    .Build();
+
+                // Configure services.
+                var services = new ServiceCollection()
+                    .AddBinance() // add default Binance services.
+                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+                    .BuildServiceProvider();
+
+                // Configure logging.
+                services.GetService<ILoggerFactory>()
+                    .AddFile(configuration.GetSection("Logging:File"));
+                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
+
+                // Get configuration settings.
+                var symbols = configuration.GetSection("Statistics:Symbols").Get<string[]>()
+                    ?? new string[] { Symbol.BTC_USDT };
+
+                // Initialize API.
+                var api = services.GetService<IBinanceApi>();
+
+                // Query and display the 24-hour statistics.
+                Display(await Get24HourStatisticsAsync(api, symbols));
+
+                // Initialize cache.
+                var cache = services.GetService<ISymbolStatisticsCache>();
+                
+                // Initialize web socket stream.
+                var stream = services.GetService<IBinanceWebSocketStream>();
 
                 using (var controller = new RetryTaskController(
-                    tkn => webSocket.StreamAsync(tkn),
+                    tkn => stream.StreamAsync(tkn),
                     err => Console.WriteLine(err.Message)))
                 {
-                    var api = services.GetService<IBinanceApi>();
-
-                    // Query and display the 24-hour statistics.
-                    Display(await Get24HourStatisticsAsync(api, symbols));
-
                     // Subscribe cache to symbols.
                     cache.Subscribe(Display, symbols);
-                    // Subscribe web socket to cache (observed symbols).
-                    webSocket.Subscribe(cache);
-                    // NOTE: This mus be done after cache subscribe.
+                    
+                    // Subscribe stream to cache (observed streams).
+                    stream.Subscribe(cache, cache.ObservedStreams);
+                    // NOTE: This must be done after cache subscribe.
 
                     // Begin streaming.
                     controller.Begin();
 
-                    Console.ReadKey(true);
+                    Console.ReadKey(true); // wait for user input.
                 }
             }
             catch (Exception e)
@@ -101,6 +165,9 @@ namespace Binance24HourStatistics
             return statistics.ToArray();
         }
 
+        private static void Display(SymbolStatisticsEventArgs args)
+            => Display(args.Statistics);
+
         private static void Display(SymbolStatisticsCacheEventArgs args)
             => Display(args.Statistics);
 
@@ -118,6 +185,5 @@ namespace Binance24HourStatistics
 
             Console.WriteLine("...press any key to exit.");
         }
-
     }
 }

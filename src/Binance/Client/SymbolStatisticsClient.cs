@@ -35,40 +35,46 @@ namespace Binance.Client
 
         #region Public Methods
 
-        public virtual void Subscribe(Action<SymbolStatisticsEventArgs> callback)
+        public virtual void Subscribe(Action<SymbolStatisticsEventArgs> callback, params string [] symbols)
         {
-            Logger?.LogDebug($"{nameof(SymbolStatisticsClient)}.{nameof(Subscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            if (symbols == null || !symbols.Any())
+            {
+                Logger?.LogDebug($"{nameof(SymbolStatisticsClient)}.{nameof(Subscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-            SubscribeStream(GetStreamName(null), callback);
+                SubscribeStream(GetStreamName(null), callback);
+            }
+            else
+            {
+                foreach (var s in symbols)
+                {
+                    var symbol = s.FormatSymbol();
+
+                    Logger?.LogDebug($"{nameof(SymbolStatisticsClient)}.{nameof(Subscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                    SubscribeStream(GetStreamName(symbol), callback);
+                }
+            }
         }
 
-        public virtual void Subscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
+        public virtual void Unsubscribe(Action<SymbolStatisticsEventArgs> callback, params string [] symbols)
         {
-            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+            if (symbols == null || !symbols.Any())
+            {
+                Logger?.LogDebug($"{nameof(SymbolStatisticsClient)}.{nameof(Unsubscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-            symbol = symbol.FormatSymbol();
+                UnsubscribeStream(GetStreamName(null), callback);
+            }
+            else
+            {
+                foreach (var s in symbols)
+                {
+                    var symbol = s.FormatSymbol();
 
-            Logger?.LogDebug($"{nameof(SymbolStatisticsClient)}.{nameof(Subscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Logger?.LogDebug($"{nameof(SymbolStatisticsClient)}.{nameof(Unsubscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-            SubscribeStream(GetStreamName(symbol), callback);
-        }
-
-        public virtual void Unsubscribe(Action<SymbolStatisticsEventArgs> callback)
-        {
-            Logger?.LogDebug($"{nameof(SymbolStatisticsClient)}.{nameof(Unsubscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-            UnsubscribeStream(GetStreamName(null), callback);
-        }
-
-        public virtual void Unsubscribe(string symbol, Action<SymbolStatisticsEventArgs> callback)
-        {
-            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
-
-            symbol = symbol.FormatSymbol();
-
-            Logger?.LogDebug($"{nameof(SymbolStatisticsClient)}.{nameof(Unsubscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-            UnsubscribeStream(GetStreamName(symbol), callback);
+                    UnsubscribeStream(GetStreamName(symbol), callback);
+                }
+            }
         }
 
         #endregion Public Methods

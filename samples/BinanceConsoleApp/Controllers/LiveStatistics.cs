@@ -48,7 +48,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (enable)
             {
-                Program.ClientManager.StatisticsClient.Subscribe(symbol, Display);
+                Program.ClientManager.StatisticsClient.Subscribe(Display, symbol);
 
                 lock (Program.ConsoleSync)
                 {

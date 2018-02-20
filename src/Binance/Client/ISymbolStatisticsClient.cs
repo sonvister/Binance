@@ -11,31 +11,19 @@ namespace Binance.Client
         event EventHandler<SymbolStatisticsEventArgs> StatisticsUpdate;
 
         /// <summary>
-        /// Subscribe to all symbols.
-        /// </summary>
-        /// <param name="callback">An event callback.</param>
-        void Subscribe(Action<SymbolStatisticsEventArgs> callback);
-
-        /// <summary>
-        /// Unsubscribe from all symbols. If no callback is specified,
-        /// then unsubscribe from all symbols (all callbacks).
+        /// Subscribe to one or more symbols. If no symbols are specified,
+        /// subscribe to all symbols.
         /// </summary>
         /// <param name="callback"></param>
-        void Unsubscribe(Action<SymbolStatisticsEventArgs> callback);
+        /// <param name="symbols"></param>
+        void Subscribe(Action<SymbolStatisticsEventArgs> callback, params string[] symbols);
 
         /// <summary>
-        /// Subscribe to the specified symbol.
+        /// Unsubscribe from one or more symbols. If no symbols are specified,
+        /// unsubscrbe from all symbols.
         /// </summary>
-        /// <param name="symbol">The symbol to subscribe.</param>
-        /// <param name="callback">An event callback.</param>
-        void Subscribe(string symbol, Action<SymbolStatisticsEventArgs> callback);
-
-        /// <summary>
-        /// Unsubscribe a callback from a symbol. If no callback is specified,
-        /// then unsubscribe from symbol (all callbacks).
-        /// </summary>
-        /// <param name="symbol"></param>
         /// <param name="callback"></param>
-        void Unsubscribe(string symbol, Action<SymbolStatisticsEventArgs> callback);
+        /// <param name="symbols"></param>
+        void Unsubscribe(Action<SymbolStatisticsEventArgs> callback, params string[] symbols);
     }
 }

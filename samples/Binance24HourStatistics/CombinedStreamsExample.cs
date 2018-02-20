@@ -24,7 +24,7 @@ namespace Binance24HourStatistics
     /// </summary>
     internal class CombinedStreamsExample
     {
-        public static void ExampleMain()
+        public static void AdvancedExampleMain()
         {
             try
             {
@@ -59,7 +59,7 @@ namespace Binance24HourStatistics
                     if (symbols.Length == 1)
                     {
                         // Subscribe to symbol with callback.
-                        client.Subscribe(symbols[0], Display);
+                        client.Subscribe(Display, symbols[0]);
                     }
                     else
                     {
