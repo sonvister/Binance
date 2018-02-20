@@ -15,13 +15,6 @@ namespace Binance.WebSocket.Manager
     /// </summary>
     public class UserDataWebSocketClientManager : UserDataClientManager<IWebSocketStream>, IUserDataWebSocketClientManager
     {
-        #region Public Properties
-
-        // TODO
-        //IJsonStreamController<IJsonStream> IControllerManager<IJsonStream>.Controller => Controller;
-
-        #endregion Public Properties
-
         #region Private Fields
 
         private readonly IUserDataWebSocketStreamControl _streamControl;

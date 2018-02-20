@@ -6,6 +6,7 @@ using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
+using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
@@ -61,9 +62,7 @@ namespace BinanceMarketDepth
                 var webSocket = services.GetService<IBinanceWebSocketStream>();
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(
-                    tkn => webSocket.StreamAsync(tkn),
-                    err => Console.WriteLine(err.Message)))
+                using (var controller = new RetryTaskController(webSocket.StreamAsync, HandleError))
                 {
                     // Query and display the order books.
                     var btcOrderBook = await api.GetOrderBookAsync(Symbol.BTC_USDT, limit);
@@ -91,8 +90,8 @@ namespace BinanceMarketDepth
                         });
 
                     // Subscribe cache to stream (with observed streams).
-                    webSocket.Subscribe(btcCache);
-                    webSocket.Subscribe(ethCache);
+                    webSocket.Subscribe(btcCache, btcCache.ObservedStreams);
+                    webSocket.Subscribe(ethCache, ethCache.ObservedStreams);
                     // NOTE: This must be done after cache subscribe.
 
                     // Verify we are using a shared/combined stream (not necessary).
@@ -129,6 +128,14 @@ namespace BinanceMarketDepth
                 }
 
                 Console.WriteLine("...press any key to exit.");
+            }
+        }
+
+        private static void HandleError(Exception e)
+        {
+            lock (_displaySync)
+            {
+                Console.WriteLine(e.Message);
             }
         }
     }

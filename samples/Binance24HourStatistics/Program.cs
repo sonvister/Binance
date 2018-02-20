@@ -8,11 +8,11 @@ using Binance.Application;
 using Binance.Cache;
 using Binance.Cache.Events;
 using Binance.Client.Events;
-using Binance.Manager;
 using Binance.Market;
 using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
+using Binance.WebSocket.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -66,7 +66,7 @@ namespace Binance24HourStatistics
                 Display(await Get24HourStatisticsAsync(api, symbols));
 
                 // Initialize manager (w/ internal controller).
-                var manager = services.GetService<ISymbolStatisticsClientManager>();
+                var manager = services.GetService<ISymbolStatisticsWebSocketClientManager>();
 
                 // Add error event handler.
                 manager.Controller.Error += (s, e) => Console.WriteLine(e.Exception.Message);

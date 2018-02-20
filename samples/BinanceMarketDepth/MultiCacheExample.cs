@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
+using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
@@ -64,14 +64,9 @@ namespace BinanceMarketDepth
                 var webSocket2 = services.GetService<IBinanceWebSocketStream>();
                 // NOTE: IBinanceWebSocketStream must be setup as Transient with DI (default).
 
-                Func<CancellationToken, Task> action1 = tkn => webSocket1.StreamAsync(tkn);
-                Func<CancellationToken, Task> action2 = tkn => webSocket2.StreamAsync(tkn);
-
-                Action<Exception> onError = err => Console.WriteLine(err.Message);
-
-                // Initialize controller.
-                using (var controller1 = new RetryTaskController(action1, onError))
-                using (var controller2 = new RetryTaskController(action2, onError))
+                // Initialize controllers.
+                using (var controller1 = new RetryTaskController(webSocket1.StreamAsync, HandleError))
+                using (var controller2 = new RetryTaskController(webSocket2.StreamAsync, HandleError))
                 {
                     btcCache.Subscribe(Symbol.BTC_USDT, limit,
                         evt =>
@@ -88,8 +83,8 @@ namespace BinanceMarketDepth
                         });
 
                     // Subscribe cache to stream (with observed streams).
-                    webSocket1.Subscribe(btcCache);
-                    webSocket2.Subscribe(ethCache);
+                    webSocket1.Subscribe(btcCache, btcCache.ObservedStreams);
+                    webSocket2.Subscribe(ethCache, ethCache.ObservedStreams);
                     // NOTE: This must be done after cache subscribe.
 
                     // Begin streaming.
@@ -127,6 +122,14 @@ namespace BinanceMarketDepth
                 }
 
                 Console.WriteLine("...press any key to exit.");
+            }
+        }
+
+        private static void HandleError(Exception e)
+        {
+            lock (_displaySync)
+            {
+                Console.WriteLine(e.Message);
             }
         }
     }

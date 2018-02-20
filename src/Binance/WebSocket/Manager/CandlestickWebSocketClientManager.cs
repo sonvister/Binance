@@ -1,6 +1,5 @@
 ﻿using Binance.Client;
 using Binance.Manager;
-using Binance.Stream;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket.Manager
@@ -10,12 +9,6 @@ namespace Binance.WebSocket.Manager
     /// </summary>
     public class CandlestickWebSocketClientManager : CandlestickClientManager<IWebSocketStream>, ICandlestickWebSocketClientManager
     {
-        #region Public Properties
-
-        IJsonStreamController<IJsonStream> IControllerManager<IJsonStream>.Controller => Controller;
-
-        #endregion Public Properties
-
         #region Constructors
 
         /// <summary>

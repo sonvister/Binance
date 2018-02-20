@@ -10,7 +10,7 @@ namespace Binance.WebSocket.Manager
     /// <summary>
     /// A user data web socket client manager.
     /// </summary>
-    public interface IUserDataWebSocketClientManager : IControllerManager<IWebSocketStream> //IUserDataClientManager<IWebSocketStream>, IUserDataClientManager // TODO
+    public interface IUserDataWebSocketClientManager : IControllerManager<IWebSocketStream> //IUserDataClientManager<IWebSocketStream> // TODO
     {
         /// <summary>
         /// The account update event.
