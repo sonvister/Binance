@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,10 +10,9 @@ using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api;
 using Binance.Application;
+using Binance.Manager;
 using Binance.Market;
-using Binance.WebSocket;
 using Binance.WebSocket.Manager;
-using Binance.WebSocket.UserData;
 using BinanceConsoleApp.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,11 +32,8 @@ namespace BinanceConsoleApp
         public static IBinanceApi Api;
         public static IBinanceApiUser User;
 
-        public static IBinanceWebSocketManager ClientManager;
-        public static IUserDataWebSocketManager UserDataManager;
-
-        public static Task LiveUserDataTask;
-        public static CancellationTokenSource LiveUserDataTokenSource;
+        public static IBinanceWebSocketClientManager ClientManager;
+        public static IUserDataWebSocketClientManager UserDataManager;
 
         public static readonly object ConsoleSync = new object();
 
@@ -54,6 +51,7 @@ namespace BinanceConsoleApp
             //await SerializationExample.ExampleMain(args);
             //await OrderBookCacheAccountBalanceExample.ExampleMain(args);
 
+
             var cts = new CancellationTokenSource();
 
             try
@@ -67,16 +65,16 @@ namespace BinanceConsoleApp
 
                 // Configure services.
                ServiceProvider = new ServiceCollection()
-                    .AddBinance()
-                    // Use a single web socket stream for combined streams (optional).
-                    .AddSingleton<IWebSocketStream, BinanceWebSocketStream>()
-                    // Change low-level web socket client implementation.
+                    .AddBinance(useSingleCombinedStream: true) // add default Binance services.
+
+                    // Use alternative, low-level, web socket client implementation.
                     //.AddTransient<IWebSocketClient, WebSocket4NetClient>()
                     //.AddTransient<IWebSocketClient, WebSocketSharpClient>()
+
                     .AddOptions()
-                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .Configure<BinanceApiOptions>(Configuration.GetSection("ApiOptions"))
-                    .Configure<UserDataWebSocketManagerOptions>(Configuration.GetSection("UserDataOptions"))
+
+                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
                 // Configure logging.
@@ -84,6 +82,7 @@ namespace BinanceConsoleApp
                     .GetService<ILoggerFactory>()
                         .AddConsole(Configuration.GetSection("Logging:Console"))
                         .AddFile(Configuration.GetSection("Logging:File"));
+                        // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 var apiKey = Configuration["BinanceApiKey"] // user secrets configuration.
                     ?? Configuration.GetSection("User")["ApiKey"]; // appsettings.json configuration.
@@ -105,7 +104,8 @@ namespace BinanceConsoleApp
 
                 Api = ServiceProvider.GetService<IBinanceApi>();
 
-                ClientManager = ServiceProvider.GetService<IBinanceWebSocketManager>();
+                ClientManager = ServiceProvider.GetService<IBinanceWebSocketClientManager>();
+
                 ClientManager.Error += (s, e) =>
                 {
                     lock (ConsoleSync)
@@ -115,6 +115,8 @@ namespace BinanceConsoleApp
                         Console.WriteLine();
                     }
                 };
+
+                UserDataManager = ServiceProvider.GetService<IUserDataWebSocketClientManager>();
 
                 // Instantiate all assembly command handlers.
                 foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
@@ -140,7 +142,7 @@ namespace BinanceConsoleApp
             }
             finally
             {
-                await DisableLiveTask();
+                await DisableLiveTaskAsync();
 
                 cts.Cancel();
                 cts.Dispose();
@@ -324,35 +326,20 @@ namespace BinanceConsoleApp
             while (true);
         }
 
-        internal static async Task DisableLiveTask()
+        internal static async Task DisableLiveTaskAsync()
         {
-            // Cancel streaming operation(s) and unsubscribe all.
-            await ClientManager.UnsubscribeAllAsync();
-
-            // Cancel streaming operation(s).
-            LiveUserDataTokenSource?.Cancel();
-
-            // Wait for live task to complete.
-            if (LiveUserDataTask != null && !LiveUserDataTask.IsCompleted)
-                await LiveUserDataTask;
-
-            LiveUserDataTokenSource?.Dispose();
-            LiveUserDataTokenSource = null;
-            LiveUserDataTask = null;
-
-            // Unsubscribe all combined streams from global web socket stream.
-            var webSocket = ServiceProvider.GetService<IWebSocketStream>();
-            webSocket.UnsubscribeAll();
-
             lock (ConsoleSync)
             {
-                if (UserDataManager != null)
+                if (ClientManager.Managers().Any(m => m.Controller.IsActive))
                 {
                     Console.WriteLine();
-                    Console.WriteLine("  ...live account feed disabled.");
+                    Console.WriteLine("  ...live feeds disabled.");
                 }
-                UserDataManager = null;
             }
+
+            ClientManager.UnsubscribeAll();
+
+            await UserDataManager.UnsubscribeAllAsync();
         }
 
         internal static void Display(DepositAddress address)
