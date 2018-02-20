@@ -1,12 +1,12 @@
-﻿using Binance.Stream;
+﻿using Binance.Client;
 
-namespace Binance.Client
+namespace Binance.Stream
 {
     /// <summary>
-    /// An <see cref="IJsonClient"/> with an <see cref="IJsonStream"/>.
+    /// A <see cref="IJsonClient"/> with <see cref="IJsonStream"/>.
     /// </summary>
     /// <typeparam name="TStream"></typeparam>
-    public interface IJsonStreamClient<TStream> : IJsonClient
+    public interface IJsonStreamClient<out TStream> : IJsonClient
         where TStream : IJsonStream
     {
         /// <summary>

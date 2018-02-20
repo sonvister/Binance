@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,6 +42,8 @@ namespace Binance.Stream
 
         private CancellationTokenSource _cts;
 
+        private Stopwatch _stopwatch;
+
         #endregion Private Fields
 
         #region Constructors
@@ -56,6 +59,8 @@ namespace Binance.Stream
             Subscribers = new Dictionary<string, ICollection<IJsonStreamObserver>>();
 
             StreamNames = new List<string>();
+
+            _stopwatch = Stopwatch.StartNew();
         }
 
         #endregion Constructors
@@ -160,12 +165,12 @@ namespace Binance.Stream
                 while (!token.IsCancellationRequested)
                 {
                     // Wait while paused or in transistion.
-                    await Task.Delay(300)
+                    await Task.Delay(100)
                         .ConfigureAwait(false);
 
                     lock (_sync)
                     {
-                        if (_isStreamingPaused || StreamNames.Count() == 0)
+                        if (_isStreamingPaused || StreamNames.Count() == 0 || _stopwatch.ElapsedMilliseconds < 500)
                             continue;
 
                         _cts = new CancellationTokenSource();
@@ -247,7 +252,7 @@ namespace Binance.Stream
                 }
             }
 
-            RaiseMessageEvent(json, streamName);
+            OnMessage(json, streamName);
         }
 
         /// <summary>
@@ -275,7 +280,7 @@ namespace Binance.Stream
                 }
             }
 
-            RaiseMessageEvent(json, streamName);
+            OnMessage(json, streamName);
 
             return Task.WhenAll(tasks);
         }
@@ -337,11 +342,11 @@ namespace Binance.Stream
                 if (!Subscribers.Any())
                     return;
 
+                AbortWebSocket();
+
                 Logger?.LogDebug($"{GetType().Name}.{nameof(UnsubscribeAll)}: Removing all streams.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 Subscribers.Clear();
                 StreamNames.Clear();
-
-                AbortWebSocket();
             }
         }
 
@@ -349,14 +354,16 @@ namespace Binance.Stream
         {
             Logger?.LogDebug($"{GetType().Name}.{nameof(RemoveStream)}: Removing stream: \"{stream}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
+            AbortWebSocket();
+
             Subscribers.Remove(stream);
             StreamNames.Remove(stream);
-
-            AbortWebSocket();
         }
 
         private void AbortWebSocket()
         {
+            _stopwatch.Restart();
+
             try
             {
                 if (!_cts?.IsCancellationRequested ?? false)

@@ -19,7 +19,7 @@ namespace Binance.Stream
 
         #region Private Fields
 
-        private SequentialBuffer<string> _buffer;
+        private QueuedProcessor<string> _buffer;
 
         #endregion Private Fields
 
@@ -46,7 +46,7 @@ namespace Binance.Stream
 
         protected void InitalizeBuffer(CancellationToken token = default)
         {
-            _buffer = new SequentialBuffer<string>(ProcessJsonAsync, token);
+            _buffer = new QueuedProcessor<string>(ProcessJsonAsync, token);
             JsonProvider.Message += OnClientMessage;
         }
 

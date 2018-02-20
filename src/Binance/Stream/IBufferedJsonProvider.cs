@@ -3,11 +3,11 @@
     /// <summary>
     /// A JSON provider that buffers data from another JSON provider.
     /// </summary>
-    public interface IBufferedJsonProvider<TProvider> : IJsonProvider
+    public interface IBufferedJsonProvider<T> : IJsonProvider
     {
         /// <summary>
         /// Get the JSON provider.
         /// </summary>
-        TProvider JsonProvider { get; }
+        T JsonProvider { get; }
     }
 }
