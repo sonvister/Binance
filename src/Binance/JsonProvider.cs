@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 
 namespace Binance
@@ -10,7 +11,18 @@ namespace Binance
     {
         #region Public Events
 
-        public event EventHandler<JsonMessageEventArgs> Message;
+        public event EventHandler<JsonMessageEventArgs> Message
+        {
+            add
+            {
+                if (_message == null || !_message.GetInvocationList().Contains(value))
+                {
+                    _message += value;
+                }
+            }
+            remove => _message -= value;
+        }
+        private EventHandler<JsonMessageEventArgs> _message;
 
         #endregion Public Events
 
@@ -40,9 +52,9 @@ namespace Binance
         /// </summary>
         /// <param name="json">The JSON message (required).</param>
         /// <param name="subject">The JSON message context (optional).</param>
-        protected void RaiseMessageEvent(string json, string subject = null)
+        protected void OnMessage(string json, string subject = null)
         {
-            try { Message?.Invoke(this, new JsonMessageEventArgs(json, subject)); }
+            try { _message?.Invoke(this, new JsonMessageEventArgs(json, subject)); }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
