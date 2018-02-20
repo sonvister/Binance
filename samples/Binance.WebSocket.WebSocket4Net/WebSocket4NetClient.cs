@@ -39,7 +39,7 @@ namespace Binance.WebSocket
             webSocket.Opened += (s, e) =>
             {
                 _isOpen = true;
-                RaiseOpenEvent();
+                OnOpen();
             };
 
             webSocket.Closed += (s, e) => tcs.TrySetCanceled();
@@ -52,7 +52,7 @@ namespace Binance.WebSocket
 
                     if (!string.IsNullOrWhiteSpace(json))
                     {
-                        RaiseMessageEvent(json, uri.AbsolutePath);
+                        OnMessage(json, uri.AbsolutePath);
                     }
                     else
                     {
@@ -116,7 +116,7 @@ namespace Binance.WebSocket
                 if (_isOpen)
                 {
                     _isOpen = false;
-                    RaiseCloseEvent();
+                    OnClose();
                 }
 
                 IsStreaming = false;
