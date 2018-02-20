@@ -74,7 +74,7 @@ namespace BinanceMarketDepth
 
                 // Initialize cache.
                 var cache = services.GetService<IOrderBookCache>();
-                cache.Client = manager;
+                cache.Client = manager; // use manager as client.
 
                 // Subscribe cache to symbol with limit and callback.
                 // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with

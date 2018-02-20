@@ -57,9 +57,7 @@ namespace BinancePriceChart
                 var client = services.GetService<ICandlestickWebSocketClient>();
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(
-                    tkn => client.StreamAsync(tkn),
-                    err => Console.WriteLine(err.Message)))
+                using (var controller = new RetryTaskController(client.StreamAsync, HandleError))
                 {
                     if (symbols.Length == 1)
                     {
@@ -158,6 +156,14 @@ namespace BinancePriceChart
                             Console.WriteLine(_message.PadRight(119));
                         });
                 }
+            }
+        }
+
+        private static void HandleError(Exception e)
+        {
+            lock (_sync)
+            {
+                Console.WriteLine(e.Message);
             }
         }
     }
