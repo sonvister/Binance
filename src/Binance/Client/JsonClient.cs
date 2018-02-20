@@ -10,13 +10,13 @@ namespace Binance.Client
     /// <summary>
     /// An abstract <see cref="IJsonClient"/> base class.
     /// </summary>
-    /// <typeparam name="TEventArgs"></typeparam>
-    public abstract class JsonClient<TEventArgs> : IJsonClient
-        where TEventArgs : EventArgs
+    /// <typeparam name="TDefaultEventArgs"></typeparam>
+    public abstract class JsonClient<TDefaultEventArgs> : IJsonClient
+        where TDefaultEventArgs : EventArgs
     {
         #region Public Properties
 
-        public IEnumerable<string> ObservedStreams
+        public virtual IEnumerable<string> ObservedStreams
         {
             get { lock (_sync) { return _subscribers.Keys.ToArray(); } }
         }
@@ -31,7 +31,7 @@ namespace Binance.Client
 
         #region Private Fields
 
-        private readonly IDictionary<string, IList<Action<TEventArgs>>> _subscribers;
+        private readonly IDictionary<string, IList<Action<TDefaultEventArgs>>> _subscribers;
 
         private readonly object _sync = new object();
 
@@ -47,7 +47,7 @@ namespace Binance.Client
         {
             Logger = logger;
 
-            _subscribers = new Dictionary<string, IList<Action<TEventArgs>>>();
+            _subscribers = new Dictionary<string, IList<Action<TDefaultEventArgs>>>();
         }
 
         #endregion Constructors
@@ -63,12 +63,6 @@ namespace Binance.Client
         {
             try
             {
-                if (!_subscribers.ContainsKey(stream))
-                {
-                    Logger?.LogDebug($"{nameof(JsonClient<TEventArgs>)}.{nameof(HandleMessageAsync)} - Ignoring event for non-subscribed stream: \"{stream}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    return; // ignore.
-                }
-
                 _subscribers.TryGetValue(stream, out var callbacks);
 
                 await HandleMessageAsync(callbacks, stream, json, token)
@@ -76,7 +70,7 @@ namespace Binance.Client
             }
             catch (Exception e)
             {
-                Logger?.LogError(e, $"{nameof(JsonClient<TEventArgs>)}.{nameof(HandleMessageAsync)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogError(e, $"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(HandleMessageAsync)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
         }
 
@@ -84,54 +78,76 @@ namespace Binance.Client
 
         #region Protected Methods
 
-        protected abstract Task HandleMessageAsync(IEnumerable<Action<TEventArgs>> callbacks, string stream, string json, CancellationToken token = default);
+        protected abstract Task HandleMessageAsync(IEnumerable<Action<TDefaultEventArgs>> callbacks, string stream, string json, CancellationToken token = default);
 
-        protected virtual void SubscribeStream(string stream, Action<TEventArgs> callback)
+        protected void SubscribeStream(string stream, Action<TDefaultEventArgs> callback)
         {
-            Throw.IfNullOrWhiteSpace(stream, nameof(stream));
-
             lock (_sync)
             {
-                if (!_subscribers.ContainsKey(stream))
-                {
-                    Logger?.LogDebug($"{nameof(JsonClient<TEventArgs>)}.{nameof(SubscribeStream)}: Adding stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                    _subscribers[stream] = new List<Action<TEventArgs>>();
-                }
-
-                // ReSharper disable once InvertIf
-                if (callback != null && !_subscribers[stream].Contains(callback))
-                {
-                    Logger?.LogDebug($"{nameof(JsonClient<TEventArgs>)}.{nameof(SubscribeStream)}: Adding callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                    _subscribers[stream].Add(callback);
-                }
+                SubscribeStream(stream, callback, _subscribers);
             }
         }
 
-        protected virtual void UnsubscribeStream(string stream, Action<TEventArgs> callback)
+        protected virtual void SubscribeStream<TEventArgs>(string stream, Action<TEventArgs> callback, IDictionary<string, IList<Action<TEventArgs>>> subscribers)
         {
             Throw.IfNullOrWhiteSpace(stream, nameof(stream));
 
+            if (!subscribers.ContainsKey(stream))
+            {
+                Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(SubscribeStream)}: Adding stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                subscribers[stream] = new List<Action<TEventArgs>>();
+            }
+
+            // ReSharper disable once InvertIf
+            if (callback != null && !subscribers[stream].Contains(callback))
+            {
+                Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(SubscribeStream)}: Adding callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                subscribers[stream].Add(callback);
+            }
+        }
+
+        protected void UnsubscribeStream(string stream, Action<TDefaultEventArgs> callback)
+        {
             lock (_sync)
             {
-                if (callback != null && _subscribers.ContainsKey(stream))
+                UnsubscribeStream(stream, callback, _subscribers);
+            }
+        }
+
+        protected virtual void UnsubscribeStream<TEventArgs>(string stream, Action<TEventArgs> callback, IDictionary<string, IList<Action<TEventArgs>>> subscribers)
+        {
+            Throw.IfNullOrWhiteSpace(stream, nameof(stream));
+
+            if (callback != null && subscribers.ContainsKey(stream))
+            {
+                if (subscribers[stream].Contains(callback))
                 {
-                    if (_subscribers[stream].Contains(callback))
-                    {
-                        Logger?.LogDebug($"{nameof(JsonClient<TEventArgs>)}.{nameof(UnsubscribeStream)}: Removing callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(UnsubscribeStream)}: Removing callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-                        _subscribers[stream].Remove(callback);
-                    }
+                    subscribers[stream].Remove(callback);
                 }
+            }
 
-                // ReSharper disable once InvertIf
-                if (callback == null || _subscribers.ContainsKey(stream) && !_subscribers[stream].Any())
-                {
-                    Logger?.LogDebug($"{nameof(JsonClient<TEventArgs>)}.{nameof(UnsubscribeStream)}: Removing stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            // ReSharper disable once InvertIf
+            if (callback == null || (subscribers.ContainsKey(stream) && !subscribers[stream].Any()))
+            {
+                Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(UnsubscribeStream)}: Removing stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-                    _subscribers.Remove(stream);
-                }
+                subscribers.Remove(stream);
+            }
+        }
+
+        protected virtual void ReplaceStreamName(string oldStreamName, string newStreamName)
+        {
+            lock (_sync)
+            {
+                if (!_subscribers.TryGetValue(oldStreamName, out var callbacks))
+                    return;
+
+                _subscribers[newStreamName] = callbacks;
+                _subscribers.Remove(oldStreamName);
             }
         }
 

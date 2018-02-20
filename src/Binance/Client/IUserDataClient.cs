@@ -27,7 +27,8 @@ namespace Binance.Client
         /// <param name="listenKey">The listen key to subscribe.</param>
         /// <param name="user">The user.</param>
         /// <param name="callback">An event callback (optional).</param>
-        void Subscribe(string listenKey, IBinanceApiUser user, Action<UserDataEventArgs> callback);
+        void Subscribe<TEventArgs>(string listenKey, IBinanceApiUser user, Action<TEventArgs> callback)
+            where TEventArgs : UserDataEventArgs;
 
         /// <summary>
         /// Unsubscribe a callback from a listen key. If no callback is
@@ -35,6 +36,14 @@ namespace Binance.Client
         /// </summary>
         /// <param name="listenKey"></param>
         /// <param name="callback"></param>
-        void Unsubscribe(string listenKey, Action<UserDataEventArgs> callback);
+        void Unsubscribe<TEventArgs>(string listenKey, Action<TEventArgs> callback)
+            where TEventArgs : UserDataEventArgs;
+
+        /// <summary>
+        /// Replace an existing listen key with a new listen key.
+        /// </summary>
+        /// <param name="oldListenKey"></param>
+        /// <param name="newListenKey"></param>
+        void HandleListenKeyChange(string oldListenKey, string newListenKey);
     }
 }

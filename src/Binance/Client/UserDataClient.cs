@@ -27,12 +27,42 @@ namespace Binance.Client
 
         #endregion Public Events
 
+        #region Public Properties
+
+        public override IEnumerable<string> ObservedStreams
+        {
+            get
+            {
+                lock (_sync)
+                {
+                    return base.ObservedStreams
+                        .Concat(_accountUpdateSubscribers.Keys)
+                        .Concat(_orderUpdateSubscribers.Keys)
+                        .Concat(_accountTradeUpdateSubscribers.Keys)
+                        .Distinct()
+                        .ToArray();
+                }
+            }
+        }
+
+        #endregion Public Properties
+
         #region Protected Fields
 
-        protected readonly IDictionary<string, IBinanceApiUser> ListenKeys
+        protected readonly IDictionary<string, IBinanceApiUser> Users
             = new Dictionary<string, IBinanceApiUser>();
 
         #endregion Protected Fields
+
+        #region Private Fields
+
+        private readonly IDictionary<string, IList<Action<AccountUpdateEventArgs>>> _accountUpdateSubscribers;
+        private readonly IDictionary<string, IList<Action<OrderUpdateEventArgs>>> _orderUpdateSubscribers;
+        private readonly IDictionary<string, IList<Action<AccountTradeUpdateEventArgs>>> _accountTradeUpdateSubscribers;
+
+        private readonly object _sync = new object();
+
+        #endregion Private Fields
 
         #region Constructors
 
@@ -42,50 +72,102 @@ namespace Binance.Client
         /// <param name="logger">The logger.</param>
         public UserDataClient(ILogger<UserDataClient> logger = null)
             : base(logger)
-        { }
+        {
+            _accountUpdateSubscribers = new Dictionary<string, IList<Action<AccountUpdateEventArgs>>>();
+            _orderUpdateSubscribers = new Dictionary<string, IList<Action<OrderUpdateEventArgs>>>();
+            _accountTradeUpdateSubscribers = new Dictionary<string, IList<Action<AccountTradeUpdateEventArgs>>>();
+        }
 
         #endregion Construtors
 
         #region Public Methods
 
-        public virtual void Subscribe(string listenKey, IBinanceApiUser user, Action<UserDataEventArgs> callback)
+        public virtual void Subscribe<TEventArgs>(string listenKey, IBinanceApiUser user, Action<TEventArgs> callback)
+            where TEventArgs : UserDataEventArgs
         {
-            Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
-            Throw.IfNull(user, nameof(user));
-
             Logger?.LogDebug($"{nameof(UserDataClient)}.{nameof(Subscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-            // Subscribe callback (if provided) to listen key.
-            SubscribeStream(listenKey, callback);
+            var type = typeof(TEventArgs);
 
-            // If listen key is new.
-            // ReSharper disable once InvertIf
-            if (!ListenKeys.ContainsKey(listenKey))
+            if (type == typeof(AccountUpdateEventArgs))
+                Subscribe(listenKey, user, callback as Action<AccountUpdateEventArgs>, _accountUpdateSubscribers);
+            else if (type == typeof(OrderUpdateEventArgs))
+                Subscribe(listenKey, user, callback as Action<OrderUpdateEventArgs>, _orderUpdateSubscribers);
+            else if (type == typeof(AccountTradeUpdateEventArgs))
+                Subscribe(listenKey, user, callback as Action<AccountTradeUpdateEventArgs>, _accountTradeUpdateSubscribers);
+            else
+                Subscribe(listenKey, user, callback as Action<UserDataEventArgs>, null);
+        }
+
+        public virtual void Unsubscribe<TEventArgs>(string listenKey, Action<TEventArgs> callback)
+            where TEventArgs : UserDataEventArgs
+        {
+            Logger?.LogDebug($"{nameof(UserDataClient)}.{nameof(Unsubscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            var type = typeof(TEventArgs);
+
+            if (callback != null)
             {
-                // If a listen key exists with user.
-                if (ListenKeys.Any(_ => _.Value.Equals(user)))
-                    throw new InvalidOperationException($"{nameof(UserDataClient)}.{nameof(Subscribe)}: A listen key is already subscribed for this user.");
-
-                // Add listen key and user (for stream event handling).
-                ListenKeys[listenKey] = user;
+                if (type == typeof(AccountUpdateEventArgs))
+                    Unsubscribe(listenKey, callback as Action<AccountUpdateEventArgs>, _accountUpdateSubscribers);
+                else if (type == typeof(OrderUpdateEventArgs))
+                    Unsubscribe(listenKey, callback as Action<OrderUpdateEventArgs>, _orderUpdateSubscribers);
+                else if (type == typeof(AccountTradeUpdateEventArgs))
+                    Unsubscribe(listenKey, callback as Action<AccountTradeUpdateEventArgs>, _accountTradeUpdateSubscribers);
+                else
+                    Unsubscribe(listenKey, callback as Action<UserDataEventArgs>, null);
+            }
+            else
+            {
+                Unsubscribe(listenKey, null, _accountUpdateSubscribers);
+                Unsubscribe(listenKey, null, _orderUpdateSubscribers);
+                Unsubscribe(listenKey, null, _accountTradeUpdateSubscribers);
+                Unsubscribe<UserDataEventArgs>(listenKey, null, null);
             }
         }
 
-        public virtual void Unsubscribe(string listenKey, Action<UserDataEventArgs> callback)
+        public override void Unsubscribe()
         {
-            Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
-
-            Logger?.LogDebug($"{nameof(UserDataClient)}.{nameof(Unsubscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-            // Unsubscribe callback (if provided) from listen key.
-            UnsubscribeStream(listenKey, callback);
-
-            // If listen key was removed from subscribers (no callbacks).
-            if (!ObservedStreams.Contains(listenKey))
+            lock (_sync)
             {
-                // Remove listen key (and user).
-                ListenKeys.Remove(listenKey);
+                _accountUpdateSubscribers.Clear();
+                _orderUpdateSubscribers.Clear();
+                _accountTradeUpdateSubscribers.Clear();
             }
+
+            base.Unsubscribe();
+        }
+
+        public void HandleListenKeyChange(string oldStreamName, string newStreamName)
+        {
+            lock (_sync)
+            {
+                if (Users.TryGetValue(oldStreamName, out var user))
+                {
+                    Users[newStreamName] = user;
+                    Users.Remove(oldStreamName);
+                }
+
+                if (_accountUpdateSubscribers.TryGetValue(oldStreamName, out var accountUpdateCallbacks))
+                {
+                    _accountUpdateSubscribers[newStreamName] = accountUpdateCallbacks;
+                    _accountUpdateSubscribers.Remove(oldStreamName);
+                }
+
+                if (_orderUpdateSubscribers.TryGetValue(oldStreamName, out var orderUpdateCallbacks))
+                {
+                    _orderUpdateSubscribers[newStreamName] = orderUpdateCallbacks;
+                    _orderUpdateSubscribers.Remove(oldStreamName);
+                }
+
+                if (_accountTradeUpdateSubscribers.TryGetValue(oldStreamName, out var accountTradeCallbacks))
+                {
+                    _accountTradeUpdateSubscribers[newStreamName] = accountTradeCallbacks;
+                    _accountTradeUpdateSubscribers.Remove(oldStreamName);
+                }
+            }
+
+            base.ReplaceStreamName(oldStreamName, newStreamName);
         }
 
         #endregion Public Methods
@@ -94,13 +176,13 @@ namespace Binance.Client
 
         protected override Task HandleMessageAsync(IEnumerable<Action<UserDataEventArgs>> callbacks, string stream, string json, CancellationToken token = default)
         {
-            if (!ListenKeys.ContainsKey(stream))
+            if (!Users.ContainsKey(stream))
             {
                 Logger?.LogError($"{nameof(UserDataClient)}.{nameof(HandleMessageAsync)}: Unknown listen key (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 return Task.CompletedTask; // ignore.
             }
 
-            var user = ListenKeys[stream];
+            var user = Users[stream];
 
             //Logger?.LogDebug($"{nameof(UserDataClient)}: \"{json}\"");
 
@@ -136,11 +218,18 @@ namespace Binance.Client
 
                     try
                     {
+                        if (_accountUpdateSubscribers.TryGetValue(stream, out var subscribers))
+                        {
+                            foreach (var subcriber in subscribers)
+                                subcriber(eventArgs);
+                        }
+
                         if (callbacks != null)
                         {
                             foreach (var callback in callbacks)
                                 callback(eventArgs);
                         }
+
                         AccountUpdate?.Invoke(this, eventArgs);
                     }
                     catch (OperationCanceledException) { }
@@ -184,11 +273,18 @@ namespace Binance.Client
 
                         try
                         {
+                            if (_accountTradeUpdateSubscribers.TryGetValue(stream, out var subscribers))
+                            {
+                                foreach (var subcriber in subscribers)
+                                    subcriber(eventArgs);
+                            }
+
                             if (callbacks != null)
                             {
                                 foreach (var callback in callbacks)
                                     callback(eventArgs);
                             }
+
                             TradeUpdate?.Invoke(this, eventArgs);
                         }
                         catch (OperationCanceledException) { }
@@ -206,11 +302,18 @@ namespace Binance.Client
 
                         try
                         {
+                            if (_orderUpdateSubscribers.TryGetValue(stream, out var subscribers))
+                            {
+                                foreach (var subcriber in subscribers)
+                                    subcriber(eventArgs);
+                            }
+
                             if (callbacks != null)
                             {
                                 foreach (var callback in callbacks)
                                     callback(eventArgs);
                             }
+
                             OrderUpdate?.Invoke(this, eventArgs);
                         }
                         catch (OperationCanceledException) { }
@@ -243,6 +346,63 @@ namespace Binance.Client
         #endregion Protected Methods
 
         #region Private Methods
+
+        private void Subscribe<TEventArgs>(string listenKey, IBinanceApiUser user, Action<TEventArgs> callback, IDictionary<string, IList<Action<TEventArgs>>> subscribers)
+            where TEventArgs : UserDataEventArgs
+        {
+            Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
+            Throw.IfNull(user, nameof(user));
+
+            // Subscribe callback (if provided) to listen key.
+            if (subscribers == null)
+            {
+                SubscribeStream(listenKey, callback as Action<UserDataEventArgs>);
+            }
+            else
+            {
+                lock (_sync)
+                {
+                    SubscribeStream(listenKey, callback, subscribers);
+                }
+            }
+
+            // If listen key is new.
+            // ReSharper disable once InvertIf
+            if (!Users.ContainsKey(listenKey))
+            {
+                // If a listen key exists with user.
+                if (Users.Any(_ => _.Value.Equals(user)))
+                    throw new InvalidOperationException($"{nameof(UserDataClient)}.{nameof(Subscribe)}: A listen key is already subscribed for this user.");
+
+                // Add listen key and user (for stream event handling).
+                Users[listenKey] = user;
+            }
+        }
+
+        private void Unsubscribe<TEventArgs>(string listenKey, Action<TEventArgs> callback, IDictionary<string, IList<Action<TEventArgs>>> subscribers)
+        {
+            Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
+
+            if (subscribers == null)
+            {
+                // Unsubscribe callback (if provided) from listen key.
+                UnsubscribeStream(listenKey, callback as Action<UserDataEventArgs>);
+            }
+            else
+            {
+                lock (_sync)
+                {
+                    UnsubscribeStream(listenKey, callback, subscribers);
+                }
+            }
+
+            // If listen key was removed from subscribers (no callbacks).
+            if (!ObservedStreams.Contains(listenKey))
+            {
+                // Remove listen key (and user).
+                Users.Remove(listenKey);
+            }
+        }
 
         /// <summary>
         /// Deserialize and fill order instance.
