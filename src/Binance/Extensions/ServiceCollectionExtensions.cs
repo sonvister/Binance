@@ -1,10 +1,13 @@
 ﻿using System;
 using Binance.Api;
 using Binance.Cache;
+using Binance.Client;
+using Binance.Manager;
 using Binance.Serialization;
+using Binance.Stream;
+using Binance.Utility;
 using Binance.WebSocket;
 using Binance.WebSocket.Manager;
-using Binance.WebSocket.UserData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,7 +17,7 @@ namespace Binance
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddBinance(this IServiceCollection services)
+        public static IServiceCollection AddBinance(this IServiceCollection services, bool useSingleCombinedStream = false)
         {
             // API
             services.AddSingleton<IBinanceApiUserProvider, BinanceApiUserProvider>();
@@ -39,28 +42,68 @@ namespace Binance
             services.AddSingleton<IBinanceApi, BinanceApi>();
 
             // Cache
+            services.AddTransient<IAccountInfoCache, AccountInfoCache>();
+            services.AddTransient<IAggregateTradeCache, AggregateTradeCache>();
             services.AddTransient<ITradeCache, TradeCache>();
             services.AddTransient<IOrderBookCache, OrderBookCache>();
-            services.AddTransient<IAccountInfoCache, AccountInfoCache>();
             services.AddTransient<ICandlestickCache, CandlestickCache>();
-            services.AddTransient<IAggregateTradeCache, AggregateTradeCache>();
             services.AddTransient<ISymbolStatisticsCache, SymbolStatisticsCache>();
 
+            // Client
+            services.AddTransient<IAggregateTradeClient, AggregateTradeClient>();
+            services.AddTransient<ICandlestickClient, CandlestickClient>();
+            services.AddTransient<IDepthClient, DepthClient>();
+            services.AddTransient<ISingleUserDataClient, SingleUserDataClient>();
+            services.AddTransient<ISymbolStatisticsClient, SymbolStatisticsClient>();
+            services.AddTransient<ITradeClient, TradeClient>();
+            services.AddTransient<IUserDataClient, UserDataClient>();
+
+            // Manager
+            services.AddTransient<IAggregateTradeClientManager, AggregateTradeClientManager>();
+            services.AddTransient<ICandlestickClientManager, CandlestickClientManager>();
+            services.AddTransient<IDepthClientManager, DepthClientManager>();
+            services.AddTransient<ISymbolStatisticsClientManager, SymbolStatisticsClientManager>();
+            services.AddTransient<ITradeClientManager, TradeClientManager>();
+            services.AddTransient<IUserDataClientManager, UserDataClientManager>();
+
             // WebSocket
+            services.AddTransient<IWatchdogTimer, WatchdogTimer>();
             services.AddTransient<IWebSocketClient, DefaultWebSocketClient>();
-            services.AddTransient<IWebSocketStream, BinanceWebSocketStream>();
-            services.AddSingleton<IWebSocketStreamProvider, WebSocketStreamProvider>();
             services.AddTransient<ITradeWebSocketClient, TradeWebSocketClient>();
             services.AddTransient<IDepthWebSocketClient, DepthWebSocketClient>();
             services.AddTransient<ICandlestickWebSocketClient, CandlestickWebSocketClient>();
             services.AddTransient<IAggregateTradeWebSocketClient, AggregateTradeWebSocketClient>();
             services.AddTransient<ISymbolStatisticsWebSocketClient, SymbolStatisticsWebSocketClient>();
             services.AddTransient<IUserDataWebSocketClient, UserDataWebSocketClient>();
-            services.AddTransient<ISingleUserDataWebSocketClient, SingleUserDataWebSocketClient>();
-            services.AddTransient<IUserDataKeepAliveTimer, UserDataKeepAliveTimer>();
-            services.AddTransient<IUserDataKeepAliveTimerProvider, UserDataKeepAliveTimerProvider>();
-            services.AddTransient<IUserDataWebSocketManager, UserDataWebSocketManager>();
-            services.AddTransient<IBinanceWebSocketManager, BinanceWebSocketManager>();
+            services.AddTransient<IBinanceJsonClientManager, BinanceWebSocketClientManager>();
+            services.AddTransient<IBinanceWebSocketClientManager, BinanceWebSocketClientManager>();
+            services.AddSingleton<IUserDataWebSocketStreamControl, UserDataWebSocketStreamControl>();
+
+            if (useSingleCombinedStream)
+            {
+                services.AddSingleton<IJsonStream, BinanceWebSocketStream>();
+                services.AddSingleton<IWebSocketStream, BinanceWebSocketStream>();
+                services.AddSingleton<IBinanceWebSocketStream, BinanceWebSocketStream>();
+
+                services.AddSingleton<IJsonStreamController, JsonStreamController>();
+                services.AddSingleton<IWebSocketStreamController, WebSocketStreamController>();
+            }
+            else
+            {
+                services.AddTransient<IJsonStream, BinanceWebSocketStream>();
+                services.AddTransient<IWebSocketStream, BinanceWebSocketStream>();
+                services.AddTransient<IBinanceWebSocketStream, BinanceWebSocketStream>();
+
+                services.AddTransient<IJsonStreamController, JsonStreamController>();
+                services.AddTransient<IWebSocketStreamController, WebSocketStreamController>();
+            }
+
+            services.AddTransient<IAggregateTradeWebSocketClientManager, AggregateTradeWebSocketClientManager>();
+            services.AddTransient<ICandlestickWebSocketClientManager, CandlestickWebSocketClientManager>();
+            services.AddTransient<IDepthWebSocketClientManager, DepthWebSocketClientManager>();
+            services.AddTransient<ISymbolStatisticsWebSocketClientManager, SymbolStatisticsWebSocketClientManager>();
+            services.AddTransient<ITradeWebSocketClientManager, TradeWebSocketClientManager>();
+            services.AddTransient<IUserDataWebSocketClientManager, UserDataWebSocketClientManager>();
 
             // Serialization
             services.AddSingleton<IOrderBookTopSerializer, OrderBookTopSerializer>();

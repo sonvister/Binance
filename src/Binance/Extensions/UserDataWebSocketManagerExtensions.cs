@@ -14,7 +14,11 @@ namespace Binance.WebSocket.UserData
         /// <param name="user"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task SubscribeAndStreamAsync(this IUserDataWebSocketManager manager, IBinanceApiUser user, CancellationToken token)
-            => manager.SubscribeAndStreamAsync(user, null, token);
+        public static Task SubscribeAndStreamAsync(this _IUserDataWebSocketManager manager, IBinanceApiUser user, CancellationToken token)
+        {
+            Throw.IfNull(manager, nameof(manager));
+
+            return manager.SubscribeAndStreamAsync(user, null, token);
+        }
     }
 }
