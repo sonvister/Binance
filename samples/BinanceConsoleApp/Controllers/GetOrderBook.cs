@@ -38,10 +38,6 @@ namespace BinanceConsoleApp.Controllers
 
             OrderBook orderBook = null;
 
-            // TODO: If live order book cache is active (for symbol), get cached data.
-            //if (Program.OrderBookCache != null && Program.OrderBookCache.OrderBook.Symbol == symbol)
-            //    orderBook = Program.OrderBookCache.OrderBook; // get local cache.
-
             // Query order book from API, if needed.
             if (orderBook == null)
                 orderBook = await Program.Api.GetOrderBookAsync(symbol, limit, token);

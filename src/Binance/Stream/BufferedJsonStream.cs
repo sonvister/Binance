@@ -69,15 +69,9 @@ namespace Binance.Stream
 
         public void Subscribe(IJsonStreamObserver observer, params string[] streamNames)
         {
-            if (observer == null && (streamNames == null || !streamNames.Any()))
-            {
-                throw new ArgumentException($"{GetType().Name}.{nameof(Subscribe)}: An observer and/or a stream name must be specified.");
-            }
-
             if (streamNames == null || !streamNames.Any())
             {
-                SubscribeAll(observer);
-                return;
+                throw new ArgumentException($"{GetType().Name}.{nameof(Subscribe)}: A a stream name must be specified.");
             }
 
             lock (_sync)
@@ -92,7 +86,7 @@ namespace Binance.Stream
                         Subscribers[streamName] = new List<IJsonStreamObserver>();
                         StreamNames.Add(streamName);
 
-                        AbortWebSocket();
+                        AbortStreaming();
                     }
 
                     if (observer != null && !Subscribers[streamName].Contains(observer))
@@ -160,7 +154,7 @@ namespace Binance.Stream
             {
                 InitalizeBuffer(token);
 
-                token.Register(AbortWebSocket);
+                token.Register(AbortStreaming);
 
                 while (!token.IsCancellationRequested)
                 {
@@ -218,7 +212,7 @@ namespace Binance.Stream
         {
             Logger?.LogDebug($"{GetType().Name}.{nameof(Pause)}: Pause streaming.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             _isStreamingPaused = true;
-            AbortWebSocket();
+            AbortStreaming();
         }
 
         public void Resume()
@@ -317,24 +311,6 @@ namespace Binance.Stream
             }
         }
 
-        private void SubscribeAll(IJsonStreamObserver observer)
-        {
-            lock (_sync)
-            {
-                if (!Subscribers.Any())
-                    throw new InvalidOperationException($"{GetType().Name}.{nameof(SubscribeAll)}: Not subscribed to any streams.");
-
-                foreach (var streamAndSubscribers in Subscribers.ToArray())
-                {
-                    if (!streamAndSubscribers.Value.Contains(observer))
-                    {
-                        Logger?.LogDebug($"{GetType().Name}.{nameof(SubscribeAll)}: Adding observer of stream: \"{streamAndSubscribers.Key}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                        streamAndSubscribers.Value.Add(observer);
-                    }
-                }
-            }
-        }
-
         private void UnsubscribeAll()
         {
             lock (_sync)
@@ -342,7 +318,7 @@ namespace Binance.Stream
                 if (!Subscribers.Any())
                     return;
 
-                AbortWebSocket();
+                AbortStreaming();
 
                 Logger?.LogDebug($"{GetType().Name}.{nameof(UnsubscribeAll)}: Removing all streams.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 Subscribers.Clear();
@@ -354,13 +330,13 @@ namespace Binance.Stream
         {
             Logger?.LogDebug($"{GetType().Name}.{nameof(RemoveStream)}: Removing stream: \"{stream}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-            AbortWebSocket();
+            AbortStreaming();
 
             Subscribers.Remove(stream);
             StreamNames.Remove(stream);
         }
 
-        private void AbortWebSocket()
+        private void AbortStreaming()
         {
             _stopwatch.Restart();
 
@@ -373,7 +349,7 @@ namespace Binance.Stream
             }
             catch (Exception e)
             {
-                Logger?.LogError(e, $"{GetType().Name}.{nameof(AbortWebSocket)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogError(e, $"{GetType().Name}.{nameof(AbortStreaming)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
         }
 

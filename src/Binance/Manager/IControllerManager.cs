@@ -1,5 +1,6 @@
 ﻿using System;
 using Binance.Stream;
+using Binance.Utility;
 
 namespace Binance.Manager
 {
@@ -17,6 +18,6 @@ namespace Binance.Manager
         /// <summary>
         /// Get the watchdog timer.
         /// </summary>
-        //IWatchdogTimer WatchdogTimer { get; } // TODO
+        IWatchdogTimer Watchdog { get; }
     }
 }

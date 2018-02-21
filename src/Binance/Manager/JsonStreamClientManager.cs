@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Client;
 using Binance.Stream;
+using Binance.Utility;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Manager
@@ -51,6 +52,8 @@ namespace Binance.Manager
 
         public IJsonStreamController<TStream> Controller { get; }
 
+        public IWatchdogTimer Watchdog { get; }
+
         #endregion Public Properties
 
         #region Private Fields
@@ -78,11 +81,10 @@ namespace Binance.Manager
 
             Controller = controller;
 
-            // TODO
-            //WatchdogTimer = new WatchdogTimer(() => Controller.RestartAsync())
-            //{
-            //    Interval = TimeSpan.FromHours(1)
-            //};
+            Watchdog = new WatchdogTimer(() => Controller.Abort())
+            {
+                Interval = TimeSpan.FromHours(1)
+            };
         }
 
         #endregion Constructors
@@ -91,8 +93,7 @@ namespace Binance.Manager
 
         public override Task HandleMessageAsync(string stream, string json, CancellationToken token = default)
         {
-            // TODO
-            //Watchdog.Kick();
+            Watchdog.Kick();
 
             return base.HandleMessageAsync(stream, json, token);
         }
@@ -148,8 +149,7 @@ namespace Binance.Manager
                     {
                         Logger?.LogDebug($"{GetType().Name}.{nameof(HandleSubscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-                        // TODO
-                        //Watchdog.Kick();
+                        Watchdog.Kick();
 
                         _controllerActive = true;
 

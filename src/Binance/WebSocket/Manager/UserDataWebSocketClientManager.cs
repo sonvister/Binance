@@ -67,7 +67,7 @@ namespace Binance.WebSocket.Manager
                 }
                 catch (Exception e)
                 {
-                    Logger?.LogError(e, $"{nameof(UserDataWebSocketClientManager)}: Failed to update listen key."); // TODO
+                    Logger?.LogError(e, $"{nameof(UserDataWebSocketClientManager)}: Failed to update listen key.");
                 }
             };
         }

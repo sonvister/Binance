@@ -139,9 +139,6 @@ namespace Binance.Cache
 
         protected override void SubscribeToClient()
         {
-            if (_symbols == null) // TODO
-                return;
-
             if (!_symbols.Any())
             {
                 Client.Subscribe(ClientCallback);
@@ -154,9 +151,6 @@ namespace Binance.Cache
 
         protected override void UnsubscribeFromClient()
         {
-            if (_symbols == null) // TODO
-                return;
-
             if (!_symbols.Any())
             {
                 Client.Unsubscribe(ClientCallback);
