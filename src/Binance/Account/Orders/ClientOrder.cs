@@ -33,12 +33,14 @@ namespace Binance.Account.Orders
         public decimal Quantity { get; set; }
 
         /// <summary>
-        /// Get or set the client order ID.
+        /// Get or set the client order ID (newClientOrderId).
+        /// NOTE: This value is set internally after order placement.
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
         /// Get the transact time.
+        /// NOTE: This value is set internally after order placement.
         /// </summary>
         public DateTime Time { get; internal set; }
 
