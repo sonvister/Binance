@@ -25,7 +25,7 @@ namespace BinanceConsoleApp
     /// </summary>
     internal class AccountBalancesExample
     {
-        private static string _asset = Asset.BTC;
+        private static readonly string _asset = Asset.BTC;
 
         public static async Task ExampleMain(string[] args)
         {
@@ -61,7 +61,7 @@ namespace BinanceConsoleApp
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
 
                 using (var user = userProvider.CreateUser(key, secret))
-                using (var manager = services.GetService<IUserDataWebSocketClientManager>())
+                using (var manager = services.GetService<IUserDataWebSocketManager>())
                 {
                     // Query and display current account balance.
                     var account = await api.GetAccountInfoAsync(user);
@@ -133,7 +133,7 @@ namespace BinanceConsoleApp
 
                             if (a.NewListenKey == null)
                             {
-                                Console.WriteLine($"! Failed to get new listen key...");
+                                Console.WriteLine("! Failed to get new listen key...");
                                 return;
                             }
 

@@ -6,7 +6,7 @@ using Binance.Api;
 using Binance.Client.Events;
 using Xunit;
 
-namespace Binance.Tests.WebSocket.Events
+namespace Binance.Tests.Client.Events
 {
     public class TradeUpdateEventArgsTest
     {

@@ -43,7 +43,7 @@ namespace Binance.Client
         /// Constructor.
         /// </summary>
         /// <param name="logger"></param>
-        public JsonClient(ILogger<IJsonClient> logger = null)
+        protected JsonClient(ILogger<IJsonClient> logger = null)
         {
             Logger = logger;
 
@@ -63,6 +63,7 @@ namespace Binance.Client
         {
             try
             {
+                // ReSharper disable once InconsistentlySynchronizedField
                 _subscribers.TryGetValue(stream, out var callbacks);
 
                 await HandleMessageAsync(callbacks, stream, json, token)
@@ -131,6 +132,7 @@ namespace Binance.Client
             }
 
             // ReSharper disable once InvertIf
+            // ReSharper disable once ArrangeRedundantParentheses
             if (callback == null || (subscribers.ContainsKey(stream) && !subscribers[stream].Any()))
             {
                 Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(UnsubscribeStream)}: Removing stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");

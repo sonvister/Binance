@@ -33,27 +33,27 @@ namespace BinanceConsoleApp.Controllers
 
             if (enable)
             {
-                await Program.UserDataManager.SubscribeAsync<AccountUpdateEventArgs>(Program.User, HandleAccountUpdateEvent);
-                await Program.UserDataManager.SubscribeAsync<OrderUpdateEventArgs>(Program.User, HandleOrderUpdateEvent);
-                await Program.UserDataManager.SubscribeAsync<AccountTradeUpdateEventArgs>(Program.User, HandleTradeUpdateEvent);
+                await Program.UserDataManager.SubscribeAsync<AccountUpdateEventArgs>(Program.User, HandleAccountUpdateEvent, token);
+                await Program.UserDataManager.SubscribeAsync<OrderUpdateEventArgs>(Program.User, HandleOrderUpdateEvent, token);
+                await Program.UserDataManager.SubscribeAsync<AccountTradeUpdateEventArgs>(Program.User, HandleTradeUpdateEvent, token);
 
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
-                    Console.WriteLine($"  ...live user data feed ENABLED.");
+                    Console.WriteLine("  ...live user data feed ENABLED.");
                     Console.WriteLine();
                 }
             }
             else // disable.
             {
-                await Program.UserDataManager.UnsubscribeAsync<AccountUpdateEventArgs>(Program.User, HandleAccountUpdateEvent);
-                await Program.UserDataManager.UnsubscribeAsync<OrderUpdateEventArgs>(Program.User, HandleOrderUpdateEvent);
-                await Program.UserDataManager.UnsubscribeAsync<AccountTradeUpdateEventArgs>(Program.User, HandleTradeUpdateEvent);
+                await Program.UserDataManager.UnsubscribeAsync<AccountUpdateEventArgs>(Program.User, HandleAccountUpdateEvent, token);
+                await Program.UserDataManager.UnsubscribeAsync<OrderUpdateEventArgs>(Program.User, HandleOrderUpdateEvent, token);
+                await Program.UserDataManager.UnsubscribeAsync<AccountTradeUpdateEventArgs>(Program.User, HandleTradeUpdateEvent, token);
 
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine();
-                    Console.WriteLine($"  ...live user data feed DISABLED.");
+                    Console.WriteLine("  ...live user data feed DISABLED.");
                     Console.WriteLine();
                 }
             }

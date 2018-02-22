@@ -25,6 +25,9 @@ namespace Binance.WebSocket.Manager
         /// The DI constructor.
         /// </summary>
         /// <param name="aggregateTradeWebSocketClientManager"></param>
+        /// <param name="candlestickWebSocketClientManager"></param>
+        /// <param name="depthWebSocketClientManager"></param>
+        /// <param name="symbolStatisticsWebSocketClientManager"></param>
         /// <param name="tradeWebSocketClientManager"></param>
         /// <param name="logger"></param>
         public BinanceWebSocketClientManager(

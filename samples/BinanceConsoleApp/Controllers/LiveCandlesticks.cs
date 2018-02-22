@@ -5,7 +5,6 @@ using Binance;
 using Binance.Client;
 using Binance.Client.Events;
 using Binance.Market;
-using Binance.WebSocket;
 
 namespace BinanceConsoleApp.Controllers
 {

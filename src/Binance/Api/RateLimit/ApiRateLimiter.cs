@@ -116,7 +116,7 @@ namespace Binance.Api
                 throw new ObjectDisposedException(nameof(ApiRateLimiter));
         }
 
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (_disposed)
                 return;
@@ -135,7 +135,6 @@ namespace Binance.Api
             _disposed = true;
         }
 
-        // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
             Dispose(true);

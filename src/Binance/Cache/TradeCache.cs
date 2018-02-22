@@ -124,35 +124,51 @@ namespace Binance.Cache
 
         protected override async ValueTask<TradeCacheEventArgs> OnAction(TradeEventArgs @event)
         {
-            // If trades have not been initialized or are out-of-sync (gap in data).
-            while (_trades.Count == 0 || @event.Trade.Id > _trades.Last().Id + 1)
-            {
-                if (_trades.Count > 0)
-                {
-                    OutOfSync?.Invoke(this, EventArgs.Empty);
-                }
+            var synchronize = false;
 
+            lock (_sync)
+            {
+                // If trades have not been initialized or are out-of-sync (gap in data).
+                if (_trades.Count == 0 || @event.Trade.Id > _trades.Last().Id + 1)
+                {
+                    if (_trades.Count > 0)
+                    {
+                        OutOfSync?.Invoke(this, EventArgs.Empty);
+                    }
+
+                    synchronize = true;
+                }
+            }
+
+            if (synchronize)
+            {
                 await SynchronizeTradesAsync(_symbol, _limit, @event.Token)
                     .ConfigureAwait(false);
             }
 
             lock (_sync)
             {
+                if (_trades.Count == 0 || @event.Trade.Id > _trades.Last().Id + 1)
+                {
+                    Logger?.LogError($"{nameof(TradeCache)} ({_symbol}): Failed to synchronize trades.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    return null;
+                }
+
                 // Ignore trades older than the latest trade in queue.
                 if (@event.Trade.Id <= _trades.Last().Id)
                 {
-                    Logger?.LogDebug($"{nameof(TradeCache)} ({_symbol}): Ignoring event (trade ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                    Logger?.LogDebug($"{nameof(TradeCache)} ({_symbol}): Ignoring event (trade ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     return null;
                 }
 
                 var removed = _trades.Dequeue();
-                Logger?.LogDebug($"{nameof(TradeCache)} ({_symbol}): REMOVE trade (ID: {removed.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                Logger?.LogDebug($"{nameof(TradeCache)} ({_symbol}): REMOVE trade (ID: {removed.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 _trades.Enqueue(@event.Trade);
-                Logger?.LogDebug($"{nameof(TradeCache)} ({_symbol}): ADD trade (ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
-            }
+                Logger?.LogDebug($"{nameof(TradeCache)} ({_symbol}): ADD trade (ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-            return new TradeCacheEventArgs(_trades.ToArray());
+                return new TradeCacheEventArgs(_trades.ToArray());
+            }
         }
 
         #endregion Protected Methods
@@ -168,7 +184,7 @@ namespace Binance.Cache
         /// <returns></returns>
         private async Task SynchronizeTradesAsync(string symbol, int limit, CancellationToken token)
         {
-            Logger?.LogInformation($"{nameof(TradeCache)} ({_symbol}): Synchronizing trades...  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+            Logger?.LogInformation($"{nameof(TradeCache)} ({_symbol}): Synchronizing trades...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             var trades = await Api.GetTradesAsync(symbol, limit, token)
                 .ConfigureAwait(false);
@@ -184,7 +200,7 @@ namespace Binance.Cache
             }
 
             // ReSharper disable once PossibleMultipleEnumeration
-            Logger?.LogInformation($"{nameof(TradeCache)} ({_symbol}): Synchronization complete (latest trade ID: {trades.Last().Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+            Logger?.LogInformation($"{nameof(TradeCache)} ({_symbol}): Synchronization complete (latest trade ID: {trades.Last().Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
         }
 
         #endregion Private Methods

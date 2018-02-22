@@ -53,8 +53,11 @@ namespace Binance.WebSocket
         {
             var streams = ProvidedStreams;
 
+            // ReSharper disable once PossibleMultipleEnumeration
             var uri = streams.Count() == 1
+                // ReSharper disable once PossibleMultipleEnumeration
                 ? new Uri($"{BaseUri}/ws/{streams.Single()}")
+                // ReSharper disable once PossibleMultipleEnumeration
                 : new Uri($"{BaseUri}/stream?streams={string.Join("/", streams)}");
 
             Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: \"{uri.AbsoluteUri}\"");
@@ -67,8 +70,8 @@ namespace Binance.WebSocket
         {
             try
             {
-                string streamName;
-                IJsonStreamObserver[] subscribers;
+                //string streamName;
+                //IJsonStreamObserver[] subscribers;
 
                 // NOTE: Avoid locking... allowing for eventual consistency of subscribers.
                 //lock (_sync)
@@ -76,7 +79,7 @@ namespace Binance.WebSocket
                     var jObject = JObject.Parse(json);
 
                     // Get stream name.
-                    streamName = jObject["stream"]?.Value<string>();
+                    var streamName = jObject["stream"]?.Value<string>();
                     if (streamName != null)
                     {
                         // Get JSON data.
@@ -105,7 +108,7 @@ namespace Binance.WebSocket
                         return; // ignore.
 
                     // Get subscribers.
-                    subscribers = observers?.ToArray();
+                    var subscribers = observers?.ToArray();
                 //}
 
                 await NotifyListenersAsync(subscribers, streamName, json, token)

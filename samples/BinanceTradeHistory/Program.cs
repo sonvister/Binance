@@ -67,6 +67,7 @@ namespace BinanceTradeHistory
                     // Subscribe cache to symbol with limit and callback.
                     cache.Subscribe(symbol, limit, Display);
 
+                    // ReSharper disable once InconsistentlySynchronizedField
                     _message = "...press any key to continue.";
                     Console.ReadKey(true);
                 }
@@ -80,6 +81,7 @@ namespace BinanceTradeHistory
             }
         }
 
+        // ReSharper disable once UnusedMember.Local
         private static void AdvancedExampleMain()
         {
             try
@@ -127,6 +129,7 @@ namespace BinanceTradeHistory
                     // Begin streaming.
                     controller.Begin();
 
+                    // ReSharper disable once InconsistentlySynchronizedField
                     _message = "...press any key to continue.";
                     Console.ReadKey(true);
                 }
@@ -153,6 +156,7 @@ namespace BinanceTradeHistory
                     // Begin streaming.
                     controller.Begin();
 
+                    // ReSharper disable once InconsistentlySynchronizedField
                     _message = "...press any key to exit.";
                     Console.ReadKey(true);
                 }
@@ -169,6 +173,7 @@ namespace BinanceTradeHistory
 
         private static string _message;
 
+        // ReSharper disable once InconsistentNaming
         private static readonly object _sync = new object();
 
         private static void Display(AggregateTradeCacheEventArgs args)
@@ -189,6 +194,7 @@ namespace BinanceTradeHistory
         /// TEST
         /// </summary>
         /// <param name="args"></param>
+        // ReSharper disable once UnusedMember.Local
         private static void Display(TradeCacheEventArgs args)
         {
             lock (_sync)

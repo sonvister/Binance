@@ -34,6 +34,7 @@ namespace Binance.Tests.Utility
 
             var stopwatch = Stopwatch.StartNew();
 
+            // ReSharper disable once UnusedVariable
             var watchdog = new WatchdogTimer(() => stopwatch.Stop())
             {
                 Interval = interval
@@ -59,13 +60,15 @@ namespace Binance.Tests.Utility
 
             const int count = 4;
             const int delay = 500;
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 await Task.Delay(delay);
                 watchdog.Kick();
             }
 
+            // ReSharper disable once ArrangeRedundantParentheses
             Assert.True(stopwatch.ElapsedMilliseconds <= (count * delay) + 200);
+            // ReSharper disable once ArrangeRedundantParentheses
             Assert.True(stopwatch.ElapsedMilliseconds >= (count * delay) - 200);
         }
     }

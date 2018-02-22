@@ -17,11 +17,11 @@ namespace Binance.Utility
 
         #region Private Fields
 
-        private Timer _timer;
+        private readonly Timer _timer;
 
-        private Stopwatch _stopwatch;
+        private readonly Stopwatch _stopwatch;
 
-        private Action _onTimeout;
+        private readonly Action _onTimeout;
 
         #endregion Private Fields
 
@@ -61,11 +61,11 @@ namespace Binance.Utility
 
         private void OnTimer(object state)
         {
-            if (_stopwatch.Elapsed >= Interval)
-            {
-                _onTimeout();
-                _stopwatch.Restart();
-            }
+            if (_stopwatch.Elapsed < Interval)
+                return;
+
+            _onTimeout();
+            _stopwatch.Restart();
         }
 
         #endregion Private Methods
@@ -74,7 +74,7 @@ namespace Binance.Utility
 
         private bool _disposed;
 
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (_disposed)
                 return;

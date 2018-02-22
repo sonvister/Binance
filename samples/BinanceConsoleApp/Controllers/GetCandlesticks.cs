@@ -37,10 +37,7 @@ namespace BinanceConsoleApp.Controllers
                 int.TryParse(args[3], out limit);
             }
 
-            IEnumerable<Candlestick> candlesticks = null;
-
-            if (candlesticks == null)
-                candlesticks = await Program.Api.GetCandlesticksAsync(symbol, interval, limit, token: token);
+            var candlesticks = await Program.Api.GetCandlesticksAsync(symbol, interval, limit, token: token);
 
             lock (Program.ConsoleSync)
             {

@@ -103,7 +103,7 @@ namespace Binance
             services.AddTransient<IDepthWebSocketClientManager, DepthWebSocketClientManager>();
             services.AddTransient<ISymbolStatisticsWebSocketClientManager, SymbolStatisticsWebSocketClientManager>();
             services.AddTransient<ITradeWebSocketClientManager, TradeWebSocketClientManager>();
-            services.AddTransient<IUserDataWebSocketClientManager, UserDataWebSocketClientManager>();
+            services.AddTransient<IUserDataWebSocketManager, UserDataWebSocketClientManager>();
 
             // Serialization
             services.AddSingleton<IOrderBookTopSerializer, OrderBookTopSerializer>();

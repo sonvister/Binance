@@ -90,10 +90,13 @@ namespace Binance.Client
             var type = typeof(TEventArgs);
 
             if (type == typeof(AccountUpdateEventArgs))
+                // ReSharper disable once InconsistentlySynchronizedField
                 Subscribe(listenKey, user, callback as Action<AccountUpdateEventArgs>, _accountUpdateSubscribers);
             else if (type == typeof(OrderUpdateEventArgs))
+                // ReSharper disable once InconsistentlySynchronizedField
                 Subscribe(listenKey, user, callback as Action<OrderUpdateEventArgs>, _orderUpdateSubscribers);
             else if (type == typeof(AccountTradeUpdateEventArgs))
+                // ReSharper disable once InconsistentlySynchronizedField
                 Subscribe(listenKey, user, callback as Action<AccountTradeUpdateEventArgs>, _accountTradeUpdateSubscribers);
             else
                 Subscribe(listenKey, user, callback as Action<UserDataEventArgs>, null);
@@ -109,18 +112,24 @@ namespace Binance.Client
             if (callback != null)
             {
                 if (type == typeof(AccountUpdateEventArgs))
+                    // ReSharper disable once InconsistentlySynchronizedField
                     Unsubscribe(listenKey, callback as Action<AccountUpdateEventArgs>, _accountUpdateSubscribers);
                 else if (type == typeof(OrderUpdateEventArgs))
+                    // ReSharper disable once InconsistentlySynchronizedField
                     Unsubscribe(listenKey, callback as Action<OrderUpdateEventArgs>, _orderUpdateSubscribers);
                 else if (type == typeof(AccountTradeUpdateEventArgs))
+                    // ReSharper disable once InconsistentlySynchronizedField
                     Unsubscribe(listenKey, callback as Action<AccountTradeUpdateEventArgs>, _accountTradeUpdateSubscribers);
                 else
                     Unsubscribe(listenKey, callback as Action<UserDataEventArgs>, null);
             }
             else
             {
+                // ReSharper disable once InconsistentlySynchronizedField
                 Unsubscribe(listenKey, null, _accountUpdateSubscribers);
+                // ReSharper disable once InconsistentlySynchronizedField
                 Unsubscribe(listenKey, null, _orderUpdateSubscribers);
+                // ReSharper disable once InconsistentlySynchronizedField
                 Unsubscribe(listenKey, null, _accountTradeUpdateSubscribers);
                 Unsubscribe<UserDataEventArgs>(listenKey, null, null);
             }
@@ -167,7 +176,7 @@ namespace Binance.Client
                 }
             }
 
-            base.ReplaceStreamName(oldStreamName, newStreamName);
+            ReplaceStreamName(oldStreamName, newStreamName);
         }
 
         #endregion Public Methods
@@ -218,6 +227,7 @@ namespace Binance.Client
 
                     try
                     {
+                        // ReSharper disable once InconsistentlySynchronizedField
                         if (_accountUpdateSubscribers.TryGetValue(stream, out var subscribers))
                         {
                             foreach (var subcriber in subscribers)
@@ -273,6 +283,7 @@ namespace Binance.Client
 
                         try
                         {
+                            // ReSharper disable once InconsistentlySynchronizedField
                             if (_accountTradeUpdateSubscribers.TryGetValue(stream, out var subscribers))
                             {
                                 foreach (var subcriber in subscribers)
@@ -302,6 +313,7 @@ namespace Binance.Client
 
                         try
                         {
+                            // ReSharper disable once InconsistentlySynchronizedField
                             if (_orderUpdateSubscribers.TryGetValue(stream, out var subscribers))
                             {
                                 foreach (var subcriber in subscribers)

@@ -19,7 +19,7 @@ namespace Binance.Stream
 
         public IEnumerable<string> ProvidedStreams
         {
-            get { lock (_sync) { return StreamNames.ToArray(); } }
+            get { lock (Sync) { return StreamNames.ToArray(); } }
         }
 
         public bool IsStreaming { get; private set; }
@@ -32,7 +32,7 @@ namespace Binance.Stream
 
         protected readonly ICollection<string> StreamNames;
 
-        protected readonly object _sync = new object();
+        protected readonly object Sync = new object();
 
         #endregion Protected Fields
 
@@ -42,7 +42,7 @@ namespace Binance.Stream
 
         private CancellationTokenSource _cts;
 
-        private Stopwatch _stopwatch;
+        private readonly Stopwatch _stopwatch;
 
         #endregion Private Fields
 
@@ -74,7 +74,7 @@ namespace Binance.Stream
                 throw new ArgumentException($"{GetType().Name}.{nameof(Subscribe)}: A a stream name must be specified.");
             }
 
-            lock (_sync)
+            lock (Sync)
             {
                 foreach (var streamName in streamNames)
                 {
@@ -89,11 +89,11 @@ namespace Binance.Stream
                         AbortStreaming();
                     }
 
-                    if (observer != null && !Subscribers[streamName].Contains(observer))
-                    {
-                        Logger?.LogDebug($"{GetType().Name}.{nameof(Subscribe)}: Adding observer of stream: \"{streamName}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                        Subscribers[streamName].Add(observer);
-                    }
+                    if (observer == null || Subscribers[streamName].Contains(observer))
+                        continue;
+
+                    Logger?.LogDebug($"{GetType().Name}.{nameof(Subscribe)}: Adding observer of stream: \"{streamName}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Subscribers[streamName].Add(observer);
                 }
             }
         }
@@ -106,7 +106,7 @@ namespace Binance.Stream
                 return;
             }
 
-            lock (_sync)
+            lock (Sync)
             {
                 foreach (var streamName in streamNames)
                 {
@@ -159,12 +159,12 @@ namespace Binance.Stream
                 while (!token.IsCancellationRequested)
                 {
                     // Wait while paused or in transistion.
-                    await Task.Delay(100)
+                    await Task.Delay(100, token)
                         .ConfigureAwait(false);
 
-                    lock (_sync)
+                    lock (Sync)
                     {
-                        if (_isStreamingPaused || StreamNames.Count() == 0 || _stopwatch.ElapsedMilliseconds < 500)
+                        if (_isStreamingPaused || !StreamNames.Any() || _stopwatch.ElapsedMilliseconds < 500)
                             continue;
 
                         _cts = new CancellationTokenSource();
@@ -178,7 +178,7 @@ namespace Binance.Stream
                     catch (OperationCanceledException) { /* ignored */ }
                     finally
                     {
-                        lock (_sync)
+                        lock (Sync)
                         {
                             _cts.Dispose();
                             _cts = null;
@@ -291,7 +291,7 @@ namespace Binance.Stream
                 return;
             }
 
-            lock (_sync)
+            lock (Sync)
             {
                 foreach (var streamAndSubscribers in Subscribers.ToArray())
                 {
@@ -313,7 +313,7 @@ namespace Binance.Stream
 
         private void UnsubscribeAll()
         {
-            lock (_sync)
+            lock (Sync)
             {
                 if (!Subscribers.Any())
                     return;

@@ -72,7 +72,7 @@ namespace BinanceConsoleApp
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
 
                 using (var user = userProvider.CreateUser(key, secret))
-                using (var manager = services.GetService<IUserDataWebSocketClientManager>())
+                using (var manager = services.GetService<IUserDataWebSocketManager>())
                 {
                     // Query and display order book and current asset balance.
                     var balance = (await api.GetAccountInfoAsync(user)).GetBalance(asset);

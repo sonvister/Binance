@@ -38,6 +38,7 @@ namespace Binance.WebSocket.Manager
         /// Open user data stream.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
         Task<string> OpenStreamAsync(IBinanceApiUser user, CancellationToken token = default);
 
@@ -45,6 +46,7 @@ namespace Binance.WebSocket.Manager
         /// Close user data stream.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
         Task CloseStreamAsync(IBinanceApiUser user, CancellationToken token = default);
 

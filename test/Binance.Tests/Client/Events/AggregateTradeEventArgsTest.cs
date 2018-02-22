@@ -4,7 +4,7 @@ using Binance.Client.Events;
 using Binance.Market;
 using Xunit;
 
-namespace Binance.Tests.WebSocket.Events
+namespace Binance.Tests.Client.Events
 {
     public class AggregateTradeEventArgsTest
     {

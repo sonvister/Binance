@@ -36,11 +36,7 @@ namespace BinanceConsoleApp.Controllers
                 int.TryParse(args[2], out limit);
             }
 
-            OrderBook orderBook = null;
-
-            // Query order book from API, if needed.
-            if (orderBook == null)
-                orderBook = await Program.Api.GetOrderBookAsync(symbol, limit, token);
+            var orderBook = await Program.Api.GetOrderBookAsync(symbol, limit, token);
 
             lock (Program.ConsoleSync)
             {

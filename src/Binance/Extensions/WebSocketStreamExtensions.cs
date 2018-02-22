@@ -10,7 +10,7 @@ namespace Binance.WebSocket
         /// <returns></returns>
         public static bool IsCombined(this IWebSocketStream webSocket)
         {
-            return (webSocket is BinanceWebSocketStream binanceWebSocketStream)
+            return webSocket is BinanceWebSocketStream binanceWebSocketStream
                 && binanceWebSocketStream.IsCombined;
         }
     }

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace Binance.Stream
 {
     /// <summary>
-    /// An abstract <see cref="IBufferedJsonProvider"/> implemenation.
+    /// An abstract <see cref="IBufferedJsonProvider{TProvider}"/> implemenation.
     /// </summary>
     public abstract class BufferedJsonProvider<TProvider> : JsonProvider, IBufferedJsonProvider<TProvider>
         where TProvider : IJsonProvider

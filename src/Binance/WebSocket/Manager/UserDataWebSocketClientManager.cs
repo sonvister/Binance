@@ -11,9 +11,9 @@ using Microsoft.Extensions.Logging;
 namespace Binance.WebSocket.Manager
 {
     /// <summary>
-    /// The default <see cref="IUserDataWebSocketClientManager"/> implementation.
+    /// The default <see cref="IUserDataWebSocketManager"/> implementation.
     /// </summary>
-    public class UserDataWebSocketClientManager : UserDataClientManager<IWebSocketStream>, IUserDataWebSocketClientManager
+    public class UserDataWebSocketClientManager : UserDataClientManager<IWebSocketStream>, IUserDataWebSocketManager
     {
         #region Private Fields
 
@@ -79,7 +79,7 @@ namespace Binance.WebSocket.Manager
         public async Task SubscribeAsync<TEventArgs>(IBinanceApiUser user, Action<TEventArgs> callback, CancellationToken token = default)
             where TEventArgs : UserDataEventArgs
         {
-            var listenKey = await _streamControl.OpenStreamAsync(user)
+            var listenKey = await _streamControl.OpenStreamAsync(user, token)
                 .ConfigureAwait(false);
 
             HandleSubscribe(() => Client.Subscribe(listenKey, user, callback));
@@ -88,14 +88,14 @@ namespace Binance.WebSocket.Manager
         public async Task UnsubscribeAsync<TEventArgs>(IBinanceApiUser user, Action<TEventArgs> callback, CancellationToken token = default)
             where TEventArgs : UserDataEventArgs
         {
-            var listenKey = await _streamControl.GetStreamNameAsync(user)
+            var listenKey = await _streamControl.GetStreamNameAsync(user, token)
                 .ConfigureAwait(false);
 
             HandleUnsubscribe(() => Client.Unsubscribe(listenKey, callback));
 
             if (callback == null || !Controller.Stream.ProvidedStreams.Contains(listenKey))
             {
-                await _streamControl.CloseStreamAsync(user)
+                await _streamControl.CloseStreamAsync(user, token)
                     .ConfigureAwait(false);
             }
         }

@@ -122,7 +122,14 @@ namespace Binance.Cache
 
         protected override async ValueTask<CandlestickCacheEventArgs> OnAction(CandlestickEventArgs @event)
         {
-            if (_candlesticks.Count == 0)
+            bool synchronize;
+
+            lock (_sync)
+            {
+                synchronize = _candlesticks.Count == 0;
+            }
+
+            if (synchronize)
             {
                 await SynchronizeCandlesticksAsync(_symbol, _interval, _limit, @event.Token)
                     .ConfigureAwait(false);
@@ -137,9 +144,9 @@ namespace Binance.Cache
 
                 _candlesticks.Remove(candlestick ?? _candlesticks.First());
                 _candlesticks.Add(@event.Candlestick);
-            }
 
-            return new CandlestickCacheEventArgs(_candlesticks.ToArray());
+                return new CandlestickCacheEventArgs(_candlesticks.ToArray());
+            }
         }
 
         #endregion Protected Methods

@@ -17,7 +17,7 @@ namespace Binance.Cache
         /// Subscribe to a user.
         /// </summary>
         /// <param name="listenKey">The listen key to subscribe.</param>
-        /// <param name="symbol">The user.</param>
+        /// <param name="user">The user.</param>
         /// <param name="callback">The callback (optional).</param>
         void Subscribe(string listenKey, IBinanceApiUser user, Action<AccountInfoCacheEventArgs> callback);
     }

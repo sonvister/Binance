@@ -33,7 +33,7 @@ namespace BinanceConsoleApp
         public static IBinanceApiUser User;
 
         public static IBinanceWebSocketClientManager ClientManager;
-        public static IUserDataWebSocketClientManager UserDataManager;
+        public static IUserDataWebSocketManager UserDataManager;
 
         public static readonly object ConsoleSync = new object();
 
@@ -64,7 +64,8 @@ namespace BinanceConsoleApp
                     .Build();
 
                 // Configure services.
-               ServiceProvider = new ServiceCollection()
+                ServiceProvider = new ServiceCollection()
+                    // ReSharper disable once ArgumentsStyleLiteral
                     .AddBinance(useSingleCombinedStream: true) // add default Binance services.
 
                     // Use alternative, low-level, web socket client implementation.
@@ -116,7 +117,7 @@ namespace BinanceConsoleApp
                     }
                 };
 
-                UserDataManager = ServiceProvider.GetService<IUserDataWebSocketClientManager>();
+                UserDataManager = ServiceProvider.GetService<IUserDataWebSocketManager>();
 
                 // Instantiate all assembly command handlers.
                 foreach (var type in Assembly.GetExecutingAssembly().GetTypes())

@@ -8,9 +8,9 @@ using Binance.Manager;
 namespace Binance.WebSocket.Manager
 {
     /// <summary>
-    /// A user data web socket client manager.
+    /// A user data web socket manager.
     /// </summary>
-    public interface IUserDataWebSocketClientManager : IControllerManager<IWebSocketStream> //IUserDataClientManager<IWebSocketStream> // TODO
+    public interface IUserDataWebSocketManager : IControllerManager<IWebSocketStream> //IUserDataClientManager<IWebSocketStream> // TODO
     {
         /// <summary>
         /// The account update event.

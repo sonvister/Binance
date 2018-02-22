@@ -83,7 +83,7 @@ namespace Binance.Stream
             // If there are any new streams subscribed to by the client.
             if (streams.Any())
             {
-                // Subscribe the client to the streams.
+                // Subscribe the client to the stream(s).
                 Stream.Subscribe(this, streams);
             }
         }
@@ -102,7 +102,7 @@ namespace Binance.Stream
             // If there are any streams no longer subscribed to by the client.
             if (streams.Any())
             {
-                // Unsubscribe the client from the streams.
+                // Unsubscribe the client from the stream(s).
                 Stream.Unsubscribe(this, streams);
             }
         }

@@ -100,10 +100,9 @@ namespace Binance.WebSocket.Manager
 
             try
             {
-                if (_listenKeys.TryGetValue(user, out string listenKey))
-                    return listenKey;
-
-                return null;
+                return _listenKeys.TryGetValue(user, out var listenKey)
+                    ? listenKey
+                    : null;
             }
             finally
             {
@@ -337,7 +336,7 @@ namespace Binance.WebSocket.Manager
                 throw new ObjectDisposedException(nameof(UserDataWebSocketStreamControl));
         }
 
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (_disposed)
                 return;

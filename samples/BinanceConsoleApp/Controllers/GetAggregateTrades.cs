@@ -30,10 +30,7 @@ namespace BinanceConsoleApp.Controllers
                 int.TryParse(args[2], out limit);
             }
 
-            IEnumerable<AggregateTrade> trades = null;
-
-            if (trades == null)
-                trades = (await Program.Api.GetAggregateTradesAsync(symbol, limit, token)).Reverse();
+            var trades = (await Program.Api.GetAggregateTradesAsync(symbol, limit, token)).Reverse();
 
             lock (Program.ConsoleSync)
             {

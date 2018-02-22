@@ -60,7 +60,7 @@ namespace Binance.Manager
 
         private bool _controllerActive;
 
-        private Task Task = Task.CompletedTask;
+        private Task _task = Task.CompletedTask;
 
         private readonly object _sync = new object();
 
@@ -107,22 +107,22 @@ namespace Binance.Manager
                     base.Unsubscribe();
 
                     // Cancel streaming if there are no subscribed streams and controller is active.
-                    if (_controllerActive && !Stream.ProvidedStreams.Any())
+                    if (!_controllerActive || Stream.ProvidedStreams.Any())
+                        return;
+
+                    Logger?.LogDebug($"{GetType().Name}.{nameof(HandleUnsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                    _controllerActive = false;
+
+                    // Add controller cancel task continuation.
+                    _task = _task.ContinueWith(async _ =>
                     {
-                        Logger?.LogDebug($"{GetType().Name}.{nameof(HandleUnsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                        _controllerActive = false;
-
-                        // Add controller cancel task continuation.
-                        Task = Task.ContinueWith(async _ =>
+                        try { await Controller.CancelAsync().ConfigureAwait(false); }
+                        catch (Exception e)
                         {
-                            try { await Controller.CancelAsync().ConfigureAwait(false); }
-                            catch (Exception e)
-                            {
-                                Logger?.LogError(e, $"{GetType().Name}.{nameof(HandleUnsubscribe)}: Failed to cancel controller.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                            }
-                        });
-                    }
+                            Logger?.LogError(e, $"{GetType().Name}.{nameof(HandleUnsubscribe)}: Failed to cancel controller.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        }
+                    });
                 }
                 catch (Exception e)
                 {
@@ -145,24 +145,24 @@ namespace Binance.Manager
                     base.HandleSubscribe(subscribeAction);
 
                     // Begin streaming if there are subscribed streams and controller is not active.
-                    if (!_controllerActive && Stream.ProvidedStreams.Any())
+                    if (_controllerActive || !Stream.ProvidedStreams.Any())
+                        return;
+
+                    Logger?.LogDebug($"{GetType().Name}.{nameof(HandleSubscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                    Watchdog.Kick();
+
+                    _controllerActive = true;
+
+                    // Add controller begin task continuation.
+                    _task = _task.ContinueWith(_ =>
                     {
-                        Logger?.LogDebug($"{GetType().Name}.{nameof(HandleSubscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                        Watchdog.Kick();
-
-                        _controllerActive = true;
-
-                        // Add controller begin task continuation.
-                        Task = Task.ContinueWith(_ =>
+                        try { Controller.Begin(); }
+                        catch (Exception e)
                         {
-                            try { Controller.Begin(); }
-                            catch (Exception e)
-                            {
-                                Logger?.LogError(e, $"{GetType().Name}.{nameof(HandleUnsubscribe)}: Failed to begin controller.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                            }
-                        });
-                    }
+                            Logger?.LogError(e, $"{GetType().Name}.{nameof(HandleUnsubscribe)}: Failed to begin controller.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        }
+                    });
                 }
                 catch (Exception e)
                 {
@@ -181,22 +181,22 @@ namespace Binance.Manager
                     base.HandleUnsubscribe(unsubscribeAction);
 
                     // Cancel streaming if there are no subscribed streams and controller is active.
-                    if (_controllerActive && !Stream.ProvidedStreams.Any())
+                    if (!_controllerActive || Stream.ProvidedStreams.Any())
+                        return;
+
+                    Logger?.LogDebug($"{GetType().Name}.{nameof(HandleUnsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                    _controllerActive = false;
+
+                    // Add controller cancel task continuation.
+                    _task = _task.ContinueWith(async _ =>
                     {
-                        Logger?.LogDebug($"{GetType().Name}.{nameof(HandleUnsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                        _controllerActive = false;
-
-                        // Add controller cancel task continuation.
-                        Task = Task.ContinueWith(async _ =>
+                        try { await Controller.CancelAsync().ConfigureAwait(false); }
+                        catch (Exception e)
                         {
-                            try { await Controller.CancelAsync().ConfigureAwait(false); }
-                            catch (Exception e)
-                            {
-                                Logger?.LogError(e, $"{GetType().Name}.{nameof(HandleUnsubscribe)}: Failed to cancel controller.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                            }
-                        });
-                    }
+                            Logger?.LogError(e, $"{GetType().Name}.{nameof(HandleUnsubscribe)}: Failed to cancel controller.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        }
+                    });
                 }
                 catch (Exception e)
                 {

@@ -47,6 +47,7 @@ namespace Binance.Manager
         /// <param name="depthClientManager"></param>
         /// <param name="statisticsClientManager"></param>
         /// <param name="tradeClientManager"></param>
+        /// <param name="logger"></param>
         protected BinanceJsonClientManager(
             IAggregateTradeClientManager<TStream> aggregateTradeClientManager,
             ICandlestickClientManager<TStream> candlestickClientManager,

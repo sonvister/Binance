@@ -329,16 +329,16 @@ namespace Binance.Api
                 var s1 = $"{baseAsset}{market}";
                 var s2 = $"{quoteAsset}{market}";
 
-                if (Symbol.IsValid(s1) && Symbol.IsValid(s2))
-                {
-                    var t1 = api.GetPriceAsync(s1, token);
-                    var t2 = api.GetPriceAsync(s2, token);
+                if (!Symbol.IsValid(s1) || !Symbol.IsValid(s2))
+                    continue;
 
-                    await Task.WhenAll(t1, t2)
-                        .ConfigureAwait(false);
+                var t1 = api.GetPriceAsync(s1, token);
+                var t2 = api.GetPriceAsync(s2, token);
 
-                    return t1.Result.Value / t2.Result.Value;
-                }
+                await Task.WhenAll(t1, t2)
+                    .ConfigureAwait(false);
+
+                return t1.Result.Value / t2.Result.Value;
             }
 
             throw new Exception($"{nameof(IBinanceApi)}.{nameof(GetExchangeRateAsync)}: No symbols/markets available to calculate exchange rate.");

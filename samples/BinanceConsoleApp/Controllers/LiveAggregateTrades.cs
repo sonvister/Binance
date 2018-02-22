@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Binance;
 using Binance.Client;
 using Binance.Client.Events;
-using Binance.WebSocket;
 
 namespace BinanceConsoleApp.Controllers
 {

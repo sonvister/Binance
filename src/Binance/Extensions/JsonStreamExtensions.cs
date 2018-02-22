@@ -40,6 +40,7 @@ namespace Binance.Stream
         /// </summary>
         /// <param name="jsonStream"></param>
         /// <param name="observer"></param>
+        /// <param name="streamNames"></param>
         public static void Subscribe(this IJsonStream jsonStream, IJsonStreamObserver observer, IEnumerable<string> streamNames)
         {
             Throw.IfNull(jsonStream, nameof(jsonStream));
