@@ -93,7 +93,7 @@ namespace Binance.Api
                 _httpClient = new HttpClient
                 {
                     BaseAddress = uri,
-                    Timeout = TimeSpan.FromSeconds(60)
+                    Timeout = TimeSpan.FromSeconds(Options.HttpClientTimeoutDefaultSeconds)
                 };
             }
             catch (Exception e)

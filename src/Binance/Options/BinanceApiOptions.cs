@@ -36,6 +36,11 @@ namespace Binance
         public long? RecvWindowDefault { get; set; } = default;
 
         /// <summary>
+        /// Default HTTP client timeout (seconds).
+        /// </summary>
+        public int HttpClientTimeoutDefaultSeconds { get; set; } = 90;
+
+        /// <summary>
         /// Timestamp offset refresh period (minutes).
         /// </summary>
         public int TimestampOffsetRefreshPeriodMinutes { get; set; } = TimestampOffsetRefreshPeriodMinutesDefault;
