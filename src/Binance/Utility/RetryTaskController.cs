@@ -22,7 +22,7 @@ namespace Binance.Utility
 
         #region Public Methods
 
-        public override void Begin()
+        public override void Begin(Func<CancellationToken, Task> action = null, Action<Exception> onError = null)
         {
             ThrowIfDisposed();
 
@@ -38,12 +38,18 @@ namespace Binance.Utility
                 Cts = new CancellationTokenSource();
             }
 
+            if (action != null)
+                Action = action;
+
+            if (onError != null)
+                ErrorAction = onError;
+
             Task = Task.Run(async () =>
             {
                 while (!Cts.IsCancellationRequested)
                 {
                     try { await Action(Cts.Token).ConfigureAwait(false); }
-                    catch (OperationCanceledException) { }
+                    catch (OperationCanceledException) { /* ignored */ }
                     catch (Exception e)
                     {
                         if (!Cts.IsCancellationRequested)
@@ -55,15 +61,27 @@ namespace Binance.Utility
                         }
                     }
 
-                    if (!Cts.IsCancellationRequested)
+                    try
                     {
-                        await Task.Delay(RetryDelayMilliseconds, Cts.Token)
-                            .ConfigureAwait(false);
+                        if (!Cts.IsCancellationRequested)
+                        {
+                            await DelayAsync(Cts.Token).ConfigureAwait(false);
+                        }
                     }
+                    catch { /* ignored */ }
                 }
             });
         }
 
         #endregion Public Methods
+
+        #region Protected Methods
+
+        protected virtual Task DelayAsync(CancellationToken token)
+        {
+            return Task.Delay(RetryDelayMilliseconds, token);
+        }
+
+        #endregion Protected Methods
     }
 }

@@ -29,7 +29,7 @@ namespace Binance.WebSocket.Manager
         /// <see cref="IWebSocketStream"/>, but no logger.
         /// </summary>
         public UserDataWebSocketClientManager()
-            : this(new UserDataClient(), new WebSocketStreamController(new BinanceWebSocketStream()), new UserDataWebSocketStreamControl())
+            : this(new UserDataClient(), new BinanceWebSocketStreamController(), new UserDataWebSocketStreamControl())
         { }
 
         /// <summary>

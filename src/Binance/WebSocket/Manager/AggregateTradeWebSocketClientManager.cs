@@ -16,7 +16,7 @@ namespace Binance.WebSocket.Manager
         /// and default <see cref="IWebSocketStream"/>, but no logger.
         /// </summary>
         public AggregateTradeWebSocketClientManager()
-            : this(new AggregateTradeClient(), new WebSocketStreamController(new BinanceWebSocketStream()))
+            : this(new AggregateTradeClient(), new BinanceWebSocketStreamController())
         { }
 
         /// <summary>

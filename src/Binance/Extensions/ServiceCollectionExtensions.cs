@@ -86,7 +86,7 @@ namespace Binance
                 services.AddSingleton<IBinanceWebSocketStream, BinanceWebSocketStream>();
 
                 services.AddSingleton<IJsonStreamController, JsonStreamController>();
-                services.AddSingleton<IWebSocketStreamController, WebSocketStreamController>();
+                services.AddSingleton<IWebSocketStreamController, BinanceWebSocketStreamController>();
             }
             else
             {
@@ -95,7 +95,7 @@ namespace Binance
                 services.AddTransient<IBinanceWebSocketStream, BinanceWebSocketStream>();
 
                 services.AddTransient<IJsonStreamController, JsonStreamController>();
-                services.AddTransient<IWebSocketStreamController, WebSocketStreamController>();
+                services.AddTransient<IWebSocketStreamController, BinanceWebSocketStreamController>();
             }
 
             services.AddTransient<IAggregateTradeWebSocketClientManager, AggregateTradeWebSocketClientManager>();

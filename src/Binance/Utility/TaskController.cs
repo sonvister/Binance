@@ -55,7 +55,7 @@ namespace Binance.Utility
 
         #region Public Methods
 
-        public virtual void Begin()
+        public virtual void Begin(Func<CancellationToken, Task> action = null, Action<Exception> onError = null)
         {
             ThrowIfDisposed();
 
@@ -71,11 +71,17 @@ namespace Binance.Utility
                 Cts = new CancellationTokenSource();
             }
 
+            if (action != null)
+                Action = action;
+
+            if (onError != null)
+                ErrorAction = onError;
+
             Task = Task.Run(async () =>
             {
                 // ReSharper disable once InconsistentlySynchronizedField
                 try { await Action(Cts.Token).ConfigureAwait(false); }
-                catch (OperationCanceledException) { }
+                catch (OperationCanceledException) { /* ignored */  }
                 catch (Exception e)
                 {
                     // ReSharper disable once InconsistentlySynchronizedField
@@ -135,7 +141,7 @@ namespace Binance.Utility
         protected void OnError(Exception exception)
         {
             try { _error?.Invoke(this, new ErrorEventArgs(exception)); }
-            catch (Exception) { /* ignored */ }
+            catch { /* ignored */ }
         }
 
         #endregion Protected Methods

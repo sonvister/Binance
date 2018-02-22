@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Binance.Utility
@@ -23,7 +24,9 @@ namespace Binance.Utility
         /// <summary>
         /// Initiate the controller action.
         /// </summary>
-        void Begin();
+        /// <param name="action">optional.</param>
+        /// <param name="onError">optional.</param>
+        void Begin(Func<CancellationToken, Task> action = null, Action<Exception> onError = null);
 
         /// <summary>
         /// Abort the controller action.

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Binance.Stream;
 using Binance.Utility;
 
@@ -56,15 +58,14 @@ namespace Binance.Manager
         /// Begin streaming after verifying stream is not active
         /// and has at least one provided stream (and subscriber).
         /// </summary>
-        public override void Begin()
+        public override void Begin(Func<CancellationToken, Task> action = null, Action<Exception> onError = null)
         {
             if (!Stream.IsStreaming && Stream.ProvidedStreams.Any())
             {
-                base.Begin();
+                base.Begin(action, onError);
             }
         }
 
         #endregion Public Methods
     }
-
 }

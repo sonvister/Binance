@@ -16,7 +16,7 @@ namespace Binance.WebSocket.Manager
         /// and default <see cref="IWebSocketStream"/>, but no logger.
         /// </summary>
         public DepthWebSocketClientManager()
-            : this(new DepthClient(), new WebSocketStreamController(new BinanceWebSocketStream()))
+            : this(new DepthClient(), new BinanceWebSocketStreamController())
         { }
 
         /// <summary>

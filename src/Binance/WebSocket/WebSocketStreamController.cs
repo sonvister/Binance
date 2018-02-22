@@ -3,15 +3,15 @@ using Binance.Manager;
 
 namespace Binance.WebSocket
 {
-    public sealed class WebSocketStreamController : JsonStreamController<IWebSocketStream>, IWebSocketStreamController
+    public abstract class WebSocketStreamController : JsonStreamController<IWebSocketStream>, IWebSocketStreamController
     {
         /// <summary>
         /// Contstructor.
         /// </summary>
-        /// <param name="webSocket"></param>
+        /// <param name="stream"></param>
         /// <param name="onError"></param>
-        public WebSocketStreamController(IWebSocketStream webSocket, Action<Exception> onError = null)
-            : base(webSocket, onError)
+        public WebSocketStreamController(IWebSocketStream stream, Action<Exception> onError = null)
+            : base(stream, onError)
         { }
     }
 }
