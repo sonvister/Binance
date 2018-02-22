@@ -31,6 +31,9 @@ namespace BinancePriceChart
             //CombinedStreamsExample.ExampleMain();
         }
 
+        /// <summary>
+        /// Example using cache and manager.
+        /// </summary>
         private static void ExampleMain()
         {
             try
@@ -86,6 +89,10 @@ namespace BinancePriceChart
             }
         }
 
+        /// <summary>
+        /// Example using cache, web socket stream (or client), and controller.
+        /// </summary>
+        // ReSharper disable once UnusedMember.Local
         private static void AdvancedExampleMain()
         {
             try
@@ -178,6 +185,7 @@ namespace BinancePriceChart
 
         private static string _message;
 
+        // ReSharper disable once InconsistentNaming
         private static readonly object _sync = new object();
 
         private static void Display(CandlestickCacheEventArgs args)

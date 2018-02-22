@@ -51,7 +51,7 @@ namespace BinanceMarketDepth
 
                 Console.Clear(); // clear the display.
 
-                var limit = 5;
+                const int limit = 5;
 
                 // Create client.
                 var client = services.GetService<IDepthWebSocketClient>();
@@ -119,8 +119,10 @@ namespace BinanceMarketDepth
 
         private static string _message;
 
+        // ReSharper disable once InconsistentNaming
         private static readonly object _sync = new object();
 
+        // ReSharper disable once InconsistentNaming
         private static readonly IDictionary<string, OrderBookTop> _orderBookTops
             = new SortedDictionary<string, OrderBookTop>();
 

@@ -120,8 +120,10 @@ namespace BinancePriceChart
 
         private static string _message;
 
+        // ReSharper disable once InconsistentNaming
         private static readonly object _sync = new object();
 
+        // ReSharper disable once InconsistentNaming
         private static readonly IDictionary<string, Candlestick> _candlesticks
             = new SortedDictionary<string, Candlestick>();
 

@@ -123,7 +123,7 @@ namespace Binance.WebSocket.Manager
 
             try
             {
-                if (_listenKeys.TryGetValue(user, out string listenKey))
+                if (_listenKeys.TryGetValue(user, out var listenKey))
                     return listenKey;
 
                 listenKey = await _api.UserStreamStartAsync(user, token)

@@ -23,6 +23,10 @@ namespace BinanceMarketDepth
     /// </summary>
     internal class MultiCacheExample
     {
+        /// <summary>
+        /// Example with multiple controllers not using combined streams.
+        /// </summary>
+        /// <returns></returns>
         public static async Task ExampleMain()
         {
             try
@@ -46,7 +50,7 @@ namespace BinanceMarketDepth
 
                 Console.Clear(); // clear the display.
 
-                var limit = 5;
+                const int limit = 5;
 
                 var api = services.GetService<IBinanceApi>();
 
@@ -60,13 +64,13 @@ namespace BinanceMarketDepth
                 var ethCache = services.GetService<IOrderBookCache>();
 
                 // Create stream.
-                var webSocket1 = services.GetService<IBinanceWebSocketStream>();
-                var webSocket2 = services.GetService<IBinanceWebSocketStream>();
+                var stream1 = services.GetService<IBinanceWebSocketStream>();
+                var stream2 = services.GetService<IBinanceWebSocketStream>();
                 // NOTE: IBinanceWebSocketStream must be setup as Transient with DI (default).
 
                 // Initialize controllers.
-                using (var controller1 = new RetryTaskController(webSocket1.StreamAsync, HandleError))
-                using (var controller2 = new RetryTaskController(webSocket2.StreamAsync, HandleError))
+                using (var controller1 = new RetryTaskController(stream1.StreamAsync, HandleError))
+                using (var controller2 = new RetryTaskController(stream2.StreamAsync, HandleError))
                 {
                     btcCache.Subscribe(Symbol.BTC_USDT, limit,
                         evt =>
@@ -83,8 +87,8 @@ namespace BinanceMarketDepth
                         });
 
                     // Subscribe cache to stream (with observed streams).
-                    webSocket1.Subscribe(btcCache, btcCache.ObservedStreams);
-                    webSocket2.Subscribe(ethCache, ethCache.ObservedStreams);
+                    stream1.Subscribe(btcCache, btcCache.ObservedStreams);
+                    stream2.Subscribe(ethCache, ethCache.ObservedStreams);
                     // NOTE: This must be done after cache subscribe.
 
                     // Begin streaming.
@@ -92,7 +96,7 @@ namespace BinanceMarketDepth
                     controller2.Begin();
 
                     // Verify we are NOT using a shared/combined stream (not necessary).
-                    if (webSocket1.IsCombined() || webSocket2.IsCombined() || webSocket1 == webSocket2)
+                    if (stream1.IsCombined() || stream2.IsCombined() || stream1 == stream2)
                         throw new Exception("You ARE using combined streams :(");
 
                     Console.ReadKey(true);

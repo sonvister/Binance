@@ -23,6 +23,10 @@ namespace BinanceMarketDepth
     /// </summary>
     internal class MultiCacheCombinedStreamsExample
     {
+        /// <summary>
+        /// Example with single controller using combined streams.
+        /// </summary>
+        /// <returns></returns>
         public static async Task ExampleMain()
         {
             try
@@ -36,10 +40,6 @@ namespace BinanceMarketDepth
                 // Configure services.
                 var services = new ServiceCollection()
                     .AddBinance() // add default Binance services.
-
-                    // Use a single web socket stream (combined streams).
-                    .AddSingleton<IBinanceWebSocketStream, BinanceWebSocketStream>()
-
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
@@ -68,10 +68,6 @@ namespace BinanceMarketDepth
                     var btcOrderBook = await api.GetOrderBookAsync(Symbol.BTC_USDT, limit);
                     var ethOrderBook = await api.GetOrderBookAsync(Symbol.ETH_BTC, limit);
                     Display(btcOrderBook, ethOrderBook);
-
-                    ///////////////////////////////////////////////////////////////////////////
-                    // Use one controller and a singleton IBinanceWebSocket (combined streams).
-                    // NOTE: IWebSocketStream must be configured as Singleton in DI setup.
 
                     // Monitor order book and display updates in real-time.
                     btcCache.Subscribe(Symbol.BTC_USDT, limit,
@@ -113,6 +109,7 @@ namespace BinanceMarketDepth
             }
         }
 
+        // ReSharper disable once InconsistentNaming
         private static readonly object _displaySync = new object();
 
         private static void Display(params OrderBook[] orderBooks)

@@ -163,10 +163,10 @@ namespace Binance.Cache
                 }
 
                 var removed = _trades.Dequeue();
-                Logger?.LogDebug($"{nameof(AggregateTradeCache)} ({_symbol}): REMOVE aggregate trade (ID: {removed.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogTrace($"{nameof(AggregateTradeCache)} ({_symbol}): REMOVE aggregate trade (ID: {removed.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 _trades.Enqueue(@event.Trade);
-                Logger?.LogDebug($"{nameof(AggregateTradeCache)} ({_symbol}): ADD aggregate trade (ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogTrace($"{nameof(AggregateTradeCache)} ({_symbol}): ADD aggregate trade (ID: {@event.Trade.Id}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 return new AggregateTradeCacheEventArgs(_trades.ToArray());
             }

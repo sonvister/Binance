@@ -30,6 +30,9 @@ namespace BinanceTradeHistory
             //CombinedStreamsExample.ExampleMain();
         }
 
+        /// <summary>
+        /// Example using cache and manager.
+        /// </summary>
         private static void ExampleMain()
         {
             try
@@ -81,6 +84,9 @@ namespace BinanceTradeHistory
             }
         }
 
+        /// <summary>
+        /// Example using cache, web socket stream (or client), and controller.
+        /// </summary>
         // ReSharper disable once UnusedMember.Local
         private static void AdvancedExampleMain()
         {

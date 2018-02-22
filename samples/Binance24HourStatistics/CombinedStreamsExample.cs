@@ -115,8 +115,10 @@ namespace Binance24HourStatistics
 
         private static string _message;
 
+        // ReSharper disable once InconsistentNaming
         private static readonly object _sync = new object();
 
+        // ReSharper disable once InconsistentNaming
         private static readonly IDictionary<string, SymbolStatistics> _statistics
             = new SortedDictionary<string, SymbolStatistics>();
 

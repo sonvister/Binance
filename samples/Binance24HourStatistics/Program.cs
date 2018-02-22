@@ -27,14 +27,20 @@ namespace Binance24HourStatistics
     /// </summary>
     internal class Program
     {
-        private static async Task Main()
+        private static Task Main()
         {
-            await ExampleMain();
-            //await AdvancedExampleMain();
-            //CombinedStreamsExample.AdvancedExampleMain(); await Task.CompletedTask;
+            ExampleMain();
+            //AdvancedExampleMain();
+            //CombinedStreamsExample.AdvancedExampleMain();
+
+            return Task.CompletedTask;
         }
 
-        private static async Task ExampleMain()
+        /// <summary>
+        /// Example using cache and manager.
+        /// </summary>
+        /// <returns></returns>
+        private static void ExampleMain()
         {
             try
             {
@@ -59,12 +65,6 @@ namespace Binance24HourStatistics
                 var symbols = configuration.GetSection("Statistics:Symbols").Get<string[]>()
                     ?? new string[] { Symbol.BTC_USDT };
 
-                // Initialize API.
-                var api = services.GetService<IBinanceApi>();
-
-                // Query and display the 24-hour statistics.
-                Display(await Get24HourStatisticsAsync(api, symbols));
-
                 // Initialize manager (w/ internal controller).
                 using (var manager = services.GetService<ISymbolStatisticsWebSocketClientManager>())
                 {
@@ -74,7 +74,6 @@ namespace Binance24HourStatistics
                     // Initialize cache.
                     var cache = services.GetService<ISymbolStatisticsCache>();
                     cache.Client = manager; // use manager as client.
-                                            //var cache = new SymbolStatisticsCache(api, manager); // or w/o logger.
 
                     // Subscribe cache to symbols (and automatically begin streaming).
                     cache.Subscribe(Display, symbols);
@@ -91,7 +90,12 @@ namespace Binance24HourStatistics
             }
         }
 
-        private static async Task AdvancedExampleMain()
+        /// <summary>
+        /// Example using cache, web socket stream (or client), and controller.
+        /// </summary>
+        /// <returns></returns>
+        // ReSharper disable once UnusedMember.Local
+        private static void AdvancedExampleMain()
         {
             try
             {
@@ -115,12 +119,6 @@ namespace Binance24HourStatistics
                 // Get configuration settings.
                 var symbols = configuration.GetSection("Statistics:Symbols").Get<string[]>()
                     ?? new string[] { Symbol.BTC_USDT };
-
-                // Initialize API.
-                var api = services.GetService<IBinanceApi>();
-
-                // Query and display the 24-hour statistics.
-                Display(await Get24HourStatisticsAsync(api, symbols));
 
                 // Initialize cache.
                 var cache = services.GetService<ISymbolStatisticsCache>();
@@ -166,6 +164,7 @@ namespace Binance24HourStatistics
             return statistics.ToArray();
         }
 
+        // ReSharper disable once UnusedMember.Local
         private static void Display(SymbolStatisticsEventArgs args)
             => Display(args.Statistics);
 

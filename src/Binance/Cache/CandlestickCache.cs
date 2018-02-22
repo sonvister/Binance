@@ -135,7 +135,7 @@ namespace Binance.Cache
                     .ConfigureAwait(false);
             }
 
-            Logger?.LogDebug($"{nameof(CandlestickCache)} ({_symbol}): Updating candlestick (open time: {@event.Candlestick.OpenTime}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+            Logger?.LogTrace($"{nameof(CandlestickCache)} ({_symbol}): Updating candlestick (open time: {@event.Candlestick.OpenTime}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
             lock (_sync)
             {

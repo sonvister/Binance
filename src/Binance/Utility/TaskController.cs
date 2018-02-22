@@ -73,10 +73,12 @@ namespace Binance.Utility
 
             Task = Task.Run(async () =>
             {
+                // ReSharper disable once InconsistentlySynchronizedField
                 try { await Action(Cts.Token).ConfigureAwait(false); }
                 catch (OperationCanceledException) { }
                 catch (Exception e)
                 {
+                    // ReSharper disable once InconsistentlySynchronizedField
                     if (!Cts.IsCancellationRequested)
                     {
                         try { ErrorAction?.Invoke(e); } 
@@ -157,6 +159,7 @@ namespace Binance.Utility
             {
                 CancelAsync().GetAwaiter().GetResult();
 
+                // ReSharper disable once InconsistentlySynchronizedField
                 Cts?.Dispose();
             }
 

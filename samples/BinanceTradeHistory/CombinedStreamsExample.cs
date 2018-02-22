@@ -116,8 +116,10 @@ namespace BinanceTradeHistory
 
         private static string _message;
 
+        // ReSharper disable once InconsistentNaming
         private static readonly object _sync = new object();
 
+        // ReSharper disable once InconsistentNaming
         private static readonly IDictionary<string, AggregateTrade> _trades
             = new SortedDictionary<string, AggregateTrade>();
 
