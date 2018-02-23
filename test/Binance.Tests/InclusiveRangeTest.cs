@@ -6,6 +6,45 @@ namespace Binance.Tests
     public class InclusiveRangeTest
     {
         [Fact]
+        public void Throws()
+        {
+            Assert.Throws<ArgumentException>("minimum", () => new InclusiveRange(-1, 1, 1));
+            Assert.Throws<ArgumentException>("minimum", () => new InclusiveRange(0, 1, 1));
+            Assert.Throws<ArgumentException>("maximum", () => new InclusiveRange(1, -1, 1));
+            Assert.Throws<ArgumentException>("maximum", () => new InclusiveRange(1, 0, 1));
+            Assert.Throws<ArgumentException>("increment", () => new InclusiveRange(1, 1, -1));
+            Assert.Throws<ArgumentException>("increment", () => new InclusiveRange(1, 1, 0));
+        }
+
+        [Fact]
+        public void ImplicitOperators()
+        {
+            const decimal minimum = 0.001m;
+            const decimal maximum = 10.0m;
+            const decimal increment = 0.01m;
+
+            var range = (InclusiveRange)(minimum, maximum, increment);
+
+            Assert.Equal(minimum, range.Minimum);
+            Assert.Equal(maximum, range.Maximum);
+            Assert.Equal(increment, range.Increment);
+        }
+
+        [Fact]
+        public void Properties()
+        {
+            const decimal minimum = 0.001m;
+            const decimal maximum = 10.0m;
+            const decimal increment = 0.01m;
+
+            var range = new InclusiveRange(minimum, maximum, increment);
+
+            Assert.Equal(minimum, range.Minimum);
+            Assert.Equal(maximum, range.Maximum);
+            Assert.Equal(increment, range.Increment);
+        }
+
+        [Fact]
         public void IsValid()
         {
             const decimal minimum = 0.01m;

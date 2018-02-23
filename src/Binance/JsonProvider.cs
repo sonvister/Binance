@@ -55,7 +55,6 @@ namespace Binance
         protected void OnMessage(string json, string subject = null)
         {
             try { _message?.Invoke(this, new JsonMessageEventArgs(json, subject)); }
-            catch (OperationCanceledException) { }
             catch (Exception e)
             {
                 Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(Message)} event handler exception.");

@@ -2,20 +2,22 @@
 
 namespace Binance
 {
-    public sealed class TimeInterval : Tuple<long, long>
+    public sealed class TimeInterval : IChronological
     {
         #region Public Properties
 
-        public long StartTime => Item1;
+        public DateTime BeginTime { get; }
 
-        public long EndTime => Item2;
+        public DateTime EndTime { get; }
+
+        public DateTime Time => BeginTime;
 
         #endregion Public Properties
 
         #region Implicit Operators
 
         public static implicit operator (long, long)(TimeInterval interval)
-            => (interval.StartTime, interval.EndTime);
+            => (interval.BeginTime.ToTimestamp(), interval.EndTime.ToTimestamp());
 
         public static implicit operator TimeInterval((long, long) interval)
             => new TimeInterval(interval.Item1, interval.Item2);
@@ -24,9 +26,15 @@ namespace Binance
 
         #region Constructors
 
-        public TimeInterval(long startTime, long endTime)
-            : base (startTime, endTime)
+        public TimeInterval(long beginTime, long endTime)
+            : this(beginTime.ToDateTime(), endTime.ToDateTime())
         { }
+
+        public TimeInterval(DateTime beginTime, DateTime endTime)
+        {
+            BeginTime = beginTime;
+            EndTime = endTime;
+        }
 
         #endregion Constructors
     }
