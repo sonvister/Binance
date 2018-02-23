@@ -6,6 +6,51 @@ namespace Binance.Tests
     public class AssetTest
     {
         [Fact]
+        public void Throws()
+        {
+            const int precision = 8;
+
+            Assert.Throws<ArgumentNullException>("symbol", () => new Asset(null, precision));
+            Assert.Throws<ArgumentNullException>("symbol", () => new Asset(string.Empty, precision));
+        }
+
+        [Fact]
+        public void ImplicitOperators()
+        {
+            var btc1 = Asset.BTC;
+            var btc2 = new Asset(btc1.Symbol, btc1.Precision);
+            var btc3 = Asset.BCH;
+
+            Assert.True(btc1 == btc2);
+            Assert.True(btc1 != btc3);
+
+            Assert.True(btc1 == btc1.Symbol);
+            Assert.True(btc1 != btc3.Symbol);
+        }
+
+        [Fact]
+        public void Properties()
+        {
+            const string symbol = "BTC";
+            const int precision = 8;
+
+            var btc = new Asset(symbol, precision);
+
+            Assert.Equal(symbol, btc.Symbol);
+            Assert.Equal(precision, btc.Precision);
+        }
+
+        [Fact]
+        public void IsValid()
+        {
+            var validAsset = Asset.BTC;
+            var invalidAsset = new Asset("...", 0);
+
+            Assert.True(Asset.IsValid(validAsset));
+            Assert.False(Asset.IsValid(invalidAsset));
+        }
+
+        [Fact]
         public void IsAmountValid()
         {
             var asset = Asset.BTC;

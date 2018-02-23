@@ -16,7 +16,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1519260507889;
+        public static readonly long LastUpdateAt = 1519419194171;
 
         public static readonly Asset ADA = new Asset("ADA", 8);
         public static readonly Asset ADX = new Asset("ADX", 8);
@@ -325,9 +325,6 @@ namespace Binance
             if (string.IsNullOrWhiteSpace(symbol))
                 throw new ArgumentNullException(nameof(symbol));
 
-            if (precision <= 0)
-                throw new ArgumentException("Asset precision must be greater than 0.", nameof(precision));
-
             Symbol = symbol.ToUpperInvariant();
             Precision = precision;
         }
@@ -358,6 +355,12 @@ namespace Binance
 
         public override bool Equals(object obj)
         {
+            if (obj == null)
+                return false;
+
+            if (obj is Asset asset)
+                return Equals(asset);
+
             return Symbol.Equals(obj);
         }
 

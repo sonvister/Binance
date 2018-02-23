@@ -75,9 +75,6 @@ namespace Binance
             services.AddTransient<IAggregateTradeWebSocketClient, AggregateTradeWebSocketClient>();
             services.AddTransient<ISymbolStatisticsWebSocketClient, SymbolStatisticsWebSocketClient>();
             services.AddTransient<IUserDataWebSocketClient, UserDataWebSocketClient>();
-            services.AddTransient<IBinanceJsonClientManager, BinanceWebSocketClientManager>();
-            services.AddTransient<IBinanceWebSocketClientManager, BinanceWebSocketClientManager>();
-            services.AddSingleton<IUserDataWebSocketStreamControl, UserDataWebSocketStreamControl>();
 
             if (useSingleCombinedStream)
             {
@@ -98,12 +95,15 @@ namespace Binance
                 services.AddTransient<IWebSocketStreamController, BinanceWebSocketStreamController>();
             }
 
+            services.AddTransient<IBinanceJsonClientManager, BinanceWebSocketClientManager>();
+            services.AddTransient<IBinanceWebSocketClientManager, BinanceWebSocketClientManager>();
             services.AddTransient<IAggregateTradeWebSocketClientManager, AggregateTradeWebSocketClientManager>();
             services.AddTransient<ICandlestickWebSocketClientManager, CandlestickWebSocketClientManager>();
             services.AddTransient<IDepthWebSocketClientManager, DepthWebSocketClientManager>();
             services.AddTransient<ISymbolStatisticsWebSocketClientManager, SymbolStatisticsWebSocketClientManager>();
             services.AddTransient<ITradeWebSocketClientManager, TradeWebSocketClientManager>();
             services.AddTransient<IUserDataWebSocketManager, UserDataWebSocketClientManager>();
+            services.AddSingleton<IUserDataWebSocketStreamControl, UserDataWebSocketStreamControl>();
 
             // Serialization
             services.AddSingleton<IOrderBookTopSerializer, OrderBookTopSerializer>();

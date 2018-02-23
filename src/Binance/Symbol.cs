@@ -20,7 +20,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1519260507889;
+        public static readonly long LastUpdateAt = 1519419194171;
 
         // BTC
         public static readonly Symbol ADA_BTC = new Symbol(SymbolStatus.Trading, Asset.ADA, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -793,6 +793,12 @@ namespace Binance
 
         public override bool Equals(object obj)
         {
+            if (obj == null)
+                return false;
+
+            if (obj is Symbol symbol)
+                return Equals(symbol);
+
             return _symbol.Equals(obj);
         }
 
