@@ -242,7 +242,7 @@ namespace Binance.Api
 
         public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, int limit = default, CancellationToken token = default)
         {
-            var json = await HttpClient.GetAggregateTradesAsync(symbol, NullId, limit, 0, 0, token)
+            var json = await HttpClient.GetAggregateTradesAsync(symbol, NullId, limit, token: token)
                 .ConfigureAwait(false);
 
             try { return _aggregateTradeSerializer.DeserializeMany(json, symbol); }
@@ -257,7 +257,7 @@ namespace Binance.Api
             if (fromId < 0)
                 throw new ArgumentException($"ID ({nameof(fromId)}) must not be less than 0.", nameof(fromId));
 
-            var json = await HttpClient.GetAggregateTradesAsync(symbol, fromId, limit, 0, 0, token)
+            var json = await HttpClient.GetAggregateTradesAsync(symbol, fromId, limit, token: token)
                 .ConfigureAwait(false);
 
             try { return _aggregateTradeSerializer.DeserializeMany(json, symbol); }
@@ -267,13 +267,8 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesInAsync(string symbol, long startTime, long endTime, CancellationToken token = default)
+        public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, DateTime startTime, DateTime endTime, CancellationToken token = default)
         {
-            if (startTime <= 0)
-                throw new ArgumentException($"Timestamp ({nameof(startTime)}) must be greater than 0.", nameof(startTime));
-            if (endTime < startTime)
-                throw new ArgumentException($"Timestamp ({nameof(endTime)}) must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
-
             // NOTE: Limit does not apply when using start and end time.
             var json = await HttpClient.GetAggregateTradesAsync(symbol, NullId, default, startTime, endTime, token)
                 .ConfigureAwait(false);
@@ -281,28 +276,7 @@ namespace Binance.Api
             try { return _aggregateTradeSerializer.DeserializeMany(json, symbol); }
             catch (Exception e)
             {
-                throw NewFailedToParseJsonException(nameof(GetAggregateTradesInAsync), json, e);
-            }
-        }
-
-        public virtual async Task<IEnumerable<AggregateTrade>> GetAggregateTradesAsync(string symbol, DateTime startTime, DateTime endTime, CancellationToken token = default)
-        {
-            if (startTime.Kind != DateTimeKind.Utc)
-                throw new ArgumentException("Date/Time must be UTC.", nameof(startTime));
-            if (endTime.Kind != DateTimeKind.Utc)
-                throw new ArgumentException("Date/Time must be UTC.", nameof(endTime));
-
-            if (endTime < startTime)
-                throw new ArgumentException($"Time ({nameof(endTime)}) must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
-
-            // NOTE: Limit does not apply when using start and end time.
-            var json = await HttpClient.GetAggregateTradesAsync(symbol, NullId, default, startTime.ToTimestamp(), endTime.ToTimestamp(), token)
-                .ConfigureAwait(false);
-
-            try { return _aggregateTradeSerializer.DeserializeMany(json, symbol); }
-            catch (Exception e)
-            {
-                throw NewFailedToParseJsonException(nameof(GetAggregateTradesInAsync), json, e);
+                throw NewFailedToParseJsonException(nameof(GetAggregateTradesAsync), json, e);
             }
         }
 

@@ -33,10 +33,10 @@ namespace Binance.Tests.Api
         [Fact]
         public async Task GetAggregateTradesThrows()
         {
-            var now = DateTimeOffset.UtcNow;
+            var now = DateTime.UtcNow;
 
-            var startTime = DateTimeOffset.UtcNow.AddHours(-25).ToUnixTimeMilliseconds();
-            var endTime = now.ToUnixTimeMilliseconds();
+            var startTime = DateTime.UtcNow.AddHours(-25);
+            var endTime = now;
 
             await Assert.ThrowsAsync<ArgumentNullException>("symbol", () => _client.GetAggregateTradesAsync(null));
             await Assert.ThrowsAsync<ArgumentException>("endTime", () => _client.GetAggregateTradesAsync(Symbol.BTC_USDT, startTime: startTime, endTime: endTime));

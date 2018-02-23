@@ -214,7 +214,7 @@ namespace Binance.Api
         /// <param name="endTime">Timestamp in ms to get aggregate trades until INCLUSIVE.</param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> GetAggregateTradesAsync(this IBinanceHttpClient client, string symbol, long fromId = BinanceApi.NullId, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
+        public static async Task<string> GetAggregateTradesAsync(this IBinanceHttpClient client, string symbol, long fromId = BinanceApi.NullId, int limit = default, DateTime startTime = default, DateTime endTime = default, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
@@ -232,23 +232,35 @@ namespace Binance.Api
             if (fromId >= 0)
                 request.AddParameter("fromId", fromId);
 
-            if (startTime > 0)
-                request.AddParameter("startTime", startTime);
+            if (startTime != default)
+            {
+                if (startTime.Kind != DateTimeKind.Utc)
+                    throw new ArgumentException("Date/Time must be UTC.", nameof(startTime));
 
-            if (endTime > 0)
-                request.AddParameter("endTime", endTime);
+                request.AddParameter("startTime", startTime.ToTimestamp());
+            }
 
-            if (startTime <= 0 || endTime <= 0)
+            if (endTime != default)
+            {
+                if (endTime.Kind != DateTimeKind.Utc)
+                    throw new ArgumentException("Date/Time must be UTC.", nameof(endTime));
+
+                request.AddParameter("endTime", endTime.ToTimestamp());
+            }
+
+            if (startTime == default || endTime == default)
             {
                 if (limit > 0)
+                {
                     request.AddParameter("limit", limit);
+                }
             }
             else
             {
-                var start = DateTimeOffset.FromUnixTimeMilliseconds(startTime);
-                var end = DateTimeOffset.FromUnixTimeMilliseconds(endTime);
+                if (endTime < startTime)
+                    throw new ArgumentException($"Time ({nameof(endTime)}) must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
 
-                if ((end - start).Duration() >= TimeSpan.FromHours(24))
+                if ((endTime - startTime).Duration() >= TimeSpan.FromHours(24))
                     throw new ArgumentException($"The interval between {nameof(startTime)} and {nameof(endTime)} must be less than 24 hours.", nameof(endTime));
             }
 
