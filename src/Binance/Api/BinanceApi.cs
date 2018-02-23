@@ -280,7 +280,7 @@ namespace Binance.Api
             }
         }
 
-        public virtual async Task<IEnumerable<Candlestick>> GetCandlesticksAsync(string symbol, CandlestickInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
+        public virtual async Task<IEnumerable<Candlestick>> GetCandlesticksAsync(string symbol, CandlestickInterval interval, int limit = default, DateTime startTime = default, DateTime endTime = default, CancellationToken token = default)
         {
             var json = await HttpClient.GetCandlesticksAsync(symbol, interval, limit, startTime, endTime, token)
                 .ConfigureAwait(false);

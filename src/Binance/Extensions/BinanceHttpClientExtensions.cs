@@ -106,7 +106,7 @@ namespace Binance.Api
         /// </summary>
         /// <param name="client"></param>
         /// <param name="symbol"></param>
-        /// <param name="limit">Default 100; max 1000. Valid limits:[5, 10, 20, 50, 100, 500, 1000].</param>
+        /// <param name="limit">Default 100; max 1000. Valid limits: [5, 10, 20, 50, 100, 500, 1000].</param>
         /// <param name="token"></param>
         /// <returns></returns>
         public static async Task<string> GetOrderBookAsync(this IBinanceHttpClient client, string symbol, int limit = default, CancellationToken token = default)
@@ -280,7 +280,7 @@ namespace Binance.Api
         /// <param name="endTime"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> GetCandlesticksAsync(this IBinanceHttpClient client, string symbol, CandlestickInterval interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
+        public static async Task<string> GetCandlesticksAsync(this IBinanceHttpClient client, string symbol, CandlestickInterval interval, int limit = default, DateTime startTime = default, DateTime endTime = default, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
@@ -299,11 +299,21 @@ namespace Binance.Api
             if (limit > 0)
                 request.AddParameter("limit", limit);
 
-            if (startTime > 0)
-                request.AddParameter("startTime", startTime);
+            if (startTime != default)
+            {
+                if (startTime.Kind != DateTimeKind.Utc)
+                    throw new ArgumentException("Date/Time must be UTC.", nameof(startTime));
 
-            if (endTime > 0)
-                request.AddParameter("endTime", endTime);
+                request.AddParameter("startTime", startTime.ToTimestamp());
+            }
+
+            if (endTime != default)
+            {
+                if (endTime.Kind != DateTimeKind.Utc)
+                    throw new ArgumentException("Date/Time must be UTC.", nameof(endTime));
+
+                request.AddParameter("endTime", endTime.ToTimestamp());
+            }
 
             return await client.GetAsync(request, token)
                 .ConfigureAwait(false);
@@ -320,7 +330,7 @@ namespace Binance.Api
         /// <param name="endTime"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> GetCandlesticksAsync(this IBinanceHttpClient client, string symbol, string interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
+        public static async Task<string> GetCandlesticksAsync(this IBinanceHttpClient client, string symbol, string interval, int limit = default, DateTime startTime = default, DateTime endTime = default, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
 

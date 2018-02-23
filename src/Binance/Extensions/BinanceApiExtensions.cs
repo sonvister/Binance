@@ -116,7 +116,7 @@ namespace Binance.Api
         /// <param name="endTime"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Task<IEnumerable<Candlestick>> GetCandlesticksAsync(this IBinanceApi api, string symbol, string interval, int limit = default, long startTime = default, long endTime = default, CancellationToken token = default)
+        public static Task<IEnumerable<Candlestick>> GetCandlesticksAsync(this IBinanceApi api, string symbol, string interval, int limit = default, DateTime startTime = default, DateTime endTime = default, CancellationToken token = default)
         {
             Throw.IfNull(api, nameof(api));
 
@@ -138,12 +138,7 @@ namespace Binance.Api
         {
             Throw.IfNull(api, nameof(api));
 
-            if (startTime.Kind != DateTimeKind.Utc)
-                throw new ArgumentException("Date/Time must be UTC.", nameof(startTime));
-            if (endTime.Kind != DateTimeKind.Utc)
-                throw new ArgumentException("Date/Time must be UTC.", nameof(endTime));
-
-            return api.GetCandlesticksAsync(symbol, interval, limit, startTime.ToTimestamp(), endTime.ToTimestamp(), token);
+            return api.GetCandlesticksAsync(symbol, interval, limit, startTime, endTime, token);
         }
 
         /// <summary>
@@ -160,7 +155,7 @@ namespace Binance.Api
         {
             Throw.IfNull(api, nameof(api));
 
-            return api.GetCandlesticksAsync(symbol, interval, limit, timeInterval.Item1, timeInterval.Item2, token);
+            return api.GetCandlesticksAsync(symbol, interval, limit, timeInterval.Item1.ToDateTime(), timeInterval.Item2.ToDateTime(), token);
         }
 
         /// <summary>
