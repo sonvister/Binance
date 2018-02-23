@@ -2,7 +2,10 @@
 
 namespace Binance
 {
-    public class ErrorEventArgs : EventArgs
+    /// <summary>
+    /// Error event arguments.
+    /// </summary>
+    public sealed class ErrorEventArgs : EventArgs
     {
         #region Public Properties
 
@@ -18,7 +21,7 @@ namespace Binance
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="exception"></param>
+        /// <param name="exception">The exception (required).</param>
         public ErrorEventArgs(Exception exception)
         {
             Throw.IfNull(exception, nameof(exception));

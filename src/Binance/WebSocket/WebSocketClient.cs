@@ -50,7 +50,6 @@ namespace Binance.WebSocket
         protected void OnOpen()
         {
             try { Open?.Invoke(this, EventArgs.Empty); }
-            catch (OperationCanceledException) { }
             catch (Exception e)
             {
                 Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(Open)} event handler exception.");
@@ -63,7 +62,6 @@ namespace Binance.WebSocket
         protected void OnClose()
         {
             try { Close?.Invoke(this, EventArgs.Empty); }
-            catch (OperationCanceledException) { }
             catch (Exception e)
             {
                 Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(Close)} event handler exception.");

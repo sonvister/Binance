@@ -200,8 +200,6 @@ namespace Binance.Api
                     var json = await response.Content.ReadAsStringAsync()
                         .ConfigureAwait(false);
 
-                    //Logger?.LogDebug($"{nameof(BinanceHttpClient)}: \"{json}\"");
-
                     OnMessage(json, requestMessage.RequestUri.AbsolutePath);
 
                     return json;

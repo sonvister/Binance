@@ -1,10 +1,14 @@
-﻿namespace Binance
+﻿using System;
+
+namespace Binance
 {
     /// <summary>
     /// JSON message event arguments.
     /// </summary>
-    public sealed class JsonMessageEventArgs
+    public sealed class JsonMessageEventArgs : EventArgs
     {
+        #region Public Properties
+
         /// <summary>
         /// Get the event message subject (can be null).
         /// </summary>
@@ -14,6 +18,10 @@
         /// Get the event message (JSON object or array).
         /// </summary>
         public string Json { get; }
+
+        #endregion Public Properties
+
+        #region Constructors
 
         /// <summary>
         /// Constructor.
@@ -27,5 +35,7 @@
             Json = json;
             Subject = subject;
         }
+
+        #endregion Constructors
     }
 }
