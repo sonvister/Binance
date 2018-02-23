@@ -871,7 +871,7 @@ namespace Binance.Api
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> GetDepositsAsync(this IBinanceHttpClient client, IBinanceApiUser user, string asset = null, DepositStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default)
+        public static async Task<string> GetDepositsAsync(this IBinanceHttpClient client, IBinanceApiUser user, string asset = null, DepositStatus? status = null, DateTime startTime = default, DateTime endTime = default, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(user, nameof(user));
@@ -896,11 +896,21 @@ namespace Binance.Api
             if (status.HasValue)
                 request.AddParameter("status", (int)status);
 
-            if (startTime > 0)
-                request.AddParameter("startTime", startTime);
+            if (startTime != default)
+            {
+                if (startTime.Kind != DateTimeKind.Utc)
+                    throw new ArgumentException("Date/Time must be UTC.", nameof(startTime));
 
-            if (endTime > 0)
-                request.AddParameter("endTime", endTime);
+                request.AddParameter("startTime", startTime.ToTimestamp());
+            }
+
+            if (endTime != default)
+            {
+                if (endTime.Kind != DateTimeKind.Utc)
+                    throw new ArgumentException("Date/Time must be UTC.", nameof(endTime));
+
+                request.AddParameter("endTime", endTime.ToTimestamp());
+            }
 
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);
@@ -924,7 +934,7 @@ namespace Binance.Api
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> GetWithdrawalsAsync(this IBinanceHttpClient client, IBinanceApiUser user, string asset = null, WithdrawalStatus? status = null, long startTime = default, long endTime = default, long recvWindow = default, CancellationToken token = default)
+        public static async Task<string> GetWithdrawalsAsync(this IBinanceHttpClient client, IBinanceApiUser user, string asset = null, WithdrawalStatus? status = null, DateTime startTime = default, DateTime endTime = default, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(user, nameof(user));
@@ -949,11 +959,21 @@ namespace Binance.Api
             if (status.HasValue)
                 request.AddParameter("status", (int)status);
 
-            if (startTime > 0)
-                request.AddParameter("startTime", startTime);
+            if (startTime != default)
+            {
+                if (startTime.Kind != DateTimeKind.Utc)
+                    throw new ArgumentException("Date/Time must be UTC.", nameof(startTime));
 
-            if (endTime > 0)
-                request.AddParameter("endTime", endTime);
+                request.AddParameter("startTime", startTime.ToTimestamp());
+            }
+
+            if (endTime != default)
+            {
+                if (endTime.Kind != DateTimeKind.Utc)
+                    throw new ArgumentException("Date/Time must be UTC.", nameof(endTime));
+
+                request.AddParameter("endTime", endTime.ToTimestamp());
+            }
 
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);

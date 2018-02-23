@@ -319,7 +319,8 @@ namespace Binance.Api
         Task<string> WithdrawAsync(WithdrawRequest withdrawRequest, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
-        /// Get the deposit history.
+        /// Get the deposit history for an asset or all assets
+        /// within a specified time interval or not.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="asset"></param>
@@ -329,10 +330,11 @@ namespace Binance.Api
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceApiUser user, string asset, DepositStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = 0, CancellationToken token = default);
+        Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceApiUser user, string asset = null, DepositStatus? status = null, DateTime startTime = default, DateTime endTime = default, long recvWindow = 0, CancellationToken token = default);
 
         /// <summary>
-        /// Get the withdrawal history.
+        /// Get the withdrawal history for an asset or all assets
+        /// within a specified time interval or not.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="asset"></param>
@@ -342,7 +344,7 @@ namespace Binance.Api
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<Withdrawal>> GetWithdrawalsAsync(IBinanceApiUser user, string asset, WithdrawalStatus? status = null, long startTime = 0, long endTime = 0, long recvWindow = 0, CancellationToken token = default);
+        Task<IEnumerable<Withdrawal>> GetWithdrawalsAsync(IBinanceApiUser user, string asset = null, WithdrawalStatus? status = null, DateTime startTime = default, DateTime endTime = default, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get the deposit address for an asset.
