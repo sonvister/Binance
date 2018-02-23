@@ -44,8 +44,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Binance, Version=0.2.0.27, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Binance.0.2.0-alpha27\lib\net471\Binance.dll</HintPath>
+    <Reference Include="Binance, Version=0.2.0.35, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Binance.0.2.0-alpha35\lib\net471\Binance.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
