@@ -10,7 +10,7 @@ namespace Binance.Tests.WebSocket
         [Fact]
         public void SubscribeThrows()
         {
-            var client = new AggregateTradeWebSocketClient();
+            var client = new TradeWebSocketClient();
 
             Assert.Throws<ArgumentNullException>("symbol", () => client.Subscribe(null));
         }
