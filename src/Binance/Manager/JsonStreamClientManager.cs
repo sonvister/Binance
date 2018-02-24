@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Client;
@@ -58,10 +57,6 @@ namespace Binance.Manager
 
         #region Private Fields
 
-        private bool _controllerActive;
-
-        private Task _task = Task.CompletedTask;
-
         private readonly object _sync = new object();
 
         #endregion Private Fields
@@ -98,71 +93,33 @@ namespace Binance.Manager
             return base.HandleMessageAsync(stream, json, token);
         }
 
-        public override void Unsubscribe()
+        public virtual new IJsonClient Unsubscribe()
         {
             lock (_sync)
             {
-                try
-                {
-                    base.Unsubscribe();
-
-                    // Cancel streaming if there are no subscribed streams and controller is active.
-                    if (!_controllerActive || Stream.ProvidedStreams.Any())
-                        return;
-
-                    Logger?.LogDebug($"{GetType().Name}.{nameof(HandleUnsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                    _controllerActive = false;
-
-                    // Add controller cancel task continuation.
-                    _task = _task.ContinueWith(async _ =>
-                    {
-                        try { await Controller.CancelAsync().ConfigureAwait(false); }
-                        catch (Exception e)
-                        {
-                            Logger?.LogError(e, $"{GetType().Name}.{nameof(HandleUnsubscribe)}: Failed to cancel controller.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                        }
-                    });
-                }
+                try { base.Unsubscribe(); }
                 catch (Exception e)
                 {
                     Logger?.LogError(e, $"{GetType().Name}.{nameof(HandleUnsubscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     throw;
                 }
             }
+
+            return this;
         }
 
         #endregion Public Methods
 
         #region Protected Methods
 
-        protected override void HandleSubscribe(Action subscribeAction)
+        protected override IJsonClient HandleSubscribe(Action subscribeAction)
         {
             lock (_sync)
             {
                 try
                 {
-                    base.HandleSubscribe(subscribeAction);
-
-                    // Begin streaming if there are subscribed streams and controller is not active.
-                    if (_controllerActive || !Stream.ProvidedStreams.Any())
-                        return;
-
-                    Logger?.LogDebug($"{GetType().Name}.{nameof(HandleSubscribe)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
                     Watchdog.Kick();
-
-                    _controllerActive = true;
-
-                    // Add controller begin task continuation.
-                    _task = _task.ContinueWith(_ =>
-                    {
-                        try { Controller.Begin(); }
-                        catch (Exception e)
-                        {
-                            Logger?.LogError(e, $"{GetType().Name}.{nameof(HandleUnsubscribe)}: Failed to begin controller.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                        }
-                    });
+                    base.HandleSubscribe(subscribeAction);
                 }
                 catch (Exception e)
                 {
@@ -170,45 +127,28 @@ namespace Binance.Manager
                     throw;
                 }
             }
+
+            return this;
         }
 
-        protected override void HandleUnsubscribe(Action unsubscribeAction)
+        protected override IJsonClient HandleUnsubscribe(Action unsubscribeAction)
         {
             lock (_sync)
             {
-                try
-                {
-                    base.HandleUnsubscribe(unsubscribeAction);
-
-                    // Cancel streaming if there are no subscribed streams and controller is active.
-                    if (!_controllerActive || Stream.ProvidedStreams.Any())
-                        return;
-
-                    Logger?.LogDebug($"{GetType().Name}.{nameof(HandleUnsubscribe)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                    _controllerActive = false;
-
-                    // Add controller cancel task continuation.
-                    _task = _task.ContinueWith(async _ =>
-                    {
-                        try { await Controller.CancelAsync().ConfigureAwait(false); }
-                        catch (Exception e)
-                        {
-                            Logger?.LogError(e, $"{GetType().Name}.{nameof(HandleUnsubscribe)}: Failed to cancel controller.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                        }
-                    });
-                }
+                try { base.HandleUnsubscribe(unsubscribeAction); }
                 catch (Exception e)
                 {
                     Logger?.LogError(e, $"{GetType().Name}.{nameof(HandleUnsubscribe)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     throw;
                 }
             }
+
+            return this;
         }
 
         #endregion Protected Methods
 
-        #region IDisposable
+        #region IDisposable 
 
         private bool _disposed;
 
@@ -219,7 +159,7 @@ namespace Binance.Manager
 
             if (disposing)
             {
-                Controller?.Dispose();
+                Unsubscribe();
             }
 
             _disposed = true;
@@ -230,6 +170,6 @@ namespace Binance.Manager
             Dispose(true);
         }
 
-        #endregion IDisposable
+        #endregion IDisposable 
     }
 }

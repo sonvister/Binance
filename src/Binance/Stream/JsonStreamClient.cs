@@ -59,17 +59,22 @@ namespace Binance.Stream
         public virtual Task HandleMessageAsync(string stream, string json, CancellationToken token = default)
             => Client.HandleMessageAsync(stream, json, token);
 
-        public virtual void Unsubscribe()
+        public virtual IJsonClient Unsubscribe()
         {
+            // Unsubscribe this observer from all streams.
             Stream.Unsubscribe(this);
+
+            // Unsubscribe client from all streams.
             Client.Unsubscribe();
+
+            return this;
         }
 
         #endregion Public Methods
 
         #region Protected Methods
 
-        protected virtual void HandleSubscribe(Action subscribeAction)
+        protected virtual IJsonClient HandleSubscribe(Action subscribeAction)
         {
             // Get a snapshot of the current client subscribed streams.
             var streams = Client.ObservedStreams.ToArray();
@@ -86,9 +91,11 @@ namespace Binance.Stream
                 // Subscribe the client to the stream(s).
                 Stream.Subscribe(this, streams);
             }
+
+            return this;
         }
 
-        protected virtual void HandleUnsubscribe(Action unsubscribeAction)
+        protected virtual IJsonClient HandleUnsubscribe(Action unsubscribeAction)
         {
             // Get a snapshot of the current client subscribed streams.
             var streams = Client.ObservedStreams.ToArray();
@@ -105,6 +112,8 @@ namespace Binance.Stream
                 // Unsubscribe the client from the stream(s).
                 Stream.Unsubscribe(this, streams);
             }
+
+            return this;
         }
 
         #endregion Protected Methods

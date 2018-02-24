@@ -15,6 +15,12 @@ namespace Binance.Stream
     public abstract class BufferedJsonStream<TProvider> : BufferedJsonProvider<TProvider>, IJsonStream
         where TProvider : IJsonProvider
     {
+        #region Public Events
+
+        public event EventHandler<EventArgs> ProvidedStreamsChanged;
+
+        #endregion Public Events
+
         #region Public Properties
 
         public IEnumerable<string> ProvidedStreams
@@ -87,6 +93,7 @@ namespace Binance.Stream
                         StreamNames.Add(streamName);
 
                         AbortStreaming();
+                        OnProvidedStreamsChanged();
                     }
 
                     if (observer == null || Subscribers[streamName].Contains(observer))
@@ -152,8 +159,6 @@ namespace Binance.Stream
 
             try
             {
-                InitalizeBuffer(token);
-
                 token.Register(AbortStreaming);
 
                 while (!token.IsCancellationRequested)
@@ -168,6 +173,8 @@ namespace Binance.Stream
                             continue;
 
                         _cts = new CancellationTokenSource();
+
+                        InitalizeBuffer(_cts.Token);
                     }
 
                     try
@@ -180,6 +187,8 @@ namespace Binance.Stream
                     {
                         lock (Sync)
                         {
+                            FinalizeBuffer();
+
                             _cts.Dispose();
                             _cts = null;
                         }
@@ -201,8 +210,6 @@ namespace Binance.Stream
                 IsStreaming = false;
 
                 _isStreamingPaused = false;
-
-                FinalizeBuffer();
 
                 Logger?.LogDebug($"{GetType().Name}.{nameof(StreamAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
@@ -279,6 +286,15 @@ namespace Binance.Stream
             return Task.WhenAll(tasks);
         }
 
+        /// <summary>
+        /// Provided streams changed event.
+        /// </summary>
+        protected void OnProvidedStreamsChanged()
+        {
+            try { ProvidedStreamsChanged?.Invoke(this, EventArgs.Empty); }
+            catch (Exception) { /* ignored */ }
+        }
+
         #endregion Protected Methods
 
         #region Private Methods
@@ -323,6 +339,8 @@ namespace Binance.Stream
                 Logger?.LogDebug($"{GetType().Name}.{nameof(UnsubscribeAll)}: Removing all streams.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 Subscribers.Clear();
                 StreamNames.Clear();
+
+                OnProvidedStreamsChanged();
             }
         }
 
@@ -334,6 +352,8 @@ namespace Binance.Stream
 
             Subscribers.Remove(stream);
             StreamNames.Remove(stream);
+
+            OnProvidedStreamsChanged();
         }
 
         private void AbortStreaming()
@@ -342,9 +362,12 @@ namespace Binance.Stream
 
             try
             {
-                if (!_cts?.IsCancellationRequested ?? false)
+                lock (Sync)
                 {
-                    _cts.Cancel();
+                    if (!_cts?.IsCancellationRequested ?? false)
+                    {
+                        _cts.Cancel();
+                    }
                 }
             }
             catch (Exception e)

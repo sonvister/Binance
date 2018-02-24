@@ -14,8 +14,9 @@ namespace Binance.Client
         IEnumerable<string> ObservedStreams { get; }
 
         /// <summary>
-        /// Unsubscribe all callbacks.
+        /// Unsubscribe all streams (and callbacks).
         /// </summary>
-        void Unsubscribe();
+        /// <returns></returns>
+        IJsonClient Unsubscribe();
     }
 }

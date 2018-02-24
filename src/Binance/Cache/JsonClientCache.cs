@@ -78,7 +78,7 @@ namespace Binance.Cache
         public Task HandleMessageAsync(string stream, string json, CancellationToken token = default)
             => _client.HandleMessageAsync(stream, json, token);
 
-        public abstract void Unsubscribe();
+        public abstract IJsonClient Unsubscribe();
 
         #endregion Public Methods
 

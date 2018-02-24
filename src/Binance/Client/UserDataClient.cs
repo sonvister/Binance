@@ -135,7 +135,7 @@ namespace Binance.Client
             }
         }
 
-        public override void Unsubscribe()
+        public override IJsonClient Unsubscribe()
         {
             lock (_sync)
             {
@@ -144,7 +144,7 @@ namespace Binance.Client
                 _accountTradeUpdateSubscribers.Clear();
             }
 
-            base.Unsubscribe();
+            return base.Unsubscribe();
         }
 
         public void HandleListenKeyChange(string oldStreamName, string newStreamName)

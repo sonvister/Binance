@@ -25,5 +25,11 @@ namespace Binance.WebSocket
         { }
 
         #endregion Constructors
+
+        #region Public Methods
+
+        public virtual new TClient Unsubscribe() => (TClient)base.Unsubscribe();
+
+        #endregion Public Methods
     }
 }

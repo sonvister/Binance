@@ -35,6 +35,14 @@ namespace Binance.Manager
 
         #endregion Public Properties
 
+        #region Private Fields
+
+        private Task _task = Task.CompletedTask;
+
+        private readonly object _sync = new object();
+
+        #endregion Private Fields
+
         #region Constructors
 
         /// <summary>
@@ -48,6 +56,8 @@ namespace Binance.Manager
             Throw.IfNull(stream, nameof(stream));
 
             Stream = stream;
+
+            Stream.ProvidedStreamsChanged += OnProvidedStreamsChanged;
         }
 
         #endregion Constructors
@@ -67,5 +77,61 @@ namespace Binance.Manager
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        /// Automatically start/stop streaming based on provided streams.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnProvidedStreamsChanged(object sender, EventArgs args)
+        {
+            lock (_sync)
+            {
+                if (_task.IsCompleted)
+                {
+                    _task = Task.Delay(250).ContinueWith(async _ =>
+                    {
+                        try
+                        {
+                            if (!Stream.IsStreaming && Stream.ProvidedStreams.Any())
+                            {
+                                base.Begin();
+                            }
+                            else if (Stream.IsStreaming && !Stream.ProvidedStreams.Any())
+                            {
+                                await CancelAsync()
+                                    .ConfigureAwait(false);
+                            }
+                        }
+                        catch { /* ignored */ }
+                    });
+                }
+            }
+        }
+
+        #endregion Private Methods
+
+        #region IDisposable
+
+        private bool _disposed;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                Stream.ProvidedStreamsChanged -= OnProvidedStreamsChanged;
+            }
+
+            _disposed = true;
+
+            base.Dispose(disposing);
+        }
+
+        #endregion IDisposable
     }
 }

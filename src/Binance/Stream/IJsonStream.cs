@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,6 +10,11 @@ namespace Binance.Stream
     /// </summary>
     public interface IJsonStream : IJsonProvider
     {
+        /// <summary>
+        /// Provided streams changed event.
+        /// </summary>
+        event EventHandler<EventArgs> ProvidedStreamsChanged;
+
         /// <summary>
         /// Get the flag indicating if the stream is active.
         /// </summary>

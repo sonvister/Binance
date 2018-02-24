@@ -86,10 +86,10 @@ namespace Binance.Cache
             SubscribeToClient();
         }
 
-        public override void Unsubscribe()
+        public override IJsonClient Unsubscribe()
         {
             if (_symbol == null)
-                return;
+                return this;
 
             UnsubscribeFromClient();
             OnUnsubscribe();
@@ -101,6 +101,8 @@ namespace Binance.Cache
 
             _symbol = default;
             _limit = default;
+
+            return this;
         }
 
         #endregion Public Methods

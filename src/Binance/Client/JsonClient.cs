@@ -54,9 +54,11 @@ namespace Binance.Client
 
         #region Public Methods
 
-        public virtual void Unsubscribe()
+        public virtual IJsonClient Unsubscribe()
         {
             lock (_sync) { _subscribers.Clear(); }
+
+            return this;
         }
 
         public virtual async Task HandleMessageAsync(string stream, string json, CancellationToken token)

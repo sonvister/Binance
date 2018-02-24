@@ -65,11 +65,13 @@ namespace Binance.Manager
 
         #region Public Methods
 
-        public virtual void Subscribe(string symbol, Action<AggregateTradeEventArgs> callback)
-            => HandleSubscribe(() => Client.Subscribe(symbol, callback));
+        public virtual IAggregateTradeClient Subscribe(string symbol, Action<AggregateTradeEventArgs> callback)
+            => (IAggregateTradeClient)HandleSubscribe(() => Client.Subscribe(symbol, callback));
 
-        public virtual void Unsubscribe(string symbol, Action<AggregateTradeEventArgs> callback)
-            => HandleUnsubscribe(() => Client.Unsubscribe(symbol, callback));
+        public virtual IAggregateTradeClient Unsubscribe(string symbol, Action<AggregateTradeEventArgs> callback)
+            => (IAggregateTradeClient)HandleUnsubscribe(() => Client.Unsubscribe(symbol, callback));
+
+        public virtual new IAggregateTradeClient Unsubscribe() => (IAggregateTradeClient)base.Unsubscribe();
 
         #endregion Public Methods
     }
