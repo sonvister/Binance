@@ -15,6 +15,7 @@ namespace Binance.Client
         /// </summary>
         /// <param name="symbol">The symbol to subscribe.</param>
         /// <param name="callback">An event callback.</param>
+        /// <returns></returns>
         ITradeClient Subscribe(string symbol, Action<TradeEventArgs> callback);
 
         /// <summary>
@@ -23,6 +24,7 @@ namespace Binance.Client
         /// </summary>
         /// <param name="symbol"></param>
         /// <param name="callback"></param>
+        /// <returns></returns>
         ITradeClient Unsubscribe(string symbol, Action<TradeEventArgs> callback);
 
         /// <summary>

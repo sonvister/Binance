@@ -82,7 +82,7 @@ namespace Binance.Client
 
         #region Public Methods
 
-        public virtual void Subscribe<TEventArgs>(string listenKey, IBinanceApiUser user, Action<TEventArgs> callback)
+        public virtual IUserDataClient Subscribe<TEventArgs>(string listenKey, IBinanceApiUser user, Action<TEventArgs> callback)
             where TEventArgs : UserDataEventArgs
         {
             Logger?.LogDebug($"{nameof(UserDataClient)}.{nameof(Subscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
@@ -100,9 +100,11 @@ namespace Binance.Client
                 Subscribe(listenKey, user, callback as Action<AccountTradeUpdateEventArgs>, _accountTradeUpdateSubscribers);
             else
                 Subscribe(listenKey, user, callback as Action<UserDataEventArgs>, null);
+
+            return this;
         }
 
-        public virtual void Unsubscribe<TEventArgs>(string listenKey, Action<TEventArgs> callback)
+        public virtual IUserDataClient Unsubscribe<TEventArgs>(string listenKey, Action<TEventArgs> callback)
             where TEventArgs : UserDataEventArgs
         {
             Logger?.LogDebug($"{nameof(UserDataClient)}.{nameof(Unsubscribe)}: \"{listenKey}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
@@ -133,9 +135,11 @@ namespace Binance.Client
                 Unsubscribe(listenKey, null, _accountTradeUpdateSubscribers);
                 Unsubscribe<UserDataEventArgs>(listenKey, null, null);
             }
+
+            return this;
         }
 
-        public override IJsonClient Unsubscribe()
+        public virtual new IUserDataClient Unsubscribe()
         {
             lock (_sync)
             {
@@ -144,7 +148,7 @@ namespace Binance.Client
                 _accountTradeUpdateSubscribers.Clear();
             }
 
-            return base.Unsubscribe();
+            return (IUserDataClient)base.Unsubscribe();
         }
 
         public void HandleListenKeyChange(string oldStreamName, string newStreamName)

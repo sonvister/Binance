@@ -16,6 +16,7 @@ namespace Binance.Client
         /// </summary>
         /// <param name="callback"></param>
         /// <param name="symbols"></param>
+        /// <returns></returns>
         ISymbolStatisticsClient Subscribe(Action<SymbolStatisticsEventArgs> callback, params string[] symbols);
 
         /// <summary>
@@ -24,6 +25,7 @@ namespace Binance.Client
         /// </summary>
         /// <param name="callback"></param>
         /// <param name="symbols"></param>
+        /// <returns></returns>
         ISymbolStatisticsClient Unsubscribe(Action<SymbolStatisticsEventArgs> callback, params string[] symbols);
 
         /// <summary>

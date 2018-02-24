@@ -12,7 +12,7 @@ namespace Binance.Client
         /// <param name="client"></param>
         /// <param name="listenKey"></param>
         /// <param name="user"></param>
-        public static void Subscribe(this IUserDataClient client, string listenKey, IBinanceApiUser user)
+        public static IUserDataClient Subscribe(this IUserDataClient client, string listenKey, IBinanceApiUser user)
             => client.Subscribe<UserDataEventArgs>(listenKey, user, null);
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Binance.Client
         /// </summary>
         /// <param name="client"></param>
         /// <param name="listenKey"></param>
-        public static void Unsubscribe(this IUserDataClient client, string listenKey)
+        public static IUserDataClient Unsubscribe(this IUserDataClient client, string listenKey)
             => client.Unsubscribe<UserDataEventArgs>(listenKey, null);
     }
 }

@@ -57,13 +57,13 @@ namespace Binance.WebSocket
 
         #region Public Methods
 
-        public virtual void Subscribe<TEventArgs>(string listenKey, IBinanceApiUser user, Action<TEventArgs> callback)
+        public virtual IUserDataClient Subscribe<TEventArgs>(string listenKey, IBinanceApiUser user, Action<TEventArgs> callback)
             where TEventArgs : UserDataEventArgs
-            => HandleSubscribe(() => Client.Subscribe(listenKey, user, callback));
+            => (IUserDataClient)HandleSubscribe(() => Client.Subscribe(listenKey, user, callback));
 
-        public virtual void Unsubscribe<TEventArgs>(string listenKey, Action<TEventArgs> callback)
+        public virtual IUserDataClient Unsubscribe<TEventArgs>(string listenKey, Action<TEventArgs> callback)
             where TEventArgs : UserDataEventArgs
-            => HandleUnsubscribe(() => Client.Unsubscribe(listenKey, callback));
+            => (IUserDataClient)HandleUnsubscribe(() => Client.Unsubscribe(listenKey, callback));
 
         public virtual void HandleListenKeyChange(string oldListenKey, string newListenKey)
             => Client.HandleListenKeyChange(oldListenKey, newListenKey);

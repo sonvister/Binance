@@ -16,6 +16,7 @@ namespace Binance.Client
         /// <param name="symbol">The symbol to subscribe.</param>
         /// <param name="limit">The limit (optional, uses partial depth stream). Valid values are: 5, 10, or 20.</param>
         /// <param name="callback">An event callback.</param>
+        /// <returns></returns>
         IDepthClient Subscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback);
 
         /// <summary>
@@ -25,6 +26,7 @@ namespace Binance.Client
         /// <param name="symbol"></param>
         /// <param name="limit">The limit (optional, uses partial depth stream). Valid values are: 5, 10, or 20.</param>
         /// <param name="callback"></param>
+        /// <returns></returns>
         IDepthClient Unsubscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback);
 
         /// <summary>

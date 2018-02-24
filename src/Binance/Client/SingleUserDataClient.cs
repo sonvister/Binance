@@ -18,7 +18,7 @@ namespace Binance.Client
             : base(logger)
         { }
 
-        public override void Subscribe<TEventArgs>(string listenKey, IBinanceApiUser user, Action<TEventArgs> callback)
+        public override IUserDataClient Subscribe<TEventArgs>(string listenKey, IBinanceApiUser user, Action<TEventArgs> callback)
         {
             Throw.IfNull(user, nameof(user));
 
@@ -26,7 +26,7 @@ namespace Binance.Client
             if (Users.Count > 0 && !Users.Single().Value.Equals(user))
                 throw new InvalidOperationException($"{nameof(SingleUserDataClient)}: Can only subscribe to a single a user.");
 
-            base.Subscribe(listenKey, user, callback);
+            return base.Subscribe(listenKey, user, callback);
         }
     }
 }
