@@ -34,7 +34,7 @@ namespace Binance.Client
 
         #region Public Methods
 
-        public virtual void Subscribe(string symbol, Action<TradeEventArgs> callback)
+        public virtual ITradeClient Subscribe(string symbol, Action<TradeEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -43,9 +43,11 @@ namespace Binance.Client
             Logger?.LogDebug($"{nameof(TradeClient)}.{nameof(Subscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             SubscribeStream(GetStreamName(symbol), callback);
+
+            return this;
         }
 
-        public virtual void Unsubscribe(string symbol, Action<TradeEventArgs> callback)
+        public virtual ITradeClient Unsubscribe(string symbol, Action<TradeEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -54,7 +56,11 @@ namespace Binance.Client
             Logger?.LogDebug($"{nameof(TradeClient)}.{nameof(Unsubscribe)}: \"{symbol}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             UnsubscribeStream(GetStreamName(symbol), callback);
+
+            return this;
         }
+
+        public virtual new ITradeClient Unsubscribe() => (ITradeClient)base.Unsubscribe();
 
         #endregion Public Methods
 
@@ -62,8 +68,6 @@ namespace Binance.Client
 
         protected override Task HandleMessageAsync(IEnumerable<Action<TradeEventArgs>> callbacks, string stream, string json, CancellationToken token = default)
         {
-            //Logger?.LogDebug($"{nameof(TradeClient)}: \"{json}\"");
-
             try
             {
                 var jObject = JObject.Parse(json);

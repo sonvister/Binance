@@ -1,7 +1,7 @@
-﻿// ReSharper disable once CheckNamespace
-using System;
+﻿using System;
 using Binance.Client.Events;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.Client
 {
     public static class AggregateTradeClientExtensions
