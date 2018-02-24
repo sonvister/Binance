@@ -5,13 +5,13 @@ using Xunit;
 
 namespace Binance.Tests.Client
 {
-    public class TradeClientTests
+    public class DepthClientTests
     {
-        private ITradeClient _client;
+        private IDepthClient _client;
 
-        public TradeClientTests()
+        public DepthClientTests()
         {
-            _client = new TradeClient();
+            _client = new DepthClient();
         }
 
         [Fact]

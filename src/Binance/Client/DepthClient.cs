@@ -34,7 +34,7 @@ namespace Binance.Client
 
         #region Public Methods
 
-        public virtual void Subscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback)
+        public virtual IDepthClient Subscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -43,9 +43,11 @@ namespace Binance.Client
             Logger?.LogDebug($"{nameof(DepthClient)}.{nameof(Subscribe)}: \"{symbol}\" \"{limit}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             SubscribeStream(GetStreamName(symbol, limit), callback);
+
+            return this;
         }
 
-        public virtual void Unsubscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback)
+        public virtual IDepthClient Unsubscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -54,7 +56,11 @@ namespace Binance.Client
             Logger?.LogDebug($"{nameof(DepthClient)}.{nameof(Unsubscribe)}: \"{symbol}\" \"{limit}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             UnsubscribeStream(GetStreamName(symbol, limit), callback);
+
+            return this;
         }
+
+        public virtual new IDepthClient Unsubscribe() => (IDepthClient)base.Unsubscribe();
 
         #endregion Public Methods
 
@@ -62,8 +68,6 @@ namespace Binance.Client
 
         protected override Task HandleMessageAsync(IEnumerable<Action<DepthUpdateEventArgs>> callbacks, string stream, string json, CancellationToken token = default)
         {
-            //Logger?.LogDebug($"{nameof(DepthClient)}: \"{args.Json}\"");
-
             try
             {
                 var jObject = JObject.Parse(json);
