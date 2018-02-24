@@ -5,6 +5,7 @@ using Binance;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Cache.Events;
+using Binance.Client.Events;
 using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
@@ -55,24 +56,36 @@ namespace BinanceTradeHistory
                     // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
+                var symbols = configuration.GetSection("TradeHistory:Symbols").Get<string[]>()
+                    ?? new string[] { Symbol.BTC_USDT };
+
                 var limit = 25;
-                var symbol = configuration.GetSection("TradeHistory")?["Symbol"] ?? Symbol.BTC_USDT;
                 try { limit = Convert.ToInt32(configuration.GetSection("TradeHistory")?["Limit"]); }
                 catch { /* ignored */ }
 
                 // Initialize manager.
                 using (var manager = services.GetService<IAggregateTradeWebSocketClientManager>())
                 {
-                    // Initialize cache.
+                    // Initialize cache and link manager (JSON client).
                     var cache = services.GetService<IAggregateTradeCache>();
                     cache.Client = manager; // use manager as client.
 
-                    // Subscribe cache to symbol with limit and callback.
-                    cache.Subscribe(symbol, limit, Display);
+                    foreach (var symbol in symbols)
+                    {
+                        // Subscribe to symbol with callback.
+                        cache.Subscribe(symbol, limit, Display);
 
-                    // ReSharper disable once InconsistentlySynchronizedField
-                    _message = "...press any key to continue.";
-                    Console.ReadKey(true);
+                        lock (_sync)
+                        {
+                            _message = symbol == symbols.Last()
+                                ? $"Symbol: \"{symbol}\" ...press any key to exit."
+                                : $"Symbol: \"{symbol}\" ...press any key to continue.";
+                        }
+                        Console.ReadKey(true);
+
+                        // Unsubscribe from symbol.
+                        cache.Unsubscribe();
+                    }
                 }
             }
             catch (Exception e)
@@ -117,7 +130,6 @@ namespace BinanceTradeHistory
 
                 // Initialize cache.
                 var cache = services.GetService<IAggregateTradeCache>();
-                //var cache = services.GetService<ITradeCache>(); // TEST
                 
                 // Initialize stream.
                 var stream = services.GetService<IBinanceWebSocketStream>();
@@ -146,7 +158,6 @@ namespace BinanceTradeHistory
 
                 // Initialize stream/client.
                 var client = services.GetService<IAggregateTradeWebSocketClient>();
-                //var client = services.GetService<ITradeWebSocketClient>(); // TEST
 
                 cache.Client = client; // link [new] client to cache.
 
@@ -196,6 +207,33 @@ namespace BinanceTradeHistory
             }
         }
 
+        private static void HandleError(Exception e)
+        {
+            lock (_sync)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// TEST
+        /// </summary>
+        /// <param name="args"></param>
+        // ReSharper disable once UnusedMember.Local
+        private static void Display(AggregateTradeEventArgs args)
+        {
+            lock (_sync)
+            {
+                Console.SetCursorPosition(0, 0);
+
+                var trade = args.Trade;
+                Console.WriteLine($"  {trade.Time.ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time.ToTimestamp()}         ".PadRight(119));
+
+                Console.WriteLine();
+                Console.WriteLine(_message.PadRight(119));
+            }
+        }
+
         /// <summary>
         /// TEST
         /// </summary>
@@ -212,14 +250,6 @@ namespace BinanceTradeHistory
                 }
                 Console.WriteLine();
                 Console.WriteLine(_message.PadRight(119));
-            }
-        }
-
-        private static void HandleError(Exception e)
-        {
-            lock (_sync)
-            {
-                Console.WriteLine(e.Message);
             }
         }
     }

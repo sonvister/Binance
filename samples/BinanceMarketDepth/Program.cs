@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
@@ -62,8 +63,10 @@ namespace BinanceMarketDepth
                 Console.Clear(); // clear the display.
 
                 // Get configuration settings.
+                var symbols = configuration.GetSection("OrderBook:Symbols").Get<string[]>()
+                    ?? new string[] { Symbol.BTC_USDT };
+
                 var limit = 10;
-                var symbol = configuration.GetSection("OrderBook")?["Symbol"] ?? Symbol.BTC_USDT;
                 try { limit = Convert.ToInt32(configuration.GetSection("OrderBook")?["Limit"]); }
                 catch { /* ignored */ }
 
@@ -79,13 +82,23 @@ namespace BinanceMarketDepth
                     var cache = services.GetService<IOrderBookCache>();
                     cache.Client = manager; // use manager as client.
 
-                    // Subscribe cache to symbol with limit and callback.
-                    // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
-                    //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
-                    cache.Subscribe(symbol, limit, Display);
+                    foreach (var symbol in symbols)
+                    {
+                        // Subscribe cache to symbol with limit and callback.
+                        // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
+                        //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
+                        cache.Subscribe(symbol, limit, Display);
 
-                    _message = "...press any key to continue.";
-                    Console.ReadKey(true); // wait for user input.
+                        lock (_sync)
+                        {
+                            _message = symbol == symbols.Last()
+                                ? $"Symbol: \"{symbol}\" ...press any key to exit."
+                                : $"Symbol: \"{symbol}\" ...press any key to continue.";
+                        }
+                        Console.ReadKey(true); // wait for user input.
+
+                        cache.Unsubscribe();
+                    }
                 }
             }
             catch (Exception e)
@@ -141,9 +154,7 @@ namespace BinanceMarketDepth
                 // Initialize stream.
                 var webSocket = services.GetService<IBinanceWebSocketStream>();
 
-                using (var controller = new RetryTaskController(
-                    tkn => webSocket.StreamAsync(tkn),
-                    err => Console.WriteLine(err.Message)))
+                using (var controller = new RetryTaskController(webSocket.StreamAsync, HandleError))
                 {
                     // Subscribe cache to symbol with limit and callback.
                     // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
@@ -157,7 +168,10 @@ namespace BinanceMarketDepth
                     // Begin streaming.
                     controller.Begin();
 
-                    _message = "...press any key to continue.";
+                    lock (_sync)
+                    {
+                        _message = "...press any key to continue.";
+                    }
                     Console.ReadKey(true); // wait for user input.
                 }
 
@@ -171,9 +185,7 @@ namespace BinanceMarketDepth
                 cache.Client = client; // link [new] client to cache.
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(
-                    tkn => client.StreamAsync(tkn),
-                    err => Console.WriteLine(err.Message)))
+                using (var controller = new RetryTaskController(client.StreamAsync, HandleError))
                 {
                     // Subscribe cache to symbol with limit and callback.
                     //cache.Subscribe(symbol, limit, Display);
@@ -184,7 +196,10 @@ namespace BinanceMarketDepth
                     // Begin streaming.
                     controller.Begin();
 
-                    _message = "...press any key to exit.";
+                    lock (_sync)
+                    {
+                        _message = "...press any key to exit.";
+                    }
                     Console.ReadKey(true); // wait for user input.
                 }
                 /////////////////////////////////////////////////////////*/
@@ -200,13 +215,27 @@ namespace BinanceMarketDepth
 
         private static string _message;
 
+        // ReSharper disable once InconsistentNaming
+        private static readonly object _sync = new object();
+
         private static void Display(OrderBookCacheEventArgs args)
         {
-            Console.SetCursorPosition(0, 0);
-            args.OrderBook.Print(Console.Out, 10); // limit to 10.
+            lock (_sync)
+            {
+                Console.SetCursorPosition(0, 0);
+                args.OrderBook.Print(Console.Out, 10); // limit to 10.
 
-            Console.WriteLine();
-            Console.WriteLine(_message.PadRight(119));
+                Console.WriteLine();
+                Console.WriteLine(_message.PadRight(119));
+            }
+        }
+
+        private static void HandleError(Exception e)
+        {
+            lock (_sync)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }

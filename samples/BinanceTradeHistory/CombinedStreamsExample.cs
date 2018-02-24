@@ -84,7 +84,7 @@ namespace BinanceTradeHistory
 
                     // NOTE: When stream names are subscribed/unsubscribed, the
                     //       websocket is aborted and a new connection is made.
-                    //       There is a small delay before streaming retarts to
+                    //       There's a small delay before streaming restarts to
                     //       allow for multiple subscribe/unsubscribe changes.
 
                     // Unsubscribe a symbol.
