@@ -8,7 +8,7 @@ namespace Binance.Client
         /// </summary>
         /// <param name="client"></param>
         /// <returns></returns>
-        public static void Subscribe(this ISymbolStatisticsClient client)
+        public static ISymbolStatisticsClient Subscribe(this ISymbolStatisticsClient client)
             => client.Subscribe(null);
 
         /// <summary>
@@ -17,14 +17,22 @@ namespace Binance.Client
         /// <param name="client"></param>
         /// <param name="symbol"></param>
         /// <returns></returns>
-        public static void Subscribe(this ISymbolStatisticsClient client, string symbol)
+        public static ISymbolStatisticsClient Subscribe(this ISymbolStatisticsClient client, string symbol)
             => client.Subscribe(null, symbol);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="client"></param>
-        public static void Unsubscribe(this ISymbolStatisticsClient client)
+        /// <param name="symbols"></param>
+        public static ISymbolStatisticsClient Subscribe(this ISymbolStatisticsClient client, params string[] symbols)
+            => client.Subscribe(null, symbols);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        public static ISymbolStatisticsClient Unsubscribe(this ISymbolStatisticsClient client)
             => client.Unsubscribe(null);
 
         /// <summary>
@@ -32,7 +40,16 @@ namespace Binance.Client
         /// </summary>
         /// <param name="client"></param>
         /// <param name="symbol"></param>
-        public static void Unsubscribe(this ISymbolStatisticsClient client, string symbol)
+        public static ISymbolStatisticsClient Unsubscribe(this ISymbolStatisticsClient client, string symbol)
             => client.Unsubscribe(null, symbol);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="symbols"></param>
+        /// <returns></returns>
+        public static ISymbolStatisticsClient Unsubscribe(this ISymbolStatisticsClient client, params string[] symbols)
+            => client.Unsubscribe(null, symbols);
     }
 }

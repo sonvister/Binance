@@ -35,7 +35,7 @@ namespace Binance.Client
 
         #region Public Methods
 
-        public virtual void Subscribe(Action<SymbolStatisticsEventArgs> callback, params string [] symbols)
+        public virtual ISymbolStatisticsClient Subscribe(Action<SymbolStatisticsEventArgs> callback, params string [] symbols)
         {
             if (symbols == null || !symbols.Any())
             {
@@ -54,9 +54,11 @@ namespace Binance.Client
                     SubscribeStream(GetStreamName(symbol), callback);
                 }
             }
+
+            return this;
         }
 
-        public virtual void Unsubscribe(Action<SymbolStatisticsEventArgs> callback, params string [] symbols)
+        public virtual ISymbolStatisticsClient Unsubscribe(Action<SymbolStatisticsEventArgs> callback, params string [] symbols)
         {
             if (symbols == null || !symbols.Any())
             {
@@ -75,7 +77,11 @@ namespace Binance.Client
                     UnsubscribeStream(GetStreamName(symbol), callback);
                 }
             }
+
+            return this;
         }
+
+        public virtual new ISymbolStatisticsClient Unsubscribe() => (ISymbolStatisticsClient)base.Unsubscribe();
 
         #endregion Public Methods
 
@@ -83,8 +89,6 @@ namespace Binance.Client
 
         protected override Task HandleMessageAsync(IEnumerable<Action<SymbolStatisticsEventArgs>> callbacks, string stream, string json, CancellationToken token = default)
         {
-            //Logger?.LogDebug($"{nameof(SymbolStatisticsWebSocketClient)}: \"{args.Json}\"");
-
             try
             {
                 SymbolStatisticsEventArgs eventArgs;

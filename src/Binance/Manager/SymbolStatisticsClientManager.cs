@@ -65,11 +65,13 @@ namespace Binance.Manager
 
         #region Public Methods
 
-        public virtual void Subscribe(Action<SymbolStatisticsEventArgs> callback, params string[] symbols)
-            => HandleSubscribe(() => Client.Subscribe(callback, symbols));
+        public virtual ISymbolStatisticsClient Subscribe(Action<SymbolStatisticsEventArgs> callback, params string[] symbols)
+            => (ISymbolStatisticsClient)HandleSubscribe(() => Client.Subscribe(callback, symbols));
 
-        public virtual void Unsubscribe(Action<SymbolStatisticsEventArgs> callback, params string[] symbols)
-            => HandleUnsubscribe(() => Client.Unsubscribe(callback, symbols));
+        public virtual ISymbolStatisticsClient Unsubscribe(Action<SymbolStatisticsEventArgs> callback, params string[] symbols)
+            => (ISymbolStatisticsClient)HandleUnsubscribe(() => Client.Unsubscribe(callback, symbols));
+
+        public virtual new ISymbolStatisticsClient Unsubscribe() => (ISymbolStatisticsClient)base.Unsubscribe();
 
         #endregion Public Methods
     }
