@@ -120,6 +120,12 @@ namespace Binance.Utility
                 await Task // wait for task to complete.
                     .ConfigureAwait(false);
             }
+
+            lock (Sync)
+            {
+                Cts?.Dispose();
+                Cts = null;
+            }
         }
 
         public virtual async Task RestartAsync()
@@ -156,7 +162,7 @@ namespace Binance.Utility
                 throw new ObjectDisposedException(nameof(TaskController));
         }
 
-        private void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (_disposed)
                 return;
@@ -164,9 +170,6 @@ namespace Binance.Utility
             if (disposing)
             {
                 CancelAsync().GetAwaiter().GetResult();
-
-                // ReSharper disable once InconsistentlySynchronizedField
-                Cts?.Dispose();
             }
 
             _disposed = true;
