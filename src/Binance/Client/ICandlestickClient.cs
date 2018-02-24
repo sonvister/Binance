@@ -17,7 +17,7 @@ namespace Binance.Client
         /// <param name="symbol">The symbol to subscribe.</param>
         /// <param name="interval">The interval.</param>
         /// <param name="callback">An event callback.</param>
-        void Subscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback);
+        ICandlestickClient Subscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback);
 
         /// <summary>
         /// Unsubscribe a callback from a symbol. If no callback is specified,
@@ -26,6 +26,12 @@ namespace Binance.Client
         /// <param name="symbol"></param>
         /// <param name="interval">The interval.</param>
         /// <param name="callback"></param>
-        void Unsubscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback);
+        ICandlestickClient Unsubscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback);
+
+        /// <summary>
+        /// Unsubscribe from all symbols (and callbacks).
+        /// </summary>
+        /// <returns></returns>
+        new ICandlestickClient Unsubscribe();
     }
 }

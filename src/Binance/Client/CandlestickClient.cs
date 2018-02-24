@@ -34,7 +34,7 @@ namespace Binance.Client
 
         #region Public Methods
 
-        public virtual void Subscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
+        public virtual ICandlestickClient Subscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -43,9 +43,11 @@ namespace Binance.Client
             Logger?.LogDebug($"{nameof(CandlestickClient)}.{nameof(Subscribe)}: \"{symbol}\" \"{interval.AsString()}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             SubscribeStream(GetStreamName(symbol, interval), callback);
+
+            return this;
         }
 
-        public virtual void Unsubscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
+        public virtual ICandlestickClient Unsubscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
@@ -54,7 +56,11 @@ namespace Binance.Client
             Logger?.LogDebug($"{nameof(CandlestickClient)}.{nameof(Unsubscribe)}: \"{symbol}\" \"{interval.AsString()}\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             UnsubscribeStream(GetStreamName(symbol, interval), callback);
+
+            return this;
         }
+
+        public virtual new ICandlestickClient Unsubscribe() => (ICandlestickClient)base.Unsubscribe();
 
         #endregion Public Methods
 

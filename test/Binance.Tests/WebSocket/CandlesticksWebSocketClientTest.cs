@@ -13,7 +13,7 @@ namespace Binance.Tests.WebSocket
         {
             var client = new CandlestickWebSocketClient();
 
-            Assert.Throws<ArgumentNullException>("symbol", () => client.Subscribe(null, CandlestickInterval.Hour));
+            Assert.Throws<ArgumentNullException>("symbol", () => client.Subscribe((string)null, CandlestickInterval.Hour));
         }
     }
 }

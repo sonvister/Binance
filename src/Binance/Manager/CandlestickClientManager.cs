@@ -66,11 +66,13 @@ namespace Binance.Manager
 
         #region Public Methods
 
-        public virtual void Subscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
-            => HandleSubscribe(() => Client.Subscribe(symbol, interval, callback));
+        public virtual ICandlestickClient Subscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
+            => (ICandlestickClient)HandleSubscribe(() => Client.Subscribe(symbol, interval, callback));
 
-        public virtual void Unsubscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
-            => HandleUnsubscribe(() => Client.Unsubscribe(symbol, interval, callback));
+        public virtual ICandlestickClient Unsubscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
+            => (ICandlestickClient)HandleUnsubscribe(() => Client.Unsubscribe(symbol, interval, callback));
+
+        public virtual new ICandlestickClient Unsubscribe() => (ICandlestickClient)base.Unsubscribe();
 
         #endregion Public Methods
     }
