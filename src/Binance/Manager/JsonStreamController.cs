@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Stream;
 using Binance.Utility;
+using Microsoft.Extensions.Logging;
 
 namespace Binance.Manager
 {
@@ -18,7 +19,8 @@ namespace Binance.Manager
         /// Contstructor.
         /// </summary>
         /// <param name="stream"></param>
-        public JsonStreamController(IJsonStream stream)
+        /// <param name="logger"></param>
+        public JsonStreamController(IJsonStream stream, ILogger<JsonStreamController> logger = null)
             : base(stream)
         { }
 
@@ -48,8 +50,9 @@ namespace Binance.Manager
         /// Contstructor.
         /// </summary>
         /// <param name="stream"></param>
-        public JsonStreamController(TStream stream)
-            : base(stream.StreamAsync)
+        /// <param name="logger"></param>
+        public JsonStreamController(TStream stream, ILogger<JsonStreamController<TStream>> logger = null)
+            : base(stream.StreamAsync, logger)
         {
             Throw.IfNull(stream, nameof(stream));
 

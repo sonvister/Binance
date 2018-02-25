@@ -1,5 +1,5 @@
-﻿using System;
-using Binance.Manager;
+﻿using Binance.Manager;
+using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket
 {
@@ -9,8 +9,9 @@ namespace Binance.WebSocket
         /// Contstructor.
         /// </summary>
         /// <param name="stream"></param>
-        public WebSocketStreamController(IWebSocketStream stream)
-            : base(stream)
+        /// <param name="logger"></param>
+        public WebSocketStreamController(IWebSocketStream stream, ILogger<WebSocketStreamController> logger = null)
+            : base(stream, logger)
         { }
     }
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Binance.Utility
 {
@@ -45,8 +46,13 @@ namespace Binance.Utility
 
         #region Constructors
 
-        public RetryTaskController(Func<CancellationToken, Task> action)
-            : base(action)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="logger"></param>
+        public RetryTaskController(Func<CancellationToken, Task> action = null, ILogger<RetryTaskController> logger = null)
+            : base(action, logger)
         { }
 
         #endregion Constructors
@@ -62,6 +68,11 @@ namespace Binance.Utility
                 if (IsActive)
                     return;
 
+                if (action != null)
+                    Action = action;
+
+                Throw.IfNull(Action, nameof(action));
+
                 IsActive = true;
 
                 Cts?.Dispose();
@@ -69,11 +80,10 @@ namespace Binance.Utility
                 Cts = new CancellationTokenSource();
             }
 
-            if (action != null)
-                Action = action;
-
             Task = Task.Run(async () =>
             {
+                Logger?.LogDebug($"{nameof(RetryTaskController)}: Task beginning...");
+
                 while (!Cts.IsCancellationRequested)
                 {
                     try
@@ -84,6 +94,8 @@ namespace Binance.Utility
                     catch (OperationCanceledException) { /* ignored */ }
                     catch (Exception e)
                     {
+                        Logger?.LogError(e, $"{nameof(RetryTaskController)}: Fail.");
+
                         if (!Cts.IsCancellationRequested)
                         {
                             OnError(e);
@@ -94,6 +106,8 @@ namespace Binance.Utility
                     {
                         if (!Cts.IsCancellationRequested)
                         {
+                            Logger?.LogDebug($"{nameof(RetryTaskController)}: Task pausing...");
+
                             await DelayAsync(Cts.Token)
                                 .ConfigureAwait(false);
                         }
@@ -102,9 +116,13 @@ namespace Binance.Utility
 
                     if (!Cts.IsCancellationRequested)
                     {
+                        Logger?.LogDebug($"{nameof(RetryTaskController)}: Task resuming...");
+
                         OnResuming();
                     }
                 }
+
+                Logger?.LogDebug($"{nameof(RetryTaskController)}: Task complete.");
             });
         }
 

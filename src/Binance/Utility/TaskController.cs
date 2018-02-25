@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Binance.Utility
 {
@@ -35,18 +36,26 @@ namespace Binance.Utility
         #region Protected Fields
 
         protected Func<CancellationToken, Task> Action;
+
+        protected ILogger<TaskController> Logger;
+
         protected CancellationTokenSource Cts;
+
         protected readonly object Sync = new object();
 
         #endregion Protected Fields
 
         #region Constructors
 
-        public TaskController(Func<CancellationToken, Task> action)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="logger"></param>
+        public TaskController(Func<CancellationToken, Task> action = null, ILogger<TaskController> logger = null)
         {
-            Throw.IfNull(action, nameof(action));
-
             Action = action;
+            Logger = logger;
         }
 
         #endregion Constructors
@@ -59,6 +68,11 @@ namespace Binance.Utility
 
             lock (Sync)
             {
+                if (action != null)
+                    Action = action;
+
+                Throw.IfNull(Action, nameof(action));
+
                 if (IsActive)
                     return;
 
@@ -69,22 +83,29 @@ namespace Binance.Utility
                 Cts = new CancellationTokenSource();
             }
 
-            if (action != null)
-                Action = action;
-
             Task = Task.Run(async () =>
             {
+                Logger?.LogDebug($"{nameof(TaskController)}: Task beginning...");
+
                 // ReSharper disable once InconsistentlySynchronizedField
-                try { await Action(Cts.Token).ConfigureAwait(false); }
+                try
+                {
+                    await Action(Cts.Token)
+                        .ConfigureAwait(false);
+                }
                 catch (OperationCanceledException) { /* ignored */  }
                 catch (Exception e)
                 {
+                    Logger?.LogError(e, $"{nameof(TaskController)}: Fail.");
+
                     // ReSharper disable once InconsistentlySynchronizedField
                     if (!Cts.IsCancellationRequested)
                     {
                         OnError(e);
                     }
                 }
+
+                Logger?.LogDebug($"{nameof(TaskController)}: Task complete.");
             });
         }
 

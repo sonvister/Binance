@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
+using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket
 {
@@ -33,8 +34,9 @@ namespace Binance.WebSocket
         /// </summary>
         /// <param name="api"></param>
         /// <param name="stream"></param>
-        public BinanceWebSocketStreamController(IBinanceApi api, IWebSocketStream stream)
-            : base(stream)
+        /// <param name="logger"></param>
+        public BinanceWebSocketStreamController(IBinanceApi api, IWebSocketStream stream, ILogger<BinanceWebSocketStreamController> logger = null)
+            : base(stream, logger)
         {
             Throw.IfNull(api, nameof(api));
 

@@ -201,7 +201,7 @@ namespace Binance.Stream
             {
                 if (!token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{GetType().Name}.{nameof(StreamAsync)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Logger?.LogError(e, $"{GetType().Name}.{nameof(StreamAsync)}: Fail.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 }
                 throw;
             }
@@ -211,7 +211,7 @@ namespace Binance.Stream
 
                 _isStreamingPaused = false;
 
-                Logger?.LogDebug($"{GetType().Name}.{nameof(StreamAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogDebug($"{GetType().Name}.{nameof(StreamAsync)}: Streaming complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
         }
 
