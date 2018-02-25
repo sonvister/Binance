@@ -53,7 +53,6 @@ namespace Binance
             services.AddTransient<IAggregateTradeClient, AggregateTradeClient>();
             services.AddTransient<ICandlestickClient, CandlestickClient>();
             services.AddTransient<IDepthClient, DepthClient>();
-            services.AddTransient<ISingleUserDataClient, SingleUserDataClient>();
             services.AddTransient<ISymbolStatisticsClient, SymbolStatisticsClient>();
             services.AddTransient<ITradeClient, TradeClient>();
             services.AddTransient<IUserDataClient, UserDataClient>();
