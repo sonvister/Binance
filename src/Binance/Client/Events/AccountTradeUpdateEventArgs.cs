@@ -36,7 +36,7 @@ namespace Binance.Client.Events
         /// <param name="newClientOrderId">The new client order ID.</param>
         /// <param name="trade">The trade.</param>
         /// <param name="quantityOfLastFilledTrade">The quantity of last filled trade.</param>
-        public AccountTradeUpdateEventArgs(DateTime time, CancellationToken token, Order order, OrderRejectedReason rejectedReason, string newClientOrderId, AccountTrade trade, decimal quantityOfLastFilledTrade)
+        public AccountTradeUpdateEventArgs(DateTime time, CancellationToken token, Order order, string rejectedReason, string newClientOrderId, AccountTrade trade, decimal quantityOfLastFilledTrade)
             : base(time, token, order, OrderExecutionType.Trade, rejectedReason, newClientOrderId)
         {
             Throw.IfNull(trade, nameof(trade));

@@ -20,7 +20,7 @@ namespace Binance.Client.Events
         /// <param name="executionType">The order execution type.</param>
         /// <param name="rejectedReason">The order rejected reason.</param>
         /// <param name="newClientOrderId">The new client order ID.</param>
-        public OrderUpdateEventArgs(DateTime time, CancellationToken token, Order order, OrderExecutionType executionType, OrderRejectedReason rejectedReason, string newClientOrderId)
+        public OrderUpdateEventArgs(DateTime time, CancellationToken token, Order order, OrderExecutionType executionType, string rejectedReason, string newClientOrderId)
             : base(time, token, order, executionType, rejectedReason, newClientOrderId)
         { }
 

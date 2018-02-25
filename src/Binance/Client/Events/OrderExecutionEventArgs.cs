@@ -24,7 +24,7 @@ namespace Binance.Client.Events
         /// <summary>
         /// Get the order rejected reason.
         /// </summary>
-        public OrderRejectedReason OrderRejectedReason { get; }
+        public string OrderRejectedReason { get; }
 
         /// <summary>
         /// Get the new client order ID.
@@ -44,10 +44,11 @@ namespace Binance.Client.Events
         /// <param name="orderExecutionType">The order execution type.</param>
         /// <param name="orderRejectedReason">The order rejected reason.</param>
         /// <param name="newClientOrderId">The new client order ID.</param>
-        protected OrderExecutionEventArgs(DateTime time, CancellationToken token, Order order, OrderExecutionType orderExecutionType, OrderRejectedReason orderRejectedReason, string newClientOrderId)
+        protected OrderExecutionEventArgs(DateTime time, CancellationToken token, Order order, OrderExecutionType orderExecutionType, string orderRejectedReason, string newClientOrderId)
             : base(time, token)
         {
             Throw.IfNull(order, nameof(order));
+            Throw.IfNullOrWhiteSpace(orderRejectedReason, nameof(orderRejectedReason));
 
             Order = order;
             OrderExecutionType = orderExecutionType;

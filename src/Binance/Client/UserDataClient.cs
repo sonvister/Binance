@@ -262,7 +262,7 @@ namespace Binance.Client
                     FillOrder(order, jObject);
 
                     var executionType = ConvertOrderExecutionType(jObject["x"].Value<string>());
-                    var rejectedReason = ConvertOrderRejectedReason(jObject["r"].Value<string>());
+                    var rejectedReason = jObject["r"].Value<string>();
                     var newClientOrderId = jObject["c"].Value<string>();
 
                     if (executionType == OrderExecutionType.Trade) // trade update event.
@@ -459,31 +459,6 @@ namespace Binance.Client
                 case "EXPIRED": return OrderExecutionType.Expired;
                 default:
                     throw new Exception($"Failed to convert order execution type: \"{executionType}\"");
-            }
-        }
-
-        /// <summary>
-        /// Deserialize order rejected reason.
-        /// </summary>
-        /// <param name="rejectedReason"></param>
-        /// <returns></returns>
-        private OrderRejectedReason ConvertOrderRejectedReason(string rejectedReason)
-        {
-            switch (rejectedReason)
-            {
-                case "NONE": return OrderRejectedReason.None;
-                case "UNKNOWN_INSTRUMENT": return OrderRejectedReason.UnknownInstrument;
-                case "MARKET_CLOSED": return OrderRejectedReason.MarketClosed;
-                case "PRICE_QTY_EXCEED_HARD_LIMITS": return OrderRejectedReason.PriceQuantityExceedHardLimits;
-                case "UNKNOWN_ORDER": return OrderRejectedReason.UnknownOrder;
-                case "DUPLICATE_ORDER": return OrderRejectedReason.DuplicateOrder;
-                case "UNKNOWN_ACCOUNT": return OrderRejectedReason.UnknownAccount;
-                case "INSUFFICIENT_BALANCE": return OrderRejectedReason.InsufficientBalance;
-                case "ACCOUNT_INACTIVE": return OrderRejectedReason.AccountInactive;
-                case "ACCOUNT_CANNOT_SETTLE": return OrderRejectedReason.AccountCannotSettle;
-                default:
-                    Logger?.LogError($"Failed to convert order rejected reason: \"{rejectedReason}\"");
-                    return OrderRejectedReason.None;
             }
         }
 

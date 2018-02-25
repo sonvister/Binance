@@ -15,7 +15,7 @@ namespace Binance.Tests.Client.Events
             var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
 
             const OrderExecutionType orderExecutionType = OrderExecutionType.New;
-            const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
+            const string orderRejectedReason = OrderRejectedReason.None;
             const string newClientOrderId = "new-test-order";
 
             using (var cts = new CancellationTokenSource())
@@ -47,7 +47,7 @@ namespace Binance.Tests.Client.Events
             var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, isWorking);
 
             const OrderExecutionType orderExecutionType = OrderExecutionType.New;
-            const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
+            const string orderRejectedReason = OrderRejectedReason.None;
             const string newClientOrderId = "new-test-order";
 
             using (var cts = new CancellationTokenSource())

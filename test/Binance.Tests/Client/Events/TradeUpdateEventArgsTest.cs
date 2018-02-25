@@ -18,7 +18,7 @@ namespace Binance.Tests.Client.Events
             var symbol = Symbol.BTC_USDT;
             const decimal price = 4999;
 
-            const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
+            const string orderRejectedReason = OrderRejectedReason.None;
             const string newClientOrderId = "new-test-order";
 
             const long tradeId = 12345;
@@ -62,7 +62,7 @@ namespace Binance.Tests.Client.Events
 
             var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, isWorking);
 
-            const OrderRejectedReason orderRejectedReason = OrderRejectedReason.None;
+            const string orderRejectedReason = OrderRejectedReason.None;
             const string newClientOrderId = "new-test-order";
 
             const long tradeId = 12345;
