@@ -72,7 +72,9 @@ namespace Binance.Manager
         /// <param name="logger">The logger (optional).</param>
         public UserDataClientManager(IUserDataClient client, IJsonStreamController<TStream> controller, ILogger<UserDataClientManager<TStream>> logger = null)
             : base(client, controller, logger)
-        { }
+        {
+            Watchdog.Interval = TimeSpan.FromHours(8);
+        }
 
         #endregion Constructors
 
