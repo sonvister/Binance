@@ -33,9 +33,8 @@ namespace Binance.WebSocket
         /// </summary>
         /// <param name="api"></param>
         /// <param name="stream"></param>
-        /// <param name="onError"></param>
-        public BinanceWebSocketStreamController(IBinanceApi api, IWebSocketStream stream, Action<Exception> onError = null)
-            : base(stream, onError)
+        public BinanceWebSocketStreamController(IBinanceApi api, IWebSocketStream stream)
+            : base(stream)
         {
             Throw.IfNull(api, nameof(api));
 

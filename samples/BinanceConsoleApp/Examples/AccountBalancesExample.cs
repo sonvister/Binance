@@ -148,10 +148,10 @@ namespace BinanceConsoleApp
                     Console.WriteLine($"Subscribe to listen key... {listenKey}");
                     client.Subscribe<AccountUpdateEventArgs>(listenKey, user, Display);
 
-                    using (var controller = new RetryTaskController(
-                        tkn => client.Stream.StreamAsync(tkn),
-                        err => Console.WriteLine(err.Message)))
+                    using (var controller = new RetryTaskController(client.Stream.StreamAsync))
                     {
+                        controller.Error += (s, e) => HandleError(e.Exception);
+
                         // Begin streaming.
                         controller.Begin();
 
@@ -169,16 +169,30 @@ namespace BinanceConsoleApp
             catch (Exception e) { Console.WriteLine(e.Message); }
         }
 
+        // ReSharper disable once InconsistentNaming
+        private static readonly object _sync = new object();
+
         private static void Display(AccountUpdateEventArgs args)
             => Display(args.AccountInfo.GetBalance(_asset));
 
         private static void Display(AccountBalance balance)
         {
-            Console.WriteLine();
-            Console.WriteLine(balance == null
-                ? "  [None]"
-                : $"  {balance.Asset}:  {balance.Free} (free)   {balance.Locked} (locked)");
-            Console.WriteLine();
+            lock (_sync)
+            {
+                Console.WriteLine();
+                Console.WriteLine(balance == null
+                    ? "  [None]"
+                    : $"  {balance.Asset}:  {balance.Free} (free)   {balance.Locked} (locked)");
+                Console.WriteLine();
+            }
+        }
+
+        private static void HandleError(Exception e)
+        {
+            lock (_sync)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }

@@ -18,9 +18,8 @@ namespace Binance.Manager
         /// Contstructor.
         /// </summary>
         /// <param name="stream"></param>
-        /// <param name="onError"></param>
-        public JsonStreamController(IJsonStream stream, Action<Exception> onError = null)
-            : base(stream, onError)
+        public JsonStreamController(IJsonStream stream)
+            : base(stream)
         { }
 
         #endregion Constructors
@@ -49,9 +48,8 @@ namespace Binance.Manager
         /// Contstructor.
         /// </summary>
         /// <param name="stream"></param>
-        /// <param name="onError"></param>
-        public JsonStreamController(TStream stream, Action<Exception> onError = null)
-            : base(stream.StreamAsync, onError)
+        public JsonStreamController(TStream stream)
+            : base(stream.StreamAsync)
         {
             Throw.IfNull(stream, nameof(stream));
 
@@ -68,11 +66,11 @@ namespace Binance.Manager
         /// Begin streaming after verifying stream is not active
         /// and has at least one provided stream (and subscriber).
         /// </summary>
-        public override void Begin(Func<CancellationToken, Task> action = null, Action<Exception> onError = null)
+        public override void Begin(Func<CancellationToken, Task> action = null)
         {
             if (!Stream.IsStreaming && Stream.ProvidedStreams.Any())
             {
-                base.Begin(action, onError);
+                base.Begin(action);
             }
         }
 

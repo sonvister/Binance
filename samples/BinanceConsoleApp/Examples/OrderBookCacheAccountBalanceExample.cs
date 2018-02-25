@@ -95,8 +95,10 @@ namespace BinanceConsoleApp
                             Display(cache.OrderBook, balance);
                         });
 
-                    using (var controller = new RetryTaskController(stream.StreamAsync, HandleError))
+                    using (var controller = new RetryTaskController(stream.StreamAsync))
                     {
+                        controller.Error += (s, e) => HandleError(e.Exception);
+
                         // Subscribe to symbol to display latest order book and asset balance.
                         controller.Begin();
 

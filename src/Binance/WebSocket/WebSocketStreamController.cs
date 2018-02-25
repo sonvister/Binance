@@ -9,9 +9,8 @@ namespace Binance.WebSocket
         /// Contstructor.
         /// </summary>
         /// <param name="stream"></param>
-        /// <param name="onError"></param>
-        public WebSocketStreamController(IWebSocketStream stream, Action<Exception> onError = null)
-            : base(stream, onError)
+        public WebSocketStreamController(IWebSocketStream stream)
+            : base(stream)
         { }
     }
 }

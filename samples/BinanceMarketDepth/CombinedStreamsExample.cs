@@ -56,8 +56,10 @@ namespace BinanceMarketDepth
                 // Create client.
                 var client = services.GetService<IDepthWebSocketClient>();
 
-                using (var controller = new RetryTaskController(client.StreamAsync, HandleError))
+                using (var controller = new RetryTaskController(client.StreamAsync))
                 {
+                    controller.Error += (s, e) => HandleError(e.Exception);
+
                     if (symbols.Length == 1)
                     {
                         // Subscribe to symbol with callback.

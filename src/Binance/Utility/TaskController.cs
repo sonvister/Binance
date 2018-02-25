@@ -35,7 +35,6 @@ namespace Binance.Utility
         #region Protected Fields
 
         protected Func<CancellationToken, Task> Action;
-        protected Action<Exception> ErrorAction;
         protected CancellationTokenSource Cts;
         protected readonly object Sync = new object();
 
@@ -43,19 +42,18 @@ namespace Binance.Utility
 
         #region Constructors
 
-        public TaskController(Func<CancellationToken, Task> action, Action<Exception> onError = null)
+        public TaskController(Func<CancellationToken, Task> action)
         {
             Throw.IfNull(action, nameof(action));
 
             Action = action;
-            ErrorAction = onError;
         }
 
         #endregion Constructors
 
         #region Public Methods
 
-        public virtual void Begin(Func<CancellationToken, Task> action = null, Action<Exception> onError = null)
+        public virtual void Begin(Func<CancellationToken, Task> action = null)
         {
             ThrowIfDisposed();
 
@@ -74,9 +72,6 @@ namespace Binance.Utility
             if (action != null)
                 Action = action;
 
-            if (onError != null)
-                ErrorAction = onError;
-
             Task = Task.Run(async () =>
             {
                 // ReSharper disable once InconsistentlySynchronizedField
@@ -87,9 +82,6 @@ namespace Binance.Utility
                     // ReSharper disable once InconsistentlySynchronizedField
                     if (!Cts.IsCancellationRequested)
                     {
-                        try { ErrorAction?.Invoke(e); } 
-                        catch { /* ignored */ }
-
                         OnError(e);
                     }
                 }

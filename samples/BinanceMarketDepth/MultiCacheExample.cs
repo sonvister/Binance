@@ -69,9 +69,12 @@ namespace BinanceMarketDepth
                 // NOTE: IBinanceWebSocketStream must be setup as Transient with DI (default).
 
                 // Initialize controllers.
-                using (var controller1 = new RetryTaskController(stream1.StreamAsync, HandleError))
-                using (var controller2 = new RetryTaskController(stream2.StreamAsync, HandleError))
+                using (var controller1 = new RetryTaskController(stream1.StreamAsync))
+                using (var controller2 = new RetryTaskController(stream2.StreamAsync))
                 {
+                    controller1.Error += (s, e) => HandleError(e.Exception);
+                    controller2.Error += (s, e) => HandleError(e.Exception);
+
                     btcCache.Subscribe(Symbol.BTC_USDT, limit,
                         evt =>
                         {

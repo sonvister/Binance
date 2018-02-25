@@ -62,8 +62,10 @@ namespace BinanceMarketDepth
                 var webSocket = services.GetService<IBinanceWebSocketStream>();
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(webSocket.StreamAsync, HandleError))
+                using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
+                    controller.Error += (s, e) => HandleError(e.Exception);
+
                     // Query and display the order books.
                     var btcOrderBook = await api.GetOrderBookAsync(Symbol.BTC_USDT, limit);
                     var ethOrderBook = await api.GetOrderBookAsync(Symbol.ETH_BTC, limit);

@@ -132,8 +132,10 @@ namespace BinancePriceChart
                 var webSocket = services.GetService<IBinanceWebSocketStream>();
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(webSocket.StreamAsync, HandleError))
+                using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
+                    controller.Error += (s, e) => HandleError(e.Exception);
+
                     // Subscribe cache to symbol and interval with limit and callback.
                     cache.Subscribe(symbol, interval, limit, Display);
 
@@ -158,8 +160,10 @@ namespace BinancePriceChart
                 cache.Client = client; // link [new] client to cache.
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(client.StreamAsync, HandleError))
+                using (var controller = new RetryTaskController(client.StreamAsync))
                 {
+                    controller.Error += (s, e) => HandleError(e.Exception);
+
                     // Subscribe cache to symbol and interval with limit and callback.
                     //cache.Subscribe(symbol, interval, limit, Display);
                     // NOTE: Cache is already subscribed to symbol (above).

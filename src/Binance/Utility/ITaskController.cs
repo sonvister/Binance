@@ -25,8 +25,7 @@ namespace Binance.Utility
         /// Initiate the controller action.
         /// </summary>
         /// <param name="action">optional.</param>
-        /// <param name="onError">optional.</param>
-        void Begin(Func<CancellationToken, Task> action = null, Action<Exception> onError = null);
+        void Begin(Func<CancellationToken, Task> action = null);
 
         /// <summary>
         /// Abort the controller action.

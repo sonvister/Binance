@@ -128,7 +128,9 @@ namespace BinanceTradeHistory
                 var client = new AggregateTradeClient(loggerFactory.CreateLogger<AggregateTradeClient>());
                 var webSocket = new DefaultWebSocketClient(loggerFactory.CreateLogger<DefaultWebSocketClient>());
                 var stream = new BinanceWebSocketStream(webSocket, loggerFactory.CreateLogger<BinanceWebSocketStream>());
-                var controller = new BinanceWebSocketStreamController(api, stream, HandleError);
+                var controller = new BinanceWebSocketStreamController(api, stream);
+
+                controller.Error += (s, e) => HandleError(e.Exception);
 
                 // Initialize manager.
                 using (var manager = new AggregateTradeWebSocketClientManager(client, controller, loggerFactory.CreateLogger<AggregateTradeWebSocketClientManager>()))
@@ -204,8 +206,10 @@ namespace BinanceTradeHistory
                 var stream = services.GetService<IBinanceWebSocketStream>();
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(stream.StreamAsync, HandleError))
+                using (var controller = new RetryTaskController(stream.StreamAsync))
                 {
+                    controller.Error += (s, e) => HandleError(e.Exception);
+
                     // Subscribe cache to symbol with limit and callback.
                     cache.Subscribe(symbol, limit, Display);
                     
@@ -231,8 +235,10 @@ namespace BinanceTradeHistory
                 cache.Client = client; // link [new] client to cache.
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(client.StreamAsync, HandleError))
+                using (var controller = new RetryTaskController(client.StreamAsync))
                 {
+                    controller.Error += (s, e) => HandleError(e.Exception);
+
                     // Subscribe cache to symbol with limit and callback.
                     //cache.Subscribe(symbol, limit, Display);
                     // NOTE: Cache is already subscribed to symbol (above).

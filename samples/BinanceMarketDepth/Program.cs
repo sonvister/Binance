@@ -154,8 +154,10 @@ namespace BinanceMarketDepth
                 // Initialize stream.
                 var webSocket = services.GetService<IBinanceWebSocketStream>();
 
-                using (var controller = new RetryTaskController(webSocket.StreamAsync, HandleError))
+                using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
+                    controller.Error += (s, e) => HandleError(e.Exception);
+
                     // Subscribe cache to symbol with limit and callback.
                     // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
                     //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
@@ -185,8 +187,10 @@ namespace BinanceMarketDepth
                 cache.Client = client; // link [new] client to cache.
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(client.StreamAsync, HandleError))
+                using (var controller = new RetryTaskController(client.StreamAsync))
                 {
+                    controller.Error += (s, e) => HandleError(e.Exception);
+
                     // Subscribe cache to symbol with limit and callback.
                     //cache.Subscribe(symbol, limit, Display);
                     // NOTE: Cache is already subscribed to symbol (above).

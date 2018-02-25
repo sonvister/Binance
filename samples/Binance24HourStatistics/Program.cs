@@ -126,10 +126,10 @@ namespace Binance24HourStatistics
                 // Initialize web socket stream.
                 var stream = services.GetService<IBinanceWebSocketStream>();
 
-                using (var controller = new RetryTaskController(
-                    tkn => stream.StreamAsync(tkn),
-                    err => Console.WriteLine(err.Message)))
+                using (var controller = new RetryTaskController(stream.StreamAsync))
                 {
+                    controller.Error += (s, e) => HandleError(e.Exception);
+
                     // Subscribe cache to symbols.
                     cache.Subscribe(Display, symbols);
                     
@@ -164,6 +164,9 @@ namespace Binance24HourStatistics
             return statistics.ToArray();
         }
 
+        // ReSharper disable once InconsistentNaming
+        private static readonly object _sync = new object();
+
         // ReSharper disable once UnusedMember.Local
         private static void Display(SymbolStatisticsEventArgs args)
             => Display(args.Statistics);
@@ -173,17 +176,28 @@ namespace Binance24HourStatistics
 
         private static void Display(SymbolStatistics[] statistics)
         {
-            Console.SetCursorPosition(0, 0);
-
-            foreach (var stats in statistics)
+            lock (_sync)
             {
-                Console.WriteLine($"  24-hour statistics for {stats.Symbol}:");
-                Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
-                Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
-                Console.WriteLine();
-            }
+                Console.SetCursorPosition(0, 0);
 
-            Console.WriteLine("...press any key to exit.");
+                foreach (var stats in statistics)
+                {
+                    Console.WriteLine($"  24-hour statistics for {stats.Symbol}:");
+                    Console.WriteLine($"    %: {stats.PriceChangePercent:0.00} | O: {stats.OpenPrice:0.00000000} | H: {stats.HighPrice:0.00000000} | L: {stats.LowPrice:0.00000000} | V: {stats.Volume:0.}");
+                    Console.WriteLine($"    Bid: {stats.BidPrice:0.00000000} | Last: {stats.LastPrice:0.00000000} | Ask: {stats.AskPrice:0.00000000} | Avg: {stats.WeightedAveragePrice:0.00000000}");
+                    Console.WriteLine();
+                }
+
+                Console.WriteLine("...press any key to exit.");
+            }
+        }
+
+        private static void HandleError(Exception e)
+        {
+            lock (_sync)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }

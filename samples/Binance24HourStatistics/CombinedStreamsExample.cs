@@ -52,8 +52,10 @@ namespace Binance24HourStatistics
                 // Initialize the client.
                 var client = services.GetService<ISymbolStatisticsWebSocketClient>();
 
-                using (var controller = new RetryTaskController(client.StreamAsync, HandleError))
+                using (var controller = new RetryTaskController(client.StreamAsync))
                 {
+                    controller.Error += (s, e) => HandleError(e.Exception);
+
                     if (symbols.Length == 1)
                     {
                         // Subscribe to symbol with callback.

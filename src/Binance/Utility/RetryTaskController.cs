@@ -14,15 +14,15 @@ namespace Binance.Utility
 
         #region Constructors
 
-        public RetryTaskController(Func<CancellationToken, Task> action, Action<Exception> onError = null)
-            : base(action, onError)
+        public RetryTaskController(Func<CancellationToken, Task> action)
+            : base(action)
         { }
 
         #endregion Constructors
 
         #region Public Methods
 
-        public override void Begin(Func<CancellationToken, Task> action = null, Action<Exception> onError = null)
+        public override void Begin(Func<CancellationToken, Task> action = null)
         {
             ThrowIfDisposed();
 
@@ -41,9 +41,6 @@ namespace Binance.Utility
             if (action != null)
                 Action = action;
 
-            if (onError != null)
-                ErrorAction = onError;
-
             Task = Task.Run(async () =>
             {
                 while (!Cts.IsCancellationRequested)
@@ -54,9 +51,6 @@ namespace Binance.Utility
                     {
                         if (!Cts.IsCancellationRequested)
                         {
-                            try { ErrorAction?.Invoke(e); }
-                            catch { /* ignored */ }
-
                             OnError(e);
                         }
                     }

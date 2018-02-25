@@ -53,8 +53,10 @@ namespace BinanceTradeHistory
                 var client = services.GetService<IAggregateTradeWebSocketClient>();
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(client.StreamAsync, HandleError))
+                using (var controller = new RetryTaskController(client.StreamAsync))
                 {
+                    controller.Error += (s, e) => HandleError(e.Exception);
+
                     if (symbols.Length == 1)
                     {
                         // Subscribe client to symbol with callback.
