@@ -55,12 +55,12 @@ REST/WebSocket details: [Binance Official Documentation](https://github.com/bina
 REST/WebSocket questions: [Binance Official API Telegram](https://t.me/binance_api_english) (*not for questions about this library*)
 
 ## Donate
-DCR: Dsog2jYLS65Y3N2jDQSxsiBYC3SRqq7TGd4\
-LTC: MNhGkftcFDE7TsFFvtE6W9VVKhxH74T3eM\
-XEM: NC3HR4-V46BTS-LIKEE4-2GZQBB-FHBUXO-CG7EBO-VIMP\
-DASH: XmFvpRgwfDRdN9wbrZjHZeH63Rt9CwHqUf\
-ZEC: t1Ygz58dkcx2WXuGCjGiPo8w7Q1dcCSscGJ\
-ETH: 0x3BFd7B3EAA6aE6BCF861B9B1803d67abe9360bca\
-BTC: 3JjG3tRR1dx98UJyNdpzpkrxRjXmPfQHk9
+**DCR**: Dsog2jYLS65Y3N2jDQSxsiBYC3SRqq7TGd4\
+**LTC**: MNhGkftcFDE7TsFFvtE6W9VVKhxH74T3eM\
+**XEM**: NC3HR4-V46BTS-LIKEE4-2GZQBB-FHBUXO-CG7EBO-VIMP\
+**DASH**: XmFvpRgwfDRdN9wbrZjHZeH63Rt9CwHqUf\
+**ZEC**: t1Ygz58dkcx2WXuGCjGiPo8w7Q1dcCSscGJ\
+**ETH**: 0x3BFd7B3EAA6aE6BCF861B9B1803d67abe9360bca\
+**BTC**: 3JjG3tRR1dx98UJyNdpzpkrxRjXmPfQHk9
 
 Thank you.
