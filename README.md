@@ -45,6 +45,8 @@ To get the source code for a particular release, first select the corresponding 
 
 ## Documentation
 See: [**Wiki**](https://github.com/sonvister/Binance/wiki)\
+Release: [**0.2.0-alpha35**](https://github.com/sonvister/Binance/releases/tag/v0.2.0-alpha35)
+
 ***NOTE**: Some documentation is out-of-date ...will be updated soon.*\
 ***NOTE**: The [samples](https://github.com/sonvister/Binance/blob/master/samples) demonstrate up-to-date usage of this library.*
 
