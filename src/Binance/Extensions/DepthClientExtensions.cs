@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Binance.Client.Events;
 
 // ReSharper disable once CheckNamespace
@@ -64,6 +65,9 @@ namespace Binance.Client
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(symbols, nameof(symbols));
 
+            if (callback == null && !symbols.Any())
+                throw new ArgumentException($"{nameof(Subscribe)}: At least one symbol is required.", nameof(symbols));
+
             foreach (var symbol in symbols)
             {
                 client.Subscribe(symbol, limit, callback);
@@ -128,6 +132,9 @@ namespace Binance.Client
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(symbols, nameof(symbols));
+
+            if (callback == null && !symbols.Any())
+                throw new ArgumentException($"{nameof(Unsubscribe)}: At least one symbol is required.", nameof(symbols));
 
             foreach (var symbol in symbols)
             {

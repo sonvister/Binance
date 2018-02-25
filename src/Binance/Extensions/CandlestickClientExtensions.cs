@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Binance.Client.Events;
 using Binance.Market;
 
@@ -38,6 +39,9 @@ namespace Binance.Client
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(symbols, nameof(symbols));
 
+            if (callback == null && !symbols.Any())
+                throw new ArgumentException($"{nameof(Subscribe)}: At least one symbol is required.", nameof(symbols));
+
             foreach (var symbol in symbols)
             {
                 client.Subscribe(symbol, interval, callback);
@@ -76,6 +80,9 @@ namespace Binance.Client
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(symbols, nameof(symbols));
+
+            if (callback == null && !symbols.Any())
+                throw new ArgumentException($"{nameof(Unsubscribe)}: At least one symbol is required.", nameof(symbols));
 
             foreach (var symbol in symbols)
             {

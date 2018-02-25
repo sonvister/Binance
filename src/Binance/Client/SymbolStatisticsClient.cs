@@ -37,6 +37,9 @@ namespace Binance.Client
 
         public virtual ISymbolStatisticsClient Subscribe(Action<SymbolStatisticsEventArgs> callback, params string [] symbols)
         {
+            if (callback == null && !symbols.Any())
+                throw new ArgumentException($"{nameof(Subscribe)}: At least one symbol is required.", nameof(symbols));
+
             if (symbols == null || !symbols.Any())
             {
                 Logger?.LogDebug($"{nameof(SymbolStatisticsClient)}.{nameof(Subscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
@@ -60,6 +63,9 @@ namespace Binance.Client
 
         public virtual ISymbolStatisticsClient Unsubscribe(Action<SymbolStatisticsEventArgs> callback, params string [] symbols)
         {
+            if (callback == null && !symbols.Any())
+                throw new ArgumentException($"{nameof(Unsubscribe)}: At least one symbol is required.", nameof(symbols));
+
             if (symbols == null || !symbols.Any())
             {
                 Logger?.LogDebug($"{nameof(SymbolStatisticsClient)}.{nameof(Unsubscribe)}: \"[All Symbols]\" (callback: {(callback == null ? "no" : "yes")}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
