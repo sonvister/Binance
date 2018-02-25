@@ -2,9 +2,11 @@
 using System.IO;
 using System.Linq;
 using Binance;
+using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Cache.Events;
+using Binance.Client;
 using Binance.Client.Events;
 using Binance.Stream;
 using Binance.Utility;
@@ -27,6 +29,7 @@ namespace BinanceTradeHistory
         private static void Main()
         {
             ExampleMain();
+            //ExampleMainWithoutDI();
             //AdvancedExampleMain();
             //CombinedStreamsExample.ExampleMain();
         }
@@ -69,6 +72,72 @@ namespace BinanceTradeHistory
                     // Initialize cache and link manager (JSON client).
                     var cache = services.GetService<IAggregateTradeCache>();
                     cache.Client = manager; // use manager as client.
+
+                    foreach (var symbol in symbols)
+                    {
+                        // Subscribe to symbol with callback.
+                        cache.Subscribe(symbol, limit, Display);
+
+                        lock (_sync)
+                        {
+                            _message = symbol == symbols.Last()
+                                ? $"Symbol: \"{symbol}\" ...press any key to exit."
+                                : $"Symbol: \"{symbol}\" ...press any key to continue.";
+                        }
+                        Console.ReadKey(true);
+
+                        // Unsubscribe from symbol.
+                        cache.Unsubscribe();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine();
+                Console.WriteLine("  ...press any key to close window.");
+                Console.ReadKey(true);
+            }
+        }
+
+        /// <summary>
+        /// Example using manager without DI framework (not recommended).
+        /// </summary>
+        private static void ExampleMainWithoutDI()
+        {
+            try
+            {
+                // Load configuration.
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", true, false)
+                    .Build();
+
+                // Get configuration settings.
+                var symbols = configuration.GetSection("TradeHistory:Symbols").Get<string[]>()
+                    ?? new string[] { Symbol.BTC_USDT };
+
+                var limit = 25;
+                try { limit = Convert.ToInt32(configuration.GetSection("TradeHistory")?["Limit"]); }
+                catch { /* ignored */ }
+
+                var loggerFactory = new LoggerFactory();
+                loggerFactory.AddFile(configuration.GetSection("Logging:File"));
+
+                var api = new BinanceApi(BinanceHttpClient.Instance, logger: loggerFactory.CreateLogger<BinanceApi>());
+                var client = new AggregateTradeClient(loggerFactory.CreateLogger<AggregateTradeClient>());
+                var webSocket = new DefaultWebSocketClient(loggerFactory.CreateLogger<DefaultWebSocketClient>());
+                var stream = new BinanceWebSocketStream(webSocket, loggerFactory.CreateLogger<BinanceWebSocketStream>());
+                var controller = new BinanceWebSocketStreamController(api, stream, HandleError);
+
+                // Initialize manager.
+                using (var manager = new AggregateTradeWebSocketClientManager(client, controller, loggerFactory.CreateLogger<AggregateTradeWebSocketClientManager>()))
+                {
+                    // Initialize cache and link manager (JSON client).
+                    var cache = new AggregateTradeCache(api, client, loggerFactory.CreateLogger<AggregateTradeCache>())
+                    {
+                        Client = manager // use manager as client.
+                    };
 
                     foreach (var symbol in symbols)
                     {
