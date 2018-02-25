@@ -66,6 +66,9 @@ namespace Binance.WebSocket
 
             while (status == BinanceStatus.Maintenance)
             {
+                // Notify listeners.
+                OnPausing(TimeSpan.FromMilliseconds(SystemMaintenanceCheckDelayMilliseconds));
+
                 await Task.Delay(SystemMaintenanceCheckDelayMilliseconds, token)
                     .ConfigureAwait(false);
 
