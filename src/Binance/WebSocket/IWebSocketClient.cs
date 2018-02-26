@@ -25,6 +25,11 @@ namespace Binance.WebSocket
         bool IsStreaming { get; }
 
         /// <summary>
+        /// Get the flag indicating if the client is connected (open).
+        /// </summary>
+        bool IsOpen { get; }
+
+        /// <summary>
         /// Connect web socket to URI and begin receiving messages.
         /// Runtime exceptions are thrown by this method and must be handled
         /// by the caller, otherwise the <see cref="Task"/> continues receiving

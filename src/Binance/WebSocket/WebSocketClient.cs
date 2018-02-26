@@ -22,6 +22,8 @@ namespace Binance.WebSocket
 
         public bool IsStreaming { get; protected set; }
 
+        public bool IsOpen { get; protected set; }
+
         #endregion Public Properties
 
         #region Constructors
@@ -49,6 +51,8 @@ namespace Binance.WebSocket
         /// </summary>
         protected void OnOpen()
         {
+            IsOpen = true;
+
             try { Open?.Invoke(this, EventArgs.Empty); }
             catch (Exception e)
             {
@@ -61,6 +65,8 @@ namespace Binance.WebSocket
         /// </summary>
         protected void OnClose()
         {
+            IsOpen = false;
+
             try { Close?.Invoke(this, EventArgs.Empty); }
             catch (Exception e)
             {
