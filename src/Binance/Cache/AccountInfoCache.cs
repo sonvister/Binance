@@ -54,6 +54,9 @@ namespace Binance.Cache
             Throw.IfNullOrWhiteSpace(listenKey, nameof(listenKey));
             Throw.IfNull(user, nameof(user));
 
+            if (_listenKey != null)
+                throw new InvalidOperationException($"{nameof(AccountInfoCache)}.{nameof(Subscribe)}: Already subscribed to a (user) listen key: \"{_listenKey}\"");
+
             _listenKey = listenKey;
             _user = user;
 
