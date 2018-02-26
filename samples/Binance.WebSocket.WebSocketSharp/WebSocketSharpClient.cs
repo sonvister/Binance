@@ -24,7 +24,8 @@ namespace Binance.WebSocket
             if (!token.CanBeCanceled)
                 throw new ArgumentException("Token must be capable of being in the canceled state.", nameof(token));
 
-            token.ThrowIfCancellationRequested();
+            if (token.IsCancellationRequested)
+                return;
 
             if (IsStreaming)
                 throw new InvalidOperationException($"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: Already streaming (this method is not reentrant).");
@@ -66,7 +67,7 @@ namespace Binance.WebSocket
                         Logger?.LogWarning($"{nameof(WebSocketSharpClient)}.OnMessage: Received empty JSON message.");
                     }
                 }
-                //catch (OperationCanceledException) { /* ignored */ }
+                catch (OperationCanceledException) { /* ignored */ }
                 catch (Exception e)
                 {
                     if (!token.IsCancellationRequested)
@@ -98,7 +99,7 @@ namespace Binance.WebSocket
                 if (exception != null)
                     throw exception;
             }
-            //catch (OperationCanceledException) { /* ignored */ }
+            catch (OperationCanceledException) { /* ignored */ }
             catch (Exception e)
             {
                 if (!token.IsCancellationRequested)

@@ -56,13 +56,13 @@ namespace Binance.Tests.Integration
         [Fact]
         public async Task GetAggregateTrades()
         {
-            var now = DateTimeOffset.UtcNow;
+            var now = DateTime.UtcNow;
 
             var json = await _api.GetAggregateTradesAsync(Symbol.BTC_USDT, 0, 1);
 
             Assert.True(IsJsonArray(json));
 
-            json = await _api.GetAggregateTradesAsync(Symbol.BTC_USDT, startTime: now.AddMinutes(-1).ToUnixTimeMilliseconds(), endTime: now.ToUnixTimeMilliseconds());
+            json = await _api.GetAggregateTradesAsync(Symbol.BTC_USDT, startTime: now.AddMinutes(-1), endTime: now);
 
             Assert.True(IsJsonArray(json));
         }
@@ -70,13 +70,13 @@ namespace Binance.Tests.Integration
         [Fact]
         public async Task GetCandlesticks()
         {
-            var now = DateTimeOffset.UtcNow;
+            var now = DateTime.UtcNow;
 
             var json = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Hour, 1);
 
             Assert.True(IsJsonArray(json));
 
-            json = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Minute, startTime: now.AddMinutes(-1).ToUnixTimeMilliseconds(), endTime: now.ToUnixTimeMilliseconds());
+            json = await _api.GetCandlesticksAsync(Symbol.BTC_USDT, CandlestickInterval.Minute, startTime: now.AddMinutes(-1), endTime: now);
 
             Assert.True(IsJsonArray(json));
         }

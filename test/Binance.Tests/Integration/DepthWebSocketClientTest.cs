@@ -1,11 +1,9 @@
 ﻿//#define INTEGRATION
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Client;
 using Binance.WebSocket;
-using Moq;
 using Xunit;
 
 namespace Binance.Tests.Integration
@@ -17,17 +15,18 @@ namespace Binance.Tests.Integration
         public async Task SubscribeCallback()
         {
             var symbol = Symbol.LTC_USDT;
-            var client = new DepthWebSocketClient(new BinanceWebSocketStream());
+            var client = new DepthWebSocketClient(new DepthClient(), new BinanceWebSocketStream());
 
             using (var cts = new CancellationTokenSource())
             {
-                var task = client.SubscribeAndStreamAsync(symbol, args =>
+                client.Subscribe(symbol, args =>
                 {
                     // NOTE: The first event will cancel the client ...could be a while.
                     // ReSharper disable once AccessToDisposedClosure
                     cts.Cancel();
-                },
-                cts.Token);
+                });
+
+                var task = client.Stream.StreamAsync(cts.Token);
 
                 await task;
             }

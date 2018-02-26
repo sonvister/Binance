@@ -46,7 +46,8 @@ namespace Binance.WebSocket
             if (!token.CanBeCanceled)
                 throw new ArgumentException($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Token must be capable of being in the canceled state.", nameof(token));
 
-            token.ThrowIfCancellationRequested();
+            if (token.IsCancellationRequested)
+                return;
 
             if (IsStreaming)
                 throw new InvalidOperationException($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Already streaming (this method is not reentrant).");
@@ -69,7 +70,7 @@ namespace Binance.WebSocket
                     _isOpen = true;
                     OnOpen();
                 }
-                //catch (OperationCanceledException) { /* ignored */ }
+                catch (OperationCanceledException) { /* ignored */ }
                 catch (Exception e)
                 {
                     if (!token.IsCancellationRequested)
@@ -121,7 +122,7 @@ namespace Binance.WebSocket
                         }
                         while (result != null && !result.EndOfMessage);
                     }
-                    //catch (OperationCanceledException) { /* ignored */ }
+                    catch (OperationCanceledException) { /* ignored */ }
                     catch (Exception e)
                     {
                         if (!token.IsCancellationRequested)

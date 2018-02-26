@@ -197,6 +197,7 @@ namespace Binance.Stream
                     token.ThrowIfCancellationRequested();
                 }
             }
+            catch (OperationCanceledException) { /* ignored */ }
             catch (Exception e)
             {
                 if (!token.IsCancellationRequested)
