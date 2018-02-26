@@ -78,9 +78,14 @@ namespace Binance.Application.Logging
                             streamWriter.WriteLine($"{Spaces}{line}");
                         }
 
-                        if (exception != null)
+                        var prefix = string.Empty;
+
+                        while (exception != null)
                         {
-                            streamWriter.WriteLine($"{Spaces}(exception: \"{exception.Message}\")");
+                            streamWriter.WriteLine($"{Spaces}{prefix}(exception: \"{exception.Message}\")");
+
+                            prefix += "  ";
+                            exception = exception.InnerException;
                         }
 
                         streamWriter.Flush();
