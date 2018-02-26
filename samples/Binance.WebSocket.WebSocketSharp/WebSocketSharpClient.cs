@@ -35,99 +35,101 @@ namespace Binance.WebSocket
             Exception exception = null;
 
             var tcs = new TaskCompletionSource<object>();
-            token.Register(() => tcs.TrySetCanceled());
 
-            var webSocket = new WebSocketSharp.WebSocket(uri.AbsoluteUri);
-            webSocket.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
-            webSocket.Log.Output = (d, s) => { /* ignore */ };
-
-            webSocket.OnOpen += (s, e) =>
+            using (token.Register(() => tcs.TrySetCanceled()))
             {
-                _isOpen = true;
-                OnOpen();
-            };
+                var webSocket = new WebSocketSharp.WebSocket(uri.AbsoluteUri);
+                webSocket.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
+                webSocket.Log.Output = (d, s) => { /* ignore */ };
 
-            webSocket.OnClose += (s, e) => tcs.TrySetCanceled();
-
-            webSocket.OnMessage += (s, evt) =>
-            {
-                try
+                webSocket.OnOpen += (s, e) =>
                 {
-                    if (!evt.IsText)
+                    _isOpen = true;
+                    OnOpen();
+                };
+
+                webSocket.OnClose += (s, e) => tcs.TrySetCanceled();
+
+                webSocket.OnMessage += (s, evt) =>
+                {
+                    try
+                    {
+                        if (!evt.IsText)
+                            return;
+
+                        var json = evt.Data;
+
+                        if (!string.IsNullOrWhiteSpace(json))
+                        {
+                            OnMessage(json, uri.AbsolutePath);
+                        }
+                        else
+                        {
+                            Logger?.LogWarning($"{nameof(WebSocketSharpClient)}.OnMessage: Received empty JSON message.");
+                        }
+                    }
+                    catch (OperationCanceledException) { /* ignore */ }
+                    catch (Exception e)
+                    {
+                        if (!token.IsCancellationRequested)
+                        {
+                            Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.OnMessage: WebSocket read exception.");
+                            exception = e;
+                            tcs.TrySetCanceled();
+                        }
+                    }
+                };
+
+                webSocket.OnError += (s, e) =>
+                {
+                    if (token.IsCancellationRequested)
                         return;
 
-                    var json = evt.Data;
+                    Logger?.LogError(e.Exception, $"{nameof(WebSocketSharpClient)}.OnError: WebSocket exception.");
+                    exception = e.Exception;
+                    tcs.TrySetCanceled();
+                };
 
-                    if (!string.IsNullOrWhiteSpace(json))
-                    {
-                        OnMessage(json, uri.AbsolutePath);
-                    }
-                    else
-                    {
-                        Logger?.LogWarning($"{nameof(WebSocketSharpClient)}.OnMessage: Received empty JSON message.");
-                    }
+                try
+                {
+                    webSocket.Connect();
+
+                    await tcs.Task
+                        .ConfigureAwait(false);
+
+                    if (exception != null)
+                        throw exception;
                 }
-                catch (OperationCanceledException) { /* ignored */ }
+                catch (OperationCanceledException) { /* ignore */ }
                 catch (Exception e)
                 {
                     if (!token.IsCancellationRequested)
                     {
-                        Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.OnMessage: WebSocket read exception.");
-                        exception = e;
-                        tcs.TrySetCanceled();
+                        Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket connect exception.");
+                        throw;
                     }
                 }
-            };
-
-            webSocket.OnError += (s, e) =>
-            {
-                if (token.IsCancellationRequested)
-                    return;
-
-                Logger?.LogError(e.Exception, $"{nameof(WebSocketSharpClient)}.OnError: WebSocket exception.");
-                exception = e.Exception;
-                tcs.TrySetCanceled();
-            };
-
-            try
-            {
-                webSocket.Connect();
-
-                await tcs.Task
-                    .ConfigureAwait(false);
-
-                if (exception != null)
-                    throw exception;
-            }
-            catch (OperationCanceledException) { /* ignored */ }
-            catch (Exception e)
-            {
-                if (!token.IsCancellationRequested)
+                finally
                 {
-                    Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket connect exception.");
-                    throw;
-                }
-            }
-            finally
-            {
-                if (webSocket.IsAlive)
-                {
-                    try { webSocket.Close(CloseStatusCode.Normal); }
-                    catch (Exception e)
+                    if (webSocket.IsAlive)
                     {
-                        Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
+                        try { webSocket.Close(CloseStatusCode.Normal); }
+                        catch (Exception e)
+                        {
+                            Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
+                        }
                     }
+
+                    ((IDisposable)webSocket).Dispose();
+
+                    if (_isOpen)
+                    {
+                        _isOpen = false;
+                        OnClose();
+                    }
+
+                    IsStreaming = false;
                 }
-
-                ((IDisposable) webSocket).Dispose();
-
-                if (_isOpen)
-                {
-                    _isOpen = false;
-                    OnClose();
-                }
-
-                IsStreaming = false;
             }
         }
     }
