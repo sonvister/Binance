@@ -106,7 +106,10 @@ namespace Binance.Manager
                                     .ConfigureAwait(false);
                             }
                         }
-                        catch { /* ignored */ }
+                        catch (Exception e)
+                        {
+                            Logger?.LogError(e, $"{nameof(JsonStreamController<TStream>)}: Automatic stream control failed.");
+                        }
                     });
                 }
             }
