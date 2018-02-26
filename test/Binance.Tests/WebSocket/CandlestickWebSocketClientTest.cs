@@ -6,14 +6,15 @@ using Xunit;
 
 namespace Binance.Tests.WebSocket
 {
-    public class CandlesticksWebSocketClientTest
+    public class CandlestickWebSocketClientTest
     {
         [Fact]
-        public void SubscribeThrows()
+        public void Throws()
         {
             var client = new CandlestickWebSocketClient();
 
             Assert.Throws<ArgumentNullException>("symbol", () => client.Subscribe((string)null, CandlestickInterval.Hour));
+            Assert.Throws<ArgumentNullException>("symbol", () => client.Subscribe(string.Empty, CandlestickInterval.Hour));
         }
     }
 }
