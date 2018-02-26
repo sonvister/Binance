@@ -32,6 +32,7 @@ namespace Binance24HourStatistics
             ExampleMain();
             //AdvancedExampleMain();
             //CombinedStreamsExample.AdvancedExampleMain();
+            //AllSymbolsExample.ExampleMain();
 
             return Task.CompletedTask;
         }

@@ -28,13 +28,7 @@ namespace Binance.Cache
         IEnumerable<SymbolStatistics> GetStatistics(params string[] symbols);
 
         /// <summary>
-        /// Subscribe to all symbols.
-        /// </summary>
-        /// <param name="callback"></param>
-        void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback);
-
-        /// <summary>
-        /// Subscribe to one or more symbols.
+        /// Subscribe to one or more symbols (or all symbols).
         /// </summary>
         /// <param name="callback"></param>
         /// <param name="symbols"></param>

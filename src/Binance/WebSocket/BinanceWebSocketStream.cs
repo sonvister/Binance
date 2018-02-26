@@ -69,27 +69,30 @@ namespace Binance.WebSocket
         {
             try
             {
-                //string streamName;
+                string streamName = null;
                 //IJsonStreamObserver[] subscribers;
 
                 // NOTE: Avoid locking... allowing for eventual consistency of subscribers.
                 //lock (_sync)
                 //{
-                    var jObject = JObject.Parse(json);
-
-                    // Get stream name.
-                    var streamName = jObject["stream"]?.Value<string>();
-                    if (streamName != null)
+                    if (json.IsJsonObject())
                     {
-                        // Get JSON data.
-                        var data = jObject["data"]?.ToString(Formatting.None);
-                        if (data == null)
-                        {
-                            Logger?.LogError($"{nameof(BinanceWebSocketStream)}: No JSON 'data' in message: \"{json}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                            return; // ignore.
-                        }
+                        var jObject = JObject.Parse(json);
 
-                        json = data;
+                        // Get stream name.
+                        streamName = jObject["stream"]?.Value<string>();
+                        if (streamName != null)
+                        {
+                            // Get JSON data.
+                            var data = jObject["data"]?.ToString(Formatting.None);
+                            if (data == null)
+                            {
+                                Logger?.LogError($"{nameof(BinanceWebSocketStream)}: No JSON 'data' in message: \"{json}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                                return; // ignore.
+                            }
+
+                            json = data;
+                        }
                     }
 
                     if (streamName == null)

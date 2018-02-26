@@ -92,29 +92,23 @@ namespace Binance.Cache
             }
         }
 
-        public void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback)
-        {
-            OnSubscribe(callback);
-
-            SubscribeToClient();
-        }
-
         public void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback, params string[] symbols)
         {
-            Throw.IfNull(symbols, nameof(symbols));
-
             OnSubscribe(callback);
 
-            foreach (var s in symbols)
+            if (symbols != null)
             {
-                Throw.IfNullOrWhiteSpace(s, nameof(s));
+                foreach (var s in symbols)
+                {
+                    Throw.IfNullOrWhiteSpace(s, nameof(s));
 
-                var symbol = s.FormatSymbol();
+                    var symbol = s.FormatSymbol();
 
-                if (_symbols.Contains(symbol))
-                    continue;
+                    if (_symbols.Contains(symbol))
+                        continue;
 
-                _symbols.Add(symbol);
+                    _symbols.Add(symbol);
+                }
             }
 
             SubscribeToClient();
