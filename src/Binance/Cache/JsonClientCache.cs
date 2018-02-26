@@ -169,7 +169,7 @@ namespace Binance.Cache
                 eventArgs = await OnAction(@event)
                     .ConfigureAwait(false);
 }
-            catch (OperationCanceledException) { /* ignored */ }
+            catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
                 Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(OnAction)} exception.  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
@@ -182,7 +182,7 @@ namespace Binance.Cache
                     _callback?.Invoke(eventArgs);
                     Update?.Invoke(this, eventArgs);
                 }
-                catch (OperationCanceledException) { /* ignored */ }
+                catch (OperationCanceledException) { /* ignore */ }
                 catch (Exception e)
                 {
                     Logger?.LogError(e, $"{GetType().Name}: Unhandled update event handler exception.  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");

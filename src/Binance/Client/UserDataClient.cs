@@ -197,8 +197,6 @@ namespace Binance.Client
 
             var user = Users[stream];
 
-            //Logger?.LogDebug($"{nameof(UserDataClient)}: \"{json}\"");
-
             try
             {
                 var jObject = JObject.Parse(json);

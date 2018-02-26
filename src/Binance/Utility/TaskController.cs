@@ -93,7 +93,7 @@ namespace Binance.Utility
                     await Action(Cts.Token)
                         .ConfigureAwait(false);
                 }
-                catch (OperationCanceledException) { /* ignored */  }
+                catch (OperationCanceledException) { /* ignore */  }
                 catch (Exception e)
                 {
                     Logger?.LogError(e, $"{nameof(TaskController)}: Fail.");
@@ -160,7 +160,7 @@ namespace Binance.Utility
         protected void OnError(Exception exception)
         {
             try { _error?.Invoke(this, new ErrorEventArgs(exception)); }
-            catch { /* ignored */ }
+            catch { /* ignore */ }
         }
 
         #endregion Protected Methods

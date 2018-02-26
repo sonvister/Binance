@@ -64,7 +64,7 @@ namespace BinanceTradeHistory
 
                 var limit = 25;
                 try { limit = Convert.ToInt32(configuration.GetSection("TradeHistory")?["Limit"]); }
-                catch { /* ignored */ }
+                catch { /* ignore */ }
 
                 // Initialize manager.
                 using (var manager = services.GetService<IAggregateTradeWebSocketClientManager>())
@@ -119,7 +119,7 @@ namespace BinanceTradeHistory
 
                 var limit = 25;
                 try { limit = Convert.ToInt32(configuration.GetSection("TradeHistory")?["Limit"]); }
-                catch { /* ignored */ }
+                catch { /* ignore */ }
 
                 var loggerFactory = new LoggerFactory();
                 loggerFactory.AddFile(configuration.GetSection("Logging:File"));
@@ -197,7 +197,7 @@ namespace BinanceTradeHistory
                 var limit = 25;
                 var symbol = configuration.GetSection("TradeHistory")?["Symbol"] ?? Symbol.BTC_USDT;
                 try { limit = Convert.ToInt32(configuration.GetSection("TradeHistory")?["Limit"]); }
-                catch { /* ignored */ }
+                catch { /* ignore */ }
 
                 // Initialize cache.
                 var cache = services.GetService<IAggregateTradeCache>();

@@ -87,7 +87,7 @@ namespace Binance.Manager
         protected void OnError(Exception exception)
         {
             try { Error?.Invoke(this, new ErrorEventArgs(exception)); }
-            catch (Exception) { /* ignored */ }
+            catch (Exception) { /* ignore */ }
         }
 
         #endregion Protected Methods

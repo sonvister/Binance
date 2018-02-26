@@ -56,7 +56,7 @@ namespace Binance.WebSocket
                 status = await _api.GetSystemStatusAsync(token)
                     .ConfigureAwait(false);
             }
-            catch { /* ignored */ }
+            catch { /* ignore */ }
 
             if (status == BinanceStatus.Normal)
             {
@@ -79,7 +79,7 @@ namespace Binance.WebSocket
                     status = await _api.GetSystemStatusAsync(token)
                         .ConfigureAwait(false);
                 }
-                catch { /* ignored */ }
+                catch { /* ignore */ }
             }
         }
 

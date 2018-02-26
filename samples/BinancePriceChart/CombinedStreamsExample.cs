@@ -51,7 +51,7 @@ namespace BinancePriceChart
 
                 var interval = CandlestickInterval.Minute;
                 try { interval = configuration.GetSection("PriceChart")?["Interval"].ToCandlestickInterval() ?? CandlestickInterval.Minute; }
-                catch { /* ignored */ }
+                catch { /* ignore */ }
 
                 // Initialize client.
                 var client = services.GetService<ICandlestickWebSocketClient>();

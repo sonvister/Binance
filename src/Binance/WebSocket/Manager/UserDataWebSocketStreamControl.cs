@@ -232,7 +232,7 @@ namespace Binance.WebSocket.Manager
                         await _api.UserStreamKeepAliveAsync(userAndListenKey.Key, userAndListenKey.Value, token)
                             .ConfigureAwait(false);
                     }
-                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
                         _logger?.LogError(e, $"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Failed to ping user data stream (1st attempt).");
@@ -256,7 +256,7 @@ namespace Binance.WebSocket.Manager
                         // If successful, remove listen key from list.
                         failedListenKeys.Remove(userAndListenKey);
                     }
-                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
                         _logger?.LogError(e, $"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Failed to ping user data stream (2nd attempt).");
@@ -288,7 +288,7 @@ namespace Binance.WebSocket.Manager
                         // If successful, remove from list.
                         failedListenKeys.Remove(userAndListenKey);
                     }
-                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
                         _logger?.LogError(e, $"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Failed to get new listen key.");

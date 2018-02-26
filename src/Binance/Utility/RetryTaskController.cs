@@ -91,7 +91,7 @@ namespace Binance.Utility
                         await Action(Cts.Token)
                             .ConfigureAwait(false);
                     }
-                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
                         Logger?.LogError(e, $"{nameof(RetryTaskController)}: Fail.");
@@ -112,7 +112,7 @@ namespace Binance.Utility
                                 .ConfigureAwait(false);
                         }
                     }
-                    catch { /* ignored */ }
+                    catch { /* ignore */ }
 
                     if (!Cts.IsCancellationRequested)
                     {
@@ -145,7 +145,7 @@ namespace Binance.Utility
         protected void OnPausing(TimeSpan timeSpan)
         {
             try { _pausing?.Invoke(this, new PausingEventArgs(timeSpan)); }
-            catch { /* ignored */ }
+            catch { /* ignore */ }
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace Binance.Utility
         protected void OnResuming()
         {
             try { _resuming?.Invoke(this, EventArgs.Empty); }
-            catch { /* ignored */ }
+            catch { /* ignore */ }
         }
 
         #endregion Protected Methods

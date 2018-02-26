@@ -68,7 +68,7 @@ namespace BinanceMarketDepth
 
                 var limit = 10;
                 try { limit = Convert.ToInt32(configuration.GetSection("OrderBook")?["Limit"]); }
-                catch { /* ignored */ }
+                catch { /* ignore */ }
 
                 // NOTE: Currently the Partial Book Depth Stream only supports limits of: 5, 10, or 20.
                 if (limit > 10) limit = 20;
@@ -141,7 +141,7 @@ namespace BinanceMarketDepth
                 var limit = 10;
                 var symbol = configuration.GetSection("OrderBook")?["Symbol"] ?? Symbol.BTC_USDT;
                 try { limit = Convert.ToInt32(configuration.GetSection("OrderBook")?["Limit"]); }
-                catch { /* ignored */ }
+                catch { /* ignore */ }
 
                 // NOTE: Currently the Partial Book Depth Stream only supports limits of: 5, 10, or 20.
                 if (limit > 10) limit = 20;

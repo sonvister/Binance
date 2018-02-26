@@ -60,11 +60,11 @@ namespace BinancePriceChart
 
                 var interval = CandlestickInterval.Minute;
                 try { interval = configuration.GetSection("PriceChart")?["Interval"].ToCandlestickInterval() ?? CandlestickInterval.Minute; }
-                catch { /* ignored */ }
+                catch { /* ignore */ }
 
                 var limit = 25;
                 try { limit = Convert.ToInt32(configuration.GetSection("PriceChart")?["Limit"] ?? "25"); }
-                catch { /* ignored */ }
+                catch { /* ignore */ }
 
                 // Initialize manager.
                 using (var manager = services.GetService<ICandlestickWebSocketClientManager>())
@@ -119,11 +119,11 @@ namespace BinancePriceChart
 
                 var interval = CandlestickInterval.Minute;
                 try { interval = configuration.GetSection("PriceChart")?["Interval"].ToCandlestickInterval() ?? CandlestickInterval.Minute; }
-                catch { /* ignored */ }
+                catch { /* ignore */ }
 
                 var limit = 25;
                 try { limit = Convert.ToInt32(configuration.GetSection("PriceChart")?["Limit"] ?? "25"); }
-                catch { /* ignored */ }
+                catch { /* ignore */ }
 
                 // Initialize cache.
                 var cache = services.GetService<ICandlestickCache>();
