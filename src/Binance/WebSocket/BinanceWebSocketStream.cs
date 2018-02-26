@@ -48,7 +48,7 @@ namespace Binance.WebSocket
 
         #region Protected Methods
 
-        protected override async Task StreamAsync(IJsonProvider jsonProvider, CancellationToken token = default)
+        protected override async Task StreamProviderAsync(CancellationToken token = default)
         {
             var streams = ProvidedStreams;
 
