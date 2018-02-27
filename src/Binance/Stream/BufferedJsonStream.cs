@@ -73,7 +73,7 @@ namespace Binance.Stream
 
         #region Public Methods
 
-        public void Subscribe(IJsonStreamObserver observer, params string[] streamNames)
+        public IJsonStream Subscribe(IJsonStreamObserver observer, params string[] streamNames)
         {
             if (streamNames == null || !streamNames.Any())
             {
@@ -103,14 +103,16 @@ namespace Binance.Stream
                     Subscribers[streamName].Add(observer);
                 }
             }
+
+            return this;
         }
 
-        public void Unsubscribe(IJsonStreamObserver observer, params string[] streamNames)
+        public IJsonStream Unsubscribe(IJsonStreamObserver observer, params string[] streamNames)
         {
             if (streamNames == null || !streamNames.Any())
             {
                 Unsubscribe(observer);
-                return;
+                return this;
             }
 
             lock (Sync)
@@ -140,6 +142,8 @@ namespace Binance.Stream
                     }
                 }
             }
+
+            return this;
         }
 
         public async Task StreamAsync(CancellationToken token)

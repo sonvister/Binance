@@ -30,14 +30,14 @@ namespace Binance.Stream
         /// </summary>
         /// <param name="observer"></param>
         /// <param name="streamNames"></param>
-        void Subscribe(IJsonStreamObserver observer, params string[] streamNames);
+        IJsonStream Subscribe(IJsonStreamObserver observer, params string[] streamNames);
 
         /// <summary>
         /// Unsubscribe an <see cref="IJsonStreamObserver"/> from a stream.
         /// </summary>
         /// <param name="observer"></param>
         /// <param name="streamNames"></param>
-        void Unsubscribe(IJsonStreamObserver observer, params string[] streamNames);
+        IJsonStream Unsubscribe(IJsonStreamObserver observer, params string[] streamNames);
 
         /// <summary>
         /// Initiate data streaming and begin sending messages to observers.
