@@ -80,7 +80,7 @@ namespace BinanceConsoleApp
                     Display(orderBook, balance);
 
                     // Subscribe cache to symbol with callback.
-                    cache.Subscribe(symbol, evt => Display(evt.OrderBook, balance));
+                    cache.Subscribe(symbol, _limit, evt => Display(evt.OrderBook, balance));
                     
                     // Subscribe stream to cache observed streams.
                     stream.Subscribe(cache, cache.ObservedStreams);
