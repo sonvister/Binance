@@ -9,6 +9,8 @@ namespace Binance.Api
     {
         #region Public Properties
 
+        public TimeSpan TimestampOffsetRefreshPeriod { get; set; }
+
         public long TimestampOffset { get; private set; }
 
         #endregion Public Properties
@@ -33,7 +35,7 @@ namespace Binance.Api
 
             try
             {
-                if (DateTime.UtcNow - _offsetLastUpdate > TimeSpan.FromMinutes(client.Options.TimestampOffsetRefreshPeriodMinutes))
+                if (DateTime.UtcNow - _offsetLastUpdate > TimestampOffsetRefreshPeriod)
                 {
                     const long n = 3;
 

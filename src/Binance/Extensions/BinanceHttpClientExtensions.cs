@@ -482,8 +482,8 @@ namespace Binance.Api
             if (quantity <= 0)
                 throw new ArgumentException("Order quantity must be greater than 0.", nameof(quantity));
 
-            if (recvWindow <= 0)
-                recvWindow = client.Options.RecvWindowDefault ?? 0;
+            if (recvWindow == default)
+                recvWindow = client.DefaultRecvWindow;
 
             if (user.RateLimiter != null)
             {
@@ -556,8 +556,8 @@ namespace Binance.Api
             if (orderId < 0 && string.IsNullOrWhiteSpace(origClientOrderId))
                 throw new ArgumentException($"Either '{nameof(orderId)}' or '{nameof(origClientOrderId)}' must be provided, but both were invalid.");
 
-            if (recvWindow <= 0)
-                recvWindow = client.Options.RecvWindowDefault ?? 0;
+            if (recvWindow == default)
+                recvWindow = client.DefaultRecvWindow;
 
             if (user.RateLimiter != null)
             {
@@ -609,8 +609,8 @@ namespace Binance.Api
             if (orderId < 0 && string.IsNullOrWhiteSpace(origClientOrderId))
                 throw new ArgumentException($"Either '{nameof(orderId)}' or '{nameof(origClientOrderId)}' must be provided, but both were invalid.");
 
-            if (recvWindow <= 0)
-                recvWindow = client.Options.RecvWindowDefault ?? 0;
+            if (recvWindow == default)
+                recvWindow = client.DefaultRecvWindow;
 
             if (user.RateLimiter != null)
             {
@@ -658,8 +658,8 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(user, nameof(user));
 
-            if (recvWindow <= 0)
-                recvWindow = client.Options.RecvWindowDefault ?? 0;
+            if (recvWindow == default)
+                recvWindow = client.DefaultRecvWindow;
 
             if (client.RateLimiter != null)
             {
@@ -706,8 +706,8 @@ namespace Binance.Api
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (recvWindow <= 0)
-                recvWindow = client.Options.RecvWindowDefault ?? 0;
+            if (recvWindow == default)
+                recvWindow = client.DefaultRecvWindow;
 
             if (client.RateLimiter != null)
             {
@@ -751,8 +751,8 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(user, nameof(user));
 
-            if (recvWindow <= 0)
-                recvWindow = client.Options.RecvWindowDefault ?? 0;
+            if (recvWindow == default)
+                recvWindow = client.DefaultRecvWindow;
 
             if (client.RateLimiter != null)
             {
@@ -792,8 +792,8 @@ namespace Binance.Api
             Throw.IfNull(user, nameof(user));
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (recvWindow <= 0)
-                recvWindow = client.Options.RecvWindowDefault ?? 0;
+            if (recvWindow == default)
+                recvWindow = client.DefaultRecvWindow;
 
             if (client.RateLimiter != null)
             {
@@ -847,8 +847,8 @@ namespace Binance.Api
             if (amount <= 0)
                 throw new ArgumentException("Withdraw amount must be greater than 0.", nameof(amount));
 
-            if (recvWindow <= 0)
-                recvWindow = client.Options.RecvWindowDefault ?? 0;
+            if (recvWindow == default)
+                recvWindow = client.DefaultRecvWindow;
 
             if (client.RateLimiter != null)
             {
@@ -898,8 +898,8 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(user, nameof(user));
 
-            if (recvWindow <= 0)
-                recvWindow = client.Options.RecvWindowDefault ?? 0;
+            if (recvWindow == default)
+                recvWindow = client.DefaultRecvWindow;
 
             if (client.RateLimiter != null)
             {
@@ -961,8 +961,8 @@ namespace Binance.Api
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(user, nameof(user));
 
-            if (recvWindow <= 0)
-                recvWindow = client.Options.RecvWindowDefault ?? 0;
+            if (recvWindow == default)
+                recvWindow = client.DefaultRecvWindow;
 
             if (client.RateLimiter != null)
             {

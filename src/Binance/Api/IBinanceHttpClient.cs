@@ -17,13 +17,9 @@ namespace Binance.Api
         IApiRateLimiter RateLimiter { get; set; }
 
         /// <summary>
-        /// Get the options.
-        /// 
-        /// NOTE: The RequestRateLimit settings are applied at construction.
-        ///       To change the request rate limiter settings at runtime,
-        ///       use RateLimiter.Configure().
+        /// Get or set the default recvWindow parameter value.
         /// </summary>
-        BinanceApiOptions Options { get; }
+        long DefaultRecvWindow { get; set; }
 
         /// <summary>
         /// 

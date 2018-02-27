@@ -36,7 +36,7 @@ namespace Binance.Api
 
         public IApiRateLimiter RateLimiter { get; set; }
 
-        public BinanceApiOptions Options { get; }
+        public long DefaultRecvWindow { get; set; }
 
         #endregion Public Properties
 
@@ -51,6 +51,8 @@ namespace Binance.Api
         #endregion Internal
 
         #region Private Fields
+
+        private BinanceApiOptions _options;
 
         private readonly HttpClient _httpClient;
 
@@ -70,14 +72,18 @@ namespace Binance.Api
         {
             TimestampProvider = timestampProvider ?? new TimestampProvider();
             RateLimiter = rateLimiter ?? new ApiRateLimiter();
-            Options = options?.Value ?? new BinanceApiOptions();
+            _options = options?.Value ?? new BinanceApiOptions();
+
+            DefaultRecvWindow = _options.RecvWindowDefault ?? default;
+
+            TimestampProvider.TimestampOffsetRefreshPeriod = TimeSpan.FromMinutes(_options.TimestampOffsetRefreshPeriodMinutes);
 
             try
             {
                 // Configure request rate limiter.
-                RateLimiter.Configure(TimeSpan.FromMinutes(Options.RequestRateLimit.DurationMinutes), Options.RequestRateLimit.Count);
+                RateLimiter.Configure(TimeSpan.FromMinutes(_options.RequestRateLimit.DurationMinutes), _options.RequestRateLimit.Count);
                 // Configure request burst rate limiter.
-                RateLimiter.Configure(TimeSpan.FromSeconds(Options.RequestRateLimit.BurstDurationSeconds), Options.RequestRateLimit.BurstCount);
+                RateLimiter.Configure(TimeSpan.FromSeconds(_options.RequestRateLimit.BurstDurationSeconds), _options.RequestRateLimit.BurstCount);
             }
             catch (Exception e)
             {
@@ -93,7 +99,7 @@ namespace Binance.Api
                 _httpClient = new HttpClient
                 {
                     BaseAddress = uri,
-                    Timeout = TimeSpan.FromSeconds(Options.HttpClientTimeoutDefaultSeconds)
+                    Timeout = TimeSpan.FromSeconds(_options.HttpClientTimeoutDefaultSeconds)
                 };
             }
             catch (Exception e)
@@ -103,14 +109,14 @@ namespace Binance.Api
                 throw new BinanceApiException(message, e);
             }
 
-            if (Options.ServicePointManagerConnectionLeaseTimeoutMilliseconds > 0)
+            if (_options.ServicePointManagerConnectionLeaseTimeoutMilliseconds > 0)
             {
                 try
                 {
                     // FIX: Singleton HttpClient doesn't respect DNS changes.
                     // https://github.com/dotnet/corefx/issues/11224
                     var sp = ServicePointManager.FindServicePoint(uri);
-                    sp.ConnectionLeaseTimeout = Options.ServicePointManagerConnectionLeaseTimeoutMilliseconds;
+                    sp.ConnectionLeaseTimeout = _options.ServicePointManagerConnectionLeaseTimeoutMilliseconds;
                 }
                 catch (Exception e)
                 {
