@@ -3,14 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Client.Events;
-using Binance.Manager;
 
 namespace Binance.WebSocket.Manager
 {
     /// <summary>
     /// A user data web socket manager.
     /// </summary>
-    public interface IUserDataWebSocketManager : IControllerManager<IWebSocketStream> //IUserDataClientManager<IWebSocketStream> // TODO
+    public interface IUserDataWebSocketManager : IWebSocketControllerManager //IUserDataClientManager<IWebSocketStream> // TODO
     {
         /// <summary>
         /// The account update event.

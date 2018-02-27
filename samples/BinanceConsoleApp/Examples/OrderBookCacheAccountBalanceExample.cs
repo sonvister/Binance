@@ -86,6 +86,7 @@ namespace BinanceConsoleApp
                     stream.Subscribe(cache, cache.ObservedStreams);
                     // NOTE: This must be done after cache subscribe.
 
+                    // Subscribe to symbol to display latest order book and asset balance.
                     await manager.SubscribeAsync<AccountUpdateEventArgs>(user,
                         evt =>
                         {
@@ -99,8 +100,11 @@ namespace BinanceConsoleApp
                     {
                         controller.Error += (s, e) => HandleError(e.Exception);
 
-                        // Subscribe to symbol to display latest order book and asset balance.
+                        // Begin streaming.
                         controller.Begin();
+
+                        // Optionally, wait for web socket is connected (open).
+                        await manager.WaitUntilWebSocketOpenAsync();
 
                         // Verify we are NOT using a combined streams (DEMONSTRATION ONLY).
                         if (stream.IsCombined() || stream == manager.Controller.Stream)
@@ -115,7 +119,7 @@ namespace BinanceConsoleApp
             {
                 Console.WriteLine(e.Message);
                 Console.WriteLine();
-                Console.WriteLine("  ...press any key to close window.");
+                Console.WriteLine("...press any key to continue.");
                 Console.ReadKey(true);
             }
         }
