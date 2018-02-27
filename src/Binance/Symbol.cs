@@ -20,7 +20,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1519606189091;
+        public static readonly long LastUpdateAt = 1519756183798;
 
         // BTC
         public static readonly Symbol ADA_BTC = new Symbol(SymbolStatus.Trading, Asset.ADA, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -88,6 +88,7 @@ namespace Binance
         public static readonly Symbol MTL_BTC = new Symbol(SymbolStatus.Trading, Asset.MTL, Asset.BTC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NANO_BTC = new Symbol(SymbolStatus.Trading, Asset.NANO, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000010m, 100000.00000000m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NAV_BTC = new Symbol(SymbolStatus.Trading, Asset.NAV, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000010m, 100000.00000000m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol NCASH_BTC = new Symbol(SymbolStatus.Trading, Asset.NCASH, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NEBL_BTC = new Symbol(SymbolStatus.Trading, Asset.NEBL, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000010m, 100000.00000000m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NEO_BTC = new Symbol(SymbolStatus.Trading, Asset.NEO, Asset.BTC, (0.01000000m, 100000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NULS_BTC = new Symbol(SymbolStatus.Trading, Asset.NULS, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -198,6 +199,7 @@ namespace Binance
         public static readonly Symbol MTL_ETH = new Symbol(SymbolStatus.Trading, Asset.MTL, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NANO_ETH = new Symbol(SymbolStatus.Trading, Asset.NANO, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NAV_ETH = new Symbol(SymbolStatus.Trading, Asset.NAV, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol NCASH_ETH = new Symbol(SymbolStatus.Trading, Asset.NCASH, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NEBL_ETH = new Symbol(SymbolStatus.Trading, Asset.NEBL, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NEO_ETH = new Symbol(SymbolStatus.Trading, Asset.NEO, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NULS_ETH = new Symbol(SymbolStatus.Trading, Asset.NULS, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -267,6 +269,7 @@ namespace Binance
         public static readonly Symbol MCO_BNB = new Symbol(SymbolStatus.Trading, Asset.MCO, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NANO_BNB = new Symbol(SymbolStatus.Trading, Asset.NANO, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00010000m, 100000.00000000m, 0.00010000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NAV_BNB = new Symbol(SymbolStatus.Trading, Asset.NAV, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol NCASH_BNB = new Symbol(SymbolStatus.Trading, Asset.NCASH, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NEBL_BNB = new Symbol(SymbolStatus.Trading, Asset.NEBL, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NEO_BNB = new Symbol(SymbolStatus.Trading, Asset.NEO, Asset.BNB, (0.00100000m, 10000000.00000000m, 0.00100000m), (0.00100000m, 10000000.00000000m, 0.00100000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NULS_BNB = new Symbol(SymbolStatus.Trading, Asset.NULS, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -551,6 +554,9 @@ namespace Binance
                     { "NAVBNB", NAV_BNB },
                     { "NAVBTC", NAV_BTC },
                     { "NAVETH", NAV_ETH },
+                    { "NCASHBNB", NCASH_BNB },
+                    { "NCASHBTC", NCASH_BTC },
+                    { "NCASHETH", NCASH_ETH },
                     { "NEBLBNB", NEBL_BNB },
                     { "NEBLBTC", NEBL_BTC },
                     { "NEBLETH", NEBL_ETH },

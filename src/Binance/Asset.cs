@@ -16,7 +16,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1519606189091;
+        public static readonly long LastUpdateAt = 1519756183798;
 
         public static readonly Asset ADA = new Asset("ADA", 8);
         public static readonly Asset ADX = new Asset("ADX", 8);
@@ -84,6 +84,7 @@ namespace Binance
         public static readonly Asset MTL = new Asset("MTL", 8);
         public static readonly Asset NANO = new Asset("NANO", 8);
         public static readonly Asset NAV = new Asset("NAV", 8);
+        public static readonly Asset NCASH = new Asset("NCASH", 8);
         public static readonly Asset NEBL = new Asset("NEBL", 8);
         public static readonly Asset NEO = new Asset("NEO", 8);
         public static readonly Asset NULS = new Asset("NULS", 8);
@@ -258,6 +259,7 @@ namespace Binance
                     { "MTL", MTL },
                     { "NANO", NANO },
                     { "NAV", NAV },
+                    { "NCASH", NCASH },
                     { "NEBL", NEBL },
                     { "NEO", NEO },
                     { "NULS", NULS },
