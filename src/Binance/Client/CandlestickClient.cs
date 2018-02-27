@@ -123,7 +123,7 @@ namespace Binance.Client
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            Logger?.LogError(e, $"{nameof(CandlestickClient)}: Unhandled candlestick event handler exception.");
+                            Logger?.LogWarning(e, $"{nameof(CandlestickClient)}: Unhandled candlestick event handler exception.");
                         }
                     }
                 }

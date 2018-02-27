@@ -126,7 +126,7 @@ namespace Binance.Client
                 {
                     if (!token.IsCancellationRequested)
                     {
-                        Logger?.LogError(e, $"{nameof(DepthClient)}: Unhandled depth update event handler exception.");
+                        Logger?.LogWarning(e, $"{nameof(DepthClient)}: Unhandled depth update event handler exception.");
                     }
                 }
             }

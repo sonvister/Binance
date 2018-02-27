@@ -92,23 +92,29 @@ namespace Binance.Manager
             {
                 if (_task.IsCompleted)
                 {
+                    Logger?.LogDebug($"{nameof(JsonStreamController<TStream>)}.{nameof(OnProvidedStreamsChanged)}: Delayed automatic stream control...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
                     _task = Task.Delay(250).ContinueWith(async _ =>
                     {
                         try
                         {
                             if (!Stream.IsStreaming && Stream.ProvidedStreams.Any())
                             {
+                                Logger?.LogDebug($"{nameof(JsonStreamController<TStream>)}.{nameof(OnProvidedStreamsChanged)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
                                 base.Begin();
                             }
                             else if (Stream.IsStreaming && !Stream.ProvidedStreams.Any())
                             {
+                                Logger?.LogDebug($"{nameof(JsonStreamController<TStream>)}.{nameof(OnProvidedStreamsChanged)}: Cancel streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
                                 await CancelAsync()
                                     .ConfigureAwait(false);
                             }
                         }
                         catch (Exception e)
                         {
-                            Logger?.LogError(e, $"{nameof(JsonStreamController<TStream>)}: Automatic stream control failed.");
+                            Logger?.LogError(e, $"{nameof(JsonStreamController<TStream>)}: Automatic stream control failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                         }
                     });
                 }

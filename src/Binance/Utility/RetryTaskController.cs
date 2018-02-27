@@ -94,7 +94,7 @@ namespace Binance.Utility
                     catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
-                        Logger?.LogError(e, $"{nameof(RetryTaskController)}: Fail.");
+                        Logger?.LogWarning(e, $"{nameof(RetryTaskController)}: Unhandled action exception.");
 
                         if (!Cts.IsCancellationRequested)
                         {

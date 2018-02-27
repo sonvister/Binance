@@ -106,7 +106,7 @@ namespace Binance.Client
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            Logger?.LogError(e, $"{nameof(TradeClient)}: Unhandled aggregate trade event handler exception.");
+                            Logger?.LogWarning(e, $"{nameof(TradeClient)}: Unhandled aggregate trade event handler exception.");
                         }
                     }
                 }

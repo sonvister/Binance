@@ -104,7 +104,7 @@ namespace Binance.Client
                     }
                     catch (Exception e)
                     {
-                        Logger?.LogError(e, $"{nameof(AggregateTradeClient)}: Unhandled aggregate trade event handler exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        Logger?.LogWarning(e, $"{nameof(AggregateTradeClient)}: Unhandled aggregate trade event handler exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     }
                 }
                 else

@@ -249,7 +249,7 @@ namespace Binance.Client
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            Logger?.LogError(e, $"{nameof(UserDataClient)}: Unhandled account update event handler exception.");
+                            Logger?.LogWarning(e, $"{nameof(UserDataClient)}: Unhandled account update event handler exception.");
                         }
                     }
                 }
@@ -305,7 +305,7 @@ namespace Binance.Client
                         {
                             if (!token.IsCancellationRequested)
                             {
-                                Logger?.LogError(e, $"{nameof(UserDataClient)}: Unhandled trade update event handler exception.");
+                                Logger?.LogWarning(e, $"{nameof(UserDataClient)}: Unhandled trade update event handler exception.");
                             }
                         }
                     }
@@ -335,7 +335,7 @@ namespace Binance.Client
                         {
                             if (!token.IsCancellationRequested)
                             {
-                                Logger?.LogError(e, $"{nameof(UserDataClient)}: Unhandled order update event handler exception.");
+                                Logger?.LogWarning(e, $"{nameof(UserDataClient)}: Unhandled order update event handler exception.");
                             }
                         }
                     }

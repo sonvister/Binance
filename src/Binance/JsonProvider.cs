@@ -57,7 +57,7 @@ namespace Binance
             try { _message?.Invoke(this, new JsonMessageEventArgs(json, subject)); }
             catch (Exception e)
             {
-                Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(Message)} event handler exception.");
+                Logger?.LogWarning(e, $"{GetType().Name}: Unhandled {nameof(Message)} event handler exception.");
             }
         }
 

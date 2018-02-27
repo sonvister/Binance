@@ -65,17 +65,17 @@ namespace Binance.WebSocket
                         .ConfigureAwait(false);
 
                     if (webSocket.State != WebSocketState.Open)
-                        throw new Exception($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket connect failed.");
+                        throw new Exception($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket connect failed (state: {webSocket.State}).");
 
                     _isOpen = true;
                     OnOpen();
                 }
-                catch (OperationCanceledException) { /* ignored */ }
+                catch (OperationCanceledException) { /* ignore */ }
                 catch (Exception e)
                 {
                     if (!token.IsCancellationRequested)
                     {
-                        Logger?.LogError(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket connect exception.");
+                        Logger?.LogWarning(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket connect exception (state: {webSocket.State}).");
                         throw;
                     }
                 }
@@ -104,30 +104,36 @@ namespace Binance.WebSocket
                             switch (result.MessageType)
                             {
                                 case WebSocketMessageType.Close:
-                                    throw new Exception(result.CloseStatus.HasValue
-                                        ? $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket closed ({result.CloseStatus.Value}): \"{result.CloseStatusDescription ?? "[no reason provided]"}\""
-                                        : $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket closed: \"{result.CloseStatusDescription ?? "[no reason provided]"}\"");
+                                    var message = result.CloseStatus.HasValue
+                                        ? $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Web socket closed ({result.CloseStatus.Value}): \"{result.CloseStatusDescription ?? "[no reason provided]"}\""
+                                        : $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Web socket closed: \"{result.CloseStatusDescription ?? "[no reason provided]"}\"";
+
+                                    Logger?.LogWarning(message);
+
+                                    await webSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
+                                        .ConfigureAwait(false);
+                                    break;
 
                                 case WebSocketMessageType.Text when result.Count > 0:
                                     stringBuilder.Append(Encoding.UTF8.GetString(bytes, 0, result.Count));
                                     break;
 
                                 case WebSocketMessageType.Binary:
-                                    Logger?.LogWarning($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Received unsupported binary message type.");
+                                    Logger?.LogWarning($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Received unsupported binary message type (state: {webSocket.State}).");
                                     break;
 
                                 default:
                                     throw new ArgumentOutOfRangeException(nameof(result.MessageType), $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Unknown result message type ({result.MessageType}).");
                             }
                         }
-                        while (result != null && !result.EndOfMessage);
+                        while (!result.EndOfMessage);
                     }
-                    catch (OperationCanceledException) { /* ignored */ }
+                    catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            Logger?.LogError(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket receive exception.");
+                            Logger?.LogWarning(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket receive exception (state: {webSocket.State}).");
                             throw;
                         }
                     }
@@ -142,24 +148,24 @@ namespace Binance.WebSocket
                     }
                     else
                     {
-                        Logger?.LogWarning($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Received empty JSON message.");
+                        Logger?.LogWarning($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Received empty JSON message (state: {webSocket.State}).");
                     }
                 }
             }
             finally
             {
-                if (webSocket.State == WebSocketState.Open || webSocket.State == WebSocketState.CloseReceived || webSocket.State == WebSocketState.CloseSent)
-                {
-                    try
-                    {
-                        await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
-                            .ConfigureAwait(false);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger?.LogError(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
-                    }
-                }
+                //if (webSocket.State == WebSocketState.Open || webSocket.State == WebSocketState.CloseReceived || webSocket.State == WebSocketState.CloseSent)
+                //{
+                //    try
+                //    {
+                //        await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
+                //            .ConfigureAwait(false);
+                //    }
+                //    catch (Exception e)
+                //    {
+                //        Logger?.LogWarning(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket close exception (state: {webSocket.State}).");
+                //    }
+                //}
 
                 webSocket?.Dispose();
 
@@ -170,7 +176,7 @@ namespace Binance.WebSocket
                 }
 
                 IsStreaming = false;
-                Logger?.LogDebug($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Streaming complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogDebug($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
         }
 

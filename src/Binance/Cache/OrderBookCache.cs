@@ -125,7 +125,7 @@ namespace Binance.Cache
                 // Ignore events with same or earlier order book update.
                 if (_orderBookClone != null && @event.LastUpdateId <= _orderBookClone.LastUpdateId)
                 {
-                    Logger?.LogDebug($"{nameof(OrderBookCache)} ({_symbol}): Ignoring event (last update ID: {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                    Logger?.LogDebug($"{nameof(OrderBookCache)} ({_symbol}): Ignoring event (last update ID: {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     return null;
                 }
 
@@ -151,11 +151,11 @@ namespace Binance.Cache
                 // Ignore events prior to order book snapshot.
                 if (@event.LastUpdateId <= _orderBook.LastUpdateId)
                 {
-                    Logger?.LogDebug($"{nameof(OrderBookCache)} ({_symbol}): Ignoring event (last update ID: {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                    Logger?.LogDebug($"{nameof(OrderBookCache)} ({_symbol}): Ignoring event (last update ID: {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     return null;
                 }
 
-                Logger?.LogDebug($"{nameof(OrderBookCache)} ({_symbol}): Updating order book (last update ID: {_orderBook.LastUpdateId} => {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                Logger?.LogTrace($"{nameof(OrderBookCache)} ({_symbol}): Updating order book (last update ID: {_orderBook.LastUpdateId} => {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 _orderBook.Modify(@event.LastUpdateId, @event.Bids, @event.Asks);
 
@@ -171,13 +171,13 @@ namespace Binance.Cache
 
         private async Task SynchronizeOrderBookAsync(CancellationToken token)
         {
-            Logger?.LogInformation($"{nameof(OrderBookCache)} ({_symbol}): Synchronizing order book...  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+            Logger?.LogInformation($"{nameof(OrderBookCache)} ({_symbol}): Synchronizing order book...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             // Get order book snapshot with the maximum limit.
             _orderBook = await Api.GetOrderBookAsync(_symbol, 1000, token) // TODO
                 .ConfigureAwait(false);
 
-            Logger?.LogInformation($"{nameof(OrderBookCache)} ({_symbol}): Synchronization complete (last update ID: {_orderBook.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+            Logger?.LogInformation($"{nameof(OrderBookCache)} ({_symbol}): Synchronization complete (last update ID: {_orderBook.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
         }
 
         #endregion Private Methods

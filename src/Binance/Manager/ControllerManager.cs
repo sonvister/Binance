@@ -67,7 +67,7 @@ namespace Binance.Manager
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                Logger?.LogError(e, $"{GetType().Name}.{nameof(OnError)}: Unhandled {nameof(Error)} event handler exception.");
+                Logger?.LogWarning(e, $"{GetType().Name}.{nameof(OnError)}: Unhandled {nameof(Error)} event handler exception.");
             }
         }
 

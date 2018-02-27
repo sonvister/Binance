@@ -235,7 +235,7 @@ namespace Binance.WebSocket.Manager
                     catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
-                        _logger?.LogError(e, $"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Failed to ping user data stream (1st attempt).");
+                        _logger?.LogWarning(e, $"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Failed to ping user data stream (1st attempt).");
                         failedListenKeys.Add(userAndListenKey);
                     }
                 }
@@ -259,7 +259,7 @@ namespace Binance.WebSocket.Manager
                     catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
-                        _logger?.LogError(e, $"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Failed to ping user data stream (2nd attempt).");
+                        _logger?.LogWarning(e, $"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Failed to ping user data stream (2nd attempt).");
                     }
                 }
 
@@ -320,7 +320,7 @@ namespace Binance.WebSocket.Manager
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                _logger?.LogError(e, $"{nameof(UserDataWebSocketStreamControl)}: Unhandled {nameof(ListenKeyUpdate)} event handler exception.");
+                _logger?.LogWarning(e, $"{nameof(UserDataWebSocketStreamControl)}: Unhandled {nameof(ListenKeyUpdate)} event handler exception.");
             }
         }
 

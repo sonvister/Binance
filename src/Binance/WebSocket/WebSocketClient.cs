@@ -56,7 +56,7 @@ namespace Binance.WebSocket
             try { Open?.Invoke(this, EventArgs.Empty); }
             catch (Exception e)
             {
-                Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(Open)} event handler exception.");
+                Logger?.LogWarning(e, $"{GetType().Name}: Unhandled {nameof(Open)} event handler exception.");
             }
         }
 
@@ -70,7 +70,7 @@ namespace Binance.WebSocket
             try { Close?.Invoke(this, EventArgs.Empty); }
             catch (Exception e)
             {
-                Logger?.LogError(e, $"{GetType().Name}: Unhandled {nameof(Close)} event handler exception.");
+                Logger?.LogWarning(e, $"{GetType().Name}: Unhandled {nameof(Close)} event handler exception.");
             }
         }
 

@@ -59,10 +59,17 @@ namespace Binance.WebSocket
                 // ReSharper disable once PossibleMultipleEnumeration
                 : new Uri($"{BaseUri}/stream?streams={string.Join("/", streams)}");
 
-            Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: \"{uri.AbsoluteUri}\"");
+            Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: Begin streaming ({uri.AbsoluteUri}).");
 
-            await WebSocket.StreamAsync(uri, token)
-                .ConfigureAwait(false);
+            try
+            {
+                await WebSocket.StreamAsync(uri, token)
+                    .ConfigureAwait(false);
+            }
+            finally
+            {
+                Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: End streaming ({uri.AbsoluteUri}).");
+            }
         }
 
         protected override async Task ProcessJsonAsync(string json, CancellationToken token = default)
@@ -116,7 +123,7 @@ namespace Binance.WebSocket
                 await NotifyListenersAsync(subscribers, streamName, json, token)
                     .ConfigureAwait(false);
             }
-            catch (OperationCanceledException) { /* ignored */ }
+            catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
                 if (!token.IsCancellationRequested)

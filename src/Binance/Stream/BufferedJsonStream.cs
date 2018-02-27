@@ -155,54 +155,55 @@ namespace Binance.Stream
             if (!Subscribers.Any())
                 throw new InvalidOperationException($"{GetType().Name}.{nameof(StreamAsync)}: Not subscribed to any streams.");
 
+            Logger?.LogDebug($"{GetType().Name}.{nameof(StreamAsync)}: Streaming initiated.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
             IsStreaming = true;
 
             try
             {
-                token.Register(AbortStreaming);
-
-                while (!token.IsCancellationRequested)
+                using (token.Register(AbortStreaming))
                 {
-                    // Wait while paused or in transistion.
-                    await Task.Delay(100, token)
-                        .ConfigureAwait(false);
-
-                    lock (Sync)
+                    while (!token.IsCancellationRequested)
                     {
-                        if (_isStreamingPaused || !StreamNames.Any() || _stopwatch.ElapsedMilliseconds < 500)
-                            continue;
-
-                        _cts = new CancellationTokenSource();
-
-                        InitalizeBuffer(_cts.Token);
-                    }
-
-                    try
-                    {
-                        await StreamProviderAsync(_cts.Token)
+                        // Wait while paused or in transistion.
+                        await Task.Delay(100, token)
                             .ConfigureAwait(false);
-                    }
-                    catch (OperationCanceledException) { /* ignored */ }
-                    finally
-                    {
+
                         lock (Sync)
                         {
-                            FinalizeBuffer();
+                            if (_isStreamingPaused || !StreamNames.Any() || _stopwatch.ElapsedMilliseconds < 500)
+                                continue;
 
-                            _cts.Dispose();
-                            _cts = null;
+                            _cts = new CancellationTokenSource();
+
+                            InitalizeBuffer(_cts.Token);
+                        }
+
+                        try
+                        {
+                            await StreamProviderAsync(_cts.Token)
+                                .ConfigureAwait(false);
+                        }
+                        catch (OperationCanceledException) { /* ignore */ }
+                        finally
+                        {
+                            lock (Sync)
+                            {
+                                FinalizeBuffer();
+
+                                _cts.Dispose();
+                                _cts = null;
+                            }
                         }
                     }
-
-                    token.ThrowIfCancellationRequested();
                 }
             }
-            catch (OperationCanceledException) { /* ignored */ }
+            catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
                 if (!token.IsCancellationRequested)
                 {
-                    Logger?.LogError(e, $"{GetType().Name}.{nameof(StreamAsync)}: Fail.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Logger?.LogWarning(e, $"{GetType().Name}.{nameof(StreamAsync)}: Unhandled exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 }
                 throw;
             }
@@ -293,7 +294,7 @@ namespace Binance.Stream
         protected void OnProvidedStreamsChanged()
         {
             try { ProvidedStreamsChanged?.Invoke(this, EventArgs.Empty); }
-            catch (Exception) { /* ignored */ }
+            catch (Exception) { /* ignore */ }
         }
 
         #endregion Protected Methods
