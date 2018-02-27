@@ -82,7 +82,7 @@ namespace Binance.Utility
 
             Task = Task.Run(async () =>
             {
-                Logger?.LogDebug($"{nameof(RetryTaskController)}: Task beginning...");
+                Logger?.LogDebug($"{nameof(RetryTaskController)}: Task beginning...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 while (!Cts.IsCancellationRequested)
                 {
@@ -94,7 +94,7 @@ namespace Binance.Utility
                     catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
-                        Logger?.LogWarning(e, $"{nameof(RetryTaskController)}: Unhandled action exception.");
+                        Logger?.LogWarning(e, $"{nameof(RetryTaskController)}: Unhandled action exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                         if (!Cts.IsCancellationRequested)
                         {
@@ -106,7 +106,7 @@ namespace Binance.Utility
                     {
                         if (!Cts.IsCancellationRequested)
                         {
-                            Logger?.LogDebug($"{nameof(RetryTaskController)}: Task pausing...");
+                            Logger?.LogDebug($"{nameof(RetryTaskController)}: Task pausing...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                             await DelayAsync(Cts.Token)
                                 .ConfigureAwait(false);
@@ -116,13 +116,13 @@ namespace Binance.Utility
 
                     if (!Cts.IsCancellationRequested)
                     {
-                        Logger?.LogDebug($"{nameof(RetryTaskController)}: Task resuming...");
+                        Logger?.LogDebug($"{nameof(RetryTaskController)}: Task resuming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                         OnResuming();
                     }
                 }
 
-                Logger?.LogDebug($"{nameof(RetryTaskController)}: Task complete.");
+                Logger?.LogDebug($"{nameof(RetryTaskController)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             });
         }
 

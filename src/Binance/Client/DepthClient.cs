@@ -121,7 +121,7 @@ namespace Binance.Client
                     }
                     DepthUpdate?.Invoke(this, eventArgs);
                 }
-                catch (OperationCanceledException) { }
+                catch (OperationCanceledException) { /* ignore */ }
                 catch (Exception e)
                 {
                     if (!token.IsCancellationRequested)
@@ -130,7 +130,7 @@ namespace Binance.Client
                     }
                 }
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
                 if (!token.IsCancellationRequested)

@@ -227,7 +227,7 @@ namespace Binance.WebSocket.Manager
                 {
                     try
                     {
-                        _logger?.LogDebug($"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Keep-alive user stream (\"{userAndListenKey.Value}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        _logger?.LogDebug($"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Keep-alive user stream ({userAndListenKey.Value}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                         await _api.UserStreamKeepAliveAsync(userAndListenKey.Key, userAndListenKey.Value, token)
                             .ConfigureAwait(false);
@@ -248,7 +248,7 @@ namespace Binance.WebSocket.Manager
                 {
                     try
                     {
-                        _logger?.LogDebug($"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Keep-alive user stream (\"{userAndListenKey.Value}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        _logger?.LogDebug($"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Keep-alive user stream ({userAndListenKey.Value}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                         await _api.UserStreamKeepAliveAsync(userAndListenKey.Key, userAndListenKey.Value, token)
                             .ConfigureAwait(false);
@@ -271,7 +271,7 @@ namespace Binance.WebSocket.Manager
                 {
                     try
                     {
-                        _logger?.LogDebug($"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Close user stream (\"{userAndListenKey.Value}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        _logger?.LogDebug($"{nameof(UserDataWebSocketStreamControl)}.{nameof(HandleTimer)}: Close user stream ({userAndListenKey.Value}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                         await _api.UserStreamCloseAsync(userAndListenKey.Key, userAndListenKey.Value, token)
                             .ConfigureAwait(false);

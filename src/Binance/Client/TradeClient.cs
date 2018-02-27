@@ -101,7 +101,7 @@ namespace Binance.Client
                         }
                         Trade?.Invoke(this, eventArgs);
                     }
-                    catch (OperationCanceledException) { }
+                    catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
                         if (!token.IsCancellationRequested)
@@ -115,7 +115,7 @@ namespace Binance.Client
                     Logger?.LogWarning($"{nameof(TradeClient)}.{nameof(HandleMessageAsync)}: Unexpected event type ({eventType}).");
                 }
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
                 if (!token.IsCancellationRequested)

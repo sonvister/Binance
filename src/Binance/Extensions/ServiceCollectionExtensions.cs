@@ -77,10 +77,12 @@ namespace Binance
 
             if (useSingleCombinedStream)
             {
+                // NOTE: Each of these interfaces have a distinct JSON stream singleton.
                 services.AddSingleton<IJsonStream, BinanceWebSocketStream>();
                 services.AddSingleton<IWebSocketStream, BinanceWebSocketStream>();
                 services.AddSingleton<IBinanceWebSocketStream, BinanceWebSocketStream>();
 
+                // NOTE: Each of these interfaces have a distinct JSON stream controller singleton.
                 services.AddSingleton<IJsonStreamController, JsonStreamController>();
                 services.AddSingleton<IWebSocketStreamController, BinanceWebSocketStreamController>();
             }

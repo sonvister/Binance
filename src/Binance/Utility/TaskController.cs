@@ -85,7 +85,7 @@ namespace Binance.Utility
 
             Task = Task.Run(async () =>
             {
-                Logger?.LogDebug($"{nameof(TaskController)}: Task beginning...");
+                Logger?.LogDebug($"{nameof(TaskController)}: Task beginning...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 // ReSharper disable once InconsistentlySynchronizedField
                 try
@@ -96,7 +96,7 @@ namespace Binance.Utility
                 catch (OperationCanceledException) { /* ignore */  }
                 catch (Exception e)
                 {
-                    Logger?.LogError(e, $"{nameof(TaskController)}: Fail.");
+                    Logger?.LogWarning(e, $"{nameof(TaskController)}: Unhandled action exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                     // ReSharper disable once InconsistentlySynchronizedField
                     if (!Cts.IsCancellationRequested)
@@ -105,7 +105,7 @@ namespace Binance.Utility
                     }
                 }
 
-                Logger?.LogDebug($"{nameof(TaskController)}: Task complete.");
+                Logger?.LogDebug($"{nameof(TaskController)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             });
         }
 

@@ -68,8 +68,6 @@ namespace Binance.Client
 
         protected override Task HandleMessageAsync(IEnumerable<Action<CandlestickEventArgs>> callbacks, string stream, string json, CancellationToken token = default)
         {
-            //Logger?.LogDebug($"{nameof(CandlestickWebSocketClient)}: \"{args.Json}\"");
-
             try
             {
                 var jObject = JObject.Parse(json);
@@ -118,7 +116,7 @@ namespace Binance.Client
                         }
                         Candlestick?.Invoke(this, eventArgs);
                     }
-                    catch (OperationCanceledException) { }
+                    catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
                         if (!token.IsCancellationRequested)
@@ -132,7 +130,7 @@ namespace Binance.Client
                     Logger?.LogWarning($"{nameof(CandlestickClient)}.{nameof(HandleMessageAsync)}: Unexpected event type ({eventType}).");
                 }
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
                 if (!token.IsCancellationRequested)

@@ -88,7 +88,7 @@ namespace Binance.Stream
 
                     if (!Subscribers.ContainsKey(streamName))
                     {
-                        Logger?.LogDebug($"{GetType().Name}.{nameof(Subscribe)}: Adding stream: \"{streamName}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        Logger?.LogDebug($"{GetType().Name}.{nameof(Subscribe)}: Adding stream ({streamName}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                         Subscribers[streamName] = new List<IJsonStreamObserver>();
                         StreamNames.Add(streamName);
 
@@ -99,7 +99,7 @@ namespace Binance.Stream
                     if (observer == null || Subscribers[streamName].Contains(observer))
                         continue;
 
-                    Logger?.LogDebug($"{GetType().Name}.{nameof(Subscribe)}: Adding observer of stream: \"{streamName}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Logger?.LogDebug($"{GetType().Name}.{nameof(Subscribe)}: Adding observer of stream ({streamName})  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     Subscribers[streamName].Add(observer);
                 }
             }
@@ -122,13 +122,13 @@ namespace Binance.Stream
 
                     if (!Subscribers.ContainsKey(streamName))
                     {
-                        Logger?.LogError($"{GetType().Name}.{nameof(Unsubscribe)}: Not subscribed to stream: \"{streamName}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                        throw new InvalidOperationException($"{GetType().Name}.{nameof(Unsubscribe)}: Not subscribed to stream: \"{streamName}\"");
+                        Logger?.LogError($"{GetType().Name}.{nameof(Unsubscribe)}: Not subscribed to stream ({streamName}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        throw new InvalidOperationException($"{GetType().Name}.{nameof(Unsubscribe)}: Not subscribed to stream ({streamName}).");
                     }
 
                     if (observer != null && Subscribers[streamName].Contains(observer))
                     {
-                        Logger?.LogDebug($"{GetType().Name}.{nameof(Unsubscribe)}: Removing callback for stream: \"{streamName}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        Logger?.LogDebug($"{GetType().Name}.{nameof(Unsubscribe)}: Removing callback for stream ({streamName}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                         Subscribers[streamName].Remove(observer);
                     }
 
@@ -315,7 +315,7 @@ namespace Binance.Stream
                 {
                     if (streamAndSubscribers.Value.Contains(observer))
                     {
-                        Logger?.LogDebug($"{GetType().Name}.{nameof(Unsubscribe)}: Removing observer of stream: \"{streamAndSubscribers.Key}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                        Logger?.LogDebug($"{GetType().Name}.{nameof(Unsubscribe)}: Removing observer of stream ({streamAndSubscribers.Key})  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                         streamAndSubscribers.Value.Remove(observer);
                     }
 
@@ -348,7 +348,7 @@ namespace Binance.Stream
 
         private void RemoveStream(string stream)
         {
-            Logger?.LogDebug($"{GetType().Name}.{nameof(RemoveStream)}: Removing stream: \"{stream}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogDebug($"{GetType().Name}.{nameof(RemoveStream)}: Removing stream ({stream}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             AbortStreaming();
 
@@ -374,7 +374,7 @@ namespace Binance.Stream
             }
             catch (Exception e)
             {
-                Logger?.LogError(e, $"{GetType().Name}.{nameof(AbortStreaming)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogWarning(e, $"{GetType().Name}.{nameof(AbortStreaming)}: Ignored exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
         }
 

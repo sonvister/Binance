@@ -59,7 +59,7 @@ namespace Binance.WebSocket
                 // ReSharper disable once PossibleMultipleEnumeration
                 : new Uri($"{BaseUri}/stream?streams={string.Join("/", streams)}");
 
-            Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: Begin streaming ({uri.AbsoluteUri}).");
+            Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: Begin streaming ({uri.AbsoluteUri}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             try
             {
@@ -68,7 +68,7 @@ namespace Binance.WebSocket
             }
             finally
             {
-                Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: End streaming ({uri.AbsoluteUri}).");
+                Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: End streaming ({uri.AbsoluteUri}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
         }
 
@@ -94,7 +94,7 @@ namespace Binance.WebSocket
                             var data = jObject["data"]?.ToString(Formatting.None);
                             if (data == null)
                             {
-                                Logger?.LogError($"{nameof(BinanceWebSocketStream)}: No JSON 'data' in message: \"{json}\"  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                                Logger?.LogError($"{nameof(BinanceWebSocketStream)}: No JSON 'data' in message.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                                 return; // ignore.
                             }
 

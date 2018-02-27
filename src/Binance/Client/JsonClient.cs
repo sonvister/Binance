@@ -73,7 +73,7 @@ namespace Binance.Client
             }
             catch (Exception e)
             {
-                Logger?.LogError(e, $"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(HandleMessageAsync)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogError(e, $"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(HandleMessageAsync)}: Unhandled exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
         }
 
@@ -97,7 +97,7 @@ namespace Binance.Client
 
             if (!subscribers.ContainsKey(stream))
             {
-                Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(SubscribeStream)}: Adding stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(SubscribeStream)}: Adding stream ({stream}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 subscribers[stream] = new List<Action<TEventArgs>>();
             }
@@ -105,7 +105,7 @@ namespace Binance.Client
             // ReSharper disable once InvertIf
             if (callback != null && !subscribers[stream].Contains(callback))
             {
-                Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(SubscribeStream)}: Adding callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(SubscribeStream)}: Adding callback for stream ({stream}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 subscribers[stream].Add(callback);
             }
@@ -127,7 +127,7 @@ namespace Binance.Client
             {
                 if (subscribers[stream].Contains(callback))
                 {
-                    Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(UnsubscribeStream)}: Removing callback for stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(UnsubscribeStream)}: Removing callback for stream ({stream}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                     subscribers[stream].Remove(callback);
                 }
@@ -137,7 +137,7 @@ namespace Binance.Client
             // ReSharper disable once ArrangeRedundantParentheses
             if (callback == null || (subscribers.ContainsKey(stream) && !subscribers[stream].Any()))
             {
-                Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(UnsubscribeStream)}: Removing stream (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogDebug($"{nameof(JsonClient<TDefaultEventArgs>)}.{nameof(UnsubscribeStream)}: Removing stream ({stream}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 subscribers.Remove(stream);
             }

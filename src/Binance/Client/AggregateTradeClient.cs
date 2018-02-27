@@ -102,6 +102,7 @@ namespace Binance.Client
 
                         AggregateTrade?.Invoke(this, eventArgs);
                     }
+                    catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
                         Logger?.LogWarning(e, $"{nameof(AggregateTradeClient)}: Unhandled aggregate trade event handler exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
@@ -112,6 +113,7 @@ namespace Binance.Client
                     Logger?.LogWarning($"{nameof(AggregateTradeClient)}.{nameof(HandleMessageAsync)}: Unexpected event type ({eventType}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 }
             }
+            catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
                 Logger?.LogError(e, $"{nameof(AggregateTradeClient)}.{nameof(HandleMessageAsync)}: Failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
