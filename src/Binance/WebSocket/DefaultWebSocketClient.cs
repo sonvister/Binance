@@ -19,11 +19,11 @@ namespace Binance.WebSocket
 
         #endregion Private Constants
 
-        #region Private Properties
+        #region Private Fields
 
-        private volatile bool _isOpen;
+        private readonly object _sync = new object();
 
-        #endregion Private Properties
+        #endregion Private Fields
 
         #region Constructors
 
@@ -49,10 +49,13 @@ namespace Binance.WebSocket
             if (token.IsCancellationRequested)
                 return;
 
-            if (IsStreaming)
-                throw new InvalidOperationException($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Already streaming (this method is not reentrant).");
+            lock (_sync)
+            {
+                if (IsStreaming)
+                    throw new InvalidOperationException($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Already streaming (this method is not reentrant).");
 
-            IsStreaming = true;
+                IsStreaming = true;
+            }
 
             var webSocket = new ClientWebSocket();
             webSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
@@ -67,7 +70,6 @@ namespace Binance.WebSocket
                     if (webSocket.State != WebSocketState.Open)
                         throw new Exception($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket connect failed (state: {webSocket.State}).");
 
-                    _isOpen = true;
                     OnOpen();
                 }
                 catch (OperationCanceledException) { /* ignore */ }
@@ -169,9 +171,8 @@ namespace Binance.WebSocket
 
                 webSocket?.Dispose();
 
-                if (_isOpen)
+                if (IsOpen)
                 {
-                    _isOpen = false;
                     OnClose();
                 }
 
