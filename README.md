@@ -62,6 +62,9 @@ using (var user = new BinanceApiUser("<API-Key>", "<API-Secret>"))
 
     try
     {
+        // Validate using cached symbol info.
+        clientOrder.Validate();
+        
         // Place a TEST order.
         await api.TestPlaceAsync(clientOrder);
         
@@ -81,19 +84,47 @@ Get real-time aggregate trades (*with automatic web socket re-connect*).
 using Binance;
 using Binance.WebSocket.Manager;
 
-using (var webSocketManager = new AggregateTradeWebSocketClientManager())
+using (var webSocketClientManager = new AggregateTradeWebSocketClientManager())
 {
     // Handle error events.
-    webSocketManager.Controller.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
+    webSocketClientManager.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
 
     // Subscribe to BTC/USDT and handle events.
-    webSocketManager.Subscribe(Symbol.BTC_USDT, evt =>
+    webSocketClientManager.Subscribe(Symbol.BTC_USDT, evt =>
     {
         var side = evt.Trade.IsBuyerMaker ? "SELL" : "BUY ";
     
         Console.WriteLine($"{evt.Trade.Symbol} {side} {evt.Trade.Quantity} @ {evt.Trade.Price}");    
     });
   
+    // ...
+}
+```
+
+Maintain real-time order book (market depth) cache.
+
+```C#
+using Binance;
+using Binance.Cache;
+using Binance.WebSocket.Manager;
+
+using (var webSocketCacheManager = new DepthWebSocketCacheManager())
+{
+    // Handle error events.
+    webSocketCacheManager.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
+    
+    // Subscribe to BTC/USDT and handle events.
+    webSocketCacheManager.Subscribe(Symbol.BTC_USDT, evt =>
+    {
+        Symbol symbol = evt.OrderBook.Symbol; // use implicit conversion.
+    
+        var minBidPrice = evt.OrderBook.Bids.Last().Price;
+        var maxAskPrice = evt.OrderBook.Asks.Last().Price;
+
+        Console.WriteLine($"Bid Quantity: {evt.OrderBook.Depth(minBidPrice)} {symbol.BaseAsset}");
+        Console.WriteLine($"Ask Quantity: {evt.OrderBook.Depth(maxAskPrice)} {symbol.BaseAsset}");
+    });
+
     // ...
 }
 ```
