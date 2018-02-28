@@ -16,7 +16,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1519756183798;
+        public static readonly long LastUpdateAt = 1519857887359;
 
         public static readonly Asset ADA = new Asset("ADA", 8);
         public static readonly Asset ADX = new Asset("ADX", 8);
@@ -92,6 +92,7 @@ namespace Binance
         public static readonly Asset OMG = new Asset("OMG", 8);
         public static readonly Asset OST = new Asset("OST", 8);
         public static readonly Asset PIVX = new Asset("PIVX", 8);
+        public static readonly Asset POA = new Asset("POA", 8);
         public static readonly Asset POE = new Asset("POE", 8);
         public static readonly Asset POWR = new Asset("POWR", 8);
         public static readonly Asset PPT = new Asset("PPT", 8);
@@ -267,6 +268,7 @@ namespace Binance
                     { "OMG", OMG },
                     { "OST", OST },
                     { "PIVX", PIVX },
+                    { "POA", POA },
                     { "POE", POE },
                     { "POWR", POWR },
                     { "PPT", PPT },
