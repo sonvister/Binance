@@ -29,7 +29,10 @@ namespace BinanceConsoleApp
 
                 try
                 {
+                    order.Validate();
+
                     await api.TestPlaceAsync(order);
+
                     Console.WriteLine("Test Order Successful!");
                 }
                 catch (Exception e)
@@ -45,6 +48,7 @@ namespace BinanceConsoleApp
                 webSocketManager.Subscribe(Symbol.BTC_USDT, evt =>
                 {
                     var side = evt.Trade.IsBuyerMaker ? "SELL" : "BUY ";
+
                     Console.WriteLine($"{evt.Trade.Symbol} {side} {evt.Trade.Quantity} @ {evt.Trade.Price}");
                 });
 

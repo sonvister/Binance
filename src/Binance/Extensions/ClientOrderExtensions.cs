@@ -1,4 +1,6 @@
 ﻿// ReSharper disable once CheckNamespace
+using System;
+
 namespace Binance.Account.Orders
 {
     public static class ClientOrderExtensions
@@ -14,7 +16,43 @@ namespace Binance.Account.Orders
         /// <returns></returns>
         public static bool IsNotPlaced(this ClientOrder clientOrder)
         {
+            Throw.IfNull(clientOrder, nameof(clientOrder));
+
             return clientOrder.Time == default;
+        }
+
+        /// <summary>
+        /// Determine if client order is valid using cached symbol information.
+        /// </summary>
+        /// <param name="clientOrder"></param>
+        /// <returns></returns>
+        public static bool IsValid(this ClientOrder clientOrder)
+        {
+            Throw.IfNull(clientOrder, nameof(clientOrder));
+
+            Symbol symbol = clientOrder.Symbol; // use implicit conversion.
+
+            if (symbol == null)
+                return false;
+
+            return symbol.IsValid(clientOrder);
+        }
+
+        /// <summary>
+        /// Determine if client order is valid using cached symbol information.
+        /// </summary>
+        /// <param name="clientOrder"></param>
+        /// <returns></returns>
+        public static void Validate(this ClientOrder clientOrder)
+        {
+            Throw.IfNull(clientOrder, nameof(clientOrder));
+
+            Symbol symbol = clientOrder.Symbol; // use implicit conversion.
+
+            if (symbol == null)
+                throw new ArgumentException($"The symbol ({clientOrder.Symbol}) is not recognized.", nameof(clientOrder.Symbol));
+
+            symbol.Validate(clientOrder);
         }
     }
 }
