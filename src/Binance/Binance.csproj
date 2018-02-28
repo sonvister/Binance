@@ -33,7 +33,6 @@
     <Compile Remove="Client\IUserDataStreamLookup.cs" />
     <Compile Remove="Client\UserDataStreamLookup.cs" />
     <Compile Remove="Extensions\UserDataWebSocketManagerExtensions.cs" />
-    <Compile Remove="Manager\ControllerManager.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,7 +48,6 @@
 
   <ItemGroup>
     <None Include="Extensions\UserDataWebSocketManagerExtensions.cs" />
-    <None Include="Manager\ControllerManager.cs" />
   </ItemGroup>
 
 </Project>

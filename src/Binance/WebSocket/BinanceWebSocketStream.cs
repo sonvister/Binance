@@ -9,7 +9,8 @@ using Newtonsoft.Json.Linq;
 namespace Binance.WebSocket
 {
     /// <summary>
-    /// The default buffered <see cref="IBinanceWebSocketStream"/> implementation.
+    /// The default buffered <see cref="IBinanceWebSocketStream"/> implementation
+    /// with support for combined streams.
     /// </summary>
     public sealed class BinanceWebSocketStream : BufferedWebSocketStream, IBinanceWebSocketStream
     {
@@ -48,7 +49,7 @@ namespace Binance.WebSocket
 
         #region Protected Methods
 
-        protected override async Task StreamProviderAsync(CancellationToken token = default)
+        protected override async Task StreamActionAsync(CancellationToken token = default)
         {
             var streams = ProvidedStreams;
 
@@ -59,7 +60,7 @@ namespace Binance.WebSocket
                 // ReSharper disable once PossibleMultipleEnumeration
                 : new Uri($"{BaseUri}/stream?streams={string.Join("/", streams)}");
 
-            Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: Begin streaming ({uri.AbsoluteUri}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamActionAsync)}: Begin streaming ({uri.AbsoluteUri}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             try
             {
@@ -68,7 +69,7 @@ namespace Binance.WebSocket
             }
             finally
             {
-                Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamAsync)}: End streaming ({uri.AbsoluteUri}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamActionAsync)}: End streaming ({uri.AbsoluteUri}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
         }
 

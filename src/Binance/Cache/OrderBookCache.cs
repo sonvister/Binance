@@ -174,7 +174,7 @@ namespace Binance.Cache
             Logger?.LogInformation($"{nameof(OrderBookCache)} ({_symbol}): Synchronizing order book...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             // Get order book snapshot with the maximum limit.
-            _orderBook = await Api.GetOrderBookAsync(_symbol, 1000, token) // TODO
+            _orderBook = await Api.GetOrderBookAsync(_symbol, 1000, token)
                 .ConfigureAwait(false);
 
             Logger?.LogInformation($"{nameof(OrderBookCache)} ({_symbol}): Synchronization complete (last update ID: {_orderBook.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");

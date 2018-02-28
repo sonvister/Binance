@@ -489,7 +489,7 @@ namespace Binance.Api
 
             if (json != BinanceHttpClient.SuccessfulTestResponse)
             {
-                var message = $"{nameof(BinanceApi)}.{nameof(TestPlaceAsync)} failed order placement test.";
+                var message = $"{nameof(BinanceApi)}.{nameof(TestPlaceAsync)}: failed order placement test.";
                 _logger?.LogError(message);
                 throw new BinanceApiException(message);
             }

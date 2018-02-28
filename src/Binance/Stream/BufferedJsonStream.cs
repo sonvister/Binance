@@ -185,7 +185,7 @@ namespace Binance.Stream
 
                         try
                         {
-                            await StreamProviderAsync(_cts.Token)
+                            await StreamActionAsync(_cts.Token)
                                 .ConfigureAwait(false);
                         }
                         catch (OperationCanceledException) { /* ignore */ }
@@ -238,7 +238,7 @@ namespace Binance.Stream
 
         #region Protected Methods
 
-        protected abstract Task StreamProviderAsync(CancellationToken token = default);
+        protected abstract Task StreamActionAsync(CancellationToken token = default);
 
         /// <summary>
         /// Notify listeners, both <see cref="IJsonStreamObserver"/> subscribers and message event handlers.
