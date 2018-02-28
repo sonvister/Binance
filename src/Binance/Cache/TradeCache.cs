@@ -15,7 +15,7 @@ namespace Binance.Cache
     /// <summary>
     /// The default <see cref="ITradeCache"/> implemenation.
     /// </summary>
-    public sealed class TradeCache : JsonClientCache<ITradeClient, TradeEventArgs, TradeCacheEventArgs>, ITradeCache
+    public class TradeCache : JsonClientCache<ITradeClient, TradeEventArgs, TradeCacheEventArgs>, ITradeCache
     {
         #region Public Events
 

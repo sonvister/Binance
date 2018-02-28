@@ -13,7 +13,7 @@ namespace Binance.Cache
     /// <summary>
     /// The default <see cref="IOrderBookCache"/> implementation.
     /// </summary>
-    public sealed class OrderBookCache : JsonClientCache<IDepthClient, DepthUpdateEventArgs, OrderBookCacheEventArgs>, IOrderBookCache
+    public class OrderBookCache : JsonClientCache<IDepthClient, DepthUpdateEventArgs, OrderBookCacheEventArgs>, IOrderBookCache
     {
         #region Public Events
 

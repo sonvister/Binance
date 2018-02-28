@@ -66,18 +66,14 @@ namespace Binance24HourStatistics
                 var symbols = configuration.GetSection("Statistics:Symbols").Get<string[]>()
                     ?? new string[] { Symbol.BTC_USDT };
 
-                // Initialize manager (w/ internal controller).
-                using (var manager = services.GetService<ISymbolStatisticsWebSocketClientManager>())
+                // Initialize manager.
+                using (var manager = services.GetService<ISymbolStatisticsWebSocketCacheManager>())
                 {
                     // Add error event handler.
-                    manager.Controller.Error += (s, e) => Console.WriteLine(e.Exception.Message);
-
-                    // Initialize cache.
-                    var cache = services.GetService<ISymbolStatisticsCache>();
-                    cache.Client = manager; // use manager as client.
+                    manager.Error += (s, e) => Console.WriteLine(e.Exception.Message);
 
                     // Subscribe cache to symbols (and automatically begin streaming).
-                    cache.Subscribe(Display, symbols);
+                    manager.Subscribe(Display, symbols);
 
                     Console.ReadKey(true); // wait for user input.
                 }

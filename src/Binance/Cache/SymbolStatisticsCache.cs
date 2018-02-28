@@ -14,7 +14,7 @@ namespace Binance.Cache
     /// <summary>
     /// The default <see cref="ISymbolStatisticsCache"/> implementation.
     /// </summary>
-    public sealed class SymbolStatisticsCache : JsonClientCache<ISymbolStatisticsClient, SymbolStatisticsEventArgs, SymbolStatisticsCacheEventArgs>, ISymbolStatisticsCache
+    public class SymbolStatisticsCache : JsonClientCache<ISymbolStatisticsClient, SymbolStatisticsEventArgs, SymbolStatisticsCacheEventArgs>, ISymbolStatisticsCache
     {
         #region Public Properties
 

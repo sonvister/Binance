@@ -67,16 +67,15 @@ namespace BinanceTradeHistory
                 catch { /* ignore */ }
 
                 // Initialize manager.
-                using (var manager = services.GetService<IAggregateTradeWebSocketClientManager>())
+                using (var manager = services.GetService<IAggregateTradeWebSocketCacheManager>())
                 {
-                    // Initialize cache and link manager (JSON client).
-                    var cache = services.GetService<IAggregateTradeCache>();
-                    cache.Client = manager; // use manager as client.
+                    // Add error event handler.
+                    manager.Error += (s, e) => Console.WriteLine(e.Exception.Message);
 
                     foreach (var symbol in symbols)
                     {
                         // Subscribe to symbol with callback.
-                        cache.Subscribe(symbol, limit, Display);
+                        manager.Subscribe(symbol, limit, Display);
 
                         lock (_sync)
                         {
@@ -87,7 +86,7 @@ namespace BinanceTradeHistory
                         Console.ReadKey(true);
 
                         // Unsubscribe from symbol.
-                        cache.Unsubscribe();
+                        manager.Unsubscribe();
                     }
                 }
             }

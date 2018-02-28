@@ -15,7 +15,7 @@ namespace Binance.Cache
     /// <summary>
     /// The default <see cref="ICandlestickCache"/> implementation.
     /// </summary>
-    public sealed class CandlestickCache : JsonClientCache<ICandlestickClient, CandlestickEventArgs, CandlestickCacheEventArgs>, ICandlestickCache
+    public class CandlestickCache : JsonClientCache<ICandlestickClient, CandlestickEventArgs, CandlestickCacheEventArgs>, ICandlestickCache
     {
         #region Public Properties
 

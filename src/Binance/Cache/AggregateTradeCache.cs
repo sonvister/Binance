@@ -15,7 +15,7 @@ namespace Binance.Cache
     /// <summary>
     /// The default <see cref="IAggregateTradeCache"/> implemenation.
     /// </summary>
-    public sealed class AggregateTradeCache : JsonClientCache<IAggregateTradeClient, AggregateTradeEventArgs, AggregateTradeCacheEventArgs>, IAggregateTradeCache
+    public class AggregateTradeCache : JsonClientCache<IAggregateTradeClient, AggregateTradeEventArgs, AggregateTradeCacheEventArgs>, IAggregateTradeCache
     {
         #region Public Events
 

@@ -76,18 +76,17 @@ namespace BinanceMarketDepth
                 else if (limit > 0) limit = 5;
 
                 // Initialize manager.
-                using (var manager = services.GetService<IDepthWebSocketClientManager>())
+                using (var manager = services.GetService<IDepthWebSocketCacheManager>())
                 {
-                    // Initialize cache.
-                    var cache = services.GetService<IOrderBookCache>();
-                    cache.Client = manager; // use manager as client.
+                    // Add error event handler.
+                    manager.Error += (s, e) => Console.WriteLine(e.Exception.Message);
 
                     foreach (var symbol in symbols)
                     {
                         // Subscribe cache to symbol with limit and callback.
                         // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
                         //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
-                        cache.Subscribe(symbol, limit, Display);
+                        manager.Subscribe(symbol, limit, Display);
 
                         lock (_sync)
                         {
@@ -97,7 +96,7 @@ namespace BinanceMarketDepth
                         }
                         Console.ReadKey(true); // wait for user input.
 
-                        cache.Unsubscribe();
+                        manager.Unsubscribe();
                     }
                 }
             }

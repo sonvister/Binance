@@ -1,4 +1,5 @@
-﻿using Binance.Client;
+﻿using System;
+using Binance.Client;
 using Binance.Manager;
 using Microsoft.Extensions.Logging;
 
@@ -9,6 +10,16 @@ namespace Binance.WebSocket.Manager
     /// </summary>
     public class CandlestickWebSocketClientManager : CandlestickClientManager<IWebSocketStream>, ICandlestickWebSocketClientManager
     {
+        #region Public Events
+
+        public event EventHandler<ErrorEventArgs> Error
+        {
+            add => Controller.Error += value;
+            remove => Controller.Error -= value;
+        }
+
+        #endregion Public Events
+
         #region Constructors
 
         /// <summary>

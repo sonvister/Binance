@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Account.Orders;
 using Binance.Api;
+using Binance.Cache;
 using Binance.WebSocket.Manager;
 
 namespace BinanceConsoleApp
@@ -18,6 +20,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("Successful!");
             }
 
+            /*
             using (var user = new BinanceApiUser("<API-Key>", "<API-Secret>"))
             {
                 var order = new MarketOrder(user)
@@ -40,16 +43,35 @@ namespace BinanceConsoleApp
                     Console.WriteLine($"Test Order Failed: \"{e.Message}\"");
                 }
             }
+            */
 
             using (var webSocketManager =  new AggregateTradeWebSocketClientManager())
             {
-                webSocketManager.Controller.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
+                webSocketManager.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
 
                 webSocketManager.Subscribe(Symbol.BTC_USDT, evt =>
                 {
                     var side = evt.Trade.IsBuyerMaker ? "SELL" : "BUY ";
 
                     Console.WriteLine($"{evt.Trade.Symbol} {side} {evt.Trade.Quantity} @ {evt.Trade.Price}");
+                });
+
+                Console.ReadKey(true);
+            }
+
+            using (var webSocketManager = new DepthWebSocketCacheManager())
+            {
+                webSocketManager.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
+
+                webSocketManager.Subscribe(Symbol.BTC_USDT, evt =>
+                {
+                    Symbol symbol = evt.OrderBook.Symbol; // use implicit conversion.
+
+                    var minBidPrice = evt.OrderBook.Bids.Last().Price;
+                    var maxAskPrice = evt.OrderBook.Asks.Last().Price;
+
+                    Console.WriteLine($"Bid Quantity: {evt.OrderBook.Depth(minBidPrice)} {symbol.BaseAsset}");
+                    Console.WriteLine($"Ask Quantity: {evt.OrderBook.Depth(maxAskPrice)} {symbol.BaseAsset}");
                 });
 
                 Console.ReadKey(true);

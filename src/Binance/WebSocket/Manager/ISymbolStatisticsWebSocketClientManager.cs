@@ -1,4 +1,5 @@
-﻿using Binance.Manager;
+﻿using System;
+using Binance.Manager;
 
 namespace Binance.WebSocket.Manager
 {
@@ -6,5 +7,10 @@ namespace Binance.WebSocket.Manager
     /// A depth web socket client manager.
     /// </summary>
     public interface ISymbolStatisticsWebSocketClientManager : ISymbolStatisticsClientManager<IWebSocketStream>, IWebSocketControllerManager
-    { }
+    {
+        /// <summary>
+        /// The controller error event.
+        /// </summary>
+        event EventHandler<ErrorEventArgs> Error;
+    }
 }

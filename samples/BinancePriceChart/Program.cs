@@ -67,14 +67,13 @@ namespace BinancePriceChart
                 catch { /* ignore */ }
 
                 // Initialize manager.
-                using (var manager = services.GetService<ICandlestickWebSocketClientManager>())
+                using (var manager = services.GetService<ICandlestickWebSocketCacheManager>())
                 {
-                    // Initialize cache.
-                    var cache = services.GetService<ICandlestickCache>();
-                    cache.Client = manager; // use manager as client.
+                    // Add error event handler.
+                    manager.Error += (s, e) => Console.WriteLine(e.Exception.Message);
 
                     // Subscribe cache to symbol and interval with limit and callback.
-                    cache.Subscribe(symbol, interval, limit, Display);
+                    manager.Subscribe(symbol, interval, limit, Display);
 
                     _message = "...press any key to continue.";
                     Console.ReadKey(true); // wait for user input.

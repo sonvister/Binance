@@ -106,6 +106,12 @@ namespace Binance
             services.AddTransient<IUserDataWebSocketManager, UserDataWebSocketClientManager>();
             services.AddSingleton<IUserDataWebSocketStreamControl, UserDataWebSocketStreamControl>();
 
+            services.AddTransient<IAggregateTradeWebSocketCacheManager, AggregateTradeWebSocketCacheManager>();
+            services.AddTransient<ICandlestickWebSocketCacheManager, CandlestickWebSocketCacheManager>();
+            services.AddTransient<IDepthWebSocketCacheManager, DepthWebSocketCacheManager>();
+            services.AddTransient<ISymbolStatisticsWebSocketCacheManager, SymbolStatisticsWebSocketCacheManager>();
+            services.AddTransient<ITradeWebSocketCacheManager, TradeWebSocketCacheManager>();
+
             // Serialization
             services.AddSingleton<IOrderBookTopSerializer, OrderBookTopSerializer>();
             services.AddSingleton<IOrderBookSerializer, OrderBookSerializer>();
