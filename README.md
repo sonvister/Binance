@@ -121,8 +121,8 @@ using (var webSocketCacheManager = new DepthWebSocketCacheManager())
         var minBidPrice = evt.OrderBook.Bids.Last().Price;
         var maxAskPrice = evt.OrderBook.Asks.Last().Price;
 
-        Console.WriteLine($"Bid Quantity: {evt.OrderBook.Depth(minBidPrice)} {symbol.BaseAsset}");
-        Console.WriteLine($"Ask Quantity: {evt.OrderBook.Depth(maxAskPrice)} {symbol.BaseAsset}");
+        Console.WriteLine($"Bid Quantity: {evt.OrderBook.Depth(minBidPrice)} {symbol.BaseAsset} - " +
+                          $"Ask Quantity: {evt.OrderBook.Depth(maxAskPrice)} {symbol.BaseAsset}");
     });
 
     // ...
