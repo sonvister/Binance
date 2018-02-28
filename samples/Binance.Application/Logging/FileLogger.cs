@@ -8,7 +8,7 @@ namespace Binance.Application.Logging
     {
         #region Private Constants
 
-        private const string Spaces = "      ";
+        private const string Spaces = "       ";
 
         #endregion Private Constants
 

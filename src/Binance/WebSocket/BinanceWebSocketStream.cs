@@ -60,7 +60,7 @@ namespace Binance.WebSocket
                 // ReSharper disable once PossibleMultipleEnumeration
                 : new Uri($"{BaseUri}/stream?streams={string.Join("/", streams)}");
 
-            Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamActionAsync)}: Begin streaming ({uri.AbsoluteUri}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamActionAsync)}: Begin streaming...{Environment.NewLine}({uri.AbsoluteUri})");
 
             try
             {
@@ -69,7 +69,7 @@ namespace Binance.WebSocket
             }
             finally
             {
-                Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamActionAsync)}: End streaming ({uri.AbsoluteUri}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogInformation($"{nameof(BinanceWebSocketStream)}.{nameof(StreamActionAsync)}: End streaming...{Environment.NewLine}({uri.AbsoluteUri})");
             }
         }
 
