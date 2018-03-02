@@ -3,6 +3,8 @@ A full-featured .NET **[Binance API](https://github.com/binance-exchange/binance
 
 Compatible with **.NET Standard 2.0** and **.NET Framework 4.7.1**
 
+Built using [TAP (Task-based Asynchronous Pattern)](https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap).
+
 [![](https://img.shields.io/github/last-commit/sonvister/Binance.svg)](https://github.com/sonvister/Binance)
 
 ## Features
