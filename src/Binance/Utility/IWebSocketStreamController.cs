@@ -1,6 +1,6 @@
-﻿using Binance.Manager;
+﻿using Binance.WebSocket;
 
-namespace Binance.WebSocket
+namespace Binance.Utility
 {
     /// <summary>
     /// A web socket <see cref="IJsonStreamController"/>.

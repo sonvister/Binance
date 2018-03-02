@@ -3,6 +3,7 @@ using Binance.Api;
 using Binance.Client;
 using Binance.Client.Events;
 using Binance.Stream;
+using Binance.Utility;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Manager

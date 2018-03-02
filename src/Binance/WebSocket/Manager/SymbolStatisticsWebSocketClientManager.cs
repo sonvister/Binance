@@ -1,6 +1,7 @@
 ﻿using System;
 using Binance.Client;
 using Binance.Manager;
+using Binance.Utility;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket.Manager

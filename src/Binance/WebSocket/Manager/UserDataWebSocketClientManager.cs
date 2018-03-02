@@ -6,6 +6,7 @@ using Binance.Api;
 using Binance.Client;
 using Binance.Client.Events;
 using Binance.Manager;
+using Binance.Utility;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket.Manager

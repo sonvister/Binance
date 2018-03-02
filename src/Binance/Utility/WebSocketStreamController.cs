@@ -1,7 +1,7 @@
-﻿using Binance.Manager;
+﻿using Binance.WebSocket;
 using Microsoft.Extensions.Logging;
 
-namespace Binance.WebSocket
+namespace Binance.Utility
 {
     public abstract class WebSocketStreamController : JsonStreamController<IWebSocketStream>, IWebSocketStreamController
     {

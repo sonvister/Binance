@@ -135,6 +135,8 @@ namespace Binance.Utility
             // Notify listeners.
             OnPausing(TimeSpan.FromMilliseconds(RetryDelayMilliseconds));
 
+            Logger?.LogDebug($"{nameof(RetryTaskController)}: Delaying for {RetryDelayMilliseconds} msec.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
             return Task.Delay(RetryDelayMilliseconds, token);
         }
 

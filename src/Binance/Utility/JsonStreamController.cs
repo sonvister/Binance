@@ -3,10 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Stream;
-using Binance.Utility;
 using Microsoft.Extensions.Logging;
 
-namespace Binance.Manager
+namespace Binance.Utility
 {
     /// <summary>
     /// The default <see cref="IJsonStreamController"/> implementation.

@@ -2,9 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
+using Binance.WebSocket;
 using Microsoft.Extensions.Logging;
 
-namespace Binance.WebSocket
+namespace Binance.Utility
 {
     public class BinanceWebSocketStreamController : WebSocketStreamController
     {
@@ -58,6 +59,8 @@ namespace Binance.WebSocket
             }
             catch { /* ignore */ }
 
+            Logger?.LogDebug($"{nameof(BinanceWebSocketStreamController)}: System status ({status}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
             if (status == BinanceStatus.Normal)
             {
                 await base.DelayAsync(token)
@@ -70,6 +73,8 @@ namespace Binance.WebSocket
             {
                 // Notify listeners.
                 OnPausing(TimeSpan.FromMilliseconds(SystemMaintenanceCheckDelayMilliseconds));
+
+                Logger?.LogDebug($"{nameof(BinanceWebSocketStreamController)}: Delaying for {SystemMaintenanceCheckDelayMilliseconds} msec.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 await Task.Delay(SystemMaintenanceCheckDelayMilliseconds, token)
                     .ConfigureAwait(false);

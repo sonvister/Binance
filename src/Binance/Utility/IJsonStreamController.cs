@@ -1,7 +1,6 @@
 ﻿using Binance.Stream;
-using Binance.Utility;
 
-namespace Binance.Manager
+namespace Binance.Utility
 {
     /// <summary>
     /// A JSON stream task controller.
