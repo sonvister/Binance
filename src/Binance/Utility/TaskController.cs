@@ -81,32 +81,32 @@ namespace Binance.Utility
                 Cts?.Dispose();
 
                 Cts = new CancellationTokenSource();
-            }
 
-            Task = Task.Run(async () =>
-            {
-                Logger?.LogDebug($"{nameof(TaskController)}: Task beginning...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Task = Task.Run(async () =>
+                {
+                    Logger?.LogDebug($"{nameof(TaskController)}: Task beginning...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-                // ReSharper disable once InconsistentlySynchronizedField
-                try
-                {
-                    await Action(Cts.Token)
-                        .ConfigureAwait(false);
-                }
-                catch (OperationCanceledException) { /* ignore */  }
-                catch (Exception e)
-                {
-                    Logger?.LogWarning(e, $"{nameof(TaskController)}: Unhandled action exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    // ReSharper disable once InconsistentlySynchronizedField
+                    try
+                    {
+                        await Action(Cts.Token)
+                            .ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException) { /* ignore */  }
+                    catch (Exception e)
+                    {
+                        Logger?.LogWarning(e, $"{nameof(TaskController)}: Unhandled action exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                     // ReSharper disable once InconsistentlySynchronizedField
                     if (!Cts.IsCancellationRequested)
-                    {
-                        OnError(e);
+                        {
+                            OnError(e);
+                        }
                     }
-                }
 
-                Logger?.LogDebug($"{nameof(TaskController)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-            });
+                    Logger?.LogDebug($"{nameof(TaskController)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                });
+            }
         }
 
         public virtual void Abort()
@@ -128,9 +128,15 @@ namespace Binance.Utility
         {
             Abort();
 
-            if (Task != null && !Task.IsCompleted)
+            Task task;
+            lock (Sync)
             {
-                await Task // wait for task to complete.
+                task = Task ?? Task.CompletedTask;
+            }
+
+            if (!task.IsCompleted)
+            {
+                await task // wait for task to complete.
                     .ConfigureAwait(false);
             }
 

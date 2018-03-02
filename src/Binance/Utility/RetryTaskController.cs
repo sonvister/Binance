@@ -78,52 +78,52 @@ namespace Binance.Utility
                 Cts?.Dispose();
 
                 Cts = new CancellationTokenSource();
-            }
 
-            Task = Task.Run(async () =>
-            {
-                Logger?.LogDebug($"{nameof(RetryTaskController)}: Task beginning...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                while (!Cts.IsCancellationRequested)
+                Task = Task.Run(async () =>
                 {
-                    try
-                    {
-                        await Action(Cts.Token)
-                            .ConfigureAwait(false);
-                    }
-                    catch (OperationCanceledException) { /* ignore */ }
-                    catch (Exception e)
-                    {
-                        Logger?.LogWarning(e, $"{nameof(RetryTaskController)}: Unhandled action exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Logger?.LogDebug($"{nameof(RetryTaskController)}: Task beginning...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-                        if (!Cts.IsCancellationRequested)
+                    while (!Cts.IsCancellationRequested)
+                    {
+                        try
                         {
-                            OnError(e);
-                        }
-                    }
-
-                    try
-                    {
-                        if (!Cts.IsCancellationRequested)
-                        {
-                            Logger?.LogDebug($"{nameof(RetryTaskController)}: Task pausing...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                            await DelayAsync(Cts.Token)
+                            await Action(Cts.Token)
                                 .ConfigureAwait(false);
                         }
+                        catch (OperationCanceledException) { /* ignore */ }
+                        catch (Exception e)
+                        {
+                            Logger?.LogWarning(e, $"{nameof(RetryTaskController)}: Unhandled action exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                            if (!Cts.IsCancellationRequested)
+                            {
+                                OnError(e);
+                            }
+                        }
+
+                        try
+                        {
+                            if (!Cts.IsCancellationRequested)
+                            {
+                                Logger?.LogDebug($"{nameof(RetryTaskController)}: Task pausing...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                                await DelayAsync(Cts.Token)
+                                    .ConfigureAwait(false);
+                            }
+                        }
+                        catch { /* ignore */ }
+
+                        if (!Cts.IsCancellationRequested)
+                        {
+                            Logger?.LogDebug($"{nameof(RetryTaskController)}: Task resuming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                            OnResuming();
+                        }
                     }
-                    catch { /* ignore */ }
 
-                    if (!Cts.IsCancellationRequested)
-                    {
-                        Logger?.LogDebug($"{nameof(RetryTaskController)}: Task resuming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                        OnResuming();
-                    }
-                }
-
-                Logger?.LogDebug($"{nameof(RetryTaskController)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-            });
+                    Logger?.LogDebug($"{nameof(RetryTaskController)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                });
+            }
         }
 
         #endregion Public Methods

@@ -86,8 +86,10 @@ namespace BinanceConsoleApp
                     stream.Subscribe(cache, cache.ObservedStreams);
                     // NOTE: This must be done after cache subscribe.
 
-                    // Subscribe to symbol to display latest order book and asset balance.
-                    await manager.SubscribeAsync<AccountUpdateEventArgs>(user,
+                    try
+                    {
+                        // Subscribe to symbol to display latest order book and asset balance.
+                        await manager.SubscribeAsync<AccountUpdateEventArgs>(user,
                         evt =>
                         {
                             // Update asset balance.
@@ -96,22 +98,27 @@ namespace BinanceConsoleApp
                             Display(cache.OrderBook, balance);
                         });
 
-                    using (var controller = new RetryTaskController(stream.StreamAsync))
+                        using (var controller = new RetryTaskController(stream.StreamAsync))
+                        {
+                            controller.Error += (s, e) => HandleError(e.Exception);
+
+                            // Begin streaming.
+                            controller.Begin();
+
+                            // Optionally, wait for web socket is connected (open).
+                            await manager.WaitUntilWebSocketOpenAsync();
+
+                            // Verify we are NOT using a combined streams (DEMONSTRATION ONLY).
+                            if (stream.IsCombined() || stream == manager.Controller.Stream)
+                                throw new Exception("You ARE using combined streams :(");
+
+                            _message = "...press any key to continue.";
+                            Console.ReadKey(true); // wait for user input.
+                        }
+                    }
+                    finally
                     {
-                        controller.Error += (s, e) => HandleError(e.Exception);
-
-                        // Begin streaming.
-                        controller.Begin();
-
-                        // Optionally, wait for web socket is connected (open).
-                        await manager.WaitUntilWebSocketOpenAsync();
-
-                        // Verify we are NOT using a combined streams (DEMONSTRATION ONLY).
-                        if (stream.IsCombined() || stream == manager.Controller.Stream)
-                            throw new Exception("You ARE using combined streams :(");
-
-                        _message = "...press any key to continue.";
-                        Console.ReadKey(true); // wait for user input.
+                        stream.Unsubscribe();
                     }
                 }
             }

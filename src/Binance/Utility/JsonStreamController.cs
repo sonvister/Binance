@@ -37,6 +37,8 @@ namespace Binance.Utility
 
         #region Private Fields
 
+        private CancellationTokenSource _cts;
+
         private Task _task = Task.CompletedTask;
 
         private readonly object _sync = new object();
@@ -76,6 +78,16 @@ namespace Binance.Utility
             }
         }
 
+        public override void Abort()
+        {
+            lock (_sync)
+            {
+                _cts?.Cancel();
+            }
+
+            base.Abort();
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -93,10 +105,19 @@ namespace Binance.Utility
                 {
                     Logger?.LogDebug($"{nameof(JsonStreamController<TStream>)}.{nameof(OnProvidedStreamsChanged)}: Delayed automatic stream control...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-                    _task = Task.Delay(250).ContinueWith(async _ =>
+                    _cts?.Dispose();
+                    _cts = new CancellationTokenSource();
+
+                    _task = Task.Delay(250, _cts.Token).ContinueWith(async _ =>
                     {
                         try
                         {
+                            lock (_sync)
+                            {
+                                if (_cts?.IsCancellationRequested ?? true)
+                                    return;
+                            }
+
                             if (!Stream.IsStreaming && Stream.ProvidedStreams.Any())
                             {
                                 Logger?.LogDebug($"{nameof(JsonStreamController<TStream>)}.{nameof(OnProvidedStreamsChanged)}: Begin streaming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
@@ -115,7 +136,7 @@ namespace Binance.Utility
                         {
                             Logger?.LogError(e, $"{nameof(JsonStreamController<TStream>)}: Automatic stream control failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                         }
-                    });
+                    }, _cts.Token);
                 }
             }
         }
@@ -133,6 +154,12 @@ namespace Binance.Utility
 
             if (disposing)
             {
+                lock (_sync)
+                {
+                    _cts?.Dispose();
+                    _cts = null;
+                }
+
                 Stream.ProvidedStreamsChanged -= OnProvidedStreamsChanged;
             }
 
