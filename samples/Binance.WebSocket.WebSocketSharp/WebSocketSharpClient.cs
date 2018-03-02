@@ -50,7 +50,13 @@ namespace Binance.WebSocket
                     OnOpen();
                 };
 
-                webSocket.OnClose += (s, e) => tcs.TrySetCanceled();
+                webSocket.OnClose += (s, e) =>
+                {
+                    if (!tcs.TrySetCanceled())
+                    {
+                        Logger?.LogWarning($"{nameof(WebSocketSharpClient)}.OnClose: Failed to set task completion source canceled.");
+                    }
+                };
 
                 webSocket.OnMessage += (s, evt) =>
                 {
@@ -75,7 +81,7 @@ namespace Binance.WebSocket
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.OnMessage: WebSocket read exception.");
+                            Logger?.LogWarning(e, $"{nameof(WebSocketSharpClient)}.OnMessage: Web socket read exception.");
                             exception = e;
                             tcs.TrySetCanceled();
                         }
@@ -87,13 +93,15 @@ namespace Binance.WebSocket
                     if (token.IsCancellationRequested)
                         return;
 
-                    Logger?.LogError(e.Exception, $"{nameof(WebSocketSharpClient)}.OnError: WebSocket exception.");
+                    Logger?.LogError(e.Exception, $"{nameof(WebSocketSharpClient)}.OnError: Web socket exception.");
                     exception = e.Exception;
                     tcs.TrySetCanceled();
                 };
 
                 try
                 {
+                    Logger?.LogInformation($"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: Web socket connecting...");
+
                     webSocket.Connect();
 
                     await tcs.Task
@@ -107,7 +115,7 @@ namespace Binance.WebSocket
                 {
                     if (!token.IsCancellationRequested)
                     {
-                        Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket connect exception.");
+                        Logger?.LogWarning(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: Web socket connect exception.");
                         throw;
                     }
                 }
@@ -118,18 +126,20 @@ namespace Binance.WebSocket
                         try { webSocket.Close(CloseStatusCode.Normal); }
                         catch (Exception e)
                         {
-                            Logger?.LogError(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
+                            Logger?.LogWarning(e, $"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: Web socket close exception.");
                         }
                     }
 
                     ((IDisposable)webSocket).Dispose();
+
+                    lock (_sync) { IsStreaming = false; }
 
                     if (IsOpen)
                     {
                         OnClose();
                     }
 
-                    IsStreaming = false;
+                    Logger?.LogDebug($"{nameof(WebSocketSharpClient)}.{nameof(StreamAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 }
             }
         }

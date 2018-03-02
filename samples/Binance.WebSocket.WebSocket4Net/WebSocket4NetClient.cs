@@ -46,7 +46,13 @@ namespace Binance.WebSocket
                     OnOpen();
                 };
 
-                webSocket.Closed += (s, e) => tcs.TrySetCanceled();
+                webSocket.Closed += (s, e) =>
+                {
+                    if (!tcs.TrySetCanceled())
+                    {
+                        Logger?.LogWarning($"{nameof(WebSocket4NetClient)}.OnClose: Failed to set task completion source canceled.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    }
+                };
 
                 webSocket.MessageReceived += (s, evt) =>
                 {
@@ -60,7 +66,7 @@ namespace Binance.WebSocket
                         }
                         else
                         {
-                            Logger?.LogWarning($"{nameof(WebSocket4NetClient)}.MessageReceived: Received empty JSON message.");
+                            Logger?.LogWarning($"{nameof(WebSocket4NetClient)}.MessageReceived: Received empty JSON message.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                         }
                     }
                     catch (OperationCanceledException) { /* ignore */ }
@@ -68,7 +74,7 @@ namespace Binance.WebSocket
                     {
                         if (!token.IsCancellationRequested)
                         {
-                            Logger?.LogError(e, $"{nameof(WebSocket4NetClient)}.MessageReceived: WebSocket read exception.");
+                            Logger?.LogWarning(e, $"{nameof(WebSocket4NetClient)}.MessageReceived: Web socket read exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                             exception = e;
                             tcs.TrySetCanceled();
                         }
@@ -80,13 +86,15 @@ namespace Binance.WebSocket
                     if (token.IsCancellationRequested)
                         return;
 
-                    Logger?.LogError(e.Exception, $"{nameof(WebSocket4NetClient)}.Error: WebSocket exception.");
+                    Logger?.LogError(e.Exception, $"{nameof(WebSocket4NetClient)}.Error: Web socket exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     exception = e.Exception;
                     tcs.TrySetCanceled();
                 };
 
                 try
                 {
+                    Logger?.LogInformation($"{nameof(WebSocket4NetClient)}.{nameof(StreamAsync)}: Web socket connecting...");
+
                     webSocket.Open();
 
                     await tcs.Task
@@ -100,7 +108,7 @@ namespace Binance.WebSocket
                 {
                     if (!token.IsCancellationRequested)
                     {
-                        Logger?.LogError(e, $"{nameof(WebSocket4NetClient)}.{nameof(StreamAsync)}: WebSocket open exception.");
+                        Logger?.LogWarning(e, $"{nameof(WebSocket4NetClient)}.{nameof(StreamAsync)}: Web socket open exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                         throw;
                     }
                 }
@@ -111,18 +119,20 @@ namespace Binance.WebSocket
                         try { webSocket.Close(); }
                         catch (Exception e)
                         {
-                            Logger?.LogError(e, $"{nameof(WebSocket4NetClient)}.{nameof(StreamAsync)}: WebSocket close exception.");
+                            Logger?.LogWarning(e, $"{nameof(WebSocket4NetClient)}.{nameof(StreamAsync)}: Web socket close exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                         }
                     }
 
                     webSocket.Dispose();
+
+                    lock (_sync) { IsStreaming = false; }
 
                     if (IsOpen)
                     {
                         OnClose();
                     }
 
-                    IsStreaming = false;
+                    Logger?.LogDebug($"{nameof(WebSocket4NetClient)}.{nameof(StreamAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 }
             }
         }

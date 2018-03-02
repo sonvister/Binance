@@ -64,6 +64,8 @@ namespace Binance.WebSocket
             {
                 try
                 {
+                    Logger?.LogInformation($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Web socket connecting...");
+
                     await webSocket.ConnectAsync(uri, token)
                         .ConfigureAwait(false);
 
@@ -171,12 +173,13 @@ namespace Binance.WebSocket
 
                 webSocket?.Dispose();
 
+                lock (_sync) { IsStreaming = false; }
+
                 if (IsOpen)
                 {
                     OnClose();
                 }
 
-                IsStreaming = false;
                 Logger?.LogDebug($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
         }

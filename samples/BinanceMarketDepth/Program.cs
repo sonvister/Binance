@@ -52,6 +52,11 @@ namespace BinanceMarketDepth
                 // Configure services.
                 var services = new ServiceCollection()
                     .AddBinance() // add default Binance services.
+
+                    // Use alternative, low-level, web socket client implementation.
+                    //.AddTransient<IWebSocketClient, WebSocket4NetClient>()
+                    //.AddTransient<IWebSocketClient, WebSocketSharpClient>()
+
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
