@@ -76,11 +76,12 @@ namespace Binance.Manager
 
             Controller = controller;
 
-            Watchdog = new WatchdogTimer(() =>
+            Watchdog = new WatchdogTimer(async () =>
             {
-                Logger?.LogInformation($"{GetType().Name}: Watchdog timer aborting stream controller (no data received in {Watchdog.Interval.TotalMinutes} minutes).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogInformation($"{GetType().Name}: Watchdog timer restarting stream controller (no data received in {Watchdog.Interval.TotalMinutes} minutes).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-                Controller.Abort();
+                await Controller.RestartAsync()
+                    .ConfigureAwait(false);
             })
             {
                 Interval = TimeSpan.FromHours(1)
