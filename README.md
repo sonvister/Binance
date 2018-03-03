@@ -149,6 +149,8 @@ To get the source code for a particular release, first select the corresponding 
 ### Build Environment
 [Microsoft Visual Studio Community 2017](https://www.visualstudio.com/vs/community/)
 
+![Build status](https://travis-ci.org/sonvister/Binance.svg?branch=master)
+
 ## Documentation
 See: [**Wiki**](https://github.com/sonvister/Binance/wiki)\
 [**Architecture**](https://github.com/sonvister/Binance/wiki/Architecture)
