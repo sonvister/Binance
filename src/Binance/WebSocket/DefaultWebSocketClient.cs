@@ -122,8 +122,11 @@ namespace Binance.WebSocket
                                         .ConfigureAwait(false);
                                     break;
 
-                                case WebSocketMessageType.Text when result.Count > 0:
-                                    stringBuilder.Append(Encoding.UTF8.GetString(bytes, 0, result.Count));
+                                case WebSocketMessageType.Text:
+                                    if (result.Count > 0)
+                                    {
+                                        stringBuilder.Append(Encoding.UTF8.GetString(bytes, 0, result.Count));
+                                    }
                                     break;
 
                                 case WebSocketMessageType.Binary:
@@ -152,7 +155,7 @@ namespace Binance.WebSocket
                     var json = stringBuilder.ToString();
                     if (!string.IsNullOrWhiteSpace(json))
                     {
-                        OnMessage(json, uri.AbsolutePath);
+                        OnMessage(json, uri.AbsoluteUri);
                     }
                     else
                     {
@@ -162,19 +165,6 @@ namespace Binance.WebSocket
             }
             finally
             {
-                //if (webSocket.State == WebSocketState.Open || webSocket.State == WebSocketState.CloseReceived || webSocket.State == WebSocketState.CloseSent)
-                //{
-                //    try
-                //    {
-                //        await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None)
-                //            .ConfigureAwait(false);
-                //    }
-                //    catch (Exception e)
-                //    {
-                //        Logger?.LogWarning(e, $"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: WebSocket close exception (state: {webSocket.State}).");
-                //    }
-                //}
-
                 webSocket?.Dispose();
 
                 lock (_sync) { IsStreaming = false; }

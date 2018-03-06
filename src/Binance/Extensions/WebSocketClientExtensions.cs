@@ -19,7 +19,10 @@ namespace Binance.WebSocket
 
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            EventHandler<EventArgs> handler = (s, e) => tcs.SetResult(true);
+            EventHandler<EventArgs> handler = (s, e) =>
+            {
+                tcs.SetResult(true);
+            };
 
             webSocket.Open += handler;
 

@@ -8,7 +8,7 @@ namespace Binance.WebSocket
     /// <summary>
     /// The default <see cref="IClientWebSocketFactory"/> implementation.
     /// </summary>
-    internal class ClientWebSocketFactory : IClientWebSocketFactory
+    internal sealed class ClientWebSocketFactory : IClientWebSocketFactory
     {
         public IClientWebSocket CreateClientWebSocket()
         {
