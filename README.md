@@ -35,8 +35,10 @@ Test connectivity.
 ```C#
 using Binance.Api;
 
+// Initialize REST API client.
 var api = new BinanceApi();
 
+// Check connectivity.
 if (await api.PingAsync())
 {
     Console.WriteLine("Successful!");
@@ -54,7 +56,7 @@ var api = new BinanceApi();
 // Create user with API-Key and API-Secret.
 using (var user = new BinanceApiUser("<API-Key>", "<API-Secret>"))
 {
-    // Create client order.
+    // Create a client (MARKET) order.
     var clientOrder = new MarketOrder(user)
     {
         Symbol = Symbol.BTC_USDT,
@@ -64,10 +66,10 @@ using (var user = new BinanceApiUser("<API-Key>", "<API-Secret>"))
 
     try
     {
-        // Validate using cached symbol info.
+        // Validate client order.
         clientOrder.Validate();
         
-        // Place a TEST order.
+        // Send the TEST order.
         await api.TestPlaceAsync(clientOrder);
         
         Console.WriteLine("TEST Order Successful!");
@@ -84,23 +86,27 @@ Get real-time aggregate trades (*with automatic web socket re-connect*).
 
 ```C#
 using Binance;
-using Binance.WebSocket.Manager;
+using Binance.WebSocket;
 
-using (var webSocketClientManager = new AggregateTradeWebSocketClientManager())
+// Initialize web socket client (with automatic streaming enabled).
+var webSocketClient = new AggregateTradeWebSocketClient();
+
+// Handle error events.
+webSocketClient.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
+
+// Subscribe callback to BTC/USDT (automatically begin streaming).
+webSocketClient.Subscribe(Symbol.BTC_USDT, evt =>
 {
-    // Handle error events.
-    webSocketClientManager.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
+    var side = evt.Trade.IsBuyerMaker ? "SELL" : "BUY ";
+	
+	// Handle aggregate trade events.
+    Console.WriteLine($"{evt.Trade.Symbol} {side} {evt.Trade.Quantity} @ {evt.Trade.Price}");
+});
 
-    // Subscribe to BTC/USDT and handle events.
-    webSocketClientManager.Subscribe(Symbol.BTC_USDT, evt =>
-    {
-        var side = evt.Trade.IsBuyerMaker ? "SELL" : "BUY ";
-    
-        Console.WriteLine($"{evt.Trade.Symbol} {side} {evt.Trade.Quantity} @ {evt.Trade.Price}");    
-    });
-  
-    // ...
-}
+// ...
+
+// Unsubscribe (automatically end streaming).
+webSocketClient.Unsubscribe();
 ```
 
 Maintain real-time order book (market depth) cache.
@@ -108,27 +114,31 @@ Maintain real-time order book (market depth) cache.
 ```C#
 using Binance;
 using Binance.Cache;
-using Binance.WebSocket.Manager;
+using Binance.WebSocket;
 
-using (var webSocketCacheManager = new DepthWebSocketCacheManager())
+// Initiatlize web socket cache (with automatic streaming enabled).
+var webSocketCache = new DepthWebSocketCache();
+
+// Handle error events.
+webSocketCache.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
+
+// Subscribe callback to BTC/USDT (automatically begin streaming).
+webSocketCache.Subscribe(Symbol.BTC_USDT, evt =>
 {
-    // Handle error events.
-    webSocketCacheManager.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
-    
-    // Subscribe to BTC/USDT and handle events.
-    webSocketCacheManager.Subscribe(Symbol.BTC_USDT, evt =>
-    {
-        Symbol symbol = evt.OrderBook.Symbol; // use implicit conversion.
-    
-        var minBidPrice = evt.OrderBook.Bids.Last().Price;
-        var maxAskPrice = evt.OrderBook.Asks.Last().Price;
+    Symbol symbol = evt.OrderBook.Symbol; // use implicit conversion.
 
-        Console.WriteLine($"Bid Quantity: {evt.OrderBook.Depth(minBidPrice)} {symbol.BaseAsset} - " +
-                          $"Ask Quantity: {evt.OrderBook.Depth(maxAskPrice)} {symbol.BaseAsset}");
-    });
+    var minBidPrice = evt.OrderBook.Bids.Last().Price;
+    var maxAskPrice = evt.OrderBook.Asks.Last().Price;
 
-    // ...
-}
+	// Handle order book update events.
+    Console.WriteLine($"Bid Quantity: {evt.OrderBook.Depth(minBidPrice)} {symbol.BaseAsset} - " +
+                      $"Ask Quantity: {evt.OrderBook.Depth(maxAskPrice)} {symbol.BaseAsset}");
+});
+
+// ...
+
+// Unsubscribe (automatically end streaming).
+webSocketCache.Unsubscribe();
 ```
 
 ### Binance Sign-up

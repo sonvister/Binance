@@ -13,7 +13,7 @@ namespace BinanceConsoleApp
     {
         public static async Task ExampleMain(string[] args)
         {
-            // Initialize REST API.
+            // Initialize REST API client.
             var api = new BinanceApi();
 
             // Check connectivity.
@@ -23,10 +23,10 @@ namespace BinanceConsoleApp
             }
 
 
-            // Initialize user with API-Key and API-Secret (optional).
+            // Create user with API-Key and API-Secret.
             using (var user = new BinanceApiUser("<API-Key>", "<API-Secret>"))
             {
-                // Initialize a new client (MARKET) order.
+                // Create a client (MARKET) order.
                 var order = new MarketOrder(user)
                 {
                     Symbol = Symbol.BTC_USDT,
@@ -39,7 +39,7 @@ namespace BinanceConsoleApp
                     // Validate client order.
                     order.Validate();
 
-                    // Place TEST order.
+                    // Send the TEST order.
                     await api.TestPlaceAsync(order);
 
                     Console.WriteLine("Test Order Successful!");
@@ -54,14 +54,15 @@ namespace BinanceConsoleApp
             // Initialize web socket client (with automatic streaming enabled).
             var webSocketClient = new AggregateTradeWebSocketClient();
 
-            // Add web socket controller error handler.
+            // Handle error events.
             webSocketClient.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
 
-            // Subscribe callback to symbol (automatically begin streaming).
+            // Subscribe callback to BTC/USDT (automatically begin streaming).
             webSocketClient.Subscribe(Symbol.BTC_USDT, evt =>
             {
                 var side = evt.Trade.IsBuyerMaker ? "SELL" : "BUY ";
-
+                
+                // Handle aggregate trade events.
                 Console.WriteLine($"{evt.Trade.Symbol} {side} {evt.Trade.Quantity} @ {evt.Trade.Price}");
             });
 
@@ -74,7 +75,7 @@ namespace BinanceConsoleApp
             // Initiatlize web socket cache (with automatic streaming enabled).
             var webSocketCache = new DepthWebSocketCache();
 
-            // Add web socket controller error handler.
+            // Handle error events.
             webSocketCache.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
 
             // Subscribe callback to symbol (automatically begin streaming).
@@ -85,6 +86,7 @@ namespace BinanceConsoleApp
                 var minBidPrice = evt.OrderBook.Bids.Last().Price;
                 var maxAskPrice = evt.OrderBook.Asks.Last().Price;
 
+                // Handle order book update events.
                 Console.WriteLine($"Bid Quantity: {evt.OrderBook.Depth(minBidPrice)} {symbol.BaseAsset} - " +
                                   $"Ask Quantity: {evt.OrderBook.Depth(maxAskPrice)} {symbol.BaseAsset}");
             });
