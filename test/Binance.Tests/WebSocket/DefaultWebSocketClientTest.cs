@@ -9,16 +9,23 @@ using Xunit;
 
 namespace Binance.Tests.WebSocket
 {
+    [Collection("Timing Sensitive Tests")]
     public class DefaultWebSocketClientTest
     {
         private readonly Uri _uri;
+        private readonly string _subject;
         private const string _message = "{}";
-        private readonly DefaultWebSocketClient _client;
+        private readonly DefaultWebSocketClient _webSocket;
 
         public DefaultWebSocketClientTest()
         {
             _uri = new Uri(BinanceWebSocketStream.BaseUri);
+            _subject = _uri.AbsoluteUri;
+            _webSocket = CreateWebSocketClient();
+        }
 
+        public static DefaultWebSocketClient CreateWebSocketClient()
+        {
             var webSocket = new Mock<IClientWebSocket>();
             webSocket.Setup(w => w.State).Returns(WebSocketState.Open);
             webSocket.Setup(w => w.ConnectAsync(It.IsAny<Uri>(), It.IsAny<CancellationToken>())).Returns(Task.Delay(500));
@@ -33,7 +40,7 @@ namespace Binance.Tests.WebSocket
             var factory = new Mock<IClientWebSocketFactory>();
             factory.Setup(f => f.CreateClientWebSocket()).Returns(webSocket.Object);
 
-            _client = new DefaultWebSocketClient(factory.Object);
+            return new DefaultWebSocketClient(factory.Object);
         }
 
         [Fact]
@@ -41,8 +48,8 @@ namespace Binance.Tests.WebSocket
         {
             using (var cts = new CancellationTokenSource())
             {
-                await Assert.ThrowsAsync<ArgumentNullException>("uri", () => _client.StreamAsync(null, cts.Token));
-                await Assert.ThrowsAsync<ArgumentException>("token", () => _client.StreamAsync(_uri, CancellationToken.None));
+                await Assert.ThrowsAsync<ArgumentNullException>("uri", () => _webSocket.StreamAsync(null, cts.Token));
+                await Assert.ThrowsAsync<ArgumentException>("token", () => _webSocket.StreamAsync(_uri, CancellationToken.None));
             }
         }
 
@@ -53,24 +60,22 @@ namespace Binance.Tests.WebSocket
             {
                 cts.Cancel();
 
-                await _client.StreamAsync(_uri, cts.Token);
+                await _webSocket.StreamAsync(_uri, cts.Token);
             }
         }
 
         [Fact]
-        public async Task IsStreaming()
+        public async Task StreamThrows()
         {
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
             {
-                Assert.False(_client.IsStreaming);
+                await Assert.ThrowsAsync<ArgumentNullException>("uri", () => _webSocket.StreamAsync(null, cts.Token));
 
-                var task = _client.StreamAsync(_uri, cts.Token);
+                var task = _webSocket.StreamAsync(_uri, cts.Token);
 
-                Assert.True(_client.IsStreaming);
+                await Assert.ThrowsAsync<InvalidOperationException>(() => _webSocket.StreamAsync(_uri, cts.Token));
 
                 await task;
-
-                Assert.False(_client.IsStreaming);
             }
         }
 
@@ -79,19 +84,19 @@ namespace Binance.Tests.WebSocket
         {
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
             {
-                Assert.False(_client.IsOpen);
+                Assert.False(_webSocket.IsOpen);
 
-                var task = _client.StreamAsync(_uri, cts.Token);
+                var task = _webSocket.StreamAsync(_uri, cts.Token);
 
-                Assert.False(_client.IsOpen);
+                Assert.False(_webSocket.IsOpen);
 
-                await _client.WaitUntilOpenAsync();
+                await _webSocket.WaitUntilOpenAsync();
 
-                Assert.True(_client.IsOpen);
+                Assert.True(_webSocket.IsOpen);
 
                 await task;
 
-                Assert.False(_client.IsOpen);
+                Assert.False(_webSocket.IsOpen);
             }
         }
 
@@ -102,18 +107,18 @@ namespace Binance.Tests.WebSocket
 
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
             {
-                _client.Open += (s, e) =>
+                _webSocket.Open += (s, e) =>
                 {
                     isOpenEventReceived = true;
                 };
 
                 Assert.False(isOpenEventReceived);
 
-                var task = _client.StreamAsync(_uri, cts.Token);
+                var task = _webSocket.StreamAsync(_uri, cts.Token);
 
                 Assert.False(isOpenEventReceived);
 
-                await _client.WaitUntilOpenAsync();
+                await _webSocket.WaitUntilOpenAsync();
 
                 Assert.True(isOpenEventReceived);
 
@@ -128,18 +133,18 @@ namespace Binance.Tests.WebSocket
 
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
             {
-                _client.Close += (s, e) =>
+                _webSocket.Close += (s, e) =>
                 {
                     isCloseEventReceived = true;
                 };
 
                 Assert.False(isCloseEventReceived);
 
-                var task = _client.StreamAsync(_uri, cts.Token);
+                var task = _webSocket.StreamAsync(_uri, cts.Token);
 
                 Assert.False(isCloseEventReceived);
 
-                await _client.WaitUntilOpenAsync();
+                await _webSocket.WaitUntilOpenAsync();
 
                 Assert.False(isCloseEventReceived);
 
@@ -156,14 +161,14 @@ namespace Binance.Tests.WebSocket
 
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
             {
-                _client.Message += (s, e) =>
+                _webSocket.Message += (s, e) =>
                 {
-                    isMessageEventReceived = e.Subject == _uri.AbsoluteUri && e.Json == _message;
+                    isMessageEventReceived = e.Subject == _subject && e.Json == _message;
                 };
 
                 Assert.False(isMessageEventReceived);
 
-                await _client.StreamAsync(_uri, cts.Token);
+                await _webSocket.StreamAsync(_uri, cts.Token);
 
                 Assert.True(isMessageEventReceived);
             }
@@ -174,19 +179,19 @@ namespace Binance.Tests.WebSocket
         {
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
             {
-                Assert.False(_client.IsOpen);
+                Assert.False(_webSocket.IsOpen);
 
-                var task = _client.StreamAsync(_uri, cts.Token);
+                var task = _webSocket.StreamAsync(_uri, cts.Token);
 
-                Assert.False(_client.IsOpen);
+                Assert.False(_webSocket.IsOpen);
 
                 // Wait when web socket is not open.
-                await _client.WaitUntilOpenAsync();
+                await _webSocket.WaitUntilOpenAsync();
 
-                Assert.True(_client.IsOpen);
+                Assert.True(_webSocket.IsOpen);
 
                 // Wait when web socket is open.
-                await _client.WaitUntilOpenAsync();
+                await _webSocket.WaitUntilOpenAsync();
 
                 Assert.False(cts.IsCancellationRequested);
 

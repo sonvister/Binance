@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Binance.Tests.Utility
 {
+    [Collection("Timing Sensitive Tests")]
     public class WatchdogTimerTest
     {
         [Fact]
@@ -33,7 +34,7 @@ namespace Binance.Tests.Utility
         [Fact]
         public async Task Timeout()
         {
-            var interval = TimeSpan.FromSeconds(1);
+            var interval = TimeSpan.FromMilliseconds(500);
 
             var stopwatch = Stopwatch.StartNew();
 
@@ -45,7 +46,7 @@ namespace Binance.Tests.Utility
 
             watchdog.Kick(); // kick start.
 
-            await Task.Delay(2000);
+            await Task.Delay(1000);
 
             Assert.True(stopwatch.ElapsedMilliseconds <= interval.TotalMilliseconds + 200);
             Assert.True(stopwatch.ElapsedMilliseconds >= interval.TotalMilliseconds - 200);
@@ -68,6 +69,7 @@ namespace Binance.Tests.Utility
             for (var i = 0; i < count; i++)
             {
                 watchdog.Kick(); // kick start.
+
                 await Task.Delay(delay);
             }
 

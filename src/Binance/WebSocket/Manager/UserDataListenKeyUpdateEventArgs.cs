@@ -1,6 +1,7 @@
 ﻿using System;
 using Binance.Api;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.WebSocket
 {
     public sealed class UserDataListenKeyUpdateEventArgs : EventArgs

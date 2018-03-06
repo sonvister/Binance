@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Binance.Tests.Api
 {
-    [Collection("Rate Limiter Tests")]
+    [Collection("Timing Sensitive Tests")]
     public class RateLimiterTest
     {
         [Fact]

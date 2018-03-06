@@ -53,7 +53,7 @@ namespace Binance.WebSocket
         protected override async Task StreamActionAsync(CancellationToken token = default)
         {
             if (_uri == null)
-                return;
+                throw new InvalidOperationException($"{nameof(WebSocketStream)}: URI must be set (not null) before streaming.");
 
             Logger?.LogInformation($"{nameof(WebSocketStream)}.{nameof(StreamActionAsync)}: Begin streaming...{Environment.NewLine}\"{_uri.AbsoluteUri}\"");
 

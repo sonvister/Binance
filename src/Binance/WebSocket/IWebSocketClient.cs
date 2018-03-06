@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Binance.WebSocket
 {
     /// <summary>
-    /// A low-level web socket client JSON provider interface.
+    /// A low-level web socket client JSON producer interface.
     /// </summary>
     public interface IWebSocketClient : IJsonProducer
     {
@@ -18,11 +18,6 @@ namespace Binance.WebSocket
         /// The close event.
         /// </summary>
         event EventHandler<EventArgs> Close;
-
-        /// <summary>
-        /// Get the flag indicating if the client is streaming.
-        /// </summary>
-        bool IsStreaming { get; }
 
         /// <summary>
         /// Get the flag indicating if the client is connected (open).

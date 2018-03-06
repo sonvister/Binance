@@ -21,11 +21,15 @@ namespace Binance.WebSocket
 
         #region Public Properties
 
-        public bool IsStreaming { get; protected set; }
-
         public bool IsOpen { get; protected set; }
 
         #endregion Public Properties
+
+        #region Protected Fields
+
+        protected bool IsStreaming;
+
+        #endregion Protected Fields
 
         #region Constructors
 

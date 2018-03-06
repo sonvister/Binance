@@ -104,10 +104,14 @@ namespace Binance.WebSocket
 
         public static Uri CreateUri(params string[] streamNames)
         {
-            return (streamNames == null || !streamNames.Any()) ? null
-                : streamNames.Count() == 1
-                    ? new Uri($"{BaseUri}/ws/{streamNames.Single()}")
-                    : new Uri($"{BaseUri}/stream?streams={string.Join("/", streamNames.Distinct())}");
+            if (streamNames == null || !streamNames.Any())
+                return null;
+
+            var distinctNames = streamNames.Distinct();
+
+            return distinctNames.Count() == 1
+                    ? new Uri($"{BaseUri}/ws/{distinctNames.Single()}")
+                    : new Uri($"{BaseUri}/stream?streams={string.Join("/", distinctNames)}");
         }
 
         #endregion Public Methods
