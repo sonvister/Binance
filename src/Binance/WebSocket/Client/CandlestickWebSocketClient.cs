@@ -10,7 +10,7 @@ namespace Binance.WebSocket
     /// <summary>
     /// The default <see cref="ICandlestickWebSocketClient"/> implementation.
     /// </summary>
-    public class CandlestickWebSocketClient : BinanceWebSocketClient<IWebSocketStream, ICandlestickClient, CandlestickEventArgs>, ICandlestickWebSocketClient
+    public class CandlestickWebSocketClient : AutoBinanceWebSocketClient<IWebSocketStream, ICandlestickClient, CandlestickEventArgs>, ICandlestickWebSocketClient
     {
         #region Public Events
 

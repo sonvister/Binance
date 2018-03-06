@@ -10,29 +10,7 @@ namespace Binance.Producer
     public abstract class AutoJsonStreamPublisher<TStream> : JsonStreamPublisher<TStream>, IAutoJsonStreamPublisher<TStream>
         where TStream : class, IJsonStream
     {
-        #region Public Constants
-
-        public static readonly bool AutoStreamingEnabledDefault = true;
-
-        #endregion Public Constants
-
         #region Public Properties
-
-        public bool IsAutoStreamingEnabled
-        {
-            get => _isAutoStreamingEnabled;
-            set
-            {
-                if (value == _isAutoStreamingEnabled)
-                    return;
-
-                // Modify automatic streaming enabled flag.
-                _isAutoStreamingEnabled = value;
-
-                // Handle automomatic streaming state change.
-                HandleAutomaticStreaming();
-            }
-        }
 
         public IJsonStreamController<TStream> Controller { get; }
 
@@ -43,8 +21,6 @@ namespace Binance.Producer
         private Task _task = Task.CompletedTask;
 
         private readonly object _sync = new object();
-
-        private bool _isAutoStreamingEnabled = AutoStreamingEnabledDefault;
 
         #endregion Private Fields
 
@@ -72,9 +48,6 @@ namespace Binance.Producer
         /// </summary>
         protected override void OnPublishedStreamsChanged()
         {
-            if (!IsAutoStreamingEnabled)
-                return;
-
             HandleAutomaticStreaming();
         }
 
@@ -94,13 +67,13 @@ namespace Binance.Producer
                     {
                         try
                         {
-                            if (IsAutoStreamingEnabled && !Stream.IsStreaming && PublishedStreams.Any())
+                            if (!Stream.IsStreaming && PublishedStreams.Any())
                             {
                                 Logger?.LogDebug($"{GetType().Name}.{nameof(HandleAutomaticStreaming)}: Begin...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                                 Controller.Begin();
                             }
-                            else if (!IsAutoStreamingEnabled || Stream.IsStreaming && !PublishedStreams.Any())
+                            else if (Stream.IsStreaming && !PublishedStreams.Any())
                             {
                                 Logger?.LogDebug($"{GetType().Name}.{nameof(HandleAutomaticStreaming)}: Cancel...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 

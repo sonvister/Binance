@@ -6,6 +6,7 @@ using Binance;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Cache.Events;
+using Binance.Client;
 using Binance.Utility;
 using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
@@ -180,16 +181,13 @@ namespace BinanceMarketDepth
                     Console.ReadKey(true); // wait for user input.
                 }
 
-                //*//////////////////////////////////////////////////////////
-                // Alternative usage (with an existing IJsonPublisherClient).
-                /////////////////////////////////////////////////////////////
+                //*/////////////////////////////////////////
+                // Alternative usage (with an IJsonClient).
+                ////////////////////////////////////////////
 
-                // Initialize publisher/client.
-                var client = services.GetService<IDepthWebSocketClient>();
+                // Initialize client.
+                var client = services.GetService<IDepthClient>();
                 
-                // Disable automatic streaming (for this contrived example).
-                client.Publisher.IsAutoStreamingEnabled = false;
-
                 cache.Client = client; // link [new] client to cache.
 
                 // Initialize controller.
@@ -201,15 +199,12 @@ namespace BinanceMarketDepth
                     //cache.Subscribe(symbol, limit, Display);
                     // NOTE: Cache is already subscribed to symbol (above).
 
-                    // NOTE: With IJsonPublisherClient, publisher is automagically subscribed.
-
                     // Begin streaming.
                     controller.Begin();
 
                     lock (_sync) _message = "(alternative usage) ...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
                 }
-                ///////////////////////////////////////////////////////////*/
             }
             catch (Exception e)
             {

@@ -10,11 +10,6 @@ namespace Binance.Producer
         where TStream : IJsonStream
     {
         /// <summary>
-        /// Get or set flag indicating if automatic streaming is enabled.
-        /// </summary>
-        bool IsAutoStreamingEnabled { get; set; }
-
-        /// <summary>
         /// Get the JSON stream controller.
         /// </summary>
         IJsonStreamController<TStream> Controller { get; }

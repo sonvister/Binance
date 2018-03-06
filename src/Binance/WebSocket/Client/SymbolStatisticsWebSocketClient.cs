@@ -9,7 +9,7 @@ namespace Binance.WebSocket
     /// <summary>
     /// The default <see cref="ISymbolStatisticsWebSocketClient"/> implementation.
     /// </summary>
-    public class SymbolStatisticsWebSocketClient : BinanceWebSocketClient<IWebSocketStream, ISymbolStatisticsClient, SymbolStatisticsEventArgs>, ISymbolStatisticsWebSocketClient
+    public class SymbolStatisticsWebSocketClient : AutoBinanceWebSocketClient<IWebSocketStream, ISymbolStatisticsClient, SymbolStatisticsEventArgs>, ISymbolStatisticsWebSocketClient
     {
         #region Public Events
 

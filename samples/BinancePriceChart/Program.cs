@@ -5,6 +5,7 @@ using Binance;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Cache.Events;
+using Binance.Client;
 using Binance.Market;
 using Binance.Utility;
 using Binance.WebSocket;
@@ -154,15 +155,12 @@ namespace BinancePriceChart
                     Console.ReadKey(true); // wait for user input.
                 }
 
-                //*//////////////////////////////////////////////////////////
-                // Alternative usage (with an existing IJsonPublisherClient).
-                /////////////////////////////////////////////////////////////
+                //*/////////////////////////////////////////
+                // Alternative usage (with an IJsonClient).
+                ////////////////////////////////////////////
 
                 // Initialize publisher/client.
-                var client = services.GetService<ICandlestickWebSocketClient>();
-
-                // Disable automatic streaming (for this contrived example).
-                client.Publisher.IsAutoStreamingEnabled = false;
+                var client = services.GetService<ICandlestickClient>();
 
                 cache.Client = client; // link [new] client to cache.
 
@@ -175,15 +173,12 @@ namespace BinancePriceChart
                     //cache.Subscribe(symbol, interval, limit, Display);
                     // NOTE: Cache is already subscribed to symbol (above).
 
-                    // NOTE: With IJsonPublisherClient, publisher is automagically subscribed.
-
                     // Begin streaming.
                     controller.Begin();
 
                     lock (_sync) _message = "(alternative usage) ...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
                 }
-                ////////////////////////////////////////////////////////////*/
             }
             catch (Exception e)
             {

@@ -9,7 +9,7 @@ namespace Binance.WebSocket
     /// <summary>
     /// The default <see cref="IDepthWebSocketClient"/> implementation.
     /// </summary>
-    public class DepthWebSocketClient : BinanceWebSocketClient<IWebSocketStream, IDepthClient, DepthUpdateEventArgs>, IDepthWebSocketClient
+    public class DepthWebSocketClient : AutoBinanceWebSocketClient<IWebSocketStream, IDepthClient, DepthUpdateEventArgs>, IDepthWebSocketClient
     {
         #region Public Events
 

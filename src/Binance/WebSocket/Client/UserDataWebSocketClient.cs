@@ -10,7 +10,7 @@ namespace Binance.WebSocket
     /// <summary>
     /// The default <see cref="IUserDataWebSocketClient"/> implementation.
     /// </summary>
-    public class UserDataWebSocketClient : BinanceWebSocketClient<IWebSocketStream, IUserDataClient, UserDataEventArgs>, IUserDataWebSocketClient
+    public class UserDataWebSocketClient : AutoBinanceWebSocketClient<IWebSocketStream, IUserDataClient, UserDataEventArgs>, IUserDataWebSocketClient
     {
         #region Public Events
 

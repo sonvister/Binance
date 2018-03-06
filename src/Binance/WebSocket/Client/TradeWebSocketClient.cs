@@ -9,7 +9,7 @@ namespace Binance.WebSocket
     /// <summary>
     /// The default <see cref="ITradeWebSocketClient"/> implementation.
     /// </summary>
-    public class TradeWebSocketClient : BinanceWebSocketClient<IWebSocketStream, ITradeClient, TradeEventArgs>, ITradeWebSocketClient
+    public class TradeWebSocketClient : AutoBinanceWebSocketClient<IWebSocketStream, ITradeClient, TradeEventArgs>, ITradeWebSocketClient
     {
         #region Public Events
 

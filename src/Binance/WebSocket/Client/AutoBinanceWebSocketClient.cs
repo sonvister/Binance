@@ -8,7 +8,7 @@ namespace Binance.WebSocket
     /// <summary>
     /// The Binance web socket client abstract base class.
     /// </summary>
-    public abstract class BinanceWebSocketClient<TStream, TClient, TEventArgs> : JsonPublisherClient<TClient, IAutoJsonStreamPublisher<TStream>>
+    public abstract class AutoBinanceWebSocketClient<TStream, TClient, TEventArgs> : JsonPublisherClient<TClient, IAutoJsonStreamPublisher<TStream>>
         where TStream : IWebSocketStream
         where TClient : IJsonClient
         where TEventArgs : EventArgs
@@ -21,7 +21,7 @@ namespace Binance.WebSocket
         /// <param name="client">The JSON client (required).</param>
         /// <param name="stream">The JSON stream publisher (required).</param>
         /// <param name="logger">The logger (optional).</param>
-        protected BinanceWebSocketClient(TClient client, IAutoJsonStreamPublisher<TStream> publisher, ILogger<BinanceWebSocketClient<TStream, TClient, TEventArgs>> logger = null)
+        protected AutoBinanceWebSocketClient(TClient client, IAutoJsonStreamPublisher<TStream> publisher, ILogger<AutoBinanceWebSocketClient<TStream, TClient, TEventArgs>> logger = null)
             : base(client, publisher, logger)
         { }
 

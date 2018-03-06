@@ -125,7 +125,7 @@ namespace BinanceTradeHistory
                 var loggerFactory = new LoggerFactory();
                 loggerFactory.AddFile(configuration.GetSection("Logging:File"));
 
-                // All the things a DI framework can instantiate for you...
+                // Initialize all the things... a DI framework could instantiate for you...
                 var api = new BinanceApi(BinanceHttpClient.Instance, logger: loggerFactory.CreateLogger<BinanceApi>());
                 var client = new AggregateTradeClient(loggerFactory.CreateLogger<AggregateTradeClient>());
                 var webSocket = new DefaultWebSocketClient(logger: loggerFactory.CreateLogger<DefaultWebSocketClient>());
@@ -223,15 +223,12 @@ namespace BinanceTradeHistory
                     Console.ReadKey(true);
                 }
 
-                //*//////////////////////////////////////////////////////////
-                // Alternative usage (with an existing IJsonPublisherClient).
-                /////////////////////////////////////////////////////////////
+                //*/////////////////////////////////////////
+                // Alternative usage (with an IJsonClient).
+                ////////////////////////////////////////////
 
                 // Initialize stream/client.
-                var client = services.GetService<IAggregateTradeWebSocketClient>();
-
-                // Disable automatic streaming (for this contrived example).
-                client.Publisher.IsAutoStreamingEnabled = false;
+                var client = services.GetService<IAggregateTradeClient>();
 
                 cache.Client = client; // link [new] client to cache.
 
@@ -244,15 +241,12 @@ namespace BinanceTradeHistory
                     //cache.Subscribe(symbol, limit, Display);
                     // NOTE: Cache is already subscribed to symbol (above).
 
-                    // NOTE: With IJsonPublisherClient, publisher is automagically subscribed.
-
                     // Begin streaming.
                     controller.Begin();
 
                     lock (_sync) _message = "(alternative usage) ...press any key to exit.";
                     Console.ReadKey(true);
                 }
-                ///////////////////////////////////////////////////////////*/
             }
             catch (Exception e)
             {
