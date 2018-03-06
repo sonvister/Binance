@@ -17,7 +17,7 @@ namespace Binance.Tests.WebSocket
         public BinanceWebSocketStreamTest()
         {
             _uri = BinanceWebSocketStream.CreateUri(_streamName);
-            _stream = new BinanceWebSocketStream(DefaultWebSocketClientTest.CreateWebSocketClient());
+            _stream = new BinanceWebSocketStream(DefaultWebSocketClientTest.CreateWebSocketClient(_message));
         }
 
         [Fact]
@@ -159,6 +159,32 @@ namespace Binance.Tests.WebSocket
                 await task;
 
                 Assert.True(cts.IsCancellationRequested);
+            }
+        }
+
+        [Fact]
+        public async Task HandleCombinedStreamData()
+        {
+            string message = $"{{\"stream\":\"{_streamName}\",\"data\":{_message}}}";
+
+            var stream = new BinanceWebSocketStream(DefaultWebSocketClientTest.CreateWebSocketClient(message));
+
+            _stream.Uri = _uri; // NOTE: Processing of combined stream data is not dependant upon URI.
+
+            var isMessageEventReceived = false;
+
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
+            {
+                _stream.Message += (s, e) =>
+                {
+                    isMessageEventReceived = e.Subject == _streamName && e.Json == _message;
+                };
+
+                Assert.False(isMessageEventReceived);
+
+                await _stream.StreamAsync(cts.Token);
+
+                Assert.True(isMessageEventReceived);
             }
         }
     }
