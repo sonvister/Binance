@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Binance.Client.Events
+// ReSharper disable once CheckNamespace
+namespace Binance.Client
 {
     /// <summary>
     /// Depth client event arguments.

@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Binance.Cache.Events
+// ReSharper disable once CheckNamespace
+namespace Binance.Cache
 {
     public abstract class CacheEventArgs : EventArgs
     { }

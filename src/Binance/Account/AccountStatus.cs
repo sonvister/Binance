@@ -1,4 +1,5 @@
-﻿namespace Binance.Account
+﻿// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// Account status.

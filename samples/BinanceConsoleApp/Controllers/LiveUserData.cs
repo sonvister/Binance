@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Client.Events;
+using Binance.Client;
 
 namespace BinanceConsoleApp.Controllers
 {

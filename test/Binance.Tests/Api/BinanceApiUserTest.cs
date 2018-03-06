@@ -1,5 +1,4 @@
 ﻿using System;
-using Binance.Api;
 using Moq;
 using Xunit;
 

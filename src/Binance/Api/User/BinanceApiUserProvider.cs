@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 // ReSharper disable once CheckNamespace
-namespace Binance.Api
+namespace Binance
 {
     /// <summary>
     /// A <see cref="IBinanceApiUser"/> provider allowing for the application of <see cref="BinanceApiOptions"/>.

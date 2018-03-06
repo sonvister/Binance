@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 // ReSharper disable once CheckNamespace
-namespace Binance.Api
+namespace Binance
 {
     public interface IRateLimiter : IDisposable
     {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Binance.Client;
-using Binance.Market;
 using Xunit;
 
 namespace Binance.Tests.Client

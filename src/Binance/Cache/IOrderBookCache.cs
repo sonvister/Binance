@@ -1,7 +1,5 @@
 ﻿using System;
-using Binance.Cache.Events;
 using Binance.Client;
-using Binance.Market;
 
 namespace Binance.Cache
 {

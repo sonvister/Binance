@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Binance.Account;
 using Xunit;
 
 namespace Binance.Tests.Account

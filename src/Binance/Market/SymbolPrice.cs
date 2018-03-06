@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Binance.Market
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// A symbol/price value object.

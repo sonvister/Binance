@@ -1,6 +1,4 @@
 ﻿using System;
-using Binance.Account.Orders;
-using Binance.Market;
 
 // ReSharper disable once CheckNamespace
 namespace Binance

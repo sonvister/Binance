@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Account;
-using Binance.Account.Orders;
-using Binance.Api.RateLimit;
-using Binance.Market;
 using Binance.Serialization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
-namespace Binance.Api
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// Binance API <see cref="IBinanceApi"/> implementation.

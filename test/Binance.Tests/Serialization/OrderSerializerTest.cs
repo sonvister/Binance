@@ -1,7 +1,4 @@
 ﻿using System;
-using Binance.Account;
-using Binance.Account.Orders;
-using Binance.Api;
 using Binance.Serialization;
 using Xunit;
 

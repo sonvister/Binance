@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Producer;
 
-namespace Binance.Api
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     public interface IBinanceHttpClient : IJsonProducer, IDisposable
     {

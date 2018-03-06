@@ -1,7 +1,5 @@
 ﻿using System;
-using Binance.Api;
 using Binance.Cache;
-using Binance.Market;
 using Binance.WebSocket;
 using Moq;
 using Xunit;

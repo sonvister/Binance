@@ -1,6 +1,5 @@
-﻿using Binance.Account;
-
-namespace Binance.Cache.Events
+﻿// ReSharper disable once CheckNamespace
+namespace Binance.Cache
 {
     public sealed class AccountInfoCacheEventArgs : CacheEventArgs
     {

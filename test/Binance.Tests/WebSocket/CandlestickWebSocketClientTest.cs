@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Binance.Client;
-using Binance.Market;
 using Binance.WebSocket;
 using Xunit;
 

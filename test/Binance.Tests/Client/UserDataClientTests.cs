@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Binance.Api;
 using Binance.Client;
 using Moq;
 using Xunit;

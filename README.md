@@ -33,7 +33,7 @@ Built using [TAP (Task-based Asynchronous Pattern)](https://docs.microsoft.com/e
 Test connectivity.
 
 ```C#
-using Binance.Api;
+using Binance;
 
 // Initialize REST API client.
 var api = new BinanceApi();
@@ -48,8 +48,7 @@ if (await api.PingAsync())
 Place a TEST market order.
 
 ```C#
-using Binance.Api;
-using Binance.Account.Orders;
+using Binance;
 
 var api = new BinanceApi();
 

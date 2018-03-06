@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Binance.Client.Events;
 
 // ReSharper disable once CheckNamespace
 namespace Binance.Client

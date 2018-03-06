@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Binance.Api;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed

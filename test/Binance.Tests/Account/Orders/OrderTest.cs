@@ -1,6 +1,4 @@
 ﻿using System;
-using Binance.Account.Orders;
-using Binance.Api;
 using Xunit;
 
 namespace Binance.Tests.Account.Orders

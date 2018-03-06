@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
-using Binance.Client.Events;
-using Binance.Market;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 

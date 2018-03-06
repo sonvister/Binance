@@ -1,6 +1,5 @@
 ﻿using System;
-using Binance.Client.Events;
-using Binance.Market;
+using Binance.Client;
 using Xunit;
 
 namespace Binance.Tests.Client.Events

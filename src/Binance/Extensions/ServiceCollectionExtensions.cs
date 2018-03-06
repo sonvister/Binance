@@ -1,5 +1,4 @@
 ﻿using System;
-using Binance.Api;
 using Binance.Cache;
 using Binance.Client;
 using Binance.Producer;

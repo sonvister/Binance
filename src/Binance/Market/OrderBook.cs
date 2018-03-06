@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Binance.Market
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// An snapshot of the depth of market (DOM) for a specific symbol with

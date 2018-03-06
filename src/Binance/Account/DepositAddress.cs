@@ -1,4 +1,5 @@
-﻿namespace Binance.Account
+﻿// ReSharper disable once CheckNamespace
+namespace Binance
 {
     public sealed class DepositAddress
     {

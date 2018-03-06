@@ -1,7 +1,7 @@
 ﻿using System;
 
 // ReSharper disable once CheckNamespace
-namespace Binance.Api
+namespace Binance
 {
     public interface IBinanceApiUser : IDisposable
     {

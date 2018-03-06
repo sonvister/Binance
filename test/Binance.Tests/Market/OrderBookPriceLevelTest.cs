@@ -1,5 +1,4 @@
 ﻿using System;
-using Binance.Market;
 using Newtonsoft.Json;
 using Xunit;
 

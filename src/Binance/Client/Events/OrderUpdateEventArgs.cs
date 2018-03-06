@@ -1,7 +1,7 @@
 ﻿using System;
-using Binance.Account.Orders;
 
-namespace Binance.Client.Events
+// ReSharper disable once CheckNamespace
+namespace Binance.Client
 {
     /// <summary>
     /// Order update event arguments.

@@ -1,8 +1,5 @@
 ﻿using System;
-using Binance.Account;
-using Binance.Account.Orders;
-using Binance.Api;
-using Binance.Client.Events;
+using Binance.Client;
 using Xunit;
 
 namespace Binance.Tests.Client.Events

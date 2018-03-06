@@ -1,7 +1,7 @@
 ﻿using System;
 
 // ReSharper disable once CheckNamespace
-namespace Binance.Market
+namespace Binance
 {
     public static class CandlestickIntervalExtensions
     {

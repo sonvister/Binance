@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Binance.Api;
 
-namespace Binance.Account
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// Account information.

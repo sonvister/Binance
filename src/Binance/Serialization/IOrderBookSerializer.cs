@@ -1,6 +1,4 @@
-﻿using Binance.Market;
-
-namespace Binance.Serialization
+﻿namespace Binance.Serialization
 {
     public interface IOrderBookSerializer
     {

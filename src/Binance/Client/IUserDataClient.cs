@@ -1,6 +1,4 @@
 ﻿using System;
-using Binance.Api;
-using Binance.Client.Events;
 
 namespace Binance.Client
 {

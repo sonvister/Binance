@@ -1,7 +1,7 @@
 ﻿using System;
-using Binance.Market;
 
-namespace Binance.Client.Events
+// ReSharper disable once CheckNamespace
+namespace Binance.Client
 {
     /// <summary>
     /// Trade client event arguments.

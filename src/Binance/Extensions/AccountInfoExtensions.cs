@@ -2,7 +2,7 @@
 using System.Linq;
 
 // ReSharper disable once CheckNamespace
-namespace Binance.Account
+namespace Binance
 {
     public static class AccountInfoExtensions
     {

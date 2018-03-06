@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Binance.Market
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// Trades that fill at the same time, from the same order, with the same

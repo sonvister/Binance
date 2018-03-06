@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace
-namespace Binance.Api
+namespace Binance
 {
     public sealed class ApiRateLimiter : IApiRateLimiter
     {

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Binance.Account;
-using Binance.Api;
 using Xunit;
 
 namespace Binance.Tests.Account

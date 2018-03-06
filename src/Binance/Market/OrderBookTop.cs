@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
 
-namespace Binance.Market
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// Best order book bid and ask price and quantity.

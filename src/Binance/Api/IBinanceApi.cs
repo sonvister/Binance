@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Account;
-using Binance.Account.Orders;
-using Binance.Api.RateLimit;
-using Binance.Market;
 
-namespace Binance.Api
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     public interface IBinanceApi
     {

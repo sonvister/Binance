@@ -1,5 +1,4 @@
-﻿using Binance.Market;
-using Binance.Serialization;
+﻿using Binance.Serialization;
 using Xunit;
 
 namespace Binance.Tests.Serialization

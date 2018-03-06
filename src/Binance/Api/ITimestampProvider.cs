@@ -2,7 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Binance.Api
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     public interface ITimestampProvider
     {

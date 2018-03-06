@@ -1,5 +1,4 @@
-﻿using Binance.Api;
-using Binance.Client;
+﻿using Binance.Client;
 
 // ReSharper disable once CheckNamespace
 namespace Binance.Cache

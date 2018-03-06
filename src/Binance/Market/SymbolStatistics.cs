@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Binance.Market
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// Symbol 24-hour statistics.

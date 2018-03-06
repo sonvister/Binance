@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Api;
-using Binance.Cache.Events;
 using Binance.Client;
-using Binance.Client.Events;
-using Binance.Market;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache

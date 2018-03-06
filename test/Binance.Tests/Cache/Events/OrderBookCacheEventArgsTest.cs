@@ -1,6 +1,5 @@
 ﻿using System;
-using Binance.Cache.Events;
-using Binance.Market;
+using Binance.Cache;
 using Xunit;
 
 namespace Binance.Tests.Cache.Events

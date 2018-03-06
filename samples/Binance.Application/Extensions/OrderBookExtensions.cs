@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using Binance.Market;
 
 // ReSharper disable once CheckNamespace
 namespace Binance.Application

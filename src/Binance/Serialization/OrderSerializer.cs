@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Binance.Account;
-using Binance.Account.Orders;
-using Binance.Api;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

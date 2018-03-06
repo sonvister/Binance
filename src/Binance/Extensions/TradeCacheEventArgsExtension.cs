@@ -1,8 +1,7 @@
 ﻿using System.Linq;
-using Binance.Market;
 
 // ReSharper disable once CheckNamespace
-namespace Binance.Cache.Events
+namespace Binance.Cache
 {
     public static class TradeCacheEventArgsExtensions
     {

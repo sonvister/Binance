@@ -1,6 +1,5 @@
-﻿using Binance.Api;
-
-namespace Binance.Account.Orders
+﻿// ReSharper disable once CheckNamespace
+namespace Binance
 {
     public abstract class StopLimitOrder : LimitOrder, IStopOrder
     {

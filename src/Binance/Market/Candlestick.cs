@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Binance.Market
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// Candlestick/K-Line which is uniquely identified by the symbol,

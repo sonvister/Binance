@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Binance.Account.Orders;
-using Binance.Api;
 
 namespace Binance.Serialization
 {

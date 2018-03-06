@@ -1,8 +1,7 @@
 ﻿using System;
-using Binance.Api;
-using Binance.Market;
 
-namespace Binance.Account
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// An account trade.

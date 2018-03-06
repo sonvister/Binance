@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Binance.Market;
 
-namespace Binance.Cache.Events
+// ReSharper disable once CheckNamespace
+namespace Binance.Cache
 {
     public sealed class TradeCacheEventArgs : CacheEventArgs
     {

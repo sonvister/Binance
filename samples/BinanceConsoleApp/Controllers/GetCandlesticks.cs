@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
-using Binance.Market;
 
 namespace BinanceConsoleApp.Controllers
 {

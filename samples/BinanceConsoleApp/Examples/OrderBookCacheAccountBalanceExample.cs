@@ -2,12 +2,9 @@
 using System.IO;
 using System.Threading.Tasks;
 using Binance;
-using Binance.Account;
-using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
-using Binance.Client.Events;
-using Binance.Market;
+using Binance.Client;
 using Binance.Utility;
 using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;

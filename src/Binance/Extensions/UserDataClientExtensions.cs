@@ -1,7 +1,4 @@
-﻿using Binance.Api;
-using Binance.Client.Events;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Binance.Client
 {
     public static class UserDataClientExtensions

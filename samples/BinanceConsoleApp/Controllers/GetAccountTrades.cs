@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance;
-using Binance.Account;
-using Binance.Api;
 
 // ReSharper disable PossibleMultipleEnumeration
 

@@ -1,7 +1,5 @@
 ﻿using System;
 using Binance.Client;
-using Binance.Client.Events;
-using Binance.Market;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace

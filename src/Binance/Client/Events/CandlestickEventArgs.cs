@@ -1,8 +1,7 @@
 ﻿using System;
-using Binance.Api;
-using Binance.Market;
 
-namespace Binance.Client.Events
+// ReSharper disable once CheckNamespace
+namespace Binance.Client
 {
     /// <summary>
     /// Candlestick/K-Line client event arguments.

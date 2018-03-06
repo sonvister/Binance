@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Binance.Market
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// Order book (depth of market) price and quantity.

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Binance.Api;
 
-namespace Binance.Account.Orders
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     /// <summary>
     /// An order that has been sent to the matching engine.

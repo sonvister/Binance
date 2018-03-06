@@ -2,8 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Api;
-using Binance.Client.Events;
+using Binance.Client;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace

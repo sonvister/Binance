@@ -4,8 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Client;
-using Binance.Client.Events;
-using Binance.Market;
 
 namespace BinanceConsoleApp.Controllers
 {

@@ -1,4 +1,5 @@
-﻿namespace Binance.Api.RateLimit
+﻿// ReSharper disable once CheckNamespace
+namespace Binance
 {
     public sealed class RateLimitInfo
     {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Binance;
-using Binance.Api;
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace

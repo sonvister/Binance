@@ -4,7 +4,8 @@ using System.Globalization;
 using System.Net.Http;
 using System.Text;
 
-namespace Binance.Api
+// ReSharper disable once CheckNamespace
+namespace Binance
 {
     public sealed class BinanceHttpRequest
     {

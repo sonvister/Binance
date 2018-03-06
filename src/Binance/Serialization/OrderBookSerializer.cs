@@ -1,5 +1,4 @@
-﻿using Binance.Market;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Binance.Serialization
 {

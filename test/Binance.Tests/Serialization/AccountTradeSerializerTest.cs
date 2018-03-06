@@ -1,5 +1,4 @@
 ﻿using System;
-using Binance.Account;
 using Binance.Serialization;
 using Xunit;
 

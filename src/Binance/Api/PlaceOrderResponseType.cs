@@ -1,4 +1,5 @@
-﻿namespace Binance.Api
+﻿// ReSharper disable once CheckNamespace
+namespace Binance
 {
     public enum PlaceOrderResponseType
     {

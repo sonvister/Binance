@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 
 // ReSharper disable once CheckNamespace
-namespace Binance.Api
+namespace Binance
 {
     /// <summary>
     /// Binance API user <see cref="IBinanceApiUser"/> implementation.

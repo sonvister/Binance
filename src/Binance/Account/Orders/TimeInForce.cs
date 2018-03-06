@@ -1,5 +1,5 @@
 ﻿// ReSharper disable InconsistentNaming
-namespace Binance.Account.Orders
+namespace Binance
 {
     public enum TimeInForce
     {

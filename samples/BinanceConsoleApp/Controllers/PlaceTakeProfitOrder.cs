@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Account.Orders;
+using Binance;
 
 namespace BinanceConsoleApp.Controllers
 {

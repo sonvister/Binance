@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Binance.Api;
-using Binance.Client.Events;
+using Binance.Client;
 
 // ReSharper disable once CheckNamespace
 namespace Binance.WebSocket

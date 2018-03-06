@@ -1,7 +1,7 @@
 ﻿using System;
-using Binance.Account;
 
-namespace Binance.Client.Events
+// ReSharper disable once CheckNamespace
+namespace Binance.Client
 {
     /// <summary>
     /// User data client event arguments.

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
 using Binance.Cache;
-using Binance.Cache.Events;
 using Binance.Client;
 using Binance.Utility;
 using Binance.WebSocket;
