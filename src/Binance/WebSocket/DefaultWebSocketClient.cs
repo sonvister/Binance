@@ -21,6 +21,8 @@ namespace Binance.WebSocket
 
         #region Private Fields
 
+        private readonly IClientWebSocketFactory _clientWebSocketFactory;
+
         private readonly object _sync = new object();
 
         #endregion Private Fields
@@ -30,10 +32,13 @@ namespace Binance.WebSocket
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="clientWebSocketFactory"></param>
         /// <param name="logger"></param>
-        public DefaultWebSocketClient(ILogger<DefaultWebSocketClient> logger = null)
+        public DefaultWebSocketClient(IClientWebSocketFactory clientWebSocketFactory = null, ILogger<DefaultWebSocketClient> logger = null)
             : base(logger)
-        { }
+        {
+            _clientWebSocketFactory = clientWebSocketFactory ?? new ClientWebSocketFactory();
+        }
 
         #endregion Constructors
 
@@ -57,8 +62,7 @@ namespace Binance.WebSocket
                 IsStreaming = true;
             }
 
-            var webSocket = new ClientWebSocket();
-            webSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+            var webSocket = _clientWebSocketFactory.CreateClientWebSocket();
 
             try
             {

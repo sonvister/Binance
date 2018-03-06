@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Binance.Account;
 using Binance.Api;
 using Binance.Client.Events;
@@ -14,10 +13,7 @@ namespace Binance.Tests.Client.Events
         {
             var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
 
-            using (var cts = new CancellationTokenSource())
-            {
-                Assert.Throws<ArgumentNullException>("accountInfo", () => new AccountUpdateEventArgs(time, cts.Token, null));
-            }
+            Assert.Throws<ArgumentNullException>("accountInfo", () => new AccountUpdateEventArgs(time, null));
         }
 
         [Fact]
@@ -31,13 +27,10 @@ namespace Binance.Tests.Client.Events
 
             var account = new AccountInfo(user, commissions, status, time, balances);
 
-            using (var cts = new CancellationTokenSource())
-            {
-                var args = new AccountUpdateEventArgs(time, cts.Token, account);
+            var args = new AccountUpdateEventArgs(time, account);
 
-                Assert.Equal(time, args.Time);
-                Assert.Equal(account, args.AccountInfo);
-            }
+            Assert.Equal(time, args.Time);
+            Assert.Equal(account, args.AccountInfo);
         }
     }
 }

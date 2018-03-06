@@ -66,7 +66,7 @@ namespace Binance.Client
 
         #region Protected Methods
 
-        protected override Task HandleMessageAsync(IEnumerable<Action<TradeEventArgs>> callbacks, string stream, string json, CancellationToken token = default)
+        protected override void HandleMessage(IEnumerable<Action<TradeEventArgs>> callbacks, string stream, string json)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace Binance.Client
                         jObject["m"].Value<bool>(),    // is buyer the market maker?
                         jObject["M"].Value<bool>());   // is best price match?
 
-                    var eventArgs = new TradeEventArgs(eventTime, token, trade);
+                    var eventArgs = new TradeEventArgs(eventTime, trade);
 
                     try
                     {
@@ -104,27 +104,19 @@ namespace Binance.Client
                     catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
-                        if (!token.IsCancellationRequested)
-                        {
-                            Logger?.LogWarning(e, $"{nameof(TradeClient)}: Unhandled aggregate trade event handler exception.");
-                        }
+                        Logger?.LogWarning(e, $"{nameof(TradeClient)}.{nameof(HandleMessage)}: Unhandled aggregate trade event handler exception.");
                     }
                 }
                 else
                 {
-                    Logger?.LogWarning($"{nameof(TradeClient)}.{nameof(HandleMessageAsync)}: Unexpected event type ({eventType}).");
+                    Logger?.LogWarning($"{nameof(TradeClient)}.{nameof(HandleMessage)}: Unexpected event type ({eventType}).");
                 }
             }
             catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
-                if (!token.IsCancellationRequested)
-                {
-                    Logger?.LogError(e, $"{nameof(TradeClient)}.{nameof(HandleMessageAsync)}");
-                }
+                Logger?.LogError(e, $"{nameof(TradeClient)}.{nameof(HandleMessage)}");
             }
-
-            return Task.CompletedTask;
         }
 
         #endregion Protected Methods

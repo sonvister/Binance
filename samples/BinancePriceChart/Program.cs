@@ -7,12 +7,10 @@ using Binance.Cache;
 using Binance.Cache.Events;
 using Binance.Market;
 using Binance.Utility;
-using Binance.Stream;
 using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Binance.WebSocket.Manager;
 
 // ReSharper disable AccessToDisposedClosure
 
@@ -71,18 +69,17 @@ namespace BinancePriceChart
                 try { limit = Convert.ToInt32(configuration.GetSection("PriceChart")?["Limit"] ?? "25"); }
                 catch { /* ignore */ }
 
-                // Initialize manager.
-                using (var manager = services.GetService<ICandlestickWebSocketCacheManager>())
-                {
-                    // Add error event handler.
-                    manager.Error += (s, e) => Console.WriteLine(e.Exception.Message);
+                // Initialize cache.
+                var cache = services.GetService<ICandlestickWebSocketCache>();
 
-                    // Subscribe cache to symbol and interval with limit and callback.
-                    manager.Subscribe(symbol, interval, limit, Display);
+                // Add error event handler.
+                cache.Error += (s, e) => Console.WriteLine(e.Exception.Message);
 
-                    _message = "...press any key to continue.";
-                    Console.ReadKey(true); // wait for user input.
-                }
+                // Subscribe cache to symbol and interval with limit and callback.
+                cache.Subscribe(symbol, interval, limit, Display);
+
+                _message = "...press any key to continue.";
+                Console.ReadKey(true); // wait for user input.
             }
             catch (Exception e)
             {
@@ -143,28 +140,34 @@ namespace BinancePriceChart
                     // Subscribe cache to symbol and interval with limit and callback.
                     cache.Subscribe(symbol, interval, limit, Display);
 
-                    // Subscribe cache to stream (with observed streams).
-                    webSocket.Subscribe(cache, cache.ObservedStreams);
+                    // Set web socket URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(cache);
                     // NOTE: This must be done after cache subscribe.
+
+                    // Route stream messages to cache.
+                    webSocket.Message += (s, e) => cache.HandleMessage(e.Subject, e.Json);
 
                     // Begin streaming.
                     controller.Begin();
 
-                    _message = "...press any key to continue.";
+                    lock (_sync) _message = "...press any key to continue.";
                     Console.ReadKey(true); // wait for user input.
                 }
 
-                //*////////////////////////////////////////////////////////
-                // Alternative usage (with an existing IJsonStreamClient).
-                ///////////////////////////////////////////////////////////
+                //*//////////////////////////////////////////////////////////
+                // Alternative usage (with an existing IJsonPublisherClient).
+                /////////////////////////////////////////////////////////////
 
-                // Initialize stream/client.
+                // Initialize publisher/client.
                 var client = services.GetService<ICandlestickWebSocketClient>();
+
+                // Disable automatic streaming (for this contrived example).
+                client.Publisher.IsAutoStreamingEnabled = false;
 
                 cache.Client = client; // link [new] client to cache.
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(client.StreamAsync))
+                using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
                     controller.Error += (s, e) => HandleError(e.Exception);
 
@@ -172,15 +175,15 @@ namespace BinancePriceChart
                     //cache.Subscribe(symbol, interval, limit, Display);
                     // NOTE: Cache is already subscribed to symbol (above).
 
-                    // NOTE: With IJsonStreamClient, stream is automagically subscribed.
+                    // NOTE: With IJsonPublisherClient, publisher is automagically subscribed.
 
                     // Begin streaming.
                     controller.Begin();
 
-                    _message = "...press any key to exit.";
+                    lock (_sync) _message = "(alternative usage) ...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
                 }
-                /////////////////////////////////////////////////////////////////*/
+                ////////////////////////////////////////////////////////////*/
             }
             catch (Exception e)
             {

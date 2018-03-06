@@ -6,7 +6,11 @@ using Binance.Market;
 
 namespace Binance.Cache
 {
-    public interface ISymbolStatisticsCache : IJsonClientCache<ISymbolStatisticsClient, SymbolStatisticsCacheEventArgs>
+    public interface ISymbolStatisticsCache : ISymbolStatisticsCache<ISymbolStatisticsClient>
+    { }
+
+    public interface ISymbolStatisticsCache<TClient> : IJsonClientCache<TClient, SymbolStatisticsCacheEventArgs>
+        where TClient : ISymbolStatisticsClient
     {
         /// <summary>
         /// The symbol statistics. Can be empty if not yet synchronized.

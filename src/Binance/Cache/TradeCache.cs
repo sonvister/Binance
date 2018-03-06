@@ -15,7 +15,32 @@ namespace Binance.Cache
     /// <summary>
     /// The default <see cref="ITradeCache"/> implemenation.
     /// </summary>
-    public class TradeCache : JsonClientCache<ITradeClient, TradeEventArgs, TradeCacheEventArgs>, ITradeCache
+    public class TradeCache : TradeCache<ITradeClient>, ITradeCache
+    {
+        /// <summary>
+        /// Default constructor provides default <see cref="IBinanceApi"/>
+        /// and default <see cref="ITradeClient"/>, but no logger.
+        /// </summary>
+        public TradeCache()
+            : this(new BinanceApi(), new TradeClient())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="api">The Binance api (required).</param>
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public TradeCache(IBinanceApi api, ITradeClient client, ILogger<TradeCache> logger = null)
+            : base(api, client, logger)
+        { }
+    }
+
+    /// <summary>
+    /// The default <see cref="ITradeCache{TClient}"/> implemenation.
+    /// </summary>
+    public abstract class TradeCache<TClient> : JsonClientCache<TClient, TradeEventArgs, TradeCacheEventArgs>, ITradeCache<TClient>
+        where TClient : class, ITradeClient
     {
         #region Public Events
 
@@ -46,20 +71,12 @@ namespace Binance.Cache
         #region Constructors
 
         /// <summary>
-        /// Default constructor provides default <see cref="IBinanceApi"/>
-        /// and default <see cref="ITradeClient"/>, but no logger.
-        /// </summary>
-        public TradeCache()
-            : this(new BinanceApi(), new TradeClient())
-        { }
-
-        /// <summary>
         /// The DI constructor.
         /// </summary>
         /// <param name="api">The Binance api (required).</param>
         /// <param name="client">The JSON client (required).</param>
         /// <param name="logger">The logger (optional).</param>
-        public TradeCache(IBinanceApi api, ITradeClient client, ILogger<TradeCache> logger = null)
+        public TradeCache(IBinanceApi api, TClient client, ILogger<TradeCache<TClient>> logger = null)
             : base(api, client, logger)
         {
             _trades = new Queue<Trade>();
@@ -86,7 +103,7 @@ namespace Binance.Cache
             SubscribeToClient();
         }
 
-        public override IJsonClient Unsubscribe()
+        public override IJsonSubscriber Unsubscribe()
         {
             if (_symbol == null)
                 return this;
@@ -124,7 +141,7 @@ namespace Binance.Cache
             Client.Unsubscribe(_symbol, ClientCallback);
         }
 
-        protected override async ValueTask<TradeCacheEventArgs> OnAction(TradeEventArgs @event)
+        protected override async ValueTask<TradeCacheEventArgs> OnActionAsync(TradeEventArgs @event, CancellationToken token = default)
         {
             var synchronize = false;
 
@@ -144,7 +161,7 @@ namespace Binance.Cache
 
             if (synchronize)
             {
-                await SynchronizeTradesAsync(_symbol, _limit, @event.Token)
+                await SynchronizeTradesAsync(_symbol, _limit, token)
                     .ConfigureAwait(false);
             }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Binance.Market;
 
 namespace Binance.Client.Events
@@ -24,10 +23,9 @@ namespace Binance.Client.Events
         /// Constructor.
         /// </summary>
         /// <param name="time">The event time.</param>
-        /// <param name="token">The cancellation token.</param>
         /// <param name="statistics">The symbol statistics.</param>
-        public SymbolStatisticsEventArgs(DateTime time, CancellationToken token, params SymbolStatistics[] statistics)
-            : base(time, token)
+        public SymbolStatisticsEventArgs(DateTime time, params SymbolStatistics[] statistics)
+            : base(time)
         {
             Throw.IfNull(statistics, nameof(statistics));
 

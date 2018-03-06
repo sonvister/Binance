@@ -6,10 +6,8 @@ using Binance;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Cache.Events;
-using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
-using Binance.WebSocket.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -31,7 +29,7 @@ namespace BinanceMarketDepth
 
             //await MultiCacheExample.ExampleMain();
             //await MultiCacheCombinedStreamsExample.ExampleMain();
-            //CombinedStreamsExample.ExampleMain();
+            //await CombinedStreamsExample.AdvancedExampleMain();
 
             await Task.CompletedTask;
         }
@@ -80,29 +78,29 @@ namespace BinanceMarketDepth
                 else if (limit > 5) limit = 10;
                 else if (limit > 0) limit = 5;
 
-                // Initialize manager.
-                using (var manager = services.GetService<IDepthWebSocketCacheManager>())
+                // Initialize cache.
+                var cache = services.GetService<IDepthWebSocketCache>();
+
+                // Add error event handler.
+                cache.Error += (s, e) => Console.WriteLine(e.Exception.Message);
+
+                foreach (var symbol in symbols)
                 {
-                    // Add error event handler.
-                    manager.Error += (s, e) => Console.WriteLine(e.Exception.Message);
+                    // Subscribe cache to symbol with limit and callback.
+                    // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
+                    //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
+                    cache.Subscribe(symbol, limit, Display); // ...automatically begin streaming.
 
-                    foreach (var symbol in symbols)
+                    lock (_sync)
                     {
-                        // Subscribe cache to symbol with limit and callback.
-                        // NOTE: If no limit is provided (or limit = 0) then the order book is initialized with
-                        //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
-                        manager.Subscribe(symbol, limit, Display);
-
-                        lock (_sync)
-                        {
-                            _message = symbol == symbols.Last()
-                                ? $"Symbol: \"{symbol}\" ...press any key to exit."
-                                : $"Symbol: \"{symbol}\" ...press any key to continue.";
-                        }
-                        Console.ReadKey(true); // wait for user input.
-
-                        manager.Unsubscribe();
+                        _message = symbol == symbols.Last()
+                            ? $"Symbol: \"{symbol}\" ...press any key to exit."
+                            : $"Symbol: \"{symbol}\" ...press any key to continue.";
                     }
+                    Console.ReadKey(true); // wait for user input.
+
+                    // Unsubscribe cache (automatically end streaming).
+                    cache.Unsubscribe();
                 }
             }
             catch (Exception e)
@@ -155,9 +153,10 @@ namespace BinanceMarketDepth
                 // Initialize cache.
                 var cache = services.GetService<IOrderBookCache>();
                 
-                // Initialize stream.
+                // Initialize web socket stream.
                 var webSocket = services.GetService<IBinanceWebSocketStream>();
 
+                // Initialize controller.
                 using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
                     controller.Error += (s, e) => HandleError(e.Exception);
@@ -167,31 +166,34 @@ namespace BinanceMarketDepth
                     //       limit = 1000 and the diff. depth stream is used to keep order book up-to-date.
                     cache.Subscribe(symbol, limit, Display);
 
-                    // Subscribe cache to stream (with observed streams).
-                    webSocket.Subscribe(cache, cache.ObservedStreams);
+                    // Set web socket URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(cache);
                     // NOTE: This must be done after cache subscribe.
+
+                    // Route stream messages to cache.
+                    webSocket.Message += (s, e) => cache.HandleMessage(e.Subject, e.Json);
 
                     // Begin streaming.
                     controller.Begin();
 
-                    lock (_sync)
-                    {
-                        _message = "...press any key to continue.";
-                    }
+                    lock (_sync) _message = "...press any key to continue.";
                     Console.ReadKey(true); // wait for user input.
                 }
 
-                //*////////////////////////////////////////////////////////
-                // Alternative usage (with an existing IJsonStreamClient).
-                ///////////////////////////////////////////////////////////
+                //*//////////////////////////////////////////////////////////
+                // Alternative usage (with an existing IJsonPublisherClient).
+                /////////////////////////////////////////////////////////////
 
-                // Initialize stream/client.
+                // Initialize publisher/client.
                 var client = services.GetService<IDepthWebSocketClient>();
+                
+                // Disable automatic streaming (for this contrived example).
+                client.Publisher.IsAutoStreamingEnabled = false;
 
                 cache.Client = client; // link [new] client to cache.
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(client.StreamAsync))
+                using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
                     controller.Error += (s, e) => HandleError(e.Exception);
 
@@ -199,18 +201,15 @@ namespace BinanceMarketDepth
                     //cache.Subscribe(symbol, limit, Display);
                     // NOTE: Cache is already subscribed to symbol (above).
 
-                    // NOTE: With IJsonStreamClient, stream is automagically subscribed.
+                    // NOTE: With IJsonPublisherClient, publisher is automagically subscribed.
 
                     // Begin streaming.
                     controller.Begin();
 
-                    lock (_sync)
-                    {
-                        _message = "...press any key to exit.";
-                    }
+                    lock (_sync) _message = "(alternative usage) ...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
                 }
-                /////////////////////////////////////////////////////////*/
+                ///////////////////////////////////////////////////////////*/
             }
             catch (Exception e)
             {

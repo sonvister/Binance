@@ -10,9 +10,8 @@ using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api;
 using Binance.Application;
-using Binance.Manager;
 using Binance.Market;
-using Binance.WebSocket.Manager;
+using Binance.WebSocket;
 using BinanceConsoleApp.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -332,7 +331,7 @@ namespace BinanceConsoleApp
         {
             lock (ConsoleSync)
             {
-                if (ClientManager.Managers().Any(m => m.Controller.IsActive))
+                if (ClientManager.Clients().Any(c => c.Publisher.PublishedStreams.Any()))
                 {
                     Console.WriteLine();
                     Console.WriteLine("  ...live feeds disabled.");

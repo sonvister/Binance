@@ -2,7 +2,7 @@
 using Binance.Client;
 
 // ReSharper disable once CheckNamespace
-namespace Binance.Manager
+namespace Binance.WebSocket
 {
     public static class BinanceJsonClientManagerExtensions
     {

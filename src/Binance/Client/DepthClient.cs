@@ -66,7 +66,7 @@ namespace Binance.Client
 
         #region Protected Methods
 
-        protected override Task HandleMessageAsync(IEnumerable<Action<DepthUpdateEventArgs>> callbacks, string stream, string json, CancellationToken token = default)
+        protected override void HandleMessage(IEnumerable<Action<DepthUpdateEventArgs>> callbacks, string stream, string json)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace Binance.Client
                         var bids = jObject["bids"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
                         var asks = jObject["asks"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
 
-                        eventArgs = new DepthUpdateEventArgs(eventTime, token, symbol, lastUpdateId, lastUpdateId, bids, asks);
+                        eventArgs = new DepthUpdateEventArgs(eventTime, symbol, lastUpdateId, lastUpdateId, bids, asks);
                         break;
                     }
                     case "depthUpdate":
@@ -104,12 +104,12 @@ namespace Binance.Client
                         var bids = jObject["b"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
                         var asks = jObject["a"].Select(entry => (entry[0].Value<decimal>(), entry[1].Value<decimal>())).ToArray();
 
-                        eventArgs = new DepthUpdateEventArgs(eventTime, token, symbol, firstUpdateId, lastUpdateId, bids, asks);
+                        eventArgs = new DepthUpdateEventArgs(eventTime, symbol, firstUpdateId, lastUpdateId, bids, asks);
                         break;
                     }
                     default:
-                        Logger?.LogWarning($"{nameof(DepthClient)}.{nameof(HandleMessageAsync)}: Unexpected event type ({eventType}).");
-                        return Task.CompletedTask;
+                        Logger?.LogWarning($"{nameof(DepthClient)}.{nameof(HandleMessage)}: Unexpected event type ({eventType}).");
+                        return;
                 }
 
                 try
@@ -124,22 +124,14 @@ namespace Binance.Client
                 catch (OperationCanceledException) { /* ignore */ }
                 catch (Exception e)
                 {
-                    if (!token.IsCancellationRequested)
-                    {
-                        Logger?.LogWarning(e, $"{nameof(DepthClient)}: Unhandled depth update event handler exception.");
-                    }
+                    Logger?.LogWarning(e, $"{nameof(DepthClient)}.{nameof(HandleMessage)}: Unhandled depth update event handler exception.");
                 }
             }
             catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
-                if (!token.IsCancellationRequested)
-                {
-                    Logger?.LogError(e, $"{nameof(DepthClient)}.{nameof(HandleMessageAsync)}");
-                }
+                Logger?.LogError(e, $"{nameof(DepthClient)}.{nameof(HandleMessage)}");
             }
-
-            return Task.CompletedTask;
         }
 
         #endregion Protected Methods

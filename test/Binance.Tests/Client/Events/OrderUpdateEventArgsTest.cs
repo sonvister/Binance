@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Binance.Account.Orders;
 using Binance.Api;
 using Binance.Client.Events;
@@ -18,10 +17,7 @@ namespace Binance.Tests.Client.Events
             const string orderRejectedReason = OrderRejectedReason.None;
             const string newClientOrderId = "new-test-order";
 
-            using (var cts = new CancellationTokenSource())
-            {
-                Assert.Throws<ArgumentNullException>("order", () => new OrderUpdateEventArgs(time, cts.Token, null, orderExecutionType, orderRejectedReason, newClientOrderId));
-            }
+            Assert.Throws<ArgumentNullException>("order", () => new OrderUpdateEventArgs(time, null, orderExecutionType, orderRejectedReason, newClientOrderId));
         }
 
         [Fact]
@@ -50,16 +46,13 @@ namespace Binance.Tests.Client.Events
             const string orderRejectedReason = OrderRejectedReason.None;
             const string newClientOrderId = "new-test-order";
 
-            using (var cts = new CancellationTokenSource())
-            {
-                var args = new OrderUpdateEventArgs(time, cts.Token, order, orderExecutionType, orderRejectedReason, newClientOrderId);
+            var args = new OrderUpdateEventArgs(time, order, orderExecutionType, orderRejectedReason, newClientOrderId);
 
-                Assert.Equal(time, args.Time);
-                Assert.Equal(order, args.Order);
-                Assert.Equal(orderExecutionType, args.OrderExecutionType);
-                Assert.Equal(orderRejectedReason, args.OrderRejectedReason);
-                Assert.Equal(newClientOrderId, args.NewClientOrderId);
-            }
+            Assert.Equal(time, args.Time);
+            Assert.Equal(order, args.Order);
+            Assert.Equal(orderExecutionType, args.OrderExecutionType);
+            Assert.Equal(orderRejectedReason, args.OrderRejectedReason);
+            Assert.Equal(newClientOrderId, args.NewClientOrderId);
         }
     }
 }

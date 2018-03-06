@@ -13,7 +13,32 @@ namespace Binance.Cache
     /// <summary>
     /// The default <see cref="IOrderBookCache"/> implementation.
     /// </summary>
-    public class OrderBookCache : JsonClientCache<IDepthClient, DepthUpdateEventArgs, OrderBookCacheEventArgs>, IOrderBookCache
+    public class OrderBookCache : OrderBookCache<IDepthClient>, IOrderBookCache
+    {
+        /// <summary>
+        /// Default constructor provides default <see cref="IBinanceApi"/>
+        /// and default <see cref="IDepthClient"/>, but no logger.
+        /// </summary>
+        public OrderBookCache()
+            : this(new BinanceApi(), new DepthClient())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="api">The Binance api (required).</param>
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public OrderBookCache(IBinanceApi api, IDepthClient client, ILogger<OrderBookCache> logger = null)
+            : base(api, client, logger)
+        { }
+    }
+
+    /// <summary>
+    /// The default <see cref="IOrderBookCache{TClient}"/> implemenation.
+    /// </summary>
+    public abstract class OrderBookCache<TClient> : JsonClientCache<TClient, DepthUpdateEventArgs, OrderBookCacheEventArgs>, IOrderBookCache<TClient>
+        where TClient : class, IDepthClient
     {
         #region Public Events
 
@@ -40,20 +65,12 @@ namespace Binance.Cache
         #region Constructors
 
         /// <summary>
-        /// Default constructor provides default <see cref="IBinanceApi"/>
-        /// and default <see cref="IDepthClient"/>, but no logger.
-        /// </summary>
-        public OrderBookCache()
-            : this(new BinanceApi(), new DepthClient())
-        { }
-
-        /// <summary>
         /// The DI constructor.
         /// </summary>
         /// <param name="api">The Binance api (required).</param>
         /// <param name="client">The JSON client (required).</param>
         /// <param name="logger">The logger (optional).</param>
-        public OrderBookCache(IBinanceApi api, IDepthClient client, ILogger<OrderBookCache> logger = null)
+        protected OrderBookCache(IBinanceApi api, TClient client, ILogger<OrderBookCache<TClient>> logger = null)
             : base(api, client, logger)
         { }
 
@@ -66,10 +83,10 @@ namespace Binance.Cache
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (limit < 0)
-                throw new ArgumentException($"{nameof(OrderBookCache)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
+                throw new ArgumentException($"{GetType().Name}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
 
             if (_symbol != null)
-                throw new InvalidOperationException($"{nameof(OrderBookCache)}.{nameof(Subscribe)}: Already subscribed to a symbol: \"{_symbol}\"");
+                throw new InvalidOperationException($"{GetType().Name}.{nameof(Subscribe)}: Already subscribed to a symbol: \"{_symbol}\"");
 
             _symbol = symbol.FormatSymbol();
             _limit = limit;
@@ -78,7 +95,7 @@ namespace Binance.Cache
             SubscribeToClient();
         }
 
-        public override IJsonClient Unsubscribe()
+        public override IJsonSubscriber Unsubscribe()
         {
             if (_symbol == null)
                 return this;
@@ -118,14 +135,14 @@ namespace Binance.Cache
         /// </summary>
         /// <param name="event"></param>
         /// <returns></returns>
-        protected override async ValueTask<OrderBookCacheEventArgs> OnAction(DepthUpdateEventArgs @event)
+        protected override async ValueTask<OrderBookCacheEventArgs> OnActionAsync(DepthUpdateEventArgs @event, CancellationToken token = default)
         {
             if (_limit > 0)
             {
                 // Ignore events with same or earlier order book update.
                 if (_orderBookClone != null && @event.LastUpdateId <= _orderBookClone.LastUpdateId)
                 {
-                    Logger?.LogDebug($"{nameof(OrderBookCache)} ({_symbol}): Ignoring event (last update ID: {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Logger?.LogDebug($"{GetType().Name} ({_symbol}): Ignoring event (last update ID: {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     return null;
                 }
 
@@ -144,18 +161,18 @@ namespace Binance.Cache
                     }
 
                     // Synchronize.
-                    await SynchronizeOrderBookAsync(@event.Token)
+                    await SynchronizeOrderBookAsync(token)
                         .ConfigureAwait(false);
                 }
 
                 // Ignore events prior to order book snapshot.
                 if (@event.LastUpdateId <= _orderBook.LastUpdateId)
                 {
-                    Logger?.LogDebug($"{nameof(OrderBookCache)} ({_symbol}): Ignoring event (last update ID: {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Logger?.LogDebug($"{GetType().Name} ({_symbol}): Ignoring event (last update ID: {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                     return null;
                 }
 
-                Logger?.LogTrace($"{nameof(OrderBookCache)} ({_symbol}): Updating order book (last update ID: {_orderBook.LastUpdateId} => {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                Logger?.LogTrace($"{GetType().Name} ({_symbol}): Updating order book (last update ID: {_orderBook.LastUpdateId} => {@event.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
                 _orderBook.Modify(@event.LastUpdateId, @event.Bids, @event.Asks);
 
@@ -171,13 +188,13 @@ namespace Binance.Cache
 
         private async Task SynchronizeOrderBookAsync(CancellationToken token)
         {
-            Logger?.LogInformation($"{nameof(OrderBookCache)} ({_symbol}): Synchronizing order book...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogInformation($"{GetType().Name} ({_symbol}): Synchronizing order book...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             // Get order book snapshot with the maximum limit.
             _orderBook = await Api.GetOrderBookAsync(_symbol, 1000, token)
                 .ConfigureAwait(false);
 
-            Logger?.LogInformation($"{nameof(OrderBookCache)} ({_symbol}): Synchronization complete (last update ID: {_orderBook.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+            Logger?.LogInformation($"{GetType().Name} ({_symbol}): Synchronization complete (last update ID: {_orderBook.LastUpdateId}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
         }
 
         #endregion Private Methods

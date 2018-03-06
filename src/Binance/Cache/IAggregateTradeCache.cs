@@ -6,7 +6,11 @@ using Binance.Market;
 
 namespace Binance.Cache
 {
-    public interface IAggregateTradeCache : IJsonClientCache<IAggregateTradeClient, AggregateTradeCacheEventArgs>
+    public interface IAggregateTradeCache : IAggregateTradeCache<IAggregateTradeClient>
+    { }
+
+    public interface IAggregateTradeCache<TClient> : IJsonClientCache<TClient, AggregateTradeCacheEventArgs>
+        where TClient : IAggregateTradeClient
     {
         /// <summary>
         /// Aggregate trades out-of-sync event.

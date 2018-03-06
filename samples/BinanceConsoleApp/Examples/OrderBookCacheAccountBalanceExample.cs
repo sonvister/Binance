@@ -8,10 +8,8 @@ using Binance.Application;
 using Binance.Cache;
 using Binance.Client.Events;
 using Binance.Market;
-using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
-using Binance.WebSocket.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -68,7 +66,7 @@ namespace BinanceConsoleApp
 
                 var api = services.GetService<IBinanceApi>();
                 var cache = services.GetService<IOrderBookCache>();
-                var stream = services.GetService<IBinanceWebSocketStream>();
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
 
                 using (var user = userProvider.CreateUser(key, secret))
@@ -81,15 +79,16 @@ namespace BinanceConsoleApp
 
                     // Subscribe cache to symbol with callback.
                     cache.Subscribe(symbol, _limit, evt => Display(evt.OrderBook, balance));
-                    
-                    // Subscribe stream to cache observed streams.
-                    stream.Subscribe(cache, cache.ObservedStreams);
+
+                    // Set web socket URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(cache);
                     // NOTE: This must be done after cache subscribe.
 
-                    try
-                    {
-                        // Subscribe to symbol to display latest order book and asset balance.
-                        await manager.SubscribeAsync<AccountUpdateEventArgs>(user,
+                    // Route stream messages to cache.
+                    webSocket.Message += (s, e) => cache.HandleMessage(e.Subject, e.Json);
+
+                    // Subscribe to symbol to display latest order book and asset balance.
+                    await manager.SubscribeAsync<AccountUpdateEventArgs>(user,
                         evt =>
                         {
                             // Update asset balance.
@@ -98,27 +97,22 @@ namespace BinanceConsoleApp
                             Display(cache.OrderBook, balance);
                         });
 
-                        using (var controller = new RetryTaskController(stream.StreamAsync))
-                        {
-                            controller.Error += (s, e) => HandleError(e.Exception);
-
-                            // Begin streaming.
-                            controller.Begin();
-
-                            // Optionally, wait for web socket is connected (open).
-                            await manager.WaitUntilWebSocketOpenAsync();
-
-                            // Verify we are NOT using a combined streams (DEMONSTRATION ONLY).
-                            if (stream.IsCombined() || stream == manager.Controller.Stream)
-                                throw new Exception("You ARE using combined streams :(");
-
-                            _message = "...press any key to continue.";
-                            Console.ReadKey(true); // wait for user input.
-                        }
-                    }
-                    finally
+                    using (var controller = new RetryTaskController(webSocket.StreamAsync))
                     {
-                        stream.Unsubscribe();
+                        controller.Error += (s, e) => HandleError(e.Exception);
+
+                        // Begin streaming.
+                        controller.Begin();
+
+                        // Optionally, wait for web socket is connected (open).
+                        await manager.WaitUntilWebSocketOpenAsync();
+
+                        // Verify we are NOT using a combined streams (DEMONSTRATION ONLY).
+                        if (webSocket.IsCombined() || webSocket == manager.Client.Publisher.Stream)
+                            throw new Exception("You ARE using combined streams :(");
+
+                        _message = "...press any key to continue.";
+                        Console.ReadKey(true); // wait for user input.
                     }
                 }
             }

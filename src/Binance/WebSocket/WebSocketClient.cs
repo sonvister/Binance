@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Producer;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket
@@ -8,7 +9,7 @@ namespace Binance.WebSocket
     /// <summary>
     /// The abstract <see cref="IWebSocketClient"/> implementation base class.
     /// </summary>
-    public abstract class WebSocketClient : JsonProvider, IWebSocketClient
+    public abstract class WebSocketClient : JsonProducer, IWebSocketClient
     {
         #region Public Events
 
@@ -51,6 +52,8 @@ namespace Binance.WebSocket
         /// </summary>
         protected void OnOpen()
         {
+            Logger?.LogInformation($"{GetType().Name}.{nameof(OnOpen)}: Web Socket OPEN.");
+
             IsOpen = true;
 
             try { Open?.Invoke(this, EventArgs.Empty); }
@@ -65,6 +68,8 @@ namespace Binance.WebSocket
         /// </summary>
         protected void OnClose()
         {
+            Logger?.LogInformation($"{GetType().Name}.{nameof(OnClose)}: Web Socket CLOSED.");
+
             IsOpen = false;
 
             try { Close?.Invoke(this, EventArgs.Empty); }

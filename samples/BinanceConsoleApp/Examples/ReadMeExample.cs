@@ -5,7 +5,7 @@ using Binance;
 using Binance.Account.Orders;
 using Binance.Api;
 using Binance.Cache;
-using Binance.WebSocket.Manager;
+using Binance.WebSocket;
 
 namespace BinanceConsoleApp
 {
@@ -13,16 +13,20 @@ namespace BinanceConsoleApp
     {
         public static async Task ExampleMain(string[] args)
         {
+            // Initialize REST API.
             var api = new BinanceApi();
 
+            // Check connectivity.
             if (await api.PingAsync())
             {
                 Console.WriteLine("Successful!");
             }
 
-            /*
+
+            // Initialize user with API-Key and API-Secret (optional).
             using (var user = new BinanceApiUser("<API-Key>", "<API-Secret>"))
             {
+                // Initialize a new client (MARKET) order.
                 var order = new MarketOrder(user)
                 {
                     Symbol = Symbol.BTC_USDT,
@@ -32,8 +36,10 @@ namespace BinanceConsoleApp
 
                 try
                 {
+                    // Validate client order.
                     order.Validate();
 
+                    // Place TEST order.
                     await api.TestPlaceAsync(order);
 
                     Console.WriteLine("Test Order Successful!");
@@ -43,39 +49,50 @@ namespace BinanceConsoleApp
                     Console.WriteLine($"Test Order Failed: \"{e.Message}\"");
                 }
             }
-            */
 
-            using (var webSocketManager =  new AggregateTradeWebSocketClientManager())
+
+            // Initialize web socket client (with automatic streaming enabled).
+            var webSocketClient = new AggregateTradeWebSocketClient();
+
+            // Add web socket controller error handler.
+            webSocketClient.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
+
+            // Subscribe callback to symbol (automatically begin streaming).
+            webSocketClient.Subscribe(Symbol.BTC_USDT, evt =>
             {
-                webSocketManager.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
+                var side = evt.Trade.IsBuyerMaker ? "SELL" : "BUY ";
 
-                webSocketManager.Subscribe(Symbol.BTC_USDT, evt =>
-                {
-                    var side = evt.Trade.IsBuyerMaker ? "SELL" : "BUY ";
+                Console.WriteLine($"{evt.Trade.Symbol} {side} {evt.Trade.Quantity} @ {evt.Trade.Price}");
+            });
 
-                    Console.WriteLine($"{evt.Trade.Symbol} {side} {evt.Trade.Quantity} @ {evt.Trade.Price}");
-                });
+            Console.ReadKey(true); // wait for user input.
 
-                Console.ReadKey(true);
-            }
+            // Unsubscribe from symbol (automatically end streaming).
+            webSocketClient.Unsubscribe();
 
-            using (var webSocketManager = new DepthWebSocketCacheManager())
+
+            // Initiatlize web socket cache (with automatic streaming enabled).
+            var webSocketCache = new DepthWebSocketCache();
+
+            // Add web socket controller error handler.
+            webSocketCache.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
+
+            // Subscribe callback to symbol (automatically begin streaming).
+            webSocketCache.Subscribe(Symbol.BTC_USDT, evt =>
             {
-                webSocketManager.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
+                Symbol symbol = evt.OrderBook.Symbol; // use implicit conversion.
 
-                webSocketManager.Subscribe(Symbol.BTC_USDT, evt =>
-                {
-                    Symbol symbol = evt.OrderBook.Symbol; // use implicit conversion.
+                var minBidPrice = evt.OrderBook.Bids.Last().Price;
+                var maxAskPrice = evt.OrderBook.Asks.Last().Price;
 
-                    var minBidPrice = evt.OrderBook.Bids.Last().Price;
-                    var maxAskPrice = evt.OrderBook.Asks.Last().Price;
+                Console.WriteLine($"Bid Quantity: {evt.OrderBook.Depth(minBidPrice)} {symbol.BaseAsset} - " +
+                                  $"Ask Quantity: {evt.OrderBook.Depth(maxAskPrice)} {symbol.BaseAsset}");
+            });
 
-                    Console.WriteLine($"Bid Quantity: {evt.OrderBook.Depth(minBidPrice)} {symbol.BaseAsset} - " +
-                                      $"Ask Quantity: {evt.OrderBook.Depth(maxAskPrice)} {symbol.BaseAsset}");
-                });
+            Console.ReadKey(true); // wait for user input.
 
-                Console.ReadKey(true);
-            }
+            // Unsubscribe from symbol (automatically end streaming).
+            webSocketCache.Unsubscribe();
         }
     }
 }

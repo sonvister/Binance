@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace Binance.Client.Events
 {
@@ -44,14 +43,13 @@ namespace Binance.Client.Events
         /// Constructor.
         /// </summary>
         /// <param name="time">The event time.</param>
-        /// <param name="token">The cancellation token.</param>
         /// <param name="symbol">The symbol.</param>
         /// <param name="firstUpdateId"></param>
         /// <param name="lastUpdateId"></param>
         /// <param name="bids">The bids.</param>
         /// <param name="asks">The asks.</param>
-        public DepthUpdateEventArgs(DateTime time, CancellationToken token, string symbol, long firstUpdateId, long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
-            : base(time, token)
+        public DepthUpdateEventArgs(DateTime time, string symbol, long firstUpdateId, long lastUpdateId, IEnumerable<(decimal, decimal)> bids, IEnumerable<(decimal, decimal)> asks)
+            : base(time)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 

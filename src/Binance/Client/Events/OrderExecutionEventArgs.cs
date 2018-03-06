@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Binance.Account.Orders;
 
 namespace Binance.Client.Events
@@ -39,13 +38,12 @@ namespace Binance.Client.Events
         /// Constructor.
         /// </summary>
         /// <param name="time">The event time.</param>
-        /// <param name="token">The cancellation token.</param>
         /// <param name="order">The order.</param>
         /// <param name="orderExecutionType">The order execution type.</param>
         /// <param name="orderRejectedReason">The order rejected reason.</param>
         /// <param name="newClientOrderId">The new client order ID.</param>
-        protected OrderExecutionEventArgs(DateTime time, CancellationToken token, Order order, OrderExecutionType orderExecutionType, string orderRejectedReason, string newClientOrderId)
-            : base(time, token)
+        protected OrderExecutionEventArgs(DateTime time, Order order, OrderExecutionType orderExecutionType, string orderRejectedReason, string newClientOrderId)
+            : base(time)
         {
             Throw.IfNull(order, nameof(order));
             Throw.IfNullOrWhiteSpace(orderRejectedReason, nameof(orderRejectedReason));

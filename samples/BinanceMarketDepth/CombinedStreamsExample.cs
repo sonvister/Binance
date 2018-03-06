@@ -24,7 +24,7 @@ namespace BinanceMarketDepth
     /// </summary>
     internal class CombinedStreamsExample
     {
-        public static void ExampleMain()
+        public static async Task AdvancedExampleMain()
         {
             try
             {
@@ -54,9 +54,13 @@ namespace BinanceMarketDepth
                 const int limit = 5;
 
                 // Create client.
-                var client = services.GetService<IDepthWebSocketClient>();
+                var client = services.GetService<IDepthClient>();
 
-                using (var controller = new RetryTaskController(client.StreamAsync))
+                // Initialize the stream.
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
+
+                // Initialize controller.
+                using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
                     controller.Error += (s, e) => HandleError(e.Exception);
 
@@ -77,8 +81,18 @@ namespace BinanceMarketDepth
                         }
                     }
 
+                    // Set stream URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(client);
+                    // NOTE: This must be done after client subscribe.
+
+                    // Route stream messages to client.
+                    webSocket.Message += (s, e) => client.HandleMessage(e.Subject, e.Json);
+
                     // Begin streaming.
                     controller.Begin();
+
+                    // Optionally, wait for web socket open event.
+                    await webSocket.WaitUntilWebSocketOpenAsync();
 
                     _message = "...press any key to continue.";
                     Console.ReadKey(true); // wait for user input.
@@ -87,10 +101,10 @@ namespace BinanceMarketDepth
                     // Example: Unsubscribe/Subscribe after streaming...
                     /////////////////////////////////////////////////////
 
-                    // NOTE: When stream names are subscribed/unsubscribed, the
-                    //       websocket is aborted and a new connection is made.
-                    //       There's a small delay before streaming restarts to
-                    //       allow for multiple subscribe/unsubscribe changes.
+                    // NOTE: When the URI is changed, the web socket is aborted
+                    //       and a new connection is made. There's a delay
+                    //       before streaming begins to allow for multiple
+                    //       changes.
 
                     // Unsubscribe a symbol.
                     client.Unsubscribe(symbols[0], limit);
@@ -98,13 +112,20 @@ namespace BinanceMarketDepth
                     // Subscribe to the real Bitcoin :D
                     client.Subscribe(Symbol.BCH_USDT, limit); // a.k.a. BCC.
 
+                    // Set stream URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(client);
+                    // NOTE: This must be done after client subscribe.
+
                     lock (_sync)
                     {
                         // Remove unsubscribed symbol and clear display (application specific).
                         _orderBookTops.Remove(symbols[0]);
                         Console.Clear();
                     }
-                    
+
+                    // Optionally, wait for web socket open event.
+                    await webSocket.WaitUntilWebSocketOpenAsync();
+
                     _message = "...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
                     ///////////////////////////////////////////////////*/

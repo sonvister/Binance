@@ -18,13 +18,16 @@ namespace Binance.Tests.Utility
         public void Properties()
         {
             var interval = TimeSpan.FromMinutes(5);
+            const bool isEnabled = true;
 
-            var watchdog = new WatchdogTimer(() => { })
+            var watchdog = new WatchdogTimer(() => { /* do nothing */ })
             {
-                Interval = interval
+                Interval = interval,
+                IsEnabled = isEnabled
             };
 
             Assert.Equal(interval, watchdog.Interval);
+            Assert.Equal(isEnabled, watchdog.IsEnabled);
         }
 
         [Fact]
@@ -37,8 +40,10 @@ namespace Binance.Tests.Utility
             // ReSharper disable once UnusedVariable
             var watchdog = new WatchdogTimer(() => stopwatch.Stop())
             {
-                Interval = interval
+                Interval = interval,
             };
+
+            watchdog.Kick(); // kick start.
 
             await Task.Delay(2000);
 
@@ -62,10 +67,11 @@ namespace Binance.Tests.Utility
             const int delay = 500;
             for (var i = 0; i < count; i++)
             {
+                watchdog.Kick(); // kick start.
                 await Task.Delay(delay);
-                watchdog.Kick();
             }
 
+            Assert.True(watchdog.IsEnabled);
             // ReSharper disable once ArrangeRedundantParentheses
             Assert.True(stopwatch.ElapsedMilliseconds <= (count * delay) + 200);
             // ReSharper disable once ArrangeRedundantParentheses

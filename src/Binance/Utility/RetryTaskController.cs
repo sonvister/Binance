@@ -57,78 +57,52 @@ namespace Binance.Utility
 
         #endregion Constructors
 
-        #region Public Methods
-
-        public override void Begin(Func<CancellationToken, Task> action = null)
-        {
-            ThrowIfDisposed();
-
-            lock (Sync)
-            {
-                if (IsActive)
-                    return;
-
-                if (action != null)
-                    Action = action;
-
-                Throw.IfNull(Action, nameof(action));
-
-                IsActive = true;
-
-                Cts?.Dispose();
-
-                Cts = new CancellationTokenSource();
-
-                Task = Task.Run(async () =>
-                {
-                    Logger?.LogDebug($"{nameof(RetryTaskController)}: Task beginning...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                    while (!Cts.IsCancellationRequested)
-                    {
-                        try
-                        {
-                            await Action(Cts.Token)
-                                .ConfigureAwait(false);
-                        }
-                        catch (OperationCanceledException) { /* ignore */ }
-                        catch (Exception e)
-                        {
-                            Logger?.LogWarning(e, $"{nameof(RetryTaskController)}: Unhandled action exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                            if (!Cts.IsCancellationRequested)
-                            {
-                                OnError(e);
-                            }
-                        }
-
-                        try
-                        {
-                            if (!Cts.IsCancellationRequested)
-                            {
-                                Logger?.LogDebug($"{nameof(RetryTaskController)}: Task pausing...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                                await DelayAsync(Cts.Token)
-                                    .ConfigureAwait(false);
-                            }
-                        }
-                        catch { /* ignore */ }
-
-                        if (!Cts.IsCancellationRequested)
-                        {
-                            Logger?.LogDebug($"{nameof(RetryTaskController)}: Task resuming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                            OnResuming();
-                        }
-                    }
-
-                    Logger?.LogDebug($"{nameof(RetryTaskController)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                });
-            }
-        }
-
-        #endregion Public Methods
-
         #region Protected Methods
+
+        protected override async Task ActionAsync()
+        {
+            Logger?.LogDebug($"{nameof(RetryTaskController)}.{nameof(ActionAsync)}: Task beginning...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            while (!Cts.IsCancellationRequested)
+            {
+                try
+                {
+                    await Action(Cts.Token)
+                        .ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) { /* ignore */ }
+                catch (Exception e)
+                {
+                    Logger?.LogWarning(e, $"{nameof(RetryTaskController)}.{nameof(ActionAsync)}: Unhandled action exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                    if (!Cts.IsCancellationRequested)
+                    {
+                        OnError(e);
+                    }
+                }
+
+                try
+                {
+                    if (!Cts.IsCancellationRequested)
+                    {
+                        Logger?.LogDebug($"{nameof(RetryTaskController)}.{nameof(ActionAsync)}: Task pausing...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                        await DelayAsync(Cts.Token)
+                            .ConfigureAwait(false);
+                    }
+                }
+                catch { /* ignore */ }
+
+                if (!Cts.IsCancellationRequested)
+                {
+                    Logger?.LogDebug($"{nameof(RetryTaskController)}.{nameof(ActionAsync)}: Task resuming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                    OnResuming();
+                }
+            }
+
+            Logger?.LogDebug($"{nameof(RetryTaskController)}.{nameof(ActionAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+        }
 
         protected virtual Task DelayAsync(CancellationToken token)
         {

@@ -4,7 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
 
-namespace Binance.WebSocket.Manager
+// ReSharper disable once CheckNamespace
+namespace Binance.WebSocket
 {
     /// <summary>
     /// A user data web socket stream (listen key) manager.

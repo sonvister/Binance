@@ -68,13 +68,13 @@ namespace Binance.Utility
 
             lock (Sync)
             {
+                if (IsActive)
+                    return;
+
                 if (action != null)
                     Action = action;
 
                 Throw.IfNull(Action, nameof(action));
-
-                if (IsActive)
-                    return;
 
                 IsActive = true;
 
@@ -82,30 +82,7 @@ namespace Binance.Utility
 
                 Cts = new CancellationTokenSource();
 
-                Task = Task.Run(async () =>
-                {
-                    Logger?.LogDebug($"{nameof(TaskController)}: Task beginning...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                    // ReSharper disable once InconsistentlySynchronizedField
-                    try
-                    {
-                        await Action(Cts.Token)
-                            .ConfigureAwait(false);
-                    }
-                    catch (OperationCanceledException) { /* ignore */  }
-                    catch (Exception e)
-                    {
-                        Logger?.LogWarning(e, $"{nameof(TaskController)}: Unhandled action exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                    // ReSharper disable once InconsistentlySynchronizedField
-                    if (!Cts.IsCancellationRequested)
-                        {
-                            OnError(e);
-                        }
-                    }
-
-                    Logger?.LogDebug($"{nameof(TaskController)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                });
+                Task = Task.Run(ActionAsync);
             }
         }
 
@@ -158,6 +135,31 @@ namespace Binance.Utility
         #endregion Public Methods
 
         #region Protected Methods
+
+        protected virtual async Task ActionAsync()
+        {
+            Logger?.LogDebug($"{nameof(TaskController)}.{nameof(ActionAsync)}: Task beginning...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+            // ReSharper disable once InconsistentlySynchronizedField
+            try
+            {
+                await Action(Cts.Token)
+                    .ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) { /* ignore */  }
+            catch (Exception e)
+            {
+                Logger?.LogWarning(e, $"{nameof(TaskController)}.{nameof(ActionAsync)}: Unhandled action exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                // ReSharper disable once InconsistentlySynchronizedField
+                if (!Cts.IsCancellationRequested)
+                {
+                    OnError(e);
+                }
+            }
+
+            Logger?.LogDebug($"{nameof(TaskController)}.{nameof(ActionAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+        }
 
         /// <summary>
         /// Raise an error event.

@@ -9,10 +9,8 @@ using Binance.Cache;
 using Binance.Cache.Events;
 using Binance.Client.Events;
 using Binance.Market;
-using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
-using Binance.WebSocket.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -71,16 +69,23 @@ namespace Binance24HourStatistics
                 var symbols = configuration.GetSection("Statistics:Symbols").Get<string[]>()
                     ?? new string[] { Symbol.BTC_USDT };
 
-                // Initialize manager.
-                using (var manager = services.GetService<ISymbolStatisticsWebSocketCacheManager>())
-                {
-                    // Add error event handler.
-                    manager.Error += (s, e) => Console.WriteLine(e.Exception.Message);
+                // Initialize cache.
+                var cache = services.GetService<ISymbolStatisticsWebSocketCache>();
 
-                    // Subscribe cache to symbols (and automatically begin streaming).
-                    manager.Subscribe(Display, symbols);
+                // Add error event handler.
+                cache.Error += (s, e) => Console.WriteLine(e.Exception.Message);
+
+                try
+                {
+                    // Subscribe cache to symbols (automatically begin streaming).
+                    cache.Subscribe(Display, symbols);
 
                     Console.ReadKey(true); // wait for user input.
+                }
+                finally
+                {
+                    // Unsubscribe cache (automatically end streaming).
+                    cache.Unsubscribe();
                 }
             }
             catch (Exception e)
@@ -126,18 +131,21 @@ namespace Binance24HourStatistics
                 var cache = services.GetService<ISymbolStatisticsCache>();
                 
                 // Initialize web socket stream.
-                var stream = services.GetService<IBinanceWebSocketStream>();
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
 
-                using (var controller = new RetryTaskController(stream.StreamAsync))
+                using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
                     controller.Error += (s, e) => HandleError(e.Exception);
 
                     // Subscribe cache to symbols.
                     cache.Subscribe(Display, symbols);
-                    
-                    // Subscribe stream to cache (observed streams).
-                    stream.Subscribe(cache, cache.ObservedStreams);
+
+                    // Set web socket URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(cache);
                     // NOTE: This must be done after cache subscribe.
+
+                    // Route stream messages to cache.
+                    webSocket.Message += (s, e) => cache.HandleMessage(e.Subject, e.Json);
 
                     // Begin streaming.
                     controller.Begin();

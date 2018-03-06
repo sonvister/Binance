@@ -8,10 +8,8 @@ using Binance.Cache;
 using Binance.Cache.Events;
 using Binance.Client;
 using Binance.Client.Events;
-using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
-using Binance.WebSocket.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -72,27 +70,26 @@ namespace BinanceTradeHistory
                 catch { /* ignore */ }
 
                 // Initialize manager.
-                using (var manager = services.GetService<IAggregateTradeWebSocketCacheManager>())
+                var cache = services.GetService<IAggregateTradeWebSocketCache>();
+
+                // Add error event handler.
+                cache.Error += (s, e) => Console.WriteLine(e.Exception.Message);
+
+                foreach (var symbol in symbols)
                 {
-                    // Add error event handler.
-                    manager.Error += (s, e) => Console.WriteLine(e.Exception.Message);
+                    // Subscribe to symbol with callback.
+                    cache.Subscribe(symbol, limit, Display);
 
-                    foreach (var symbol in symbols)
+                    lock (_sync)
                     {
-                        // Subscribe to symbol with callback.
-                        manager.Subscribe(symbol, limit, Display);
-
-                        lock (_sync)
-                        {
-                            _message = symbol == symbols.Last()
-                                ? $"Symbol: \"{symbol}\" ...press any key to exit."
-                                : $"Symbol: \"{symbol}\" ...press any key to continue.";
-                        }
-                        Console.ReadKey(true);
-
-                        // Unsubscribe from symbol.
-                        manager.Unsubscribe();
+                        _message = symbol == symbols.Last()
+                            ? $"Symbol: \"{symbol}\" ...press any key to exit."
+                            : $"Symbol: \"{symbol}\" ...press any key to continue.";
                     }
+                    Console.ReadKey(true);
+
+                    // Unsubscribe from symbol.
+                    cache.Unsubscribe();
                 }
             }
             catch (Exception e)
@@ -128,39 +125,34 @@ namespace BinanceTradeHistory
                 var loggerFactory = new LoggerFactory();
                 loggerFactory.AddFile(configuration.GetSection("Logging:File"));
 
+                // All the things a DI framework can instantiate for you...
                 var api = new BinanceApi(BinanceHttpClient.Instance, logger: loggerFactory.CreateLogger<BinanceApi>());
                 var client = new AggregateTradeClient(loggerFactory.CreateLogger<AggregateTradeClient>());
-                var webSocket = new DefaultWebSocketClient(loggerFactory.CreateLogger<DefaultWebSocketClient>());
+                var webSocket = new DefaultWebSocketClient(logger: loggerFactory.CreateLogger<DefaultWebSocketClient>());
                 var stream = new BinanceWebSocketStream(webSocket, loggerFactory.CreateLogger<BinanceWebSocketStream>());
-                var controller = new BinanceWebSocketStreamController(api, stream);
+                var controller = new BinanceWebSocketStreamController(api, stream, loggerFactory.CreateLogger<BinanceWebSocketStreamController>());
+                var publisher = new BinanceWebSocketStreamPublisher(controller, loggerFactory.CreateLogger<BinanceWebSocketStreamPublisher>());
+                var webSocketClient = new AggregateTradeWebSocketClient(client, publisher, loggerFactory.CreateLogger<AggregateTradeWebSocketClient>());
+                var cache = new AggregateTradeWebSocketCache(api, webSocketClient, loggerFactory.CreateLogger<AggregateTradeWebSocketCache>());
 
+                // Add error event handler.
                 controller.Error += (s, e) => HandleError(e.Exception);
 
-                // Initialize manager.
-                using (var manager = new AggregateTradeWebSocketClientManager(client, controller, loggerFactory.CreateLogger<AggregateTradeWebSocketClientManager>()))
+                foreach (var symbol in symbols)
                 {
-                    // Initialize cache and link manager (JSON client).
-                    var cache = new AggregateTradeCache(api, client, loggerFactory.CreateLogger<AggregateTradeCache>())
+                    // Subscribe to symbol with callback.
+                    cache.Subscribe(symbol, limit, Display);
+
+                    lock (_sync)
                     {
-                        Client = manager // use manager as client.
-                    };
-
-                    foreach (var symbol in symbols)
-                    {
-                        // Subscribe to symbol with callback.
-                        cache.Subscribe(symbol, limit, Display);
-
-                        lock (_sync)
-                        {
-                            _message = symbol == symbols.Last()
-                                ? $"Symbol: \"{symbol}\" ...press any key to exit."
-                                : $"Symbol: \"{symbol}\" ...press any key to continue.";
-                        }
-                        Console.ReadKey(true);
-
-                        // Unsubscribe from symbol.
-                        cache.Unsubscribe();
+                        _message = symbol == symbols.Last()
+                            ? $"Symbol: \"{symbol}\" ...press any key to exit."
+                            : $"Symbol: \"{symbol}\" ...press any key to continue.";
                     }
+                    Console.ReadKey(true);
+
+                    // Unsubscribe from symbol.
+                    cache.Unsubscribe();
                 }
             }
             catch (Exception e)
@@ -207,39 +199,44 @@ namespace BinanceTradeHistory
                 var cache = services.GetService<IAggregateTradeCache>();
                 
                 // Initialize stream.
-                var stream = services.GetService<IBinanceWebSocketStream>();
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(stream.StreamAsync))
+                using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
                     controller.Error += (s, e) => HandleError(e.Exception);
 
                     // Subscribe cache to symbol with limit and callback.
                     cache.Subscribe(symbol, limit, Display);
-                    
-                    // Subscribe cache to stream (with observed streams).
-                    stream.Subscribe(cache, cache.ObservedStreams);
+
+                    // Set web socket URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(cache);
                     // NOTE: This must be done after cache subscribe.
+
+                    // Route stream messages to cache.
+                    webSocket.Message += (s, e) => cache.HandleMessage(e.Subject, e.Json);
 
                     // Begin streaming.
                     controller.Begin();
 
-                    // ReSharper disable once InconsistentlySynchronizedField
-                    _message = "...press any key to continue.";
+                    lock (_sync) _message = "...press any key to continue.";
                     Console.ReadKey(true);
                 }
 
-                //*////////////////////////////////////////////////////////
-                // Alternative usage (with an existing IJsonStreamClient).
-                ///////////////////////////////////////////////////////////
+                //*//////////////////////////////////////////////////////////
+                // Alternative usage (with an existing IJsonPublisherClient).
+                /////////////////////////////////////////////////////////////
 
                 // Initialize stream/client.
                 var client = services.GetService<IAggregateTradeWebSocketClient>();
 
+                // Disable automatic streaming (for this contrived example).
+                client.Publisher.IsAutoStreamingEnabled = false;
+
                 cache.Client = client; // link [new] client to cache.
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(client.StreamAsync))
+                using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
                     controller.Error += (s, e) => HandleError(e.Exception);
 
@@ -247,16 +244,15 @@ namespace BinanceTradeHistory
                     //cache.Subscribe(symbol, limit, Display);
                     // NOTE: Cache is already subscribed to symbol (above).
 
-                    // NOTE: With IJsonStreamClient, stream is automagically subscribed.
+                    // NOTE: With IJsonPublisherClient, publisher is automagically subscribed.
 
                     // Begin streaming.
                     controller.Begin();
 
-                    // ReSharper disable once InconsistentlySynchronizedField
-                    _message = "...press any key to exit.";
+                    lock (_sync) _message = "(alternative usage) ...press any key to exit.";
                     Console.ReadKey(true);
                 }
-                /////////////////////////////////////////////////////////*/
+                ///////////////////////////////////////////////////////////*/
             }
             catch (Exception e)
             {

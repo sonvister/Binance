@@ -5,7 +5,11 @@ using Binance.Market;
 
 namespace Binance.Cache
 {
-    public interface IOrderBookCache : IJsonClientCache<IDepthClient, OrderBookCacheEventArgs>
+    public interface IOrderBookCache : IOrderBookCache<IDepthClient>
+    { }
+
+    public interface IOrderBookCache<TClient> : IJsonClientCache<TClient, OrderBookCacheEventArgs>
+        where TClient : IDepthClient
     {
         /// <summary>
         /// Order book out-of-sync event.

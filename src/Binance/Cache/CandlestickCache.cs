@@ -15,7 +15,32 @@ namespace Binance.Cache
     /// <summary>
     /// The default <see cref="ICandlestickCache"/> implementation.
     /// </summary>
-    public class CandlestickCache : JsonClientCache<ICandlestickClient, CandlestickEventArgs, CandlestickCacheEventArgs>, ICandlestickCache
+    public class CandlestickCache : CandlestickCache<ICandlestickClient>, ICandlestickCache
+    {
+        /// <summary>
+        /// Default constructor provides default <see cref="IBinanceApi"/>
+        /// and default <see cref="ICandlestickClient"/>, but no logger.
+        /// </summary>
+        public CandlestickCache()
+            : this(new BinanceApi(), new CandlestickClient())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="api">The Binance api (required).</param>
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public CandlestickCache(IBinanceApi api, ICandlestickClient client, ILogger<CandlestickCache> logger = null)
+            : base(api, client, logger)
+        { }
+    }
+
+    /// <summary>
+    /// The default <see cref="ICandlestickCache{TClient}"/> implemenation.
+    /// </summary>
+    public abstract class CandlestickCache<TClient> : JsonClientCache<TClient, CandlestickEventArgs, CandlestickCacheEventArgs>, ICandlestickCache<TClient>
+        where TClient : class, ICandlestickClient
     {
         #region Public Properties
 
@@ -41,20 +66,12 @@ namespace Binance.Cache
         #region Constructors
 
         /// <summary>
-        /// Default constructor provides default <see cref="IBinanceApi"/>
-        /// and default <see cref="ICandlestickClient"/>, but no logger.
-        /// </summary>
-        public CandlestickCache()
-            : this(new BinanceApi(), new CandlestickClient())
-        { }
-
-        /// <summary>
         /// The DI constructor.
         /// </summary>
         /// <param name="api">The Binance api (required).</param>
         /// <param name="client">The JSON client (required).</param>
         /// <param name="logger">The logger (optional).</param>
-        public CandlestickCache(IBinanceApi api, ICandlestickClient client, ILogger<CandlestickCache> logger = null)
+        protected CandlestickCache(IBinanceApi api, TClient client, ILogger<CandlestickCache<TClient>> logger = null)
             : base(api, client, logger)
         {
             _candlesticks = new List<Candlestick>();
@@ -69,10 +86,10 @@ namespace Binance.Cache
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
             if (limit < 0)
-                throw new ArgumentException($"{nameof(CandlestickCache)}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
+                throw new ArgumentException($"{GetType().Name}: {nameof(limit)} must be greater than or equal to 0.", nameof(limit));
 
             if (_symbol != null)
-                throw new InvalidOperationException($"{nameof(CandlestickCache)}.{nameof(Subscribe)}: Already subscribed to a symbol: \"{_symbol}\"");
+                throw new InvalidOperationException($"{GetType().Name}.{nameof(Subscribe)}: Already subscribed to a symbol: \"{_symbol}\"");
 
             _symbol = symbol.FormatSymbol();
             _interval = interval;
@@ -82,7 +99,7 @@ namespace Binance.Cache
             SubscribeToClient();
         }
 
-        public override IJsonClient Unsubscribe()
+        public override IJsonSubscriber Unsubscribe()
         {
             if (_symbol == null)
                 return this;
@@ -122,7 +139,7 @@ namespace Binance.Cache
             Client.Unsubscribe(_symbol, _interval, ClientCallback);
         }
 
-        protected override async ValueTask<CandlestickCacheEventArgs> OnAction(CandlestickEventArgs @event)
+        protected override async ValueTask<CandlestickCacheEventArgs> OnActionAsync(CandlestickEventArgs @event, CancellationToken token = default)
         {
             bool synchronize;
 
@@ -133,11 +150,11 @@ namespace Binance.Cache
 
             if (synchronize)
             {
-                await SynchronizeCandlesticksAsync(_symbol, _interval, _limit, @event.Token)
+                await SynchronizeCandlesticksAsync(_symbol, _interval, _limit, token)
                     .ConfigureAwait(false);
             }
 
-            Logger?.LogTrace($"{nameof(CandlestickCache)} ({_symbol}): Updating candlestick (open time: {@event.Candlestick.OpenTime}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+            Logger?.LogTrace($"{GetType().Name} ({_symbol}): Updating candlestick (open time: {@event.Candlestick.OpenTime}).  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
             lock (_sync)
             {
@@ -165,7 +182,7 @@ namespace Binance.Cache
         /// <returns></returns>
         private async Task SynchronizeCandlesticksAsync(string symbol, CandlestickInterval interval, int limit, CancellationToken token)
         {
-            Logger?.LogInformation($"{nameof(CandlestickCache)} ({_symbol}): Synchronizing candlesticks...  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+            Logger?.LogInformation($"{GetType().Name} ({_symbol}): Synchronizing candlesticks...  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
 
             var candlesticks = await Api.GetCandlesticksAsync(symbol, interval, limit, token: token)
                 .ConfigureAwait(false);
@@ -181,7 +198,7 @@ namespace Binance.Cache
             }
 
             // ReSharper disable once PossibleMultipleEnumeration
-            Logger?.LogInformation($"{nameof(CandlestickCache)} ({_symbol}): Synchronization complete (latest open time: {candlesticks.Last().OpenTime}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+            Logger?.LogInformation($"{GetType().Name} ({_symbol}): Synchronization complete (latest open time: {candlesticks.Last().OpenTime}).  [thread: {Thread.CurrentThread.ManagedThreadId}{(token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
         }
 
         #endregion Private Methods

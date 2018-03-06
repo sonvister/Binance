@@ -7,9 +7,11 @@ namespace Binance.Utility
     /// <summary>
     /// The default <see cref="IWatchdogTimer"/> implementation.
     /// </summary>
-    public sealed class WatchdogTimer : IWatchdogTimer, IDisposable
+    public sealed class WatchdogTimer : IWatchdogTimer
     {
         #region Public Properties
+
+        public bool IsEnabled { get; set; } = true;
 
         public TimeSpan Interval { get; set; }
 
@@ -17,11 +19,15 @@ namespace Binance.Utility
 
         #region Private Fields
 
-        private readonly Timer _timer;
+        private Timer _timer;
 
-        private readonly Stopwatch _stopwatch;
+        private Stopwatch _stopwatch;
 
         private readonly Action _onTimeout;
+
+        private readonly int _timerResolutionMilliseconds;
+
+        private readonly object _sync = new object();
 
         #endregion Private Fields
 
@@ -40,10 +46,9 @@ namespace Binance.Utility
                 throw new ArgumentException($"{nameof(WatchdogTimer)}: Timer resolution ({timerResolutionMilliseconds}) must be greater than 0 milliseconds.", nameof(timerResolutionMilliseconds));
 
             _onTimeout = onTimeout;
+            _timerResolutionMilliseconds = timerResolutionMilliseconds;
 
-            _stopwatch = Stopwatch.StartNew();
-
-            _timer = new Timer(OnTimer, null, timerResolutionMilliseconds, timerResolutionMilliseconds);
+            _stopwatch = new Stopwatch();
         }
 
         #endregion Constructors
@@ -52,6 +57,20 @@ namespace Binance.Utility
 
         public void Kick()
         {
+            if (!IsEnabled)
+                return;
+
+            if (_timer == null)
+            {
+                lock (_sync)
+                {
+                    if (_timer == null)
+                    {
+                        _timer = new Timer(OnTimer, null, _timerResolutionMilliseconds, _timerResolutionMilliseconds);
+                    }
+                }
+            }
+
             _stopwatch.Restart();
         }
 
@@ -64,34 +83,21 @@ namespace Binance.Utility
             if (_stopwatch.Elapsed < Interval)
                 return;
 
-            _onTimeout();
-            _stopwatch.Restart();
+            _stopwatch.Reset();
+
+            if (IsEnabled)
+            {
+                try { _onTimeout(); }
+                catch { /* ignore */  }
+            }
+
+            lock (_sync)
+            {
+                _timer.Dispose();
+                _timer = null;
+            }
         }
 
         #endregion Private Methods
-
-        #region IDisposable
-
-        private bool _disposed;
-
-        private void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                _timer?.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        #endregion
     }
 }

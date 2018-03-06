@@ -6,7 +6,11 @@ using Binance.Client;
 
 namespace Binance.Cache
 {
-    public interface IAccountInfoCache : IJsonClientCache<IUserDataClient, AccountInfoCacheEventArgs>
+    public interface IAccountInfoCache : IAccountInfoCache<IUserDataClient>
+    { }
+
+    public interface IAccountInfoCache<TClient> : IJsonClientCache<TClient, AccountInfoCacheEventArgs>
+        where TClient : IUserDataClient
     {
         /// <summary>
         /// The account information. Can be null if not yet synchronized or out-of-sync.

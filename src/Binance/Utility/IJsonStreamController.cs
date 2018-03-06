@@ -1,4 +1,4 @@
-﻿using Binance.Stream;
+﻿using Binance.Producer;
 
 namespace Binance.Utility
 {
@@ -19,5 +19,10 @@ namespace Binance.Utility
         /// Get the JSON stream.
         /// </summary>
         TStream Stream { get; }
+
+        /// <summary>
+        /// Get the watchdog timer.
+        /// </summary>
+        IWatchdogTimer Watchdog { get; }
     }
 }

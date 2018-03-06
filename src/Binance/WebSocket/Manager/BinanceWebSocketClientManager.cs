@@ -1,7 +1,7 @@
-﻿using Binance.Manager;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
-namespace Binance.WebSocket.Manager
+// ReSharper disable once CheckNamespace
+namespace Binance.WebSocket
 {
     /// <summary>
     /// A <see cref="IBinanceJsonClientManager"/> web socket implementation.
@@ -14,34 +14,34 @@ namespace Binance.WebSocket.Manager
         /// The default constructor.
         /// </summary>
         public BinanceWebSocketClientManager()
-            : this(new AggregateTradeWebSocketClientManager(),
-                   new CandlestickWebSocketClientManager(),
-                   new DepthWebSocketClientManager(),
-                   new SymbolStatisticsWebSocketClientManager(),
-                   new TradeWebSocketClientManager())
+            : this(new AggregateTradeWebSocketClient(),
+                   new CandlestickWebSocketClient(),
+                   new DepthWebSocketClient(),
+                   new SymbolStatisticsWebSocketClient(),
+                   new TradeWebSocketClient())
         { }
 
         /// <summary>
         /// The DI constructor.
         /// </summary>
-        /// <param name="aggregateTradeWebSocketClientManager"></param>
-        /// <param name="candlestickWebSocketClientManager"></param>
-        /// <param name="depthWebSocketClientManager"></param>
-        /// <param name="symbolStatisticsWebSocketClientManager"></param>
-        /// <param name="tradeWebSocketClientManager"></param>
+        /// <param name="aggregateTradeWebSocketClient"></param>
+        /// <param name="candlestickWebSocketClient"></param>
+        /// <param name="depthWebSocketClient"></param>
+        /// <param name="symbolStatisticsWebSocketClient"></param>
+        /// <param name="tradeWebSocketClient"></param>
         /// <param name="logger"></param>
         public BinanceWebSocketClientManager(
-            IAggregateTradeWebSocketClientManager aggregateTradeWebSocketClientManager,
-            ICandlestickWebSocketClientManager candlestickWebSocketClientManager,
-            IDepthWebSocketClientManager depthWebSocketClientManager,
-            ISymbolStatisticsWebSocketClientManager symbolStatisticsWebSocketClientManager,
-            ITradeWebSocketClientManager tradeWebSocketClientManager,
+            IAggregateTradeWebSocketClient aggregateTradeWebSocketClient,
+            ICandlestickWebSocketClient candlestickWebSocketClient,
+            IDepthWebSocketClient depthWebSocketClient,
+            ISymbolStatisticsWebSocketClient symbolStatisticsWebSocketClient,
+            ITradeWebSocketClient tradeWebSocketClient,
             ILogger<BinanceWebSocketClientManager> logger = null)
-            : base(aggregateTradeWebSocketClientManager,
-                   candlestickWebSocketClientManager,
-                   depthWebSocketClientManager,
-                   symbolStatisticsWebSocketClientManager,
-                   tradeWebSocketClientManager,
+            : base(aggregateTradeWebSocketClient,
+                   candlestickWebSocketClient,
+                   depthWebSocketClient,
+                   symbolStatisticsWebSocketClient,
+                   tradeWebSocketClient,
                    logger)
         { }
 

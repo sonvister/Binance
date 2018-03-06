@@ -33,19 +33,19 @@ namespace Binance.Tests.Client
             var symbol = Symbol.BTC_USDT;
             const CandlestickInterval interval = CandlestickInterval.Hour;
 
-            Assert.Empty(_client.ObservedStreams);
+            Assert.Empty(_client.SubscribedStreams);
 
             // Subscribe to symbol.
             _client.Subscribe(symbol, interval);
-            Assert.True(_client.ObservedStreams.Count() == 1);
+            Assert.True(_client.SubscribedStreams.Count() == 1);
 
             // Re-Subscribe to same symbol doesn't fail.
             _client.Subscribe(symbol, interval);
-            Assert.True(_client.ObservedStreams.Count() == 1);
+            Assert.True(_client.SubscribedStreams.Count() == 1);
 
             // Subscribe to a different symbol.
             _client.Subscribe(Symbol.LTC_BTC, interval);
-            Assert.True(_client.ObservedStreams.Count() == 2);
+            Assert.True(_client.SubscribedStreams.Count() == 2);
         }
 
         [Fact]
@@ -54,16 +54,16 @@ namespace Binance.Tests.Client
             var symbol = Symbol.BTC_USDT;
             const CandlestickInterval interval = CandlestickInterval.Hour;
 
-            Assert.Empty(_client.ObservedStreams);
+            Assert.Empty(_client.SubscribedStreams);
 
             // Unsubscribe non-subscribed symbol doesn't fail.
             _client.Unsubscribe(symbol, interval);
-            Assert.Empty(_client.ObservedStreams);
+            Assert.Empty(_client.SubscribedStreams);
 
             // Subscribe and unsubscribe symbol.
             _client.Subscribe(symbol, interval).Unsubscribe(symbol, interval);
 
-            Assert.Empty(_client.ObservedStreams);
+            Assert.Empty(_client.SubscribedStreams);
         }
 
         [Fact]
@@ -77,12 +77,12 @@ namespace Binance.Tests.Client
 
             // Subscribe to multiple symbols.
             _client.Subscribe(interval, symbols);
-            Assert.True(_client.ObservedStreams.Count() == symbols.Length);
+            Assert.True(_client.SubscribedStreams.Count() == symbols.Length);
 
             // Unsubscribe all.
             _client.Unsubscribe();
 
-            Assert.Empty(_client.ObservedStreams);
+            Assert.Empty(_client.SubscribedStreams);
         }
     }
 }

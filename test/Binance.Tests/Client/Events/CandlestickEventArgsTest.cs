@@ -32,13 +32,10 @@ namespace Binance.Tests.Client.Events
 
             var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
 
-            using (var cts = new CancellationTokenSource())
-            {
-                Assert.Throws<ArgumentNullException>("candlestick", () => new CandlestickEventArgs(time, cts.Token, null, firstTradeId, lastTradeId, isFinal));
-                Assert.Throws<ArgumentException>("firstTradeId", () => new CandlestickEventArgs(time, cts.Token, candlestick, -2, lastTradeId, isFinal));
-                Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(time, cts.Token, candlestick, firstTradeId, -2, isFinal));
-                Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(time, cts.Token, candlestick, firstTradeId, firstTradeId - 1, isFinal));
-            }
+            Assert.Throws<ArgumentNullException>("candlestick", () => new CandlestickEventArgs(time, null, firstTradeId, lastTradeId, isFinal));
+            Assert.Throws<ArgumentException>("firstTradeId", () => new CandlestickEventArgs(time, candlestick, -2, lastTradeId, isFinal));
+            Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(time, candlestick, firstTradeId, -2, isFinal));
+            Assert.Throws<ArgumentException>("lastTradeId", () => new CandlestickEventArgs(time, candlestick, firstTradeId, firstTradeId - 1, isFinal));
         }
 
         [Fact]
@@ -65,16 +62,13 @@ namespace Binance.Tests.Client.Events
 
             var candlestick = new Candlestick(symbol, interval, openTime, open, high, low, close, volume, closeTime, quoteAssetVolume, numberOfTrades, takerBuyBaseAssetVolume, takerBuyQuoteAssetVolume);
 
-            using (var cts = new CancellationTokenSource())
-            {
-                var args = new CandlestickEventArgs(time, cts.Token, candlestick, firstTradeId, lastTradeId, isFinal);
+            var args = new CandlestickEventArgs(time, candlestick, firstTradeId, lastTradeId, isFinal);
 
-                Assert.Equal(time, args.Time);
-                Assert.Equal(candlestick, args.Candlestick);
-                Assert.Equal(firstTradeId, args.FirstTradeId);
-                Assert.Equal(lastTradeId, args.LastTradeId);
-                Assert.Equal(isFinal, args.IsFinal);
-            }
+            Assert.Equal(time, args.Time);
+            Assert.Equal(candlestick, args.Candlestick);
+            Assert.Equal(firstTradeId, args.FirstTradeId);
+            Assert.Equal(lastTradeId, args.LastTradeId);
+            Assert.Equal(isFinal, args.IsFinal);
         }
     }
 }

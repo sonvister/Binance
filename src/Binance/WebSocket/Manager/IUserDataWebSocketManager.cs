@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Client.Events;
 
-namespace Binance.WebSocket.Manager
+// ReSharper disable once CheckNamespace
+namespace Binance.WebSocket
 {
     /// <summary>
     /// A user data web socket manager.
     /// </summary>
-    public interface IUserDataWebSocketManager : IWebSocketControllerManager //IUserDataClientManager<IWebSocketStream> // TODO
+    public interface IUserDataWebSocketManager : IDisposable
     {
         /// <summary>
         /// The account update event.
@@ -25,6 +26,11 @@ namespace Binance.WebSocket.Manager
         /// The trade update event.
         /// </summary>
         event EventHandler<AccountTradeUpdateEventArgs> TradeUpdate;
+
+        /// <summary>
+        /// Get the client.
+        /// </summary>
+        IUserDataWebSocketClient Client { get; }
 
         /// <summary>
         /// Subscribe to user events.

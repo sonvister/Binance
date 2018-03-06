@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Binance.Account;
 using Binance.Account.Orders;
 using Binance.Api;
@@ -34,10 +33,7 @@ namespace Binance.Tests.Client.Events
 
             decimal quantityOfLastFilledTrade = 1;
 
-            using (var cts = new CancellationTokenSource())
-            {
-                Assert.Throws<ArgumentNullException>("order", () => new AccountTradeUpdateEventArgs(time, cts.Token, null, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
-            }
+            Assert.Throws<ArgumentNullException>("order", () => new AccountTradeUpdateEventArgs(time, null, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade));
         }
 
         [Fact]
@@ -78,18 +74,15 @@ namespace Binance.Tests.Client.Events
 
             const decimal quantityOfLastFilledTrade = 1;
 
-            using (var cts = new CancellationTokenSource())
-            {
-                var args = new AccountTradeUpdateEventArgs(time, cts.Token, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
+            var args = new AccountTradeUpdateEventArgs(time, order, orderRejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
 
-                Assert.Equal(time, args.Time);
-                Assert.Equal(order, args.Order);
-                Assert.Equal(OrderExecutionType.Trade, args.OrderExecutionType);
-                Assert.Equal(orderRejectedReason, args.OrderRejectedReason);
-                Assert.Equal(newClientOrderId, args.NewClientOrderId);
-                Assert.Equal(trade, args.Trade);
-                Assert.Equal(quantityOfLastFilledTrade, args.QuantityOfLastFilledTrade);
-            }
+            Assert.Equal(time, args.Time);
+            Assert.Equal(order, args.Order);
+            Assert.Equal(OrderExecutionType.Trade, args.OrderExecutionType);
+            Assert.Equal(orderRejectedReason, args.OrderRejectedReason);
+            Assert.Equal(newClientOrderId, args.NewClientOrderId);
+            Assert.Equal(trade, args.Trade);
+            Assert.Equal(quantityOfLastFilledTrade, args.QuantityOfLastFilledTrade);
         }
     }
 }

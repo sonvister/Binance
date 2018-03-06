@@ -16,11 +16,37 @@ namespace Binance.Utility
 
         #region Constructors
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
+        public QueuedProcessor(Action<T> action)
+        {
+            Throw.IfNull(action, nameof(action));
+
+            //_bufferBlock = new BufferBlock<T>(new DataflowBlockOptions
+            //{
+            //    EnsureOrdered = true,
+            //    CancellationToken = CancellationToken.None,
+            //    BoundedCapacity = DataflowBlockOptions.Unbounded,
+            //    MaxMessagesPerTask = DataflowBlockOptions.Unbounded
+            //});
+
+            _actionBlock = new ActionBlock<T>(action,
+                new ExecutionDataflowBlockOptions
+                {
+                    //BoundedCapacity = 1,
+                    BoundedCapacity = DataflowBlockOptions.Unbounded,
+                    EnsureOrdered = true,
+                    //MaxMessagesPerTask = 1,
+                    MaxDegreeOfParallelism = 1,
+                    CancellationToken = CancellationToken.None,
+                    SingleProducerConstrained = true
+                });
+
+            //_bufferBlock.LinkTo(_actionBlock);
+        }
+
         public QueuedProcessor(Func<T, CancellationToken, Task> actionAsync, CancellationToken token = default)
         {
+            Throw.IfNull(actionAsync, nameof(actionAsync));
+
             //_bufferBlock = new BufferBlock<T>(new DataflowBlockOptions
             //{
             //    EnsureOrdered = true,

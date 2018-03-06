@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Binance.Account;
 
 namespace Binance.Client.Events
@@ -24,10 +23,9 @@ namespace Binance.Client.Events
         /// Constructor.
         /// </summary>
         /// <param name="time">The event time.</param>
-        /// <param name="token">The cancellation token.</param>
         /// <param name="accountInfo">The account information.</param>
-        public AccountUpdateEventArgs(DateTime time, CancellationToken token, AccountInfo accountInfo)
-            : base(time, token)
+        public AccountUpdateEventArgs(DateTime time, AccountInfo accountInfo)
+            : base(time)
         {
             Throw.IfNull(accountInfo, nameof(accountInfo));
 

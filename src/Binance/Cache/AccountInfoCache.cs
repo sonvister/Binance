@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Binance.Account;
 using Binance.Api;
@@ -9,7 +10,35 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Cache
 {
-    public sealed class AccountInfoCache : JsonClientCache<IUserDataClient, AccountUpdateEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache
+    /// <summary>
+    /// The default <see cref="IAccountInfoCache"/> implementation.
+    /// </summary>
+    public class AccountInfoCache : AccountInfoCache<IUserDataClient>, IAccountInfoCache
+    {
+        /// <summary>
+        /// Default constructor provides default <see cref="IBinanceApi"/>
+        /// and default <see cref="IUserDataClient"/>, but no logger.
+        /// </summary>
+        public AccountInfoCache()
+            : this(new BinanceApi(), new UserDataClient())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="api">The Binance api (required).</param>
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public AccountInfoCache(IBinanceApi api, IUserDataClient client, ILogger<AccountInfoCache> logger = null)
+            : base(api, client, logger)
+        { }
+    }
+
+    /// <summary>
+    /// The default <see cref="IAccountInfoCache{TClient}"/> implemenation.
+    /// </summary>
+    public abstract class AccountInfoCache<TClient> : JsonClientCache<TClient, AccountUpdateEventArgs, AccountInfoCacheEventArgs>, IAccountInfoCache<TClient>
+        where TClient : class, IUserDataClient
     {
         #region Public Properties
 
@@ -28,20 +57,12 @@ namespace Binance.Cache
         #region Constructors
 
         /// <summary>
-        /// Default constructor provides default <see cref="IBinanceApi"/>
-        /// and default <see cref="IUserDataClient"/>, but no logger.
-        /// </summary>
-        public AccountInfoCache()
-            : this(new BinanceApi(), new UserDataClient())
-        { }
-
-        /// <summary>
         /// The DI constructor.
         /// </summary>
         /// <param name="api">The Binance api (required).</param>
         /// <param name="client">The JSON client (required).</param>
         /// <param name="logger">The logger (optional).</param>
-        public AccountInfoCache(IBinanceApi api, IUserDataClient client, ILogger<AccountInfoCache> logger = null)
+        protected AccountInfoCache(IBinanceApi api, TClient client, ILogger<AccountInfoCache<TClient>> logger = null)
             : base(api, client, logger)
         { }
 
@@ -55,7 +76,7 @@ namespace Binance.Cache
             Throw.IfNull(user, nameof(user));
 
             if (_listenKey != null)
-                throw new InvalidOperationException($"{nameof(AccountInfoCache)}.{nameof(Subscribe)}: Already subscribed to a (user) listen key: \"{_listenKey}\"");
+                throw new InvalidOperationException($"{GetType().Name}.{nameof(Subscribe)}: Already subscribed to a (user) listen key: \"{_listenKey}\"");
 
             _listenKey = listenKey;
             _user = user;
@@ -64,7 +85,7 @@ namespace Binance.Cache
             SubscribeToClient();
         }
 
-        public override IJsonClient Unsubscribe()
+        public override IJsonSubscriber Unsubscribe()
         {
             if (_listenKey == null)
                 return this;
@@ -100,7 +121,7 @@ namespace Binance.Cache
             Client.Unsubscribe<AccountUpdateEventArgs>(_listenKey, ClientCallback);
         }
 
-        protected override ValueTask<AccountInfoCacheEventArgs> OnAction(AccountUpdateEventArgs @event)
+        protected override ValueTask<AccountInfoCacheEventArgs> OnActionAsync(AccountUpdateEventArgs @event, CancellationToken token = default)
         {
             AccountInfo = @event.AccountInfo;
 

@@ -1,4 +1,6 @@
 ﻿// ReSharper disable once CheckNamespace
+using Binance.Client;
+
 namespace Binance.Cache
 {
     public static class SymbolStatisticsCacheExtensions
@@ -8,7 +10,8 @@ namespace Binance.Cache
         /// </summary>
         /// <param name="cache"></param>
         /// <returns></returns>
-        public static void Subscribe(this ISymbolStatisticsCache cache)
+        public static void Subscribe<TClient>(this ISymbolStatisticsCache<TClient> cache)
+            where TClient : ISymbolStatisticsClient
             => cache.Subscribe(null);
 
         /// <summary>
@@ -17,7 +20,8 @@ namespace Binance.Cache
         /// <param name="cache"></param>
         /// <param name="symbol"></param>
         /// <returns></returns>
-        public static void Subscribe(this ISymbolStatisticsCache cache, string symbol)
+        public static void Subscribe<TClient>(this ISymbolStatisticsCache<TClient> cache, string symbol)
+            where TClient : ISymbolStatisticsClient
             => cache.Subscribe(null, symbol);
     }
 }

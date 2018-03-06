@@ -7,9 +7,7 @@ using Binance.Api;
 using Binance.Application;
 using Binance.Client;
 using Binance.Client.Events;
-using Binance.Utility;
 using Binance.WebSocket;
-using Binance.WebSocket.Manager;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -115,6 +113,8 @@ namespace BinanceConsoleApp
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
                 var streamControl = services.GetService<IUserDataWebSocketStreamControl>();
 
+                client.Error += (s, e) => HandleError(e.Exception);
+
                 using (var user = userProvider.CreateUser(key, secret))
                 {
                     // Query and display current account balance.
@@ -146,20 +146,17 @@ namespace BinanceConsoleApp
                     };
 
                     Console.WriteLine($"Subscribe to listen key... {listenKey}");
+                    // Subscribe listen key and user (automatically begin streaming).
                     client.Subscribe<AccountUpdateEventArgs>(listenKey, user, Display);
 
-                    using (var controller = new RetryTaskController(client.Stream.StreamAsync))
-                    {
-                        controller.Error += (s, e) => HandleError(e.Exception);
+                    // Optionally wait for web socket open event.
+                    await client.WaitUntilWebSocketOpenAsync();
 
-                        // Begin streaming.
-                        controller.Begin();
-
-                        Console.WriteLine("...press any key to continue.");
-                        Console.ReadKey(true);
-                    }
+                    Console.WriteLine("...press any key to continue.");
+                    Console.ReadKey(true); // wait for user input.
 
                     Console.WriteLine($"Unsubscribe listen key... {listenKey}");
+                    // Unsubscribe listen key (automatically end streaming).
                     client.Unsubscribe(listenKey);
 
                     await streamControl.CloseStreamAsync(user);

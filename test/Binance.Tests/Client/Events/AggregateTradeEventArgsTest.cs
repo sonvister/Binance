@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Binance.Client.Events;
 using Binance.Market;
 using Xunit;
@@ -13,10 +12,7 @@ namespace Binance.Tests.Client.Events
         {
             var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
 
-            using (var cts = new CancellationTokenSource())
-            {
-                Assert.Throws<ArgumentNullException>("trade", () => new AggregateTradeEventArgs(time, cts.Token, null));
-            }
+            Assert.Throws<ArgumentNullException>("trade", () => new AggregateTradeEventArgs(time, null));
         }
 
         [Fact]
@@ -35,13 +31,10 @@ namespace Binance.Tests.Client.Events
 
             var trade = new AggregateTrade(symbol, id, price, quantity, firstTradeId, lastTradeId, time, isBuyerMaker, isBestPriceMatch);
 
-            using (var cts = new CancellationTokenSource())
-            {
-                var args = new AggregateTradeEventArgs(time, cts.Token, trade);
+            var args = new AggregateTradeEventArgs(time, trade);
 
-                Assert.Equal(time, args.Time);
-                Assert.Equal(trade, args.Trade);
-            }
+            Assert.Equal(time, args.Time);
+            Assert.Equal(trade, args.Trade);
         }
     }
 }

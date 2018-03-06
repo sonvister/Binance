@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using Binance.Api;
 using Microsoft.Extensions.Logging;
 
-namespace Binance.WebSocket.Manager
+// ReSharper disable once CheckNamespace
+namespace Binance.WebSocket
 {
     /// <summary>
     /// The default <see cref="IUserDataWebSocketStreamControl"/> implementation.
@@ -21,7 +22,7 @@ namespace Binance.WebSocket.Manager
 
         #region Public Constants
 
-        public static readonly TimeSpan KeepAliveTimerPeriodDefault = TimeSpan.FromMinutes(30);
+        public static readonly TimeSpan KeepAliveTimerPeriodDefault = TimeSpan.FromMinutes(15);
 
         #endregion Public Constants
 

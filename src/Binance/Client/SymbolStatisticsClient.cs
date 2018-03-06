@@ -93,7 +93,7 @@ namespace Binance.Client
 
         #region Protected Methods
 
-        protected override Task HandleMessageAsync(IEnumerable<Action<SymbolStatisticsEventArgs>> callbacks, string stream, string json, CancellationToken token = default)
+        protected override void HandleMessage(IEnumerable<Action<SymbolStatisticsEventArgs>> callbacks, string stream, string json)
         {
             try
             {
@@ -106,7 +106,7 @@ namespace Binance.Client
 
                     var statistics = JArray.Parse(json).Select(DeserializeSymbolStatistics).ToArray();
 
-                    eventArgs = new SymbolStatisticsEventArgs(eventTime, token, statistics);
+                    eventArgs = new SymbolStatisticsEventArgs(eventTime, statistics);
                 }
                 else
                 {
@@ -120,12 +120,12 @@ namespace Binance.Client
 
                         var statistics = DeserializeSymbolStatistics(jObject);
 
-                        eventArgs = new SymbolStatisticsEventArgs(eventTime, token, statistics);
+                        eventArgs = new SymbolStatisticsEventArgs(eventTime, statistics);
                     }
                     else
                     {
-                        Logger?.LogWarning($"{nameof(SymbolStatisticsClient)}.{nameof(HandleMessageAsync)}: Unexpected event type ({eventType}).");
-                        return Task.CompletedTask;
+                        Logger?.LogWarning($"{nameof(SymbolStatisticsClient)}.{nameof(HandleMessage)}: Unexpected event type ({eventType}).");
+                        return;
                     }
                 }
 
@@ -141,22 +141,14 @@ namespace Binance.Client
                 catch (OperationCanceledException) { /* ignore */ }
                 catch (Exception e)
                 {
-                    if (!token.IsCancellationRequested)
-                    {
-                        Logger?.LogWarning(e, $"{nameof(SymbolStatisticsClient)}: Unhandled aggregate trade event handler exception.");
-                    }
+                    Logger?.LogWarning(e, $"{nameof(SymbolStatisticsClient)}.{nameof(HandleMessage)}: Unhandled aggregate trade event handler exception.");
                 }
             }
             catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
-                if (!token.IsCancellationRequested)
-                {
-                    Logger?.LogError(e, $"{nameof(SymbolStatisticsClient)}.{nameof(HandleMessageAsync)}");
-                }
+                Logger?.LogError(e, $"{nameof(SymbolStatisticsClient)}.{nameof(HandleMessage)}");
             }
-
-            return Task.CompletedTask;
         }
 
         #endregion Protected Methods

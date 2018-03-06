@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Producer;
 
 namespace Binance.WebSocket
 {
     /// <summary>
     /// A low-level web socket client JSON provider interface.
     /// </summary>
-    public interface IWebSocketClient : IJsonProvider
+    public interface IWebSocketClient : IJsonProducer
     {
         /// <summary>
         /// The open event.

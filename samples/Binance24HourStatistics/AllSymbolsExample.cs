@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Application;
-using Binance.Cache;
 using Binance.Cache.Events;
 using Binance.Market;
-using Binance.WebSocket.Manager;
+using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,7 +16,8 @@ using Microsoft.Extensions.Logging;
 namespace Binance24HourStatistics
 {
     /// <summary>
-    /// Demonstrate how to monitor all symbol statistics.
+    /// Demonstrate how to monitor all symbol statistics
+    /// and display symbols with highest % price change.
     /// </summary>
     internal class AllSymbolsExample
     {
@@ -42,21 +42,24 @@ namespace Binance24HourStatistics
                     .AddFile(configuration.GetSection("Logging:File"));
                     // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
-                // Initialize manager (w/ internal controller).
-                using (var manager = services.GetService<ISymbolStatisticsWebSocketClientManager>())
+                // Initialize cache (w/ internal controller).
+                var cache = services.GetService<ISymbolStatisticsWebSocketCache>();
+
+                // Add error event handler.
+                cache.Error += (s, e) => Console.WriteLine(e.Exception.Message);
+
+                try
                 {
-                    // Add error event handler.
-                    manager.Controller.Error += (s, e) => Console.WriteLine(e.Exception.Message);
-
-                    // Initialize cache.
-                    var cache = services.GetService<ISymbolStatisticsCache>();
-                    cache.Client = manager; // use manager as client.
-
-                    // Subscribe cache to symbols (and automatically begin streaming).
+                    // Subscribe cache to symbols (automatically begin streaming).
                     cache.Subscribe(Display);
 
                     _message = "...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
+                }
+                finally
+                {
+                    // Unsubscribe cache (automatically end streaming).
+                    cache.Unsubscribe();
                 }
             }
             catch (Exception e)

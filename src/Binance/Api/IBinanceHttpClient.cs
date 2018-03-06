@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Producer;
 
 namespace Binance.Api
 {
-    public interface IBinanceHttpClient : IJsonProvider, IDisposable
+    public interface IBinanceHttpClient : IJsonProducer, IDisposable
     {
         /// <summary>
         /// Get or set the timestamp provider.

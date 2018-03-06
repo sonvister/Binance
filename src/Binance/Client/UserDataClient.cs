@@ -29,13 +29,13 @@ namespace Binance.Client
 
         #region Public Properties
 
-        public override IEnumerable<string> ObservedStreams
+        public override IEnumerable<string> SubscribedStreams
         {
             get
             {
                 lock (_sync)
                 {
-                    return base.ObservedStreams
+                    return base.SubscribedStreams
                         .Concat(_accountUpdateSubscribers.Keys)
                         .Concat(_orderUpdateSubscribers.Keys)
                         .Concat(_accountTradeUpdateSubscribers.Keys)
@@ -153,6 +153,8 @@ namespace Binance.Client
 
         public void HandleListenKeyChange(string oldStreamName, string newStreamName)
         {
+            Logger?.LogDebug($"{nameof(UserDataClient)}.{nameof(HandleListenKeyChange)}: Changing listen key \"{oldStreamName}\" to \"{newStreamName}\".  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
             lock (_sync)
             {
                 if (Users.TryGetValue(oldStreamName, out var user))
@@ -187,12 +189,12 @@ namespace Binance.Client
 
         #region Protected Methods
 
-        protected override Task HandleMessageAsync(IEnumerable<Action<UserDataEventArgs>> callbacks, string stream, string json, CancellationToken token = default)
+        protected override void HandleMessage(IEnumerable<Action<UserDataEventArgs>> callbacks, string stream, string json)
         {
             if (!Users.ContainsKey(stream))
             {
-                Logger?.LogError($"{nameof(UserDataClient)}.{nameof(HandleMessageAsync)}: Unknown listen key (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                return Task.CompletedTask; // ignore.
+                Logger?.LogError($"{nameof(UserDataClient)}.{nameof(HandleMessage)}: Unknown listen key (\"{stream}\").  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                return; // ignore.
             }
 
             var user = Users[stream];
@@ -225,7 +227,7 @@ namespace Binance.Client
                             entry["l"].Value<decimal>())) // locked amount
                         .ToList();
 
-                    var eventArgs = new AccountUpdateEventArgs(eventTime, token, new AccountInfo(user, commissions, status, jObject["u"].Value<long>().ToDateTime(), balances));
+                    var eventArgs = new AccountUpdateEventArgs(eventTime, new AccountInfo(user, commissions, status, jObject["u"].Value<long>().ToDateTime(), balances));
 
                     try
                     {
@@ -247,10 +249,7 @@ namespace Binance.Client
                     catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
-                        if (!token.IsCancellationRequested)
-                        {
-                            Logger?.LogWarning(e, $"{nameof(UserDataClient)}: Unhandled account update event handler exception.");
-                        }
+                        Logger?.LogWarning(e, $"{nameof(UserDataClient)}.{nameof(HandleMessage)}: Unhandled account update event handler exception.");
                     }
                 }
                 else if (eventType == "executionReport")
@@ -281,7 +280,7 @@ namespace Binance.Client
 
                         var quantityOfLastFilledTrade = jObject["l"].Value<decimal>();
 
-                        var eventArgs = new AccountTradeUpdateEventArgs(eventTime, token, order, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
+                        var eventArgs = new AccountTradeUpdateEventArgs(eventTime, order, rejectedReason, newClientOrderId, trade, quantityOfLastFilledTrade);
 
                         try
                         {
@@ -303,15 +302,12 @@ namespace Binance.Client
                         catch (OperationCanceledException) { /* ignore */ }
                         catch (Exception e)
                         {
-                            if (!token.IsCancellationRequested)
-                            {
-                                Logger?.LogWarning(e, $"{nameof(UserDataClient)}: Unhandled trade update event handler exception.");
-                            }
+                            Logger?.LogWarning(e, $"{nameof(UserDataClient)}.{nameof(HandleMessage)}: Unhandled trade update event handler exception.");
                         }
                     }
                     else // order update event.
                     {
-                        var eventArgs = new OrderUpdateEventArgs(eventTime, token, order, executionType, rejectedReason, newClientOrderId);
+                        var eventArgs = new OrderUpdateEventArgs(eventTime, order, executionType, rejectedReason, newClientOrderId);
 
                         try
                         {
@@ -333,28 +329,20 @@ namespace Binance.Client
                         catch (OperationCanceledException) { /* ignore */ }
                         catch (Exception e)
                         {
-                            if (!token.IsCancellationRequested)
-                            {
-                                Logger?.LogWarning(e, $"{nameof(UserDataClient)}: Unhandled order update event handler exception.");
-                            }
+                            Logger?.LogWarning(e, $"{nameof(UserDataClient)}.{nameof(HandleMessage)}: Unhandled order update event handler exception.");
                         }
                     }
                 }
                 else
                 {
-                    Logger?.LogWarning($"{nameof(UserDataClient)}.{nameof(HandleMessageAsync)}: Unexpected event type ({eventType}).");
+                    Logger?.LogWarning($"{nameof(UserDataClient)}.{nameof(HandleMessage)}: Unexpected event type ({eventType}).");
                 }
             }
             catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
-                if (!token.IsCancellationRequested)
-                {
-                    Logger?.LogError(e, $"{nameof(UserDataClient)}.{nameof(HandleMessageAsync)}");
-                }
+                Logger?.LogError(e, $"{nameof(UserDataClient)}.{nameof(HandleMessage)}");
             }
-
-            return Task.CompletedTask;
         }
 
         #endregion Protected Methods
@@ -411,7 +399,7 @@ namespace Binance.Client
             }
 
             // If listen key was removed from subscribers (no callbacks).
-            if (!ObservedStreams.Contains(listenKey))
+            if (!SubscribedStreams.Contains(listenKey))
             {
                 // Remove listen key (and user).
                 Users.Remove(listenKey);

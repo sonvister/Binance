@@ -4,20 +4,15 @@ using System.Threading.Tasks;
 
 namespace Binance.Utility
 {
-    public interface ITaskController : IDisposable
+    public interface ITaskController : IError, IDisposable
     {
-        /// <summary>
-        /// The error event.
-        /// </summary>
-        event EventHandler<ErrorEventArgs> Error;
-
         /// <summary>
         /// Get the flag indicating if this controller is active.
         /// </summary>
         bool IsActive { get; }
 
         /// <summary>
-        /// Get the controller <see cref="Task"/>.
+        /// Get the controller task.
         /// </summary>
         Task Task { get; }
 

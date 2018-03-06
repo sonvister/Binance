@@ -66,7 +66,7 @@ namespace Binance.Client
 
         #region Protected Methods
 
-        protected override Task HandleMessageAsync(IEnumerable<Action<CandlestickEventArgs>> callbacks, string stream, string json, CancellationToken token = default)
+        protected override void HandleMessage(IEnumerable<Action<CandlestickEventArgs>> callbacks, string stream, string json)
         {
             try
             {
@@ -105,7 +105,7 @@ namespace Binance.Client
                         kLine["Q"].Value<decimal>()  // taker buy quote asset volume (quote volume of active buy)
                     );
 
-                    var eventArgs = new CandlestickEventArgs(eventTime, token, candlestick, firstTradeId, lastTradeId, isFinal);
+                    var eventArgs = new CandlestickEventArgs(eventTime, candlestick, firstTradeId, lastTradeId, isFinal);
 
                     try
                     {
@@ -119,27 +119,19 @@ namespace Binance.Client
                     catch (OperationCanceledException) { /* ignore */ }
                     catch (Exception e)
                     {
-                        if (!token.IsCancellationRequested)
-                        {
-                            Logger?.LogWarning(e, $"{nameof(CandlestickClient)}: Unhandled candlestick event handler exception.");
-                        }
+                        Logger?.LogWarning(e, $"{nameof(CandlestickClient)}.{nameof(HandleMessage)}: Unhandled candlestick event handler exception.");
                     }
                 }
                 else
                 {
-                    Logger?.LogWarning($"{nameof(CandlestickClient)}.{nameof(HandleMessageAsync)}: Unexpected event type ({eventType}).");
+                    Logger?.LogWarning($"{nameof(CandlestickClient)}.{nameof(HandleMessage)}: Unexpected event type ({eventType}).");
                 }
             }
             catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
-                if (!token.IsCancellationRequested)
-                {
-                    Logger?.LogError(e, $"{nameof(CandlestickClient)}.{nameof(HandleMessageAsync)}");
-                }
+                Logger?.LogError(e, $"{nameof(CandlestickClient)}.{nameof(HandleMessage)}");
             }
-
-            return Task.CompletedTask;
         }
 
         #endregion Protected Methods

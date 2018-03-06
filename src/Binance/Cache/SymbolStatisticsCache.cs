@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Binance.Api;
 using Binance.Cache.Events;
@@ -14,7 +15,32 @@ namespace Binance.Cache
     /// <summary>
     /// The default <see cref="ISymbolStatisticsCache"/> implementation.
     /// </summary>
-    public class SymbolStatisticsCache : JsonClientCache<ISymbolStatisticsClient, SymbolStatisticsEventArgs, SymbolStatisticsCacheEventArgs>, ISymbolStatisticsCache
+    public class SymbolStatisticsCache : SymbolStatisticsCache<ISymbolStatisticsClient>, ISymbolStatisticsCache
+    {
+        /// <summary>
+        /// Default constructor provides default <see cref="IBinanceApi"/>
+        /// and default <see cref="ISymbolStatisticsClient"/>, but no logger.
+        /// </summary>
+        public SymbolStatisticsCache()
+            : this(new BinanceApi(), new SymbolStatisticsClient())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="api">The Binance api (required).</param>
+        /// <param name="client">The JSON client (required).</param>
+        /// <param name="logger">The logger (optional).</param>
+        public SymbolStatisticsCache(IBinanceApi api, ISymbolStatisticsClient client, ILogger<SymbolStatisticsCache> logger = null)
+            : base(api, client, logger)
+        { }
+    }
+
+    /// <summary>
+    /// The default <see cref="ISymbolStatisticsCache{TClient}"/> implemenation.
+    /// </summary>
+    public abstract class SymbolStatisticsCache<TClient> : JsonClientCache<TClient, SymbolStatisticsEventArgs, SymbolStatisticsCacheEventArgs>, ISymbolStatisticsCache<TClient>
+        where TClient : class, ISymbolStatisticsClient
     {
         #region Public Properties
 
@@ -48,20 +74,12 @@ namespace Binance.Cache
         #region Constructors
 
         /// <summary>
-        /// Default constructor provides default <see cref="IBinanceApi"/>
-        /// and default <see cref="ISymbolStatisticsClient"/>, but no logger.
-        /// </summary>
-        public SymbolStatisticsCache()
-            : this(new BinanceApi(), new SymbolStatisticsClient())
-        { }
-
-        /// <summary>
         /// The DI constructor.
         /// </summary>
         /// <param name="api">The Binance api (required).</param>
         /// <param name="client">The JSON client (required).</param>
         /// <param name="logger">The logger (optional).</param>
-        public SymbolStatisticsCache(IBinanceApi api, ISymbolStatisticsClient client, ILogger<SymbolStatisticsCache> logger = null)
+        public SymbolStatisticsCache(IBinanceApi api, TClient client, ILogger<SymbolStatisticsCache<TClient>> logger = null)
             : base(api, client, logger)
         { }
 
@@ -114,7 +132,7 @@ namespace Binance.Cache
             SubscribeToClient();
         }
 
-        public override IJsonClient Unsubscribe()
+        public override IJsonSubscriber Unsubscribe()
         {
             UnsubscribeFromClient();
             OnUnsubscribe();
@@ -157,16 +175,16 @@ namespace Binance.Cache
             }
         }
 
-        protected override async ValueTask<SymbolStatisticsCacheEventArgs> OnAction(SymbolStatisticsEventArgs @event)
+        protected override async ValueTask<SymbolStatisticsCacheEventArgs> OnActionAsync(SymbolStatisticsEventArgs @event, CancellationToken token = default)
         {
             try
             {
                 // ReSharper disable once InconsistentlySynchronizedField
                 if (_statistics.Count == 0 && !_symbols.Any())
                 {
-                    Logger?.LogInformation($"{nameof(SymbolStatisticsCache)}.{nameof(OnAction)}: Initializing all symbol statistics...");
+                    Logger?.LogInformation($"{nameof(SymbolStatisticsCache)}.{nameof(OnActionAsync)}: Initializing all symbol statistics...");
 
-                    var statistics = await Api.Get24HourStatisticsAsync(@event.Token)
+                    var statistics = await Api.Get24HourStatisticsAsync(token)
                         .ConfigureAwait(false);
 
                     lock (_sync)
@@ -199,7 +217,7 @@ namespace Binance.Cache
             }
             catch (Exception e)
             {
-                Logger?.LogError(e, $"{nameof(SymbolStatisticsCache)}.{nameof(OnAction)}: Failed.");
+                Logger?.LogError(e, $"{nameof(SymbolStatisticsCache)}.{nameof(OnActionAsync)}: Failed.");
                 return null;
             }
         }

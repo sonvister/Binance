@@ -37,19 +37,19 @@ namespace Binance.Tests.Client
             var listenKey2 = "<listen key 2>";
             var user2 = new Mock<IBinanceApiUser>().Object;
 
-            Assert.Empty(_client.ObservedStreams);
+            Assert.Empty(_client.SubscribedStreams);
 
             // Subscribe to listen key.
             _client.Subscribe(listenKey1, user1);
-            Assert.True(_client.ObservedStreams.Count() == 1);
+            Assert.True(_client.SubscribedStreams.Count() == 1);
 
             // Re-Subscribe to same listen key doesn't fail.
             _client.Subscribe(listenKey1, user1);
-            Assert.True(_client.ObservedStreams.Count() == 1);
+            Assert.True(_client.SubscribedStreams.Count() == 1);
 
             // Subscribe to a different listen key.
             _client.Subscribe(listenKey2, user2);
-            Assert.True(_client.ObservedStreams.Count() == 2);
+            Assert.True(_client.SubscribedStreams.Count() == 2);
         }
 
         [Fact]
@@ -58,16 +58,16 @@ namespace Binance.Tests.Client
             var listenKey = "<listen key>";
             var user = new Mock<IBinanceApiUser>().Object;
 
-            Assert.Empty(_client.ObservedStreams);
+            Assert.Empty(_client.SubscribedStreams);
 
             // Unsubscribe non-subscribed listen key doesn't fail.
             _client.Unsubscribe(listenKey);
-            Assert.Empty(_client.ObservedStreams);
+            Assert.Empty(_client.SubscribedStreams);
 
             // Subscribe and unsubscribe listen key.
             _client.Subscribe(listenKey, user).Unsubscribe(listenKey);
 
-            Assert.Empty(_client.ObservedStreams);
+            Assert.Empty(_client.SubscribedStreams);
         }
 
         [Fact]
@@ -84,12 +84,12 @@ namespace Binance.Tests.Client
 
             // Subscribe to multiple listen keys.
             _client.Subscribe(listenKey1, user1).Subscribe(listenKey2, user2);
-            Assert.True(_client.ObservedStreams.Count() == 2);
+            Assert.True(_client.SubscribedStreams.Count() == 2);
 
             // Unsubscribe all.
             _client.Unsubscribe();
 
-            Assert.Empty(_client.ObservedStreams);
+            Assert.Empty(_client.SubscribedStreams);
         }
     }
 }

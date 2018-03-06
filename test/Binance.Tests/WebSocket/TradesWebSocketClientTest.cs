@@ -22,13 +22,13 @@ namespace Binance.Tests.WebSocket
         {
             var client = new TradeWebSocketClient();
 
-            Assert.Empty(client.ObservedStreams);
-            Assert.Empty(client.Stream.ProvidedStreams);
+            Assert.Empty(client.SubscribedStreams);
+            Assert.Empty(client.Publisher.PublishedStreams);
 
             client.Subscribe(Symbol.BTC_USDT);
 
-            Assert.True(client.ObservedStreams.Count() == 1);
-            Assert.True(client.Stream.ProvidedStreams.Count() == 1);
+            Assert.True(client.SubscribedStreams.Count() == 1);
+            Assert.True(client.Publisher.PublishedStreams.Count() == 1);
         }
     }
 }

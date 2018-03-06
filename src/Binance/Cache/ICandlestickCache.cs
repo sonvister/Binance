@@ -6,7 +6,11 @@ using Binance.Market;
 
 namespace Binance.Cache
 {
-    public interface ICandlestickCache : IJsonClientCache<ICandlestickClient, CandlestickCacheEventArgs>
+    public interface ICandlestickCache : ICandlestickCache<ICandlestickClient>
+    { }
+
+    public interface ICandlestickCache<TClient> : IJsonClientCache<TClient, CandlestickCacheEventArgs>
+        where TClient : ICandlestickClient
     {
         /// <summary>
         /// The candlesticks. Can be empty if not yet synchronized or out-of-sync.

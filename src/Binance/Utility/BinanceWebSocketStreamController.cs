@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Utility
 {
-    public class BinanceWebSocketStreamController : WebSocketStreamController
+    public class BinanceWebSocketStreamController : WebSocketStreamController<IBinanceWebSocketStream>, IBinanceWebSocketStreamController
     {
         #region Public Constants
 
@@ -36,7 +36,7 @@ namespace Binance.Utility
         /// <param name="api"></param>
         /// <param name="stream"></param>
         /// <param name="logger"></param>
-        public BinanceWebSocketStreamController(IBinanceApi api, IWebSocketStream stream, ILogger<BinanceWebSocketStreamController> logger = null)
+        public BinanceWebSocketStreamController(IBinanceApi api, IBinanceWebSocketStream stream, ILogger<BinanceWebSocketStreamController> logger = null)
             : base(stream, logger)
         {
             Throw.IfNull(api, nameof(api));

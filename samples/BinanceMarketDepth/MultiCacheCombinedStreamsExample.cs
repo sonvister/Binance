@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Binance;
 using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
-using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
@@ -58,7 +58,7 @@ namespace BinanceMarketDepth
                 var btcCache = services.GetService<IOrderBookCache>();
                 var ethCache = services.GetService<IOrderBookCache>();
 
-                // Create stream.
+                // Create web socket stream.
                 var webSocket = services.GetService<IBinanceWebSocketStream>();
 
                 // Initialize controller.
@@ -87,10 +87,14 @@ namespace BinanceMarketDepth
                             Display(btcOrderBook, ethOrderBook);
                         });
 
-                    // Subscribe cache to stream (with observed streams).
-                    webSocket.Subscribe(btcCache, btcCache.ObservedStreams);
-                    webSocket.Subscribe(ethCache, ethCache.ObservedStreams);
-                    // NOTE: This must be done after cache subscribe.
+                    // Set web socket URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(
+                        btcCache.SubscribedStreams.Concat(ethCache.SubscribedStreams));
+                        // NOTE: This must be done after cache subscribe.
+
+                    // Route stream messages to cache.
+                    webSocket.Message += (s, e) => btcCache.HandleMessage(e.Subject, e.Json);
+                    webSocket.Message += (s, e) => ethCache.HandleMessage(e.Subject, e.Json);
 
                     // Verify we are using a shared/combined stream (not necessary).
                     if (!webSocket.IsCombined())

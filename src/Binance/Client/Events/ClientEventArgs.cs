@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 
 namespace Binance.Client.Events
 {
@@ -15,11 +14,6 @@ namespace Binance.Client.Events
         /// </summary>
         public DateTime Time { get; }
 
-        /// <summary>
-        /// Get the cancellation token.
-        /// </summary>
-        public CancellationToken Token { get; }
-
         #endregion Public Properties
 
         #region Constructors
@@ -28,11 +22,9 @@ namespace Binance.Client.Events
         /// Constructor.
         /// </summary>
         /// <param name="time">The event time.</param>
-        /// <param name="token"></param>
-        protected ClientEventArgs(DateTime time, CancellationToken token)
+        protected ClientEventArgs(DateTime time)
         {
             Time = time;
-            Token = token;
         }
 
         #endregion Constructors

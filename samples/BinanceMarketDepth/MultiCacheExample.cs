@@ -6,7 +6,6 @@ using Binance.Api;
 using Binance.Application;
 using Binance.Cache;
 using Binance.Market;
-using Binance.Stream;
 using Binance.Utility;
 using Binance.WebSocket;
 using Microsoft.Extensions.Configuration;
@@ -63,14 +62,14 @@ namespace BinanceMarketDepth
                 var btcCache = services.GetService<IOrderBookCache>();
                 var ethCache = services.GetService<IOrderBookCache>();
 
-                // Create stream.
-                var stream1 = services.GetService<IBinanceWebSocketStream>();
-                var stream2 = services.GetService<IBinanceWebSocketStream>();
+                // Create web socket streams.
+                var webSocket1 = services.GetService<IBinanceWebSocketStream>();
+                var webSocket2 = services.GetService<IBinanceWebSocketStream>();
                 // NOTE: IBinanceWebSocketStream must be setup as Transient with DI (default).
 
                 // Initialize controllers.
-                using (var controller1 = new RetryTaskController(stream1.StreamAsync))
-                using (var controller2 = new RetryTaskController(stream2.StreamAsync))
+                using (var controller1 = new RetryTaskController(webSocket1.StreamAsync))
+                using (var controller2 = new RetryTaskController(webSocket2.StreamAsync))
                 {
                     controller1.Error += (s, e) => HandleError(e.Exception);
                     controller2.Error += (s, e) => HandleError(e.Exception);
@@ -89,17 +88,21 @@ namespace BinanceMarketDepth
                             Display(btcOrderBook, ethOrderBook);
                         });
 
-                    // Subscribe cache to stream (with observed streams).
-                    stream1.Subscribe(btcCache, btcCache.ObservedStreams);
-                    stream2.Subscribe(ethCache, ethCache.ObservedStreams);
+                    // Set web socket URI using cache subscribed streams.
+                    webSocket1.Uri = BinanceWebSocketStream.CreateUri(btcCache);
+                    webSocket2.Uri = BinanceWebSocketStream.CreateUri(ethCache);
                     // NOTE: This must be done after cache subscribe.
+
+                    // Route stream messages to cache.
+                    webSocket1.Message += (s, e) => btcCache.HandleMessage(e.Subject, e.Json);
+                    webSocket2.Message += (s, e) => ethCache.HandleMessage(e.Subject, e.Json);
 
                     // Begin streaming.
                     controller1.Begin();
                     controller2.Begin();
 
                     // Verify we are NOT using a shared/combined stream (not necessary).
-                    if (stream1.IsCombined() || stream2.IsCombined() || stream1 == stream2)
+                    if (webSocket1.IsCombined() || webSocket2.IsCombined() || webSocket1 == webSocket2)
                         throw new Exception("You ARE using combined streams :(");
 
                     Console.ReadKey(true);

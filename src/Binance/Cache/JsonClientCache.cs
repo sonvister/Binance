@@ -31,7 +31,7 @@ namespace Binance.Cache
 
         #region Public Properties
 
-        public IEnumerable<string> ObservedStreams => _client.ObservedStreams;
+        public IEnumerable<string> SubscribedStreams => _client.SubscribedStreams;
 
         public TClient Client
         {
@@ -75,10 +75,10 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public Task HandleMessageAsync(string stream, string json, CancellationToken token = default)
-            => _client.HandleMessageAsync(stream, json, token);
+        public void HandleMessage(string stream, string json)
+            => _client.HandleMessage(stream, json);
 
-        public abstract IJsonClient Unsubscribe();
+        public abstract IJsonSubscriber Unsubscribe();
 
         #endregion Public Methods
 
@@ -99,7 +99,7 @@ namespace Binance.Cache
         /// </summary>
         /// <param name="event"></param>
         /// <returns></returns>
-        protected abstract ValueTask<TCacheEventArgs> OnAction(TEventArgs @event);
+        protected abstract ValueTask<TCacheEventArgs> OnActionAsync(TEventArgs @event, CancellationToken token = default);
 
         /// <summary>
         /// Handle subscribe.
@@ -166,13 +166,13 @@ namespace Binance.Cache
 
             try
             {
-                eventArgs = await OnAction(@event)
+                eventArgs = await OnActionAsync(@event, token)
                     .ConfigureAwait(false);
 }
             catch (OperationCanceledException) { /* ignore */ }
             catch (Exception e)
             {
-                Logger?.LogWarning(e, $"{GetType().Name}: Unhandled {nameof(OnAction)} exception.  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                Logger?.LogWarning(e, $"{GetType().Name}: Unhandled {nameof(OnActionAsync)} exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }
 
             if (eventArgs != null)
@@ -185,7 +185,7 @@ namespace Binance.Cache
                 catch (OperationCanceledException) { /* ignore */ }
                 catch (Exception e)
                 {
-                    Logger?.LogWarning(e, $"{GetType().Name}: Unhandled update event handler exception.  [thread: {Thread.CurrentThread.ManagedThreadId}{(@event.Token.IsCancellationRequested ? ", canceled" : string.Empty)}]");
+                    Logger?.LogWarning(e, $"{GetType().Name}: Unhandled update event handler exception.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
                 }
             }
         }

@@ -24,7 +24,7 @@ namespace BinancePriceChart
     /// </summary>
     internal class CombinedStreamsExample
     {
-        public static void ExampleMain()
+        public static void AdvancedExampleMain()
         {
             try
             {
@@ -54,10 +54,13 @@ namespace BinancePriceChart
                 catch { /* ignore */ }
 
                 // Initialize client.
-                var client = services.GetService<ICandlestickWebSocketClient>();
+                var client = services.GetService<ICandlestickClient>();
+
+                // Initialize the stream.
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
 
                 // Initialize controller.
-                using (var controller = new RetryTaskController(client.StreamAsync))
+                using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
                     controller.Error += (s, e) => HandleError(e.Exception);
 
@@ -78,6 +81,13 @@ namespace BinancePriceChart
                         }
                     }
 
+                    // Set stream URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(client);
+                    // NOTE: This must be done after client subscribe.
+
+                    // Route stream messages to client.
+                    webSocket.Message += (s, e) => client.HandleMessage(e.Subject, e.Json);
+
                     // Begin streaming.
                     controller.Begin();
 
@@ -88,16 +98,20 @@ namespace BinancePriceChart
                     // Example: Unsubscribe/Subscribe after streaming...
                     /////////////////////////////////////////////////////
 
-                    // NOTE: When stream names are subscribed/unsubscribed, the
-                    //       websocket is aborted and a new connection is made.
-                    //       There's a small delay before streaming restarts to
-                    //       allow for multiple subscribe/unsubscribe changes.
+                    // NOTE: When the URI is changed, the web socket is aborted
+                    //       and a new connection is made. There's a delay
+                    //       before streaming begins to allow for multiple
+                    //       changes.
 
                     // Unsubscribe a symbol.
                     client.Unsubscribe(symbols[0], interval);
 
                     // Subscribe to the real Bitcoin :D
                     client.Subscribe(Symbol.BCH_USDT, interval); // a.k.a. BCC.
+
+                    // Set stream URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(client);
+                    // NOTE: This must be done after client subscribe.
 
                     lock (_sync)
                     {

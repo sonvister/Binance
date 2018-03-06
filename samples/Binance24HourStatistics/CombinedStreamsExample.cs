@@ -50,9 +50,12 @@ namespace Binance24HourStatistics
                     ?? new string[] { Symbol.BTC_USDT };
 
                 // Initialize the client.
-                var client = services.GetService<ISymbolStatisticsWebSocketClient>();
+                var client = services.GetService<ISymbolStatisticsClient>();
 
-                using (var controller = new RetryTaskController(client.StreamAsync))
+                // Initialize the stream.
+                var webSocket = services.GetService<IBinanceWebSocketStream>();
+
+                using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
                     controller.Error += (s, e) => HandleError(e.Exception);
 
@@ -73,6 +76,13 @@ namespace Binance24HourStatistics
                         }
                     }
 
+                    // Set stream URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(client);
+                    // NOTE: This must be done after client subscribe.
+
+                    // Route stream messages to client.
+                    webSocket.Message += (s, e) => client.HandleMessage(e.Subject, e.Json);
+
                     // Begin streaming.
                     controller.Begin();
 
@@ -83,16 +93,20 @@ namespace Binance24HourStatistics
                     // Example: Unsubscribe/Subscribe after streaming...
                     /////////////////////////////////////////////////////
 
-                    // NOTE: When stream names are subscribed/unsubscribed, the
-                    //       websocket is aborted and a new connection is made.
-                    //       There's a small delay before streaming restarts to
-                    //       allow for multiple subscribe/unsubscribe changes.
+                    // NOTE: When the URI is changed, the web socket is aborted
+                    //       and a new connection is made. There's a delay
+                    //       before streaming begins to allow for multiple
+                    //       changes.
 
                     // Unsubscribe a symbol.
                     client.Unsubscribe(symbols[0]);
 
                     // Subscribe to the real Bitcoin :D
                     client.Subscribe(Symbol.BCH_USDT); // a.k.a. BCC.
+
+                    // Set stream URI using cache subscribed streams.
+                    webSocket.Uri = BinanceWebSocketStream.CreateUri(client);
+                    // NOTE: This must be done after client subscribe.
 
                     lock (_sync)
                     {
