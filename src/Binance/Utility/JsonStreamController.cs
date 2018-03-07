@@ -6,15 +6,31 @@ using Microsoft.Extensions.Logging;
 
 namespace Binance.Utility
 {
+    public class JsonStreamController : JsonStreamController<IJsonStream>, IJsonStreamController
+    {
+        #region Public Constants
+
+        public static readonly TimeSpan WatchdogTimerIntervalDefault = TimeSpan.FromHours(1);
+
+        #endregion Public Constants
+
+        #region Constructors
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="logger"></param>
+        public JsonStreamController(IJsonStream stream, ILogger<JsonStreamController> logger = null)
+            : base(stream, logger)
+        { }
+
+        #endregion Constructors
+    }
+
     public class JsonStreamController<TStream> : RetryTaskController, IJsonStreamController<TStream>
         where TStream : IJsonStream
     {
-        #region Private Constants
-
-        private readonly TimeSpan _watchdogTimerIntervalDefault = TimeSpan.FromHours(1);
-
-        #endregion Private Constants
-
         #region Public Properties
 
         public TStream Stream { get; }
@@ -45,7 +61,7 @@ namespace Binance.Utility
                     .ConfigureAwait(false);
             })
             {
-                Interval = _watchdogTimerIntervalDefault
+                Interval = JsonStreamController.WatchdogTimerIntervalDefault
             };
 
             Stream.Message += (s, e) =>
