@@ -19,8 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Asset.template.cs" />
-    <None Include="Symbol.template.cs" />
+    <None Include="Asset.template.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Symbol.template.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

@@ -18,7 +18,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1519857887359;
+        public static readonly long LastUpdateAt = 1520406290103;
 
         // BTC
         public static readonly Symbol ADA_BTC = new Symbol(SymbolStatus.Trading, Asset.ADA, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -132,6 +132,7 @@ namespace Binance
         public static readonly Symbol XZC_BTC = new Symbol(SymbolStatus.Trading, Asset.XZC, Asset.BTC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol YOYO_BTC = new Symbol(SymbolStatus.Trading, Asset.YOYO, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol ZEC_BTC = new Symbol(SymbolStatus.Trading, Asset.ZEC, Asset.BTC, (0.00100000m, 10000000.00000000m, 0.00100000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol ZIL_BTC = new Symbol(SymbolStatus.Trading, Asset.ZIL, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol ZRX_BTC = new Symbol(SymbolStatus.Trading, Asset.ZRX, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
 
         // ETH
@@ -244,6 +245,7 @@ namespace Binance
         public static readonly Symbol XZC_ETH = new Symbol(SymbolStatus.Trading, Asset.XZC, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol YOYO_ETH = new Symbol(SymbolStatus.Trading, Asset.YOYO, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol ZEC_ETH = new Symbol(SymbolStatus.Trading, Asset.ZEC, Asset.ETH, (0.00100000m, 10000000.00000000m, 0.00100000m), (0.00001000m, 100000.00000000m, 0.00001000m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol ZIL_ETH = new Symbol(SymbolStatus.Trading, Asset.ZIL, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol ZRX_ETH = new Symbol(SymbolStatus.Trading, Asset.ZRX, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
 
         // BNB
@@ -292,6 +294,7 @@ namespace Binance
         public static readonly Symbol XLM_BNB = new Symbol(SymbolStatus.Trading, Asset.XLM, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol XZC_BNB = new Symbol(SymbolStatus.Trading, Asset.XZC, Asset.BNB, (0.00100000m, 10000000.00000000m, 0.00100000m), (0.00100000m, 10000000.00000000m, 0.00100000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol YOYO_BNB = new Symbol(SymbolStatus.Trading, Asset.YOYO, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol ZIL_BNB = new Symbol(SymbolStatus.Trading, Asset.ZIL, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
 
         // USDT
         public static readonly Symbol BCC_USDT = new Symbol(SymbolStatus.Trading, Asset.BCC, Asset.USDT, (0.00001000m, 10000000.00000000m, 0.00001000m), (0.01000000m, 10000000.00000000m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -671,6 +674,9 @@ namespace Binance
                     { "YOYOETH", YOYO_ETH },
                     { "ZECBTC", ZEC_BTC },
                     { "ZECETH", ZEC_ETH },
+                    { "ZILBNB", ZIL_BNB },
+                    { "ZILBTC", ZIL_BTC },
+                    { "ZILETH", ZIL_ETH },
                     { "ZRXBTC", ZRX_BTC },
                     { "ZRXETH", ZRX_ETH },
 
