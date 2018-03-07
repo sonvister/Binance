@@ -52,7 +52,7 @@ namespace Binance.Producer
 
         #region Public Methods
 
-        public IJsonPublisher Subscribe(IJsonSubscriber observer, params string[] streamNames)
+        public IJsonPublisher Subscribe(IJsonSubscriber subscriber, params string[] streamNames)
         {
             if (streamNames == null || !streamNames.Any())
             {
@@ -76,11 +76,11 @@ namespace Binance.Producer
                         streamsChanged = true;
                     }
 
-                    if (observer == null || Subscribers[streamName].Contains(observer))
+                    if (subscriber == null || Subscribers[streamName].Contains(subscriber))
                         continue;
 
-                    Logger?.LogDebug($"{GetType().Name}.{nameof(Subscribe)}: Adding observer of stream \"{streamName}\".  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                    Subscribers[streamName].Add(observer);
+                    Logger?.LogDebug($"{GetType().Name}.{nameof(Subscribe)}: Adding subscriber of stream \"{streamName}\".  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    Subscribers[streamName].Add(subscriber);
                 }
 
                 if (streamsChanged)
@@ -90,11 +90,11 @@ namespace Binance.Producer
             return this;
         }
 
-        public IJsonPublisher Unsubscribe(IJsonSubscriber observer, params string[] streamNames)
+        public IJsonPublisher Unsubscribe(IJsonSubscriber subscriber, params string[] streamNames)
         {
             if (streamNames == null || !streamNames.Any())
             {
-                Unsubscribe(observer);
+                Unsubscribe(subscriber);
                 return this;
             }
 
@@ -114,10 +114,10 @@ namespace Binance.Producer
                         throw new InvalidOperationException($"{GetType().Name}.{nameof(Unsubscribe)}: Not subscribed to stream ({streamName}).");
                     }
 
-                    if (observer != null && Subscribers[streamName].Contains(observer))
+                    if (subscriber != null && Subscribers[streamName].Contains(subscriber))
                     {
                         Logger?.LogDebug($"{GetType().Name}.{nameof(Unsubscribe)}: Removing callback for stream \"{streamName}\".  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                        Subscribers[streamName].Remove(observer);
+                        Subscribers[streamName].Remove(subscriber);
                     }
 
                     // Unsubscribe stream if there are no callbacks.

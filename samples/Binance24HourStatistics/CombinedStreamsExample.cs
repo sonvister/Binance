@@ -53,6 +53,7 @@ namespace Binance24HourStatistics
                 // Initialize the stream.
                 var webSocket = services.GetService<IBinanceWebSocketStream>();
 
+                // Initialize controller.
                 using (var controller = new RetryTaskController(webSocket.StreamAsync))
                 {
                     controller.Error += (s, e) => HandleError(e.Exception);
@@ -74,7 +75,7 @@ namespace Binance24HourStatistics
                         }
                     }
 
-                    // Set stream URI using cache subscribed streams.
+                    // Set stream URI using client subscribed streams.
                     webSocket.Uri = BinanceWebSocketStream.CreateUri(client);
                     // NOTE: This must be done after client subscribe.
 
@@ -102,7 +103,7 @@ namespace Binance24HourStatistics
                     // Subscribe to the real Bitcoin :D
                     client.Subscribe(Symbol.BCH_USDT); // a.k.a. BCC.
 
-                    // Set stream URI using cache subscribed streams.
+                    // Set stream URI using client subscribed streams.
                     webSocket.Uri = BinanceWebSocketStream.CreateUri(client);
                     // NOTE: This must be done after client subscribe.
 

@@ -79,7 +79,7 @@ namespace BinanceMarketDepth
                         }
                     }
 
-                    // Set stream URI using cache subscribed streams.
+                    // Set stream URI using client subscribed streams.
                     webSocket.Uri = BinanceWebSocketStream.CreateUri(client);
                     // NOTE: This must be done after client subscribe.
 

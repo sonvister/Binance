@@ -25,7 +25,7 @@ namespace BinancePriceChart
         {
             ExampleMain();
             //AdvancedExampleMain();
-            //CombinedStreamsExample.ExampleMain();
+            //CombinedStreamsExample.AdvancedExampleMain();
         }
 
         /// <summary>

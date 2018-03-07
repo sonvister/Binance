@@ -26,7 +26,7 @@ namespace BinanceTradeHistory
             ExampleMain();
             //ExampleMainWithoutDI();
             //AdvancedExampleMain();
-            //CombinedStreamsExample.ExampleMain();
+            //CombinedStreamsExample.AdvancedExampleMain();
         }
 
         /// <summary>
@@ -124,13 +124,13 @@ namespace BinanceTradeHistory
 
                 // Initialize all the things... a DI framework could instantiate for you...
                 var api = new BinanceApi(BinanceHttpClient.Instance, logger: loggerFactory.CreateLogger<BinanceApi>());
-                var client = new AggregateTradeClient(loggerFactory.CreateLogger<AggregateTradeClient>());
+                var tradeClient = new AggregateTradeClient(loggerFactory.CreateLogger<AggregateTradeClient>());
                 var webSocket = new DefaultWebSocketClient(logger: loggerFactory.CreateLogger<DefaultWebSocketClient>());
                 var stream = new BinanceWebSocketStream(webSocket, loggerFactory.CreateLogger<BinanceWebSocketStream>());
                 var controller = new BinanceWebSocketStreamController(api, stream, loggerFactory.CreateLogger<BinanceWebSocketStreamController>());
                 var publisher = new BinanceWebSocketStreamPublisher(controller, loggerFactory.CreateLogger<BinanceWebSocketStreamPublisher>());
-                var webSocketClient = new AggregateTradeWebSocketClient(client, publisher, loggerFactory.CreateLogger<AggregateTradeWebSocketClient>());
-                var cache = new AggregateTradeWebSocketCache(api, webSocketClient, loggerFactory.CreateLogger<AggregateTradeWebSocketCache>());
+                var client = new AggregateTradeWebSocketClient(tradeClient, publisher, loggerFactory.CreateLogger<AggregateTradeWebSocketClient>());
+                var cache = new AggregateTradeWebSocketCache(api, client, loggerFactory.CreateLogger<AggregateTradeWebSocketCache>());
 
                 // Add error event handler.
                 controller.Error += (s, e) => HandleError(e.Exception);
