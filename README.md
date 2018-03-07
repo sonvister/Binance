@@ -172,8 +172,8 @@ REST/WebSocket details: [Binance Official Documentation](https://github.com/bina
 REST/WebSocket questions: [Binance Official API Telegram](https://t.me/binance_api_english) (*not for questions about this library*)
 
 ## Donate
+**LTC**: MNhGkftcFDE7TsFFvtE6W9VVKhxH74T3eM or 3GV8SnUeJ6NgfMyMq1EkgWF611Mq6c78sU\
 **DCR**: Dsog2jYLS65Y3N2jDQSxsiBYC3SRqq7TGd4\
-**LTC**: MNhGkftcFDE7TsFFvtE6W9VVKhxH74T3eM\
 **XEM**: NC3HR4-V46BTS-LIKEE4-2GZQBB-FHBUXO-CG7EBO-VIMP\
 **DASH**: XmFvpRgwfDRdN9wbrZjHZeH63Rt9CwHqUf\
 **ZEC**: t1Ygz58dkcx2WXuGCjGiPo8w7Q1dcCSscGJ\
