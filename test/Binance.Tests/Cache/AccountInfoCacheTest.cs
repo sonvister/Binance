@@ -14,8 +14,9 @@ namespace Binance.Tests.Cache
             var listenKey = "<valid listen key>";
             var api = new Mock<IBinanceApi>().Object;
             var user = new Mock<IBinanceApiUser>().Object;
+            var client = new Mock<IUserDataClient>().Object;
 
-            var cache = new AccountInfoCache(api, new Mock<IUserDataClient>().Object);
+            var cache = new AccountInfoCache(api, client);
 
             Assert.Throws<ArgumentNullException>("listenKey", () => cache.Subscribe(null, user));
             Assert.Throws<ArgumentNullException>("listenKey", () => cache.Subscribe(string.Empty, user));
@@ -24,6 +25,19 @@ namespace Binance.Tests.Cache
             cache.Subscribe(listenKey, user);
 
             Assert.Throws<InvalidOperationException>(() => cache.Subscribe(listenKey, user));
+        }
+
+        [Fact]
+        public void Unsubscribe()
+        {
+            var api = new Mock<IBinanceApi>().Object;
+            var client = new Mock<IUserDataClient>().Object;
+
+            var cache = new AccountInfoCache(api, client);
+
+            // Can call unsubscribe before subscribe or multiple times without fail.
+            cache.Unsubscribe();
+            cache.Unsubscribe();
         }
     }
 }
