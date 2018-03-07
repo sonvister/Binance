@@ -304,6 +304,7 @@ namespace Binance
                 request.AddParameter("startTime", startTime.ToTimestamp());
             }
 
+            // ReSharper disable once InvertIf
             if (endTime != default)
             {
                 if (endTime.Kind != DateTimeKind.Utc)

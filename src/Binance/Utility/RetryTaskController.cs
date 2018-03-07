@@ -93,12 +93,12 @@ namespace Binance.Utility
                 }
                 catch { /* ignore */ }
 
-                if (!Cts.IsCancellationRequested)
-                {
-                    Logger?.LogDebug($"{nameof(RetryTaskController)}.{nameof(ActionAsync)}: Task resuming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                if (Cts.IsCancellationRequested)
+                    continue;
 
-                    OnResuming();
-                }
+                Logger?.LogDebug($"{nameof(RetryTaskController)}.{nameof(ActionAsync)}: Task resuming...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                OnResuming();
             }
 
             Logger?.LogDebug($"{nameof(RetryTaskController)}.{nameof(ActionAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");

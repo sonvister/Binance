@@ -1,6 +1,7 @@
 ﻿using System;
 using Binance.Client;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.WebSocket
 {
     /// <summary>

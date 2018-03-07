@@ -14,6 +14,7 @@ namespace Binance.Tests.WebSocket
     {
         private readonly Uri _uri;
         private readonly string _subject;
+        // ReSharper disable once InconsistentNaming
         private const string _message = "{}";
         private readonly DefaultWebSocketClient _webSocket;
 
@@ -90,7 +91,7 @@ namespace Binance.Tests.WebSocket
 
                 Assert.False(_webSocket.IsOpen);
 
-                await _webSocket.WaitUntilOpenAsync();
+                await _webSocket.WaitUntilOpenAsync(cts.Token);
 
                 Assert.True(_webSocket.IsOpen);
 
@@ -118,7 +119,7 @@ namespace Binance.Tests.WebSocket
 
                 Assert.False(isOpenEventReceived);
 
-                await _webSocket.WaitUntilOpenAsync();
+                await _webSocket.WaitUntilOpenAsync(cts.Token);
 
                 Assert.True(isOpenEventReceived);
 
@@ -144,7 +145,7 @@ namespace Binance.Tests.WebSocket
 
                 Assert.False(isCloseEventReceived);
 
-                await _webSocket.WaitUntilOpenAsync();
+                await _webSocket.WaitUntilOpenAsync(cts.Token);
 
                 Assert.False(isCloseEventReceived);
 
@@ -186,12 +187,12 @@ namespace Binance.Tests.WebSocket
                 Assert.False(_webSocket.IsOpen);
 
                 // Wait when web socket is not open.
-                await _webSocket.WaitUntilOpenAsync();
+                await _webSocket.WaitUntilOpenAsync(cts.Token);
 
                 Assert.True(_webSocket.IsOpen);
 
                 // Wait when web socket is open.
-                await _webSocket.WaitUntilOpenAsync();
+                await _webSocket.WaitUntilOpenAsync(cts.Token);
 
                 Assert.False(cts.IsCancellationRequested);
 

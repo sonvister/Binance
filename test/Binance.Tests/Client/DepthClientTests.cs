@@ -7,7 +7,7 @@ namespace Binance.Tests.Client
 {
     public class DepthClientTests
     {
-        private IDepthClient _client;
+        private readonly IDepthClient _client;
 
         public DepthClientTests()
         {

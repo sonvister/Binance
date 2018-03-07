@@ -101,6 +101,8 @@ namespace BinanceTradeHistory
         /// <summary>
         /// Example using manager without DI framework (not recommended).
         /// </summary>
+        // ReSharper disable once InconsistentNaming
+        // ReSharper disable once UnusedMember.Local
         private static void ExampleMainWithoutDI()
         {
             try

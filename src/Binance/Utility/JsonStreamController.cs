@@ -9,11 +9,11 @@ namespace Binance.Utility
     public class JsonStreamController<TStream> : RetryTaskController, IJsonStreamController<TStream>
         where TStream : IJsonStream
     {
-        #region Public Constants
+        #region Private Constants
 
-        public static readonly TimeSpan WatchdogTimerIntervalDefault = TimeSpan.FromHours(1);
+        private readonly TimeSpan _watchdogTimerIntervalDefault = TimeSpan.FromHours(1);
 
-        #endregion Public Constants
+        #endregion Private Constants
 
         #region Public Properties
 
@@ -45,7 +45,7 @@ namespace Binance.Utility
                     .ConfigureAwait(false);
             })
             {
-                Interval = WatchdogTimerIntervalDefault
+                Interval = _watchdogTimerIntervalDefault
             };
 
             Stream.Message += (s, e) =>

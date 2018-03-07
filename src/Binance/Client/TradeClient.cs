@@ -57,7 +57,7 @@ namespace Binance.Client
             return this;
         }
 
-        public virtual new ITradeClient Unsubscribe() => (ITradeClient)base.Unsubscribe();
+        public new virtual ITradeClient Unsubscribe() => (ITradeClient)base.Unsubscribe();
 
         #endregion Public Methods
 

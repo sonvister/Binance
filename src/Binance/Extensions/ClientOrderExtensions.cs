@@ -32,10 +32,7 @@ namespace Binance
 
             Symbol symbol = clientOrder.Symbol; // use implicit conversion.
 
-            if (symbol == null)
-                return false;
-
-            return symbol.IsValid(clientOrder);
+            return symbol != null && symbol.IsValid(clientOrder);
         }
 
         /// <summary>

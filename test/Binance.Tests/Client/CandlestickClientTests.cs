@@ -7,7 +7,7 @@ namespace Binance.Tests.Client
 {
     public class CandlestickClientTests
     {
-        private ICandlestickClient _client;
+        private readonly ICandlestickClient _client;
 
         public CandlestickClientTests()
         {

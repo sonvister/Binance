@@ -4,8 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Binance.Api;
-using Binance.Market;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

@@ -11,6 +11,7 @@ namespace Binance.Tests.WebSocket
     {
         private readonly Uri _uri;
         private readonly string _subject;
+        // ReSharper disable once InconsistentNaming
         private const string _message = "{}";
         private readonly WebSocketStream _stream;
 
@@ -113,12 +114,12 @@ namespace Binance.Tests.WebSocket
                 Assert.False(_stream.WebSocket.IsOpen);
 
                 // Wait when web socket is not open.
-                await _stream.WaitUntilWebSocketOpenAsync();
+                await _stream.WaitUntilWebSocketOpenAsync(cts.Token);
 
                 Assert.True(_stream.WebSocket.IsOpen);
 
                 // Wait when web socket is open.
-                await _stream.WaitUntilWebSocketOpenAsync();
+                await _stream.WaitUntilWebSocketOpenAsync(cts.Token);
 
                 Assert.False(cts.IsCancellationRequested);
 

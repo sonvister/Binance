@@ -3,6 +3,7 @@ using Binance.Client;
 using Binance.Producer;
 using Microsoft.Extensions.Logging;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.WebSocket
 {
     /// <summary>
@@ -19,7 +20,7 @@ namespace Binance.WebSocket
         /// Constructor.
         /// </summary>
         /// <param name="client">The JSON client (required).</param>
-        /// <param name="stream">The JSON stream publisher (required).</param>
+        /// <param name="publisher">The JSON stream publisher (required).</param>
         /// <param name="logger">The logger (optional).</param>
         protected AutoBinanceWebSocketClient(TClient client, IAutoJsonStreamPublisher<TStream> publisher, ILogger<AutoBinanceWebSocketClient<TStream, TClient, TEventArgs>> logger = null)
             : base(client, publisher, logger)
@@ -29,7 +30,7 @@ namespace Binance.WebSocket
 
         #region Public Methods
 
-        public virtual new TClient Unsubscribe() => (TClient)base.Unsubscribe();
+        public new virtual TClient Unsubscribe() => (TClient)base.Unsubscribe();
 
         #endregion Public Methods
     }

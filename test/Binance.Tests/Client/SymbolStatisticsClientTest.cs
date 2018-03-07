@@ -6,7 +6,7 @@ namespace Binance.Tests.Client
 {
     public class SymbolStatisticsClientTests
     {
-        private ISymbolStatisticsClient _client;
+        private readonly ISymbolStatisticsClient _client;
 
         public SymbolStatisticsClientTests()
         {

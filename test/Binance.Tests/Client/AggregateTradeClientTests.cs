@@ -7,7 +7,7 @@ namespace Binance.Tests.Client
 {
     public class AggregateTradeClientTests
     {
-        private IAggregateTradeClient _client;
+        private readonly IAggregateTradeClient _client;
 
         public AggregateTradeClientTests()
         {

@@ -41,7 +41,7 @@ namespace Binance.Tests.Utility
             // ReSharper disable once UnusedVariable
             var watchdog = new WatchdogTimer(() => stopwatch.Stop())
             {
-                Interval = interval,
+                Interval = interval
             };
 
             watchdog.Kick(); // kick start.

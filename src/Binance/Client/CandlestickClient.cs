@@ -57,7 +57,7 @@ namespace Binance.Client
             return this;
         }
 
-        public virtual new ICandlestickClient Unsubscribe() => (ICandlestickClient)base.Unsubscribe();
+        public new virtual ICandlestickClient Unsubscribe() => (ICandlestickClient)base.Unsubscribe();
 
         #endregion Public Methods
 

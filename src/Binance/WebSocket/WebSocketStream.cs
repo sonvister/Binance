@@ -17,13 +17,13 @@ namespace Binance.WebSocket
             get => _uri;
             set
             {
-                if (!Equals(value, _uri))
-                {
-                    if (IsStreaming && !IsStreamingPaused)
-                        throw new InvalidOperationException($"Cancel streaming before setting a new {nameof(Uri)} value.");
+                if (Equals(value, _uri))
+                    return;
 
-                    _uri = value;
-                }
+                if (IsStreaming && !IsStreamingPaused)
+                    throw new InvalidOperationException($"Cancel streaming before setting a new {nameof(Uri)} value.");
+
+                _uri = value;
             }
         }
 

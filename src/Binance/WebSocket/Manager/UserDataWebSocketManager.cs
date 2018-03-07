@@ -45,6 +45,7 @@ namespace Binance.WebSocket
 
         private readonly IUserDataWebSocketStreamControl _streamControl;
 
+        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private readonly ILogger<UserDataWebSocketManager> _logger;
 
         #endregion Private Fields

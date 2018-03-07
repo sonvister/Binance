@@ -20,6 +20,7 @@ namespace BinanceConsoleApp
     /// </summary>
     internal class AccountBalancesExample
     {
+        // ReSharper disable once InconsistentNaming
         private static readonly string _asset = Asset.BTC;
 
         public static async Task ExampleMain(string[] args)

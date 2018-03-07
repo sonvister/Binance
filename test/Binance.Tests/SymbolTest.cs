@@ -17,7 +17,7 @@ namespace Binance.Tests
             var priceRange = new InclusiveRange(0.01m, 100.0m, 0.01m);
             const decimal minNotionalValue = 0.001m;
             const bool isIcebergAllowed = true;
-            var orderTypes = new OrderType[] { OrderType.Limit, OrderType.Market };
+            var orderTypes = new [] { OrderType.Limit, OrderType.Market };
 
             Assert.Throws<ArgumentNullException>("baseAsset", () => new Symbol(status, null, quoteAsset, quantityRange, priceRange, minNotionalValue, isIcebergAllowed, orderTypes));
             Assert.Throws<ArgumentNullException>("quoteAsset", () => new Symbol(status, baseAsset, null, quantityRange, priceRange, minNotionalValue, isIcebergAllowed, orderTypes));
@@ -50,7 +50,7 @@ namespace Binance.Tests
             var priceRange = new InclusiveRange(0.01m, 100.0m, 0.01m);
             const decimal minNotionalValue = 0.001m;
             const bool isIcebergAllowed = true;
-            var orderTypes = new OrderType[] { OrderType.Limit, OrderType.Market };
+            var orderTypes = new [] { OrderType.Limit, OrderType.Market };
 
             var symbol = new Symbol(status, baseAsset, quoteAsset, quantityRange, priceRange, minNotionalValue, isIcebergAllowed, orderTypes);
 
@@ -67,13 +67,13 @@ namespace Binance.Tests
         public void IsValid()
         {
             const SymbolStatus status = SymbolStatus.Trading;
-            var baseAsset = Asset.BTC;
+            //var baseAsset = Asset.BTC;
             var quoteAsset = Asset.USDT;
             var quantityRange = new InclusiveRange(0.01m, 10.0m, 0.01m);
             var priceRange = new InclusiveRange(0.01m, 100.0m, 0.01m);
             const decimal minNotionalValue = 0.001m;
             const bool isIcebergAllowed = true;
-            var orderTypes = new OrderType[] { OrderType.Limit, OrderType.Market };
+            var orderTypes = new [] { OrderType.Limit, OrderType.Market };
 
             var validSymbol = Symbol.BTC_USDT;
             var invalidSymbol = new Symbol(status, new Asset("...", 0), quoteAsset, quantityRange, priceRange, minNotionalValue, isIcebergAllowed, orderTypes);

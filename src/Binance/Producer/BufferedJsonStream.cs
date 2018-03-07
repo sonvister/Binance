@@ -79,6 +79,7 @@ namespace Binance.Producer
 
                         try
                         {
+                            // ReSharper disable once InconsistentlySynchronizedField
                             await StreamActionAsync(_cts.Token)
                                 .ConfigureAwait(false);
                         }

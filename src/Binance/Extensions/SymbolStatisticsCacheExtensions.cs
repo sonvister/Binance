@@ -1,6 +1,6 @@
-﻿// ReSharper disable once CheckNamespace
-using Binance.Client;
+﻿using Binance.Client;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.Cache
 {
     public static class SymbolStatisticsCacheExtensions

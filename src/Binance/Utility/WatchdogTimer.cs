@@ -21,7 +21,7 @@ namespace Binance.Utility
 
         private Timer _timer;
 
-        private Stopwatch _stopwatch;
+        private readonly Stopwatch _stopwatch;
 
         private readonly Action _onTimeout;
 

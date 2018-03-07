@@ -95,6 +95,7 @@ namespace Binance.Cache
         /// Abstract event action handler.
         /// </summary>
         /// <param name="event"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
         protected abstract ValueTask<TCacheEventArgs> OnActionAsync(TEventArgs @event, CancellationToken token = default);
 

@@ -75,7 +75,7 @@ namespace Binance.Cache
         /// <param name="api">The Binance api (required).</param>
         /// <param name="client">The JSON client (required).</param>
         /// <param name="logger">The logger (optional).</param>
-        public SymbolStatisticsCache(IBinanceApi api, TClient client, ILogger<SymbolStatisticsCache<TClient>> logger = null)
+        protected SymbolStatisticsCache(IBinanceApi api, TClient client, ILogger<SymbolStatisticsCache<TClient>> logger = null)
             : base(api, client, logger)
         { }
 

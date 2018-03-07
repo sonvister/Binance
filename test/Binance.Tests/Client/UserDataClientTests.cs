@@ -8,7 +8,7 @@ namespace Binance.Tests.Client
 {
     public class UserDataClientTests
     {
-        private IUserDataClient _client;
+        private readonly IUserDataClient _client;
 
         public UserDataClientTests()
         {
@@ -20,10 +20,10 @@ namespace Binance.Tests.Client
         {
             var user = new Mock<IBinanceApiUser>().Object;
 
-            Assert.Throws<ArgumentNullException>("listenKey", () => _client.Subscribe((string)null, user));
+            Assert.Throws<ArgumentNullException>("listenKey", () => _client.Subscribe(null, user));
             Assert.Throws<ArgumentNullException>("listenKey", () => _client.Subscribe(string.Empty, user));
 
-            Assert.Throws<ArgumentNullException>("listenKey", () => _client.Unsubscribe((string)null));
+            Assert.Throws<ArgumentNullException>("listenKey", () => _client.Unsubscribe(null));
             Assert.Throws<ArgumentNullException>("listenKey", () => _client.Unsubscribe(string.Empty));
         }
 

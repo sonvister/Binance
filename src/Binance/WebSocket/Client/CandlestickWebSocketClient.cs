@@ -42,8 +42,8 @@ namespace Binance.WebSocket
         /// <param name="client">The JSON client (required).</param>
         /// <param name="publisher">The web socket stream publisher (required).</param>
         /// <param name="logger">The logger (optional).</param>
-        public CandlestickWebSocketClient(ICandlestickClient client, IBinanceWebSocketStreamPublisher stream, ILogger<CandlestickWebSocketClient> logger = null)
-            : base(client, stream, logger)
+        public CandlestickWebSocketClient(ICandlestickClient client, IBinanceWebSocketStreamPublisher publisher, ILogger<CandlestickWebSocketClient> logger = null)
+            : base(client, publisher, logger)
         { }
 
         #endregion Construtors

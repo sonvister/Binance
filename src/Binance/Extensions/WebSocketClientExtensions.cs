@@ -19,6 +19,7 @@ namespace Binance.WebSocket
 
             var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
+            // ReSharper disable once ConvertToLocalFunction
             EventHandler<EventArgs> handler = (s, e) =>
             {
                 tcs.SetResult(true);

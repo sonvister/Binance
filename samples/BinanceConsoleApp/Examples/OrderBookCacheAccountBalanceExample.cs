@@ -56,6 +56,7 @@ namespace BinanceConsoleApp
 
                 Console.Clear(); // clear the display.
 
+                // ReSharper disable once InconsistentlySynchronizedField
                 _limit = 5;
 
                 var symbol = Symbol.BTC_USDT;
@@ -108,7 +109,7 @@ namespace BinanceConsoleApp
                         if (webSocket.IsCombined() || webSocket == manager.Client.Publisher.Stream)
                             throw new Exception("You ARE using combined streams :(");
 
-                        _message = "...press any key to continue.";
+                        lock (_sync) _message = "...press any key to continue.";
                         Console.ReadKey(true); // wait for user input.
                     }
                 }
@@ -124,6 +125,7 @@ namespace BinanceConsoleApp
 
         private static string _message;
 
+        // ReSharper disable once InconsistentNaming
         private static readonly object _sync = new object();
 
         private static Task _displayTask = Task.CompletedTask;

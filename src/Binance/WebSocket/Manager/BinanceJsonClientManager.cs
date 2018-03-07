@@ -3,6 +3,7 @@ using Binance.Client;
 using Binance.Producer;
 using Microsoft.Extensions.Logging;
 
+// ReSharper disable once CheckNamespace
 namespace Binance.WebSocket
 {
     /// <summary>
@@ -33,6 +34,7 @@ namespace Binance.WebSocket
 
         #region Private Properties
 
+        // ReSharper disable once NotAccessedField.Local
         private readonly ILogger<BinanceJsonClientManager<TStream>> _logger;
 
         #endregion Private Properties

@@ -72,7 +72,7 @@ namespace Binance.Cache
         /// <param name="api">The Binance api (required).</param>
         /// <param name="client">The JSON client (required).</param>
         /// <param name="logger">The logger (optional).</param>
-        public TradeCache(IBinanceApi api, TClient client, ILogger<TradeCache<TClient>> logger = null)
+        protected TradeCache(IBinanceApi api, TClient client, ILogger<TradeCache<TClient>> logger = null)
             : base(api, client, logger)
         {
             _trades = new Queue<Trade>();

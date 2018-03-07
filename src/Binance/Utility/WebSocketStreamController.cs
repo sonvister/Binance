@@ -18,7 +18,7 @@ namespace Binance.Utility
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="logger"></param>
-        public WebSocketStreamController(TStream stream, ILogger<WebSocketStreamController<TStream>> logger = null)
+        protected WebSocketStreamController(TStream stream, ILogger<WebSocketStreamController<TStream>> logger = null)
             : base(stream, logger)
         { }
     }

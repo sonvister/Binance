@@ -159,6 +159,7 @@ namespace Binance24HourStatistics
             }
         }
 
+        // ReSharper disable once UnusedMember.Local
         private static async Task<SymbolStatistics[]> Get24HourStatisticsAsync(IBinanceApi api, params string[] symbols)
         {
             var statistics = new List<SymbolStatistics>();

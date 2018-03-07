@@ -10,7 +10,9 @@ namespace Binance.Tests.WebSocket
     public class BinanceWebSocketStreamTest
     {
         private readonly Uri _uri;
+        // ReSharper disable once InconsistentNaming
         private const string _message = "{}";
+        // ReSharper disable once InconsistentNaming
         private const string _streamName = "test";
         private readonly BinanceWebSocketStream _stream;
 
@@ -67,8 +69,8 @@ namespace Binance.Tests.WebSocket
             Assert.Equal($"{BinanceWebSocketStream.BaseUri}/ws/{_streamName}", uri.AbsoluteUri);
 
             // Duplicates are ignored.
-            var _uri = BinanceWebSocketStream.CreateUri(_streamName, _streamName);
-            Assert.Equal(uri, _uri);
+            var uri2 = BinanceWebSocketStream.CreateUri(_streamName, _streamName);
+            Assert.Equal(uri, uri2);
 
             const string streamName = "combined";
             uri = BinanceWebSocketStream.CreateUri(_streamName, streamName);
@@ -147,12 +149,12 @@ namespace Binance.Tests.WebSocket
                 Assert.False(_stream.WebSocket.IsOpen);
 
                 // Wait when web socket is not open.
-                await _stream.WaitUntilWebSocketOpenAsync();
+                await _stream.WaitUntilWebSocketOpenAsync(cts.Token);
 
                 Assert.True(_stream.WebSocket.IsOpen);
 
                 // Wait when web socket is open.
-                await _stream.WaitUntilWebSocketOpenAsync();
+                await _stream.WaitUntilWebSocketOpenAsync(cts.Token);
 
                 Assert.False(cts.IsCancellationRequested);
 
@@ -165,24 +167,25 @@ namespace Binance.Tests.WebSocket
         [Fact]
         public async Task HandleCombinedStreamData()
         {
-            string message = $"{{\"stream\":\"{_streamName}\",\"data\":{_message}}}";
+            var message = $"{{\"stream\":\"{_streamName}\",\"data\":{_message}}}";
 
-            var stream = new BinanceWebSocketStream(DefaultWebSocketClientTest.CreateWebSocketClient(message));
-
-            _stream.Uri = _uri; // NOTE: Processing of combined stream data is not dependant upon URI.
+            var stream = new BinanceWebSocketStream(DefaultWebSocketClientTest.CreateWebSocketClient(message))
+            {
+                Uri = _uri // NOTE: Processing of combined stream data is not dependant upon URI.
+            };
 
             var isMessageEventReceived = false;
 
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)))
             {
-                _stream.Message += (s, e) =>
+                stream.Message += (s, e) =>
                 {
                     isMessageEventReceived = e.Subject == _streamName && e.Json == _message;
                 };
 
                 Assert.False(isMessageEventReceived);
 
-                await _stream.StreamAsync(cts.Token);
+                await stream.StreamAsync(cts.Token);
 
                 Assert.True(isMessageEventReceived);
             }

@@ -6,7 +6,7 @@ namespace Binance.WebSocket
     public static class BinanceWebSocketClientManagerExtensions
     {
         /// <summary>
-        /// Get all <see cref="IControllerManager"/> managers.
+        /// Get all <see cref="IWebSocketPublisherClient"/> clients.
         /// </summary>
         /// <param name="manager"></param>
         /// <returns></returns>

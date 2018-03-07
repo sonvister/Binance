@@ -19,7 +19,7 @@ namespace Binance.WebSocket
         /// <summary>
         /// Get the base URI.
         /// </summary>
-        public readonly static string BaseUri = "wss://stream.binance.com:9443";
+        public static readonly string BaseUri = "wss://stream.binance.com:9443";
 
         #endregion Public Constants
 
@@ -54,16 +54,7 @@ namespace Binance.WebSocket
             }
         }
 
-        public bool IsCombined
-        {
-            get
-            {
-                if (base.Uri == null)
-                    return false;
-
-                return base.Uri.AbsoluteUri.Contains("/stream?streams=");
-            }
-        }
+        public bool IsCombined => base.Uri != null && base.Uri.AbsoluteUri.Contains("/stream?streams=");
 
         #endregion Public Properties
 
@@ -107,9 +98,9 @@ namespace Binance.WebSocket
             if (streamNames == null || !streamNames.Any())
                 return null;
 
-            var distinctNames = streamNames.Distinct();
+            var distinctNames = streamNames.Distinct().ToArray();
 
-            return distinctNames.Count() == 1
+            return distinctNames.Length == 1
                     ? new Uri($"{BaseUri}/ws/{distinctNames.Single()}")
                     : new Uri($"{BaseUri}/stream?streams={string.Join("/", distinctNames)}");
         }

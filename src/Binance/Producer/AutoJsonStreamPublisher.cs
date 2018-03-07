@@ -59,34 +59,34 @@ namespace Binance.Producer
         {
             lock (_sync)
             {
-                if (_task.IsCompleted)
+                if (!_task.IsCompleted)
+                    return;
+
+                Logger?.LogDebug($"{GetType().Name}.{nameof(HandleAutomaticStreaming)}: Delayed automatic stream control...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                _task = Task.Delay(250).ContinueWith(async _ =>
                 {
-                    Logger?.LogDebug($"{GetType().Name}.{nameof(HandleAutomaticStreaming)}: Delayed automatic stream control...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                    _task = Task.Delay(250).ContinueWith(async _ =>
+                    try
                     {
-                        try
+                        if (!Stream.IsStreaming && PublishedStreams.Any())
                         {
-                            if (!Stream.IsStreaming && PublishedStreams.Any())
-                            {
-                                Logger?.LogDebug($"{GetType().Name}.{nameof(HandleAutomaticStreaming)}: Begin...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                            Logger?.LogDebug($"{GetType().Name}.{nameof(HandleAutomaticStreaming)}: Begin...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
 
-                                Controller.Begin();
-                            }
-                            else if (Stream.IsStreaming && !PublishedStreams.Any())
-                            {
-                                Logger?.LogDebug($"{GetType().Name}.{nameof(HandleAutomaticStreaming)}: Cancel...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-
-                                await Controller.CancelAsync()
-                                    .ConfigureAwait(false);
-                            }
+                            Controller.Begin();
                         }
-                        catch (Exception e)
+                        else if (Stream.IsStreaming && !PublishedStreams.Any())
                         {
-                            Logger?.LogError(e, $"{GetType().Name}: Automatic stream control failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                            Logger?.LogDebug($"{GetType().Name}.{nameof(HandleAutomaticStreaming)}: Cancel...  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+
+                            await Controller.CancelAsync()
+                                .ConfigureAwait(false);
                         }
-                    });
-                }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger?.LogError(e, $"{GetType().Name}: Automatic stream control failed.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
+                    }
+                });
             }
         }
 

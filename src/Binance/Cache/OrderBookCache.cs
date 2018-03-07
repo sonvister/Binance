@@ -130,6 +130,7 @@ namespace Binance.Cache
         /// 
         /// </summary>
         /// <param name="event"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
         protected override async ValueTask<OrderBookCacheEventArgs> OnActionAsync(DepthUpdateEventArgs @event, CancellationToken token = default)
         {

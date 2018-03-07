@@ -115,6 +115,7 @@ namespace BinanceMarketDepth
             }
         }
 
+        // ReSharper disable once InconsistentNaming
         private static readonly object _displaySync = new object();
 
         private static void Display(params OrderBook[] orderBooks)

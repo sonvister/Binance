@@ -3,7 +3,7 @@
 namespace Binance.Client
 {
     /// <summary>
-    /// An subscriber of an <see cref="IJsonPublisher"/>.
+    /// An subscriber of a JSON publisher.
     /// </summary>
     public interface IJsonSubscriber : IJsonConsumer
     {

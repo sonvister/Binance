@@ -8,8 +8,8 @@ namespace Binance.Tests
         [Fact]
         public void Throws()
         {
-            Assert.Throws<ArgumentNullException>("json", () => new JsonMessageEventArgs(null, null));
-            Assert.Throws<ArgumentNullException>("json", () => new JsonMessageEventArgs(string.Empty, null));
+            Assert.Throws<ArgumentNullException>("json", () => new JsonMessageEventArgs(null));
+            Assert.Throws<ArgumentNullException>("json", () => new JsonMessageEventArgs(string.Empty));
         }
 
         [Fact]

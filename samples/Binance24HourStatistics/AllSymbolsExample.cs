@@ -52,7 +52,7 @@ namespace Binance24HourStatistics
                     // Subscribe cache to symbols (automatically begin streaming).
                     cache.Subscribe(Display);
 
-                    _message = "...press any key to exit.";
+                    lock (_sync) _message = "...press any key to exit.";
                     Console.ReadKey(true); // wait for user input.
                 }
                 finally
@@ -87,7 +87,7 @@ namespace Binance24HourStatistics
                     _displayTask = Task.Delay(250)
                         .ContinueWith(_ =>
                         {
-                            SymbolStatistics[] latestStatistics = args.Statistics;
+                            var latestStatistics = args.Statistics;
 
                             Console.SetCursorPosition(0, 0);
 
@@ -103,14 +103,6 @@ namespace Binance24HourStatistics
                             Console.WriteLine(_message.PadRight(119));
                         });
                 }
-            }
-        }
-
-        private static void HandleError(Exception e)
-        {
-            lock (_sync)
-            {
-                Console.WriteLine(e.Message);
             }
         }
     }

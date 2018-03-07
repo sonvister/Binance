@@ -84,7 +84,7 @@ namespace Binance.Client
             return this;
         }
 
-        public virtual new ISymbolStatisticsClient Unsubscribe() => (ISymbolStatisticsClient)base.Unsubscribe();
+        public new virtual ISymbolStatisticsClient Unsubscribe() => (ISymbolStatisticsClient)base.Unsubscribe();
 
         #endregion Public Methods
 

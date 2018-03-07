@@ -5,6 +5,7 @@ using Binance;
 using Binance.Cache;
 using Binance.WebSocket;
 
+// ReSharper disable once CheckNamespace
 namespace BinanceConsoleApp
 {
     public class ReadMeExample

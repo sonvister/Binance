@@ -54,7 +54,7 @@ namespace Binance
                         // Calculate timestamp offset to account for time differences.
                         sum += JObject.Parse(json)["serverTime"].Value<long>() - systemTime;
 
-                        await Task.Delay(100)
+                        await Task.Delay(100, token)
                             .ConfigureAwait(false);
                     } while (--count > 0);
 

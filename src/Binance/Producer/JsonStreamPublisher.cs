@@ -12,7 +12,7 @@ namespace Binance.Producer
     {
         #region Public Properties
 
-        public virtual TStream Stream { get; }
+        public TStream Stream { get; }
 
         public IEnumerable<string> PublishedStreams
         {
@@ -156,6 +156,7 @@ namespace Binance.Producer
                 }
 
                 // Ignore message events if not subscribed.
+                // ReSharper disable once InconsistentlySynchronizedField
                 if (!Subscribers.TryGetValue(args.Subject, out var subscribers))
                     return; // ignore.
 
@@ -179,15 +180,15 @@ namespace Binance.Producer
         /// <param name="json"></param>
         protected virtual void NotifySubscribers(IEnumerable<IJsonSubscriber> subscribers, string streamName, string json)
         {
-            if (subscribers != null)
+            if (subscribers == null)
+                return;
+
+            foreach (var subscriber in subscribers)
             {
-                foreach (var subscriber in subscribers)
+                try { subscriber.HandleMessage(streamName, json); }
+                catch (Exception e)
                 {
-                    try { subscriber.HandleMessage(streamName, json); }
-                    catch (Exception e)
-                    {
-                        Logger?.LogWarning(e, $"{GetType().Name}.{nameof(NotifySubscribers)}: Unhandled {nameof(HandleMessage)} exception.");
-                    }
+                    Logger?.LogWarning(e, $"{GetType().Name}.{nameof(NotifySubscribers)}: Unhandled {nameof(HandleMessage)} exception.");
                 }
             }
         }

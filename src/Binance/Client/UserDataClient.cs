@@ -134,7 +134,7 @@ namespace Binance.Client
             return this;
         }
 
-        public virtual new IUserDataClient Unsubscribe()
+        public new virtual IUserDataClient Unsubscribe()
         {
             lock (_sync)
             {

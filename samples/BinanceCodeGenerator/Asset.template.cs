@@ -133,6 +133,7 @@ namespace Binance
 
         public override bool Equals(object obj)
         {
+            // ReSharper disable once ConvertIfStatementToSwitchStatement
             if (obj == null)
                 return false;
 

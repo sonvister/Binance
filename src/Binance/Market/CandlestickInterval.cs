@@ -1,4 +1,5 @@
 ﻿// ReSharper disable InconsistentNaming
+// ReSharper disable once CheckNamespace
 namespace Binance
 {
     /// <summary>
