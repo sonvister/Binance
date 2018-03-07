@@ -1,7 +1,6 @@
 ﻿using System;
 using Binance.Api;
 using Binance.Cache;
-using Binance.Manager;
 using Binance.Utility;
 using Microsoft.Extensions.Logging;
 

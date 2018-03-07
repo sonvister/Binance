@@ -24,6 +24,9 @@ namespace Binance.Cache
             {
                 lock (_sync)
                 {
+                    if (_symbols == null)
+                        return new SymbolStatistics[] { };
+
                     return _symbols
                         .Where(s => _statistics.ContainsKey(s))
                         .Select(s => _statistics[s])
@@ -36,7 +39,7 @@ namespace Binance.Cache
 
         #region Private Fields
 
-        private readonly IList<string> _symbols = new List<string>();
+        private IList<string> _symbols;
 
         private readonly IDictionary<string, SymbolStatistics> _statistics
             = new Dictionary<string, SymbolStatistics>();
@@ -94,6 +97,11 @@ namespace Binance.Cache
 
         public void Subscribe(Action<SymbolStatisticsCacheEventArgs> callback, params string[] symbols)
         {
+            if (_symbols != null)
+                throw new InvalidOperationException($"{nameof(SymbolStatisticsCache)}.{nameof(Subscribe)}: Already subscribed.");
+
+            _symbols = new List<string>();
+
             OnSubscribe(callback);
 
             if (symbols != null)
@@ -116,6 +124,9 @@ namespace Binance.Cache
 
         public override IJsonClient Unsubscribe()
         {
+            if (_symbols == null)
+                return this;
+
             UnsubscribeFromClient();
             OnUnsubscribe();
 
@@ -124,7 +135,7 @@ namespace Binance.Cache
                 _statistics.Clear();
             }
 
-            _symbols.Clear();
+            _symbols = null;
 
             return this;
         }
@@ -135,6 +146,9 @@ namespace Binance.Cache
 
         protected override void SubscribeToClient()
         {
+            if (_symbols == null)
+                return;
+
             if (!_symbols.Any())
             {
                 Client.Subscribe(ClientCallback);
@@ -147,6 +161,9 @@ namespace Binance.Cache
 
         protected override void UnsubscribeFromClient()
         {
+            if (_symbols == null)
+                return;
+
             if (!_symbols.Any())
             {
                 Client.Unsubscribe(ClientCallback);
@@ -159,6 +176,9 @@ namespace Binance.Cache
 
         protected override async ValueTask<SymbolStatisticsCacheEventArgs> OnAction(SymbolStatisticsEventArgs @event)
         {
+            if (_symbols == null)
+                return null;
+
             try
             {
                 // ReSharper disable once InconsistentlySynchronizedField

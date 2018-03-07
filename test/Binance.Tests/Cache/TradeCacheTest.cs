@@ -1,7 +1,7 @@
 ﻿using System;
 using Binance.Api;
 using Binance.Cache;
-using Binance.WebSocket;
+using Binance.Client;
 using Moq;
 using Xunit;
 
@@ -14,7 +14,7 @@ namespace Binance.Tests.Cache
         {
             var symbol = Symbol.BTC_USDT;
             var api = new Mock<IBinanceApi>().Object;
-            var client = new Mock<ITradeWebSocketClient>().Object;
+            var client = new Mock<ITradeClient>().Object;
 
             var cache = new TradeCache(api, client);
 
@@ -24,6 +24,19 @@ namespace Binance.Tests.Cache
             cache.Subscribe(symbol);
 
             Assert.Throws<InvalidOperationException>(() => cache.Subscribe(symbol));
+        }
+
+        [Fact]
+        public void Unsubscribe()
+        {
+            var api = new Mock<IBinanceApi>().Object;
+            var client = new Mock<ITradeClient>().Object;
+
+            var cache = new TradeCache(api, client);
+
+            // Can call unsubscribe before subscribe or multiple times without fail.
+            cache.Unsubscribe();
+            cache.Unsubscribe();
         }
     }
 }
