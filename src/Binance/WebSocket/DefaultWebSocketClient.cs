@@ -169,10 +169,7 @@ namespace Binance.WebSocket
 
                 lock (_sync) { IsStreaming = false; }
 
-                if (IsOpen)
-                {
-                    OnClose();
-                }
+                OnClose();
 
                 Logger?.LogDebug($"{nameof(DefaultWebSocketClient)}.{nameof(StreamAsync)}: Task complete.  [thread: {Thread.CurrentThread.ManagedThreadId}]");
             }

@@ -21,7 +21,7 @@ namespace Binance.WebSocket
 
         #region Public Properties
 
-        public bool IsOpen { get; protected set; }
+        public bool IsOpen { get; private set; }
 
         #endregion Public Properties
 
@@ -72,6 +72,9 @@ namespace Binance.WebSocket
         /// </summary>
         protected void OnClose()
         {
+            if (!IsOpen)
+                return;
+
             Logger?.LogInformation($"{GetType().Name}.{nameof(OnClose)}: Web Socket CLOSED.");
 
             IsOpen = false;
