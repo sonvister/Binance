@@ -87,7 +87,7 @@ Get real-time aggregate trades (*with automatic web socket re-connect*).
 using Binance;
 using Binance.WebSocket;
 
-// Initialize web socket client (with automatic streaming enabled).
+// Initialize web socket client (with automatic streaming).
 var webSocketClient = new AggregateTradeWebSocketClient();
 
 // Handle error events.
@@ -115,7 +115,7 @@ using Binance;
 using Binance.Cache;
 using Binance.WebSocket;
 
-// Initiatlize web socket cache (with automatic streaming enabled).
+// Initiatlize web socket cache (with automatic streaming).
 var webSocketCache = new DepthWebSocketCache();
 
 // Handle error events.
