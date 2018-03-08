@@ -32,6 +32,16 @@ namespace Binance.Client
 
         #region Public Methods
 
+        /// <summary>
+        /// Convert symbol (or null) to stream name.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
+        public static string GetStreamName(string symbol)
+        {
+            return symbol == null ? "!ticker@arr" : $"{symbol.ToLowerInvariant()}@ticker";
+        }
+
         public virtual ISymbolStatisticsClient Subscribe(Action<SymbolStatisticsEventArgs> callback, params string [] symbols)
         {
             if (callback == null && !symbols.Any())
@@ -151,9 +161,6 @@ namespace Binance.Client
         #endregion Protected Methods
 
         #region Private Methods
-
-        private static string GetStreamName(string symbol)
-            => symbol == null ? "!ticker@arr" : $"{symbol.ToLowerInvariant()}@ticker";
 
         private static SymbolStatistics DeserializeSymbolStatistics(JToken jToken)
         {

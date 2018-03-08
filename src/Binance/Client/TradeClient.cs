@@ -31,6 +31,18 @@ namespace Binance.Client
 
         #region Public Methods
 
+        /// <summary>
+        /// Convert symbol to stream name.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <returns></returns>
+        public static string GetStreamName(string symbol)
+        {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            return $"{symbol.ToLowerInvariant()}@trade";
+        }
+
         public virtual ITradeClient Subscribe(string symbol, Action<TradeEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
@@ -117,12 +129,5 @@ namespace Binance.Client
         }
 
         #endregion Protected Methods
-
-        #region Private Methods
-
-        private static string GetStreamName(string symbol)
-            => $"{symbol.ToLowerInvariant()}@trade";
-
-        #endregion Private Methods
     }
 }

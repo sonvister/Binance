@@ -31,6 +31,19 @@ namespace Binance.Client
 
         #region Public Methods
 
+        /// <summary>
+        /// Convert symbol and <see cref="CandlestickInterval"/> to stream name.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        public static string GetStreamName(string symbol, CandlestickInterval interval)
+        {
+            Throw.IfNullOrEmpty(symbol, nameof(symbol));
+
+            return $"{symbol.ToLowerInvariant()}@kline_{interval.AsString()}";
+        }
+
         public virtual ICandlestickClient Subscribe(string symbol, CandlestickInterval interval, Action<CandlestickEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
@@ -132,12 +145,5 @@ namespace Binance.Client
         }
 
         #endregion Protected Methods
-
-        #region Private Methods
-
-        private static string GetStreamName(string symbol, CandlestickInterval interval)
-            => $"{symbol.ToLowerInvariant()}@kline_{interval.AsString()}";
-
-        #endregion Private Methods
     }
 }

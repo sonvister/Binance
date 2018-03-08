@@ -32,6 +32,19 @@ namespace Binance.Client
 
         #region Public Methods
 
+        /// <summary>
+        /// Convert symbol and limit (optional) to stream name.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="limit"></param>
+        /// <returns></returns>
+        public static string GetStreamName(string symbol, int limit = default)
+        {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            return limit > 0 ? $"{symbol.ToLowerInvariant()}@depth{limit}" : $"{symbol.ToLowerInvariant()}@depth";
+        }
+
         public virtual IDepthClient Subscribe(string symbol, int limit, Action<DepthUpdateEventArgs> callback)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
@@ -133,12 +146,5 @@ namespace Binance.Client
         }
 
         #endregion Protected Methods
-
-        #region Private Methods
-
-        private static string GetStreamName(string symbol, int limit)
-            => limit > 0 ? $"{symbol.ToLowerInvariant()}@depth{limit}" : $"{symbol.ToLowerInvariant()}@depth";
-
-        #endregion Private Methods
     }
 }
