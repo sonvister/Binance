@@ -1,4 +1,4 @@
-﻿namespace Binance.Producer
+﻿namespace Binance.Stream
 {
     /// <summary>
     /// An <see cref="IJsonProducer"/> that buffers JSON from

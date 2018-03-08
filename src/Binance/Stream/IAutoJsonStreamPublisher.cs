@@ -1,6 +1,6 @@
 ﻿using Binance.Utility;
 
-namespace Binance.Producer
+namespace Binance.Stream
 {
     /// <summary>
     /// An <see cref="IJsonStreamPublisher{TStream}"/> with automatic stream control.

@@ -1,4 +1,4 @@
-﻿using Binance.Producer;
+﻿using Binance.Stream;
 
 namespace Binance.Client
 {

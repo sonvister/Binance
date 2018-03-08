@@ -8,7 +8,7 @@ namespace Binance.Client
     public interface IJsonSubscriber : IJsonConsumer
     {
         /// <summary>
-        /// Get the observed streams.
+        /// Get the subscribed streams.
         /// </summary>
         IEnumerable<string> SubscribedStreams { get; }
 

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace Binance.Producer
+namespace Binance.Stream
 {
     public abstract class BufferedJsonStream<TProvider> : BufferedJsonProducer<TProvider>, IBufferedJsonStream<TProvider>
         where TProvider : IJsonProducer

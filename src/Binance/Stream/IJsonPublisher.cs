@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Binance.Client;
 
-namespace Binance.Producer
+namespace Binance.Stream
 {
     /// <summary>
     /// A JSON publisher.

@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
-namespace Binance.Producer
+namespace Binance
 {
     /// <summary>
     /// An abstract <see cref="IJsonProducer"/> implementation.

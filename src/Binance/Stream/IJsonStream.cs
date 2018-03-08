@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Binance.Producer
+namespace Binance.Stream
 {
     /// <summary>
     /// A streaming JSON producer.

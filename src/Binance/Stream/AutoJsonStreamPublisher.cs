@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Binance.Utility;
 using Microsoft.Extensions.Logging;
 
-namespace Binance.Producer
+namespace Binance.Stream
 {
     public abstract class AutoJsonStreamPublisher<TStream> : JsonStreamPublisher<TStream>, IAutoJsonStreamPublisher<TStream>
         where TStream : class, IJsonStream

@@ -5,7 +5,7 @@ using System.Threading;
 using Binance.Client;
 using Microsoft.Extensions.Logging;
 
-namespace Binance.Producer
+namespace Binance.Stream
 {
     public abstract class JsonStreamPublisher<TStream> : JsonProducer, IJsonStreamPublisher<TStream>
         where TStream : class, IJsonStream

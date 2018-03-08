@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Binance.Producer;
+using Binance.Stream;
 using Binance.Utility;
 using Microsoft.Extensions.Logging;
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Binance.Client;
-using Binance.Producer;
+using Binance.Stream;
 
 // ReSharper disable once CheckNamespace
 namespace Binance

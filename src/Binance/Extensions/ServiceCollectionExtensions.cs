@@ -1,7 +1,7 @@
 ﻿using System;
 using Binance.Cache;
 using Binance.Client;
-using Binance.Producer;
+using Binance.Stream;
 using Binance.Serialization;
 using Binance.Utility;
 using Binance.WebSocket;

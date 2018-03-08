@@ -2,7 +2,7 @@
 using Binance.Utility;
 using Microsoft.Extensions.Logging;
 
-namespace Binance.Producer
+namespace Binance.Stream
 {
     /// <summary>
     /// An abstract <see cref="IBufferedJsonProducer{TProvider}"/> implemenation.

@@ -1,5 +1,5 @@
 ﻿using Binance.Client;
-using Binance.Producer;
+using Binance.Stream;
 
 namespace Binance.WebSocket
 {
