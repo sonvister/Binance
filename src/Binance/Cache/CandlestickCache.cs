@@ -45,6 +45,16 @@ namespace Binance.Cache
             get { lock (_sync) { return _candlesticks?.ToArray() ?? new Candlestick[] { }; } }
         }
 
+        public override IEnumerable<string> SubscribedStreams
+        {
+            get
+            {
+                return _symbol == null
+                    ? new string[] { }
+                    : new string[] { CandlestickClient.GetStreamName(_symbol, _interval) };
+            }
+        }
+
         #endregion Public Properties
 
         #region Private Fields

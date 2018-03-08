@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Client;
@@ -45,6 +46,16 @@ namespace Binance.Cache
         #region Public Properties
 
         public OrderBook OrderBook => _orderBookClone;
+
+        public override IEnumerable<string> SubscribedStreams
+        {
+            get
+            {
+                return _symbol == null
+                    ? new string[] { }
+                    : new string[] { DepthClient.GetStreamName(_symbol, _limit) };
+            }
+        }
 
         #endregion Public Properties
 

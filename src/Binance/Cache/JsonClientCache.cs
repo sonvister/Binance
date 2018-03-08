@@ -28,13 +28,13 @@ namespace Binance.Cache
 
         #region Public Properties
 
-        public IEnumerable<string> SubscribedStreams => _client.SubscribedStreams;
-
         public TClient Client
         {
             get => _client;
             set => LinkTo(value);
         }
+
+        public abstract IEnumerable<string> SubscribedStreams { get; }
 
         #endregion Public Properties
 
@@ -42,7 +42,7 @@ namespace Binance.Cache
 
         protected readonly IBinanceApi Api;
 
-        protected readonly ILogger Logger;
+        protected readonly ILogger<JsonClientCache<TClient, TEventArgs, TCacheEventArgs>> Logger;
 
         #endregion Protected Fields
 
@@ -58,7 +58,7 @@ namespace Binance.Cache
 
         #region Constructors
 
-        protected JsonClientCache(IBinanceApi api, TClient client, ILogger logger = null)
+        protected JsonClientCache(IBinanceApi api, TClient client, ILogger<JsonClientCache<TClient, TEventArgs, TCacheEventArgs>> logger = null)
         {
             Throw.IfNull(api, nameof(api));
             Throw.IfNull(client, nameof(client));
@@ -72,7 +72,7 @@ namespace Binance.Cache
 
         #region Public Methods
 
-        public void HandleMessage(string stream, string json)
+        public virtual void HandleMessage(string stream, string json)
             => _client.HandleMessage(stream, json);
 
         public abstract IJsonSubscriber Unsubscribe();

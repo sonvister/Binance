@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Binance.Client;
@@ -40,15 +41,25 @@ namespace Binance.Cache
 
         public AccountInfo AccountInfo { get; private set; }
 
+        public override IEnumerable<string> SubscribedStreams
+        {
+            get
+            {
+                return _listenKey == null
+                    ? new string[] { }
+                    : new string[] { _listenKey };
+            }
+        }
+
         #endregion Public Properties
 
-        #region Private Properties
+        #region Private Fields
 
         private string _listenKey;
 
         private IBinanceApiUser _user;
 
-        #endregion Private Properties
+        #endregion Private Fields
 
         #region Constructors
 

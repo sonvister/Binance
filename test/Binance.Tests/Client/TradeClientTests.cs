@@ -27,21 +27,24 @@ namespace Binance.Tests.Client
         [Fact]
         public void Subscribe()
         {
-            var symbol = Symbol.BTC_USDT;
+            var symbol1 = Symbol.BTC_USDT;
+            var symbol2 = Symbol.LTC_BTC;
 
             Assert.Empty(_client.SubscribedStreams);
 
             // Subscribe to symbol.
-            _client.Subscribe(symbol);
-            Assert.True(_client.SubscribedStreams.Count() == 1);
+            _client.Subscribe(symbol1);
+            Assert.Equal(TradeClient.GetStreamName(symbol1), _client.SubscribedStreams.Single());
 
             // Re-Subscribe to same symbol doesn't fail.
-            _client.Subscribe(symbol);
-            Assert.True(_client.SubscribedStreams.Count() == 1);
+            _client.Subscribe(symbol1);
+            Assert.Equal(TradeClient.GetStreamName(symbol1), _client.SubscribedStreams.Single());
 
             // Subscribe to a different symbol.
-            _client.Subscribe(Symbol.LTC_BTC);
+            _client.Subscribe(symbol2);
             Assert.True(_client.SubscribedStreams.Count() == 2);
+            Assert.Contains(TradeClient.GetStreamName(symbol1), _client.SubscribedStreams);
+            Assert.Contains(TradeClient.GetStreamName(symbol2), _client.SubscribedStreams);
         }
 
         [Fact]

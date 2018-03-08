@@ -34,7 +34,7 @@ namespace Binance.Client
 
         private readonly object _sync = new object();
 
-        #endregion
+        #endregion Private Fields
 
         #region Constructors
 

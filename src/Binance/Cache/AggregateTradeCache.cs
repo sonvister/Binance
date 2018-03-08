@@ -51,6 +51,16 @@ namespace Binance.Cache
             get { lock (_sync) { return _trades?.ToArray() ?? new AggregateTrade[] { }; } }
         }
 
+        public override IEnumerable<string> SubscribedStreams
+        {
+            get
+            {
+                return _symbol == null
+                    ? new string[] { }
+                    : new string[] { AggregateTradeClient.GetStreamName(_symbol) };
+            }
+        }
+
         #endregion Public Properties
 
         #region Private Fields

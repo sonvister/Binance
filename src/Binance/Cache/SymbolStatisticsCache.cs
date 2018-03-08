@@ -57,6 +57,18 @@ namespace Binance.Cache
             }
         }
 
+        public override IEnumerable<string> SubscribedStreams
+        {
+            get
+            {
+                return _symbols == null
+                    ? new string[] { }
+                    : !_symbols.Any()
+                        ? new string[] { SymbolStatisticsClient.GetStreamName(null) }
+                        : _symbols.Select(s => SymbolStatisticsClient.GetStreamName(s)).ToArray();
+            }
+        }
+
         #endregion Public Properties
 
         #region Private Fields
