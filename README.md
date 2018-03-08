@@ -98,7 +98,7 @@ webSocketClient.Subscribe(Symbol.BTC_USDT, evt =>
 {
     var side = evt.Trade.IsBuyerMaker ? "SELL" : "BUY ";
 	
-	// Handle aggregate trade events.
+    // Handle aggregate trade events.
     Console.WriteLine($"{evt.Trade.Symbol} {side} {evt.Trade.Quantity} @ {evt.Trade.Price}");
 });
 
@@ -129,7 +129,7 @@ webSocketCache.Subscribe(Symbol.BTC_USDT, evt =>
     var minBidPrice = evt.OrderBook.Bids.Last().Price;
     var maxAskPrice = evt.OrderBook.Asks.Last().Price;
 
-	// Handle order book update events.
+    // Handle order book update events.
     Console.WriteLine($"Bid Quantity: {evt.OrderBook.Depth(minBidPrice)} {symbol.BaseAsset} - " +
                       $"Ask Quantity: {evt.OrderBook.Depth(maxAskPrice)} {symbol.BaseAsset}");
 });
