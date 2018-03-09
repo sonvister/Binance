@@ -205,7 +205,7 @@ namespace Binance
                     var json = await response.Content.ReadAsStringAsync()
                         .ConfigureAwait(false);
 
-                    OnMessage(json, requestMessage.RequestUri.AbsolutePath);
+                    OnMessage(json, requestMessage.RequestUri.AbsoluteUri);
 
                     return json;
                 }
@@ -237,7 +237,7 @@ namespace Binance
                     }
                 }
 
-                OnMessage(error, requestMessage.RequestUri.AbsolutePath);
+                OnMessage(error, requestMessage.RequestUri.AbsoluteUri);
 
                 // ReSharper disable once SwitchStatementMissingSomeCases
                 switch (response.StatusCode)

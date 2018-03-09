@@ -128,6 +128,6 @@ namespace Binance
             Dispose(true);
         }
 
-        #endregion
+        #endregion IDisposable
     }
 }

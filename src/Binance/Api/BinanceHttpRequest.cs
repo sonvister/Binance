@@ -22,9 +22,9 @@ namespace Binance
         public string Body { get; set; }
 
         /// <summary>
-        /// Get the URI.
+        /// Get the path and query string.
         /// </summary>
-        public string Uri => _parameters.Count == 0 ? _path : $"{_path}?{QueryString}";
+        public string PathAndQuery => _parameters.Count == 0 ? _path : $"{_path}?{QueryString}";
 
         /// <summary>
         /// Get the request query string.
@@ -98,7 +98,7 @@ namespace Binance
 
         public HttpRequestMessage CreateMessage(HttpMethod method)
         {
-            var requestMessage = new HttpRequestMessage(method, Uri);
+            var requestMessage = new HttpRequestMessage(method, PathAndQuery);
 
             if (ApiKey != null)
             {
