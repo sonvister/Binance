@@ -18,7 +18,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1520406290103;
+        public static readonly long LastUpdateAt = 1520613780884;
 
         // BTC
         public static readonly Symbol ADA_BTC = new Symbol(SymbolStatus.Trading, Asset.ADA, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -92,6 +92,7 @@ namespace Binance
         public static readonly Symbol NULS_BTC = new Symbol(SymbolStatus.Trading, Asset.NULS, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol OAX_BTC = new Symbol(SymbolStatus.Trading, Asset.OAX, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol OMG_BTC = new Symbol(SymbolStatus.Trading, Asset.OMG, Asset.BTC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol ONT_BTC = new Symbol(SymbolStatus.Trading, Asset.ONT, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol OST_BTC = new Symbol(SymbolStatus.Trading, Asset.OST, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol PIVX_BTC = new Symbol(SymbolStatus.Trading, Asset.PIVX, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000010m, 100000.00000000m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol POA_BTC = new Symbol(SymbolStatus.Trading, Asset.POA, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -205,6 +206,7 @@ namespace Binance
         public static readonly Symbol NULS_ETH = new Symbol(SymbolStatus.Trading, Asset.NULS, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol OAX_ETH = new Symbol(SymbolStatus.Trading, Asset.OAX, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000010m, 100000.00000000m, 0.00000010m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol OMG_ETH = new Symbol(SymbolStatus.Trading, Asset.OMG, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol ONT_ETH = new Symbol(SymbolStatus.Trading, Asset.ONT, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol OST_ETH = new Symbol(SymbolStatus.Trading, Asset.OST, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol PIVX_ETH = new Symbol(SymbolStatus.Trading, Asset.PIVX, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0.00000100m, 100000.00000000m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol POA_ETH = new Symbol(SymbolStatus.Trading, Asset.POA, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0.00000001m, 100000.00000000m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -275,6 +277,7 @@ namespace Binance
         public static readonly Symbol NEBL_BNB = new Symbol(SymbolStatus.Trading, Asset.NEBL, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NEO_BNB = new Symbol(SymbolStatus.Trading, Asset.NEO, Asset.BNB, (0.00100000m, 10000000.00000000m, 0.00100000m), (0.00100000m, 10000000.00000000m, 0.00100000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol NULS_BNB = new Symbol(SymbolStatus.Trading, Asset.NULS, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
+        public static readonly Symbol ONT_BNB = new Symbol(SymbolStatus.Trading, Asset.ONT, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol OST_BNB = new Symbol(SymbolStatus.Trading, Asset.OST, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol PIVX_BNB = new Symbol(SymbolStatus.Trading, Asset.PIVX, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
         public static readonly Symbol POA_BNB = new Symbol(SymbolStatus.Trading, Asset.POA, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0.00001000m, 10000.00000000m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit});
@@ -575,6 +578,9 @@ namespace Binance
                     { "OAXETH", OAX_ETH },
                     { "OMGBTC", OMG_BTC },
                     { "OMGETH", OMG_ETH },
+                    { "ONTBNB", ONT_BNB },
+                    { "ONTBTC", ONT_BTC },
+                    { "ONTETH", ONT_ETH },
                     { "OSTBNB", OST_BNB },
                     { "OSTBTC", OST_BTC },
                     { "OSTETH", OST_ETH },
