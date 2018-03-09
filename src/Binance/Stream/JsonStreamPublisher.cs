@@ -209,6 +209,8 @@ namespace Binance.Stream
 
             lock (Sync)
             {
+                var streamsChanged = false;
+
                 foreach (var streamAndSubscribers in Subscribers.ToArray())
                 {
                     if (streamAndSubscribers.Value.Contains(observer))
@@ -222,8 +224,12 @@ namespace Binance.Stream
                     if (!streamAndSubscribers.Value.Any())
                     {
                         RemoveStream(streamAndSubscribers.Key);
+                        streamsChanged = true;
                     }
                 }
+
+                if (streamsChanged)
+                    OnPublishedStreamsChanged();
             }
         }
 
