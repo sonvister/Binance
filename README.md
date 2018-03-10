@@ -181,3 +181,5 @@ REST/WebSocket questions: [Binance Official API Telegram](https://t.me/binance_a
 **BTC**: 3JjG3tRR1dx98UJyNdpzpkrxRjXmPfQHk9
 
 Thank you.
+
+Follow [@sonvister](https://twitter.com/sonvister)
