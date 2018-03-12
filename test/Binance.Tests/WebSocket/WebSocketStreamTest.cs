@@ -19,7 +19,7 @@ namespace Binance.Tests.WebSocket
         {
             _uri = new Uri(BinanceWebSocketStream.BaseUri);
             _subject = _uri.AbsoluteUri;
-            _stream = new WebSocketStream(DefaultWebSocketClientTest.CreateWebSocketClient(_message));
+            _stream = new WebSocketStream(DefaultWebSocketClientTest.CreateMockWebSocketClient(_message));
         }
 
         [Fact]

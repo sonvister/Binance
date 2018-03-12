@@ -21,8 +21,8 @@ namespace Binance.Client
         /// <summary>
         /// Handle a JSON message event.
         /// </summary>
-        /// <param name="stream"></param>
+        /// <param name="streamName"></param>
         /// <param name="json"></param>
-        void HandleMessage(string stream, string json);
+        void HandleMessage(string streamName, string json);
     }
 }

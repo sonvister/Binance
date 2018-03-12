@@ -110,8 +110,7 @@ namespace Binance.Stream
 
                     if (!Subscribers.ContainsKey(streamName))
                     {
-                        Logger?.LogError($"{GetType().Name}.{nameof(Unsubscribe)}: Not subscribed to stream \"{streamName}\".  [thread: {Thread.CurrentThread.ManagedThreadId}]");
-                        throw new InvalidOperationException($"{GetType().Name}.{nameof(Unsubscribe)}: Not subscribed to stream ({streamName}).");
+                        return this; // ignore.
                     }
 
                     if (subscriber != null && Subscribers[streamName].Contains(subscriber))

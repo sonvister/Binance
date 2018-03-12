@@ -19,7 +19,7 @@ namespace Binance.Tests.WebSocket
         public BinanceWebSocketStreamTest()
         {
             _uri = BinanceWebSocketStream.CreateUri(_streamName);
-            _stream = new BinanceWebSocketStream(DefaultWebSocketClientTest.CreateWebSocketClient(_message));
+            _stream = new BinanceWebSocketStream(DefaultWebSocketClientTest.CreateMockWebSocketClient(_message));
         }
 
         [Fact]
@@ -169,7 +169,7 @@ namespace Binance.Tests.WebSocket
         {
             var message = $"{{\"stream\":\"{_streamName}\",\"data\":{_message}}}";
 
-            var stream = new BinanceWebSocketStream(DefaultWebSocketClientTest.CreateWebSocketClient(message))
+            var stream = new BinanceWebSocketStream(DefaultWebSocketClientTest.CreateMockWebSocketClient(message))
             {
                 Uri = _uri // NOTE: Processing of combined stream data is not dependant upon URI.
             };

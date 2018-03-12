@@ -22,10 +22,10 @@ namespace Binance.Tests.WebSocket
         {
             _uri = new Uri(BinanceWebSocketStream.BaseUri);
             _subject = _uri.AbsoluteUri;
-            _webSocket = CreateWebSocketClient(_message);
+            _webSocket = CreateMockWebSocketClient(_message);
         }
 
-        public static DefaultWebSocketClient CreateWebSocketClient(string message)
+        public static DefaultWebSocketClient CreateMockWebSocketClient(string json, string subject = null)
         {
             var webSocket = new Mock<IClientWebSocket>();
             webSocket.Setup(w => w.State).Returns(WebSocketState.Open);
@@ -33,9 +33,15 @@ namespace Binance.Tests.WebSocket
             webSocket.Setup(w => w.ReceiveAsync(It.IsAny<ArraySegment<byte>>(), It.IsAny<CancellationToken>()))
                 .Returns<ArraySegment<byte>, CancellationToken>((a, t) =>
                 {
+                    var message = json;
+                    if (subject != null)
+                    {
+                        message = $"{{\"stream\":\"{subject}\",\"data\":{json}}}";
+                    }
+
                     var bytes = Encoding.ASCII.GetBytes(message);
                     bytes.CopyTo(a.Array, 0);
-                    return Task.FromResult(new WebSocketReceiveResult(message.Length, WebSocketMessageType.Text, true));
+                    return Task.FromResult(new WebSocketReceiveResult(bytes.Length, WebSocketMessageType.Text, true));
                 });
 
             var factory = new Mock<IClientWebSocketFactory>();
