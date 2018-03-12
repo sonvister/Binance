@@ -7,8 +7,6 @@ namespace Binance
 {
     public interface IRateLimiter : IDisposable
     {
-        #region Properties
-
         /// <summary>
         /// The count.
         /// </summary>
@@ -19,10 +17,6 @@ namespace Binance
         /// </summary>
         TimeSpan Duration { get; set; }
 
-        #endregion Properties
-
-        #region Methods
-
         /// <summary>
         /// Delay if count has been exceeded within time duration.
         /// </summary>
@@ -30,7 +24,5 @@ namespace Binance
         /// <param name="token"></param>
         /// <returns></returns>
         Task DelayAsync(int count = 1, CancellationToken token = default);
-
-        #endregion Methods
     }
 }
