@@ -9,7 +9,7 @@
     <Company></Company>
     <Product>Binance</Product>
     <AssemblyVersion>0.2.0.42</AssemblyVersion>
-    <Description>A full-featured .NET Binance API designed for ease of use.</Description>
+    <Description>A full-featured .NET Binance API library designed for ease of use.</Description>
     <Copyright>Copyright © 2017-2018 sonvister</Copyright>
     <PackageTags>binance binance-api cryptocurrency exchange api api-client api-wrapper</PackageTags>
     <PackageReleaseNotes>https://github.com/sonvister/Binance/releases/tag/v0.2.0-alpha42</PackageReleaseNotes>
