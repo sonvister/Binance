@@ -207,7 +207,7 @@ namespace Binance
         }
 
         /// <summary>
-        /// Get trades associated with an order.
+        /// Get account trades associated with an order.
         /// 
         /// NOTE: Without any trade reference (e.g. first and last trade ID),
         ///       this must query ALL account trades for a symbol.
@@ -217,7 +217,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<IEnumerable<AccountTrade>> GetTradesAsync(this IBinanceApi api, Order order, long recvWindow = default, CancellationToken token = default)
+        public static async Task<IEnumerable<AccountTrade>> GetAccountTradesAsync(this IBinanceApi api, Order order, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(api, nameof(api));
             Throw.IfNull(order, nameof(order));

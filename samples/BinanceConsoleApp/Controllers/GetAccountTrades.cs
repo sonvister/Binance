@@ -74,7 +74,7 @@ namespace BinanceConsoleApp.Controllers
                 var order = await Program.Api.GetOrderAsync(Program.User, symbol, orderId, token: token);
                 if (order != null)
                 {
-                    trades = await Program.Api.GetTradesAsync(order, token: token);
+                    trades = await Program.Api.GetAccountTradesAsync(order, token: token);
                 }
             }
             else
