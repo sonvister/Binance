@@ -186,15 +186,12 @@ namespace Binance
         {
             Throw.IfNull(api, nameof(api));
 
-            var symbols = string.IsNullOrWhiteSpace(symbol)
-                ? await api.SymbolsAsync(token).ConfigureAwait(false)
-                : new [] { symbol };
+             var cancelOrderIds = new List<string>();
 
-            var cancelOrderIds = new List<string>();
-
-            foreach (var s in symbols)
+            IEnumerable<Order> orders;
+            do
             {
-                var orders = await api.GetOpenOrdersAsync(user, s, recvWindow, token)
+                orders = await api.GetOpenOrdersAsync(user, symbol, recvWindow, token)
                     .ConfigureAwait(false);
 
                 foreach (var order in orders)
@@ -204,7 +201,7 @@ namespace Binance
 
                     cancelOrderIds.Add(cancelOrderId);
                 }
-            }
+            } while (orders.Any());
 
             return cancelOrderIds;
         }
