@@ -103,7 +103,7 @@ namespace Binance
         /// </summary>
         /// <param name="client"></param>
         /// <param name="symbol"></param>
-        /// <param name="limit">Default 100; max 1000. Valid limits: [5, 10, 20, 50, 100, 500, 1000].</param>
+        /// <param name="limit">Valid values: [5, 10, 20, 50, 100, 500, 1000] (default: 100).</param>
         /// <param name="token"></param>
         /// <returns></returns>
         public static async Task<string> GetOrderBookAsync(this IBinanceHttpClient client, string symbol, int limit = default, CancellationToken token = default)

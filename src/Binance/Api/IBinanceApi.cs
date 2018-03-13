@@ -54,7 +54,7 @@ namespace Binance
         /// Get order book (market depth) of a symbol.
         /// </summary>
         /// <param name="symbol"></param>
-        /// <param name="limit">Default 100; max 100.</param>
+        /// <param name="limit">Valid values: [5, 10, 20, 50, 100, 500, 1000] (default: 100).</param>
         /// <param name="token"></param>
         /// <returns></returns>
         Task<OrderBook> GetOrderBookAsync(string symbol, int limit = default, CancellationToken token = default);
