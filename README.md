@@ -161,10 +161,9 @@ To get the source code for a particular release, first select the corresponding 
 ![Build status](https://travis-ci.org/sonvister/Binance.svg?branch=master)
 
 ## Documentation
-See: [**Wiki**](https://github.com/sonvister/Binance/wiki)\
-[**Architecture**](https://github.com/sonvister/Binance/wiki/Architecture)
+See: [**Wiki**](https://github.com/sonvister/Binance/wiki)
 
-***NOTE**: Some documentation is out-of-date ...will be updated soon.*\
+***NOTE**: Some documentation is out-of-date ...updates in progress.*\
 ***NOTE**: The [samples](https://github.com/sonvister/Binance/blob/master/samples) demonstrate up-to-date usage of this library.*
 
 ### Binance Exchange API (*for reference*)
