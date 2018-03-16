@@ -156,7 +156,6 @@ webSocketCache.Unsubscribe();
 ## Documentation
 See: [**Wiki**](https://github.com/sonvister/Binance/wiki)
 
-***NOTE**: Some documentation is out-of-date ...updates in progress.*\
 ***NOTE**: The [samples](https://github.com/sonvister/Binance/blob/master/samples) demonstrate up-to-date usage of this library.*
 
 ### Binance Exchange API (*for reference*)
