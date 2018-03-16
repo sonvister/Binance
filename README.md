@@ -141,7 +141,9 @@ webSocketCache.Unsubscribe();
 ```
 
 ### Binance Sign-up
-To use the private (*authenticated*) API methods you must have an account with Binance and create an API Key. Please use my Referral ID: **10899093** when you [**Register**](https://www.binance.com/register.html?ref=10899093) (*an account is not required to access the public market data*). It's an easy way to give back at no cost to you.
+To use the private (*authenticated*) API methods you must have an account with Binance and create an API-Key. Please use my Referral ID: **10899093** when you [**Register**](https://www.binance.com/register.html?ref=10899093) (*it's an easy way to give back at no cost to you*).
+
+*NOTE*: An account is *not* required to access the public market data.
 
 ### Installation
 Using [Nuget](https://www.nuget.org/packages/Binance/) Package Manager:
