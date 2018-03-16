@@ -175,10 +175,6 @@ REST/WebSocket questions: [Binance Official API Telegram](https://t.me/binance_a
 ## Donate
 **LTC**: MNhGkftcFDE7TsFFvtE6W9VVKhxH74T3eM or 3GV8SnUeJ6NgfMyMq1EkgWF611Mq6c78sU\
 **DCR**: Dsog2jYLS65Y3N2jDQSxsiBYC3SRqq7TGd4\
-**XEM**: NC3HR4-V46BTS-LIKEE4-2GZQBB-FHBUXO-CG7EBO-VIMP\
-**DASH**: XmFvpRgwfDRdN9wbrZjHZeH63Rt9CwHqUf\
-**ZEC**: t1Ygz58dkcx2WXuGCjGiPo8w7Q1dcCSscGJ\
-**ETH**: 0x3BFd7B3EAA6aE6BCF861B9B1803d67abe9360bca\
 **BTC**: 3JjG3tRR1dx98UJyNdpzpkrxRjXmPfQHk9
 
 Thank you.
