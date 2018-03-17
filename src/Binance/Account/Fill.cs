@@ -37,11 +37,11 @@ namespace Binance
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="price"></param>
-        /// <param name="quantity"></param>
-        /// <param name="commission"></param>
-        /// <param name="commissionAsset"></param>
-        /// <param name="tradeId"></param>
+        /// <param name="price">The price.</param>
+        /// <param name="quantity">The quantity.</param>
+        /// <param name="commission">The commission.</param>
+        /// <param name="commissionAsset">The commission asset.</param>
+        /// <param name="tradeId">The account trade ID.</param>
         public Fill(decimal price, decimal quantity, decimal commission, string commissionAsset, long tradeId)
         {
             Price = price;

@@ -8,7 +8,7 @@ namespace Binance
         /// <summary>
         /// Get or set the stop price.
         /// </summary>
-        public decimal StopPrice { get; set; }
+        public virtual decimal StopPrice { get; set; }
 
         #endregion Public Properties
 

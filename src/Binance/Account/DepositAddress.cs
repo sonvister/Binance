@@ -16,7 +16,7 @@ namespace Binance
         public string Address { get; }
 
         /// <summary>
-        /// Get the address tag.
+        /// Get the address tag (can be null).
         /// </summary>
         public string AddressTag { get; }
 
@@ -27,9 +27,9 @@ namespace Binance
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="asset"></param>
-        /// <param name="address"></param>
-        /// <param name="addressTag"></param>
+        /// <param name="asset">The asset.</param>
+        /// <param name="address">The address.</param>
+        /// <param name="addressTag">The address tag (optional).</param>
         public DepositAddress(string asset, string address, string addressTag = null)
         {
             Throw.IfNullOrWhiteSpace(asset, nameof(asset));

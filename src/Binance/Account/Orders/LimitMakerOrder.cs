@@ -15,7 +15,7 @@ namespace Binance
             set
             {
                 if (value != TimeInForce.GTC)
-                    throw new ArgumentException($"{nameof(TimeInForce)} must be {TimeInForce.GTC}.");
+                    throw new ArgumentException($"{nameof(TimeInForce)} must be {TimeInForce.GTC}.", nameof(TimeInForce));
             }
         }
 
@@ -23,6 +23,10 @@ namespace Binance
 
         #region Constructors
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="user">The user (required).</param>
         public LimitMakerOrder(IBinanceApiUser user)
             : base(user)
         { }

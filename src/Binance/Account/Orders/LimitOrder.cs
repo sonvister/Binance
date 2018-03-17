@@ -21,7 +21,7 @@ namespace Binance
         public virtual decimal IcebergQuantity { get; set; }
 
         /// <summary>
-        /// Get or set the time in force.
+        /// Get or set the time-in-force.
         /// </summary>
         public virtual TimeInForce TimeInForce { get; set; }
 
@@ -29,6 +29,10 @@ namespace Binance
 
         #region Constructors
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="user">The user (required).</param>
         public LimitOrder(IBinanceApiUser user)
             : base(user)
         { }

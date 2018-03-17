@@ -1,6 +1,4 @@
-﻿using System;
-
-// ReSharper disable once CheckNamespace
+﻿// ReSharper disable once CheckNamespace
 namespace Binance
 {
     public abstract class ClientOrder
@@ -15,7 +13,7 @@ namespace Binance
         /// <summary>
         /// Get or set the symbol.
         /// </summary>
-        public string Symbol { get; set; }
+        public virtual string Symbol { get; set; }
 
         /// <summary>
         /// Get the order type.
@@ -25,18 +23,18 @@ namespace Binance
         /// <summary>
         /// Get or set the order side.
         /// </summary>
-        public OrderSide? Side { get; set; }
+        public virtual OrderSide? Side { get; set; }
 
         /// <summary>
         /// Get or set the quantity.
         /// </summary>
-        public decimal Quantity { get; set; }
+        public virtual decimal Quantity { get; set; }
 
         /// <summary>
         /// Get or set the client order ID (newClientOrderId).
         /// NOTE: This value is set internally after order placement.
         /// </summary>
-        public string Id { get; set; }
+        public virtual string Id { get; set; }
 
         #endregion Public Properties
 

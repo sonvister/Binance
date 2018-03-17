@@ -11,6 +11,10 @@ namespace Binance
 
         #region Constructors
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="user">The user (required).</param>
         public StopLossLimitOrder(IBinanceApiUser user)
             : base(user)
         { }

@@ -14,6 +14,10 @@ namespace Binance
 
         #region Constructors
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="user">The user (required).</param>
         public MarketOrder(IBinanceApiUser user)
             : base(user)
         { }

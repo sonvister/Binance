@@ -61,7 +61,7 @@ namespace Binance
         /// <summary>
         /// Verify commission argument is valid.
         /// </summary>
-        /// <param name="commission">The commission.</param>
+        /// <param name="commission">The commission (bips).</param>
         /// <param name="paramName">The parameter name.</param>
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private static void ThrowIfCommissionIsInvalid(decimal commission, string paramName)
