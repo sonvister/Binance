@@ -316,7 +316,7 @@ namespace Binance
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceApiUser user, string asset = null, DepositStatus? status = null, DateTime startTime = default, DateTime endTime = default, long recvWindow = 0, CancellationToken token = default);
+        Task<IEnumerable<Deposit>> GetDepositsAsync(IBinanceApiUser user, string asset = null, DepositStatus? status = null, DateTime startTime = default, DateTime endTime = default, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get the withdrawal history for an asset or all assets
@@ -337,17 +337,29 @@ namespace Binance
         /// </summary>
         /// <param name="user"></param>
         /// <param name="asset"></param>
+        /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<DepositAddress> GetDepositAddressAsync(IBinanceApiUser user, string asset, CancellationToken token = default);
+        Task<DepositAddress> GetDepositAddressAsync(IBinanceApiUser user, string asset, long recvWindow = default, CancellationToken token = default);
+
+        /// <summary>
+        /// Get the withdraw fee for an asset.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="asset"></param>
+        /// <param name="recvWindow"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<decimal> GetWithdrawFeeAsync(IBinanceApiUser user, string asset, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
         /// Get account status.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<string> GetAccountStatusAsync(IBinanceApiUser user, CancellationToken token = default);
+        Task<string> GetAccountStatusAsync(IBinanceApiUser user, long recvWindow = default, CancellationToken token = default);
 
         #endregion Account
 

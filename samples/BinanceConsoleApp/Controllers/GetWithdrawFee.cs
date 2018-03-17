@@ -5,12 +5,12 @@ using Binance;
 
 namespace BinanceConsoleApp.Controllers
 {
-    internal class GetDepositAddress : IHandleCommand
+    internal class GetWithdrawFee : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
-            if (!command.StartsWith("address ", StringComparison.OrdinalIgnoreCase) &&
-                !command.Equals("address", StringComparison.OrdinalIgnoreCase))
+            if (!command.StartsWith("withdrawFee ", StringComparison.OrdinalIgnoreCase) &&
+                !command.Equals("withdrawFee", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             var args = command.Split(' ');
@@ -21,7 +21,12 @@ namespace BinanceConsoleApp.Controllers
                 asset = args[1];
             }
 
-            Program.Display(await Program.Api.GetDepositAddressAsync(Program.User, asset, token: token));
+            var fee = await Program.Api.GetWithdrawFeeAsync(Program.User, asset, token: token);
+
+            lock (Program.ConsoleSync)
+            {
+                Console.WriteLine($"  {asset.ToUpperInvariant()} Withdraw Fee = {fee}");
+            }
 
             return true;
         }

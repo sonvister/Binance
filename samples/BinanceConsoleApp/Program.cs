@@ -212,6 +212,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  deposits [asset]                                      display user deposits of an asset or all deposits.");
                 Console.WriteLine("  withdrawals [asset]                                   display user withdrawals of an asset or all withdrawals.");
                 Console.WriteLine("  withdraw <asset> <address> <amount> [description]     submit a withdraw request (NOTE: 'test only' does NOT apply).");
+                Console.WriteLine("  withdrawFee <asset>                                   display withdraw fee for an asset.");
                 Console.WriteLine("  status [account|system]                               display account or system status.");
                 Console.WriteLine("  test <on|off>                                         determines if orders are test only (default: 'on').");
                 Console.WriteLine();

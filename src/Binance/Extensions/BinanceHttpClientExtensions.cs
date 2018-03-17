@@ -1011,9 +1011,10 @@ namespace Binance
         /// <param name="client"></param>
         /// <param name="user"></param>
         /// <param name="asset"></param>
+        /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> GetDepositAddressAsync(this IBinanceHttpClient client, IBinanceApiUser user, string asset, CancellationToken token = default)
+        public static async Task<string> GetDepositAddressAsync(this IBinanceHttpClient client, IBinanceApiUser user, string asset, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNullOrWhiteSpace(asset, nameof(asset));
@@ -1031,6 +1032,46 @@ namespace Binance
 
             request.AddParameter("asset", asset.FormatSymbol());
 
+            if (recvWindow > 0)
+                request.AddParameter("recvWindow", recvWindow);
+
+            await client.SignAsync(request, user, token)
+                .ConfigureAwait(false);
+
+            return await client.GetAsync(request, token)
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get the withdraw fee for an asset.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="user"></param>
+        /// <param name="asset"></param>
+        /// <param name="recvWindow"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task<string> GetWithdrawFeeAsync(this IBinanceHttpClient client, IBinanceApiUser user, string asset, long recvWindow = default, CancellationToken token = default)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(asset, nameof(asset));
+
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
+
+            var request = new BinanceHttpRequest("/wapi/v3/withdrawFee.html")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            request.AddParameter("asset", asset.FormatSymbol());
+
+            if (recvWindow > 0)
+                request.AddParameter("recvWindow", recvWindow);
+
             await client.SignAsync(request, user, token)
                 .ConfigureAwait(false);
 
@@ -1043,9 +1084,10 @@ namespace Binance
         /// </summary>
         /// <param name="client"></param>
         /// <param name="user"></param>
+        /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> GetAccountStatusAsync(this IBinanceHttpClient client, IBinanceApiUser user, CancellationToken token = default)
+        public static async Task<string> GetAccountStatusAsync(this IBinanceHttpClient client, IBinanceApiUser user, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
 
@@ -1059,6 +1101,9 @@ namespace Binance
             {
                 ApiKey = user.ApiKey
             };
+
+            if (recvWindow > 0)
+                request.AddParameter("recvWindow", recvWindow);
 
             await client.SignAsync(request, user, token)
                 .ConfigureAwait(false);

@@ -16,7 +16,7 @@ namespace BinanceConsoleApp.Controllers
 
             if (args.Length < 2 || args[1].Equals("account", StringComparison.OrdinalIgnoreCase))
             {
-                var status = await Program.Api.GetAccountStatusAsync(Program.User, token);
+                var status = await Program.Api.GetAccountStatusAsync(Program.User, token: token);
 
                 lock (Program.ConsoleSync)
                 {
