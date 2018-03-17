@@ -16,7 +16,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1520613780884;
+        public static readonly long LastUpdateAt = 1521306303589;
 
         public static readonly Asset ADA = new Asset("ADA", 8);
         public static readonly Asset ADX = new Asset("ADX", 8);
@@ -110,6 +110,7 @@ namespace Binance
         public static readonly Asset SNT = new Asset("SNT", 8);
         public static readonly Asset STEEM = new Asset("STEEM", 8);
         public static readonly Asset STORJ = new Asset("STORJ", 8);
+        public static readonly Asset STORM = new Asset("STORM", 8);
         public static readonly Asset STRAT = new Asset("STRAT", 8);
         public static readonly Asset SUB = new Asset("SUB", 8);
         public static readonly Asset TNB = new Asset("TNB", 8);
@@ -288,6 +289,7 @@ namespace Binance
                     { "SNT", SNT },
                     { "STEEM", STEEM },
                     { "STORJ", STORJ },
+                    { "STORM", STORM },
                     { "STRAT", STRAT },
                     { "SUB", SUB },
                     { "TNB", TNB },
