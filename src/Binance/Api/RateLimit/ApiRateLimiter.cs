@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace
 namespace Binance
@@ -24,7 +23,7 @@ namespace Binance
 
         #region Private Fields
 
-        private readonly IServiceProvider _services;
+        private readonly IRateLimiterProvider _rateLimiterProvider;
 
         private volatile bool _isEnabled = EnabledDefault;
 
@@ -38,12 +37,21 @@ namespace Binance
         #region Constructors
 
         /// <summary>
-        /// Constructor.
+        /// The default constructor with default <see cref="IRateLimiterProvider"/>.
         /// </summary>
-        /// <param name="services"></param>
-        public ApiRateLimiter(IServiceProvider services = null)
+        public ApiRateLimiter()
+            : this(new RateLimiterProvider())
+        { }
+
+        /// <summary>
+        /// The DI constructor.
+        /// </summary>
+        /// <param name="rateLimiterProvider">The rate limiter provider (required).</param>
+        public ApiRateLimiter(IRateLimiterProvider rateLimiterProvider)
         {
-            _services = services;
+            Throw.IfNull(rateLimiterProvider, nameof(rateLimiterProvider));
+
+            _rateLimiterProvider = rateLimiterProvider;
         }
 
         #endregion Constructors
@@ -74,7 +82,7 @@ namespace Binance
                     return;
                 }
 
-                var limiter = _services?.GetService<IRateLimiter>() ?? new RateLimiter();
+                var limiter = _rateLimiterProvider.CreateRateLimiter();
 
                 limiter.Duration = duration;
                 limiter.Count = count;

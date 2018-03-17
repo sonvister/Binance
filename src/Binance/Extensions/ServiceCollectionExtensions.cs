@@ -34,6 +34,8 @@ namespace Binance
 
                 return BinanceHttpClient.Instance;
             });
+            services.AddSingleton<IApiRateLimiterProvider, ApiRateLimiterProvider>();
+            services.AddSingleton<IRateLimiterProvider, RateLimiterProvider>();
             services.AddTransient<IApiRateLimiter, ApiRateLimiter>();
             services.AddTransient<IRateLimiter, RateLimiter>();
             services.AddSingleton<IBinanceApi, BinanceApi>();

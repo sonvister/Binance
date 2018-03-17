@@ -36,8 +36,8 @@ namespace Binance
         /// </summary>
         /// <param name="apiKey">The user's API key.</param>
         /// <param name="apiSecret">The user's API secret (optional, but required for signing).</param>
-        /// <param name="rateLimiter">The rate limiter (auto-configured).</param>
-        /// <param name="options">The JSON API options.</param>
+        /// <param name="rateLimiter">The rate limiter (optional, auto-configured).</param>
+        /// <param name="options">The API options (optional).</param>
         public BinanceApiUser(string apiKey, string apiSecret = null, IApiRateLimiter rateLimiter = null, IOptions<BinanceApiOptions> options = null)
         {
             Throw.IfNullOrWhiteSpace(apiKey, nameof(apiKey));
