@@ -435,6 +435,7 @@ namespace Binance
         public virtual async Task<Order> PlaceAsync(ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(clientOrder, nameof(clientOrder));
+            Throw.IfNull(clientOrder.Side, nameof(clientOrder.Side));
 
             var limitOrder = clientOrder as LimitOrder;
             var stopOrder = clientOrder as IStopOrder;
@@ -444,14 +445,14 @@ namespace Binance
                 Symbol = clientOrder.Symbol.FormatSymbol(),
                 OriginalQuantity = clientOrder.Quantity,
                 Price = limitOrder?.Price ?? 0,
-                Side = clientOrder.Side,
+                Side = clientOrder.Side.Value,
                 Type = clientOrder.Type,
                 Status = OrderStatus.New,
                 TimeInForce = limitOrder?.TimeInForce ?? TimeInForce.GTC
             };
 
             // Place the order.
-            var json = await HttpClient.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
+            var json = await HttpClient.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side.Value, clientOrder.Type,
                 clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, clientOrder.Type == OrderType.LimitMaker ? null : limitOrder?.TimeInForce,
                 stopOrder?.StopPrice ?? 0, limitOrder?.IcebergQuantity ?? 0, recvWindow, false, PlaceOrderResponseType.Full, token);
 
@@ -462,7 +463,6 @@ namespace Binance
 
                 // Update client order properties.
                 clientOrder.Id = order.ClientOrderId;
-                clientOrder.Time = order.Time;
             }
             catch (Exception e)
             {
@@ -475,12 +475,13 @@ namespace Binance
         public virtual async Task TestPlaceAsync(ClientOrder clientOrder, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(clientOrder, nameof(clientOrder));
+            Throw.IfNull(clientOrder.Side, nameof(clientOrder.Side));
 
             var limitOrder = clientOrder as LimitOrder;
             var stopOrder = clientOrder as IStopOrder;
 
             // Place the TEST order.
-            var json = await HttpClient.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side, clientOrder.Type,
+            var json = await HttpClient.PlaceOrderAsync(clientOrder.User, clientOrder.Symbol, clientOrder.Side.Value, clientOrder.Type,
                 clientOrder.Quantity, limitOrder?.Price ?? 0, clientOrder.Id, clientOrder.Type == OrderType.LimitMaker ? null : limitOrder?.TimeInForce,
                 stopOrder?.StopPrice ?? 0, limitOrder?.IcebergQuantity ?? 0, recvWindow, true, PlaceOrderResponseType.Ack, token);
 

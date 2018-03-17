@@ -3,7 +3,7 @@
 // ReSharper disable once CheckNamespace
 namespace Binance
 {
-    public abstract class ClientOrder : IChronological
+    public abstract class ClientOrder
     {
         #region Public Properties
 
@@ -25,7 +25,7 @@ namespace Binance
         /// <summary>
         /// Get or set the order side.
         /// </summary>
-        public OrderSide Side { get; set; }
+        public OrderSide? Side { get; set; }
 
         /// <summary>
         /// Get or set the quantity.
@@ -38,12 +38,6 @@ namespace Binance
         /// </summary>
         public string Id { get; set; }
 
-        /// <summary>
-        /// Get the transact time.
-        /// NOTE: This value is set internally after order placement.
-        /// </summary>
-        public DateTime Time { get; internal set; }
-
         #endregion Public Properties
 
         #region Constructors
@@ -51,7 +45,7 @@ namespace Binance
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="user">The user (required).</param>
         protected ClientOrder(IBinanceApiUser user)
         {
             Throw.IfNull(user, nameof(user));
