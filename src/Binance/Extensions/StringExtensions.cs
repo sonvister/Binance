@@ -49,6 +49,7 @@ namespace Binance
                 case "1h": return CandlestickInterval.Hour;
                 case "2h": return CandlestickInterval.Hours_2;
                 case "4h": return CandlestickInterval.Hours_4;
+                case "6h": return CandlestickInterval.Hours_6;
                 case "8h": return CandlestickInterval.Hours_8;
                 case "12h": return CandlestickInterval.Hours_12;
                 case "24h":
