@@ -128,7 +128,7 @@ using Binance;
 using Binance.Cache;
 using Binance.WebSocket;
 
-// Initiatlize web socket cache (with automatic streaming).
+// Initialize web socket cache (with automatic streaming).
 var webSocketCache = new DepthWebSocketCache();
 
 // Handle error events.
