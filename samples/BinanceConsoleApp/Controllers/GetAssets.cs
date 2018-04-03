@@ -6,14 +6,12 @@ using Binance;
 
 namespace BinanceConsoleApp.Controllers
 {
-    internal class GetSymbols : IHandleCommand
+    internal class GetAssets : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
-            if (!command.StartsWith("symbols ", StringComparison.OrdinalIgnoreCase) &&
-                !command.Equals("symbols", StringComparison.OrdinalIgnoreCase) &&
-                !command.StartsWith("pairs ", StringComparison.OrdinalIgnoreCase) &&
-                !command.Equals("pairs", StringComparison.OrdinalIgnoreCase))
+            if (!command.StartsWith("assets ", StringComparison.OrdinalIgnoreCase) &&
+                !command.Equals("assets", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             var args = command.Split(' ');
@@ -23,13 +21,12 @@ namespace BinanceConsoleApp.Controllers
                 await Symbol.UpdateCacheAsync(Program.Api, token);
             }
 
-            var symbols = Symbol.Cache.Values.OrderBy(s => s.ToString());
-            //var symbols = await Program.Api.SymbolsAsync(token); // as string.
+            var assets = Asset.Cache.Values.OrderBy(a => a.Symbol);
 
             lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
-                Console.WriteLine(string.Join(", ", symbols));
+                Console.WriteLine(string.Join(", ", assets));
                 Console.WriteLine();
             }
 

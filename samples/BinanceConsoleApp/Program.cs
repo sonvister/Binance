@@ -181,6 +181,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  candles|kLines <symbol> <interval> [limit]            display candlesticks for a symbol.");
                 Console.WriteLine("  candlesIn|kLinesIn <symbol> <interval> <start> <end>  display candlesticks for a symbol in time interval.");
                 Console.WriteLine("  symbols|pairs [refresh]                               display all symbols (currency pairs).");
+                Console.WriteLine("  assets [refresh]                                      display all assets (currencies).");
                 Console.WriteLine("  price <symbol>                                        display current market price for a symbol or all symbols.");
                 Console.WriteLine("  rate <baseAsset> <quoteAsset>                         display exchange rate for any pair of assets.");
                 Console.WriteLine("  top <symbol>                                          display order book top price/qty for a symbol or all symbols.");
