@@ -130,8 +130,10 @@ namespace Binance
             if (numberOfTrades < 0)
                 throw new ArgumentException($"{nameof(Candlestick)}: number of trades must not be less than 0.", nameof(numberOfTrades));
 
-            if (volume < 0)
-                throw new ArgumentException($"{nameof(Candlestick)}: volume must not be less than 0.", nameof(volume));
+            // HACK: https://api.binance.com/api/v1/klines?symbol=TRXBTC&interval=1M returns negative volume.
+            //if (volume < 0)
+            //    throw new ArgumentException($"{nameof(Candlestick)}: volume must not be less than 0.", nameof(volume));
+
             if (quoteAssetVolume < 0)
                 throw new ArgumentException($"{nameof(Candlestick)}: volume must not be less than 0.", nameof(quoteAssetVolume));
             if (takerBuyBaseAssetVolume < 0)
