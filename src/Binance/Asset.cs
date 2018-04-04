@@ -16,7 +16,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1521306303589;
+        public static readonly long LastUpdateAt = 1522861060011;
 
         public static readonly Asset ADA = new Asset("ADA", 8);
         public static readonly Asset ADX = new Asset("ADX", 8);
@@ -59,6 +59,7 @@ namespace Binance
         public static readonly Asset FUEL = new Asset("FUEL", 8);
         public static readonly Asset FUN = new Asset("FUN", 8);
         public static readonly Asset GAS = new Asset("GAS", 8);
+        public static readonly Asset GRS = new Asset("GRS", 8);
         public static readonly Asset GTO = new Asset("GTO", 8);
         public static readonly Asset GVT = new Asset("GVT", 8);
         public static readonly Asset GXS = new Asset("GXS", 8);
@@ -97,6 +98,7 @@ namespace Binance
         public static readonly Asset POE = new Asset("POE", 8);
         public static readonly Asset POWR = new Asset("POWR", 8);
         public static readonly Asset PPT = new Asset("PPT", 8);
+        public static readonly Asset QLC = new Asset("QLC", 8);
         public static readonly Asset QSP = new Asset("QSP", 8);
         public static readonly Asset QTUM = new Asset("QTUM", 8);
         public static readonly Asset RCN = new Asset("RCN", 8);
@@ -113,6 +115,7 @@ namespace Binance
         public static readonly Asset STORM = new Asset("STORM", 8);
         public static readonly Asset STRAT = new Asset("STRAT", 8);
         public static readonly Asset SUB = new Asset("SUB", 8);
+        public static readonly Asset SYS = new Asset("SYS", 8);
         public static readonly Asset TNB = new Asset("TNB", 8);
         public static readonly Asset TNT = new Asset("TNT", 8);
         public static readonly Asset TRIG = new Asset("TRIG", 8);
@@ -123,9 +126,12 @@ namespace Binance
         public static readonly Asset VIB = new Asset("VIB", 8);
         public static readonly Asset VIBE = new Asset("VIBE", 8);
         public static readonly Asset WABI = new Asset("WABI", 8);
+        public static readonly Asset WAN = new Asset("WAN", 8);
         public static readonly Asset WAVES = new Asset("WAVES", 8);
         public static readonly Asset WINGS = new Asset("WINGS", 8);
+        public static readonly Asset WPR = new Asset("WPR", 8);
         public static readonly Asset WTC = new Asset("WTC", 8);
+        public static readonly Asset XEM = new Asset("XEM", 8);
         public static readonly Asset XLM = new Asset("XLM", 8);
         public static readonly Asset XMR = new Asset("XMR", 8);
         public static readonly Asset XRP = new Asset("XRP", 8);
@@ -238,6 +244,7 @@ namespace Binance
                     { "FUEL", FUEL },
                     { "FUN", FUN },
                     { "GAS", GAS },
+                    { "GRS", GRS },
                     { "GTO", GTO },
                     { "GVT", GVT },
                     { "GXS", GXS },
@@ -276,6 +283,7 @@ namespace Binance
                     { "POE", POE },
                     { "POWR", POWR },
                     { "PPT", PPT },
+                    { "QLC", QLC },
                     { "QSP", QSP },
                     { "QTUM", QTUM },
                     { "RCN", RCN },
@@ -292,6 +300,7 @@ namespace Binance
                     { "STORM", STORM },
                     { "STRAT", STRAT },
                     { "SUB", SUB },
+                    { "SYS", SYS },
                     { "TNB", TNB },
                     { "TNT", TNT },
                     { "TRIG", TRIG },
@@ -302,9 +311,12 @@ namespace Binance
                     { "VIB", VIB },
                     { "VIBE", VIBE },
                     { "WABI", WABI },
+                    { "WAN", WAN },
                     { "WAVES", WAVES },
                     { "WINGS", WINGS },
+                    { "WPR", WPR },
                     { "WTC", WTC },
+                    { "XEM", XEM },
                     { "XLM", XLM },
                     { "XMR", XMR },
                     { "XRP", XRP },
