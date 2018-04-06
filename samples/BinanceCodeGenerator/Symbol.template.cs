@@ -124,10 +124,10 @@ namespace Binance
                     // <<insert symbol definitions>>
 
                     // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                    { "BCHUSDT", BCC_USDT },
-                    { "BCHBNB", BCC_BNB },
-                    { "BCHBTC", BCC_BTC },
-                    { "BCHETH", BCC_ETH }
+                    { string.Intern("BCHUSDT"), BCC_USDT },
+                    { string.Intern("BCHBNB"), BCC_BNB },
+                    { string.Intern("BCHBTC"), BCC_BTC },
+                    { string.Intern("BCHETH"), BCC_ETH }
                 };
             }
             catch (Exception e)
@@ -167,7 +167,7 @@ namespace Binance
             IsIcebergAllowed = isIcebergAllowed;
             OrderTypes = orderTypes;
 
-            _symbol = $"{baseAsset}{quoteAsset}";
+            _symbol = string.Intern($"{baseAsset}{quoteAsset}");
         }
 
         #endregion Constructors
@@ -237,7 +237,7 @@ namespace Binance
                 // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var symbol in symbols)
                 {
-                    Cache[symbol] = symbol;
+                    Cache[string.Intern(symbol)] = symbol;
                 }
             }
 

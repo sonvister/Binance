@@ -84,7 +84,7 @@ namespace Binance
                     // <<insert asset definitions>>
             
                     // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                    { "BCH", BCC }
+                    { string.Intern("BCH"), BCC }
                 };
             }
             catch (Exception e)
@@ -103,7 +103,7 @@ namespace Binance
             if (string.IsNullOrWhiteSpace(symbol))
                 throw new ArgumentNullException(nameof(symbol));
 
-            Symbol = symbol.ToUpperInvariant();
+            Symbol = string.Intern(symbol.ToUpperInvariant());
             Precision = precision;
         }
 
@@ -196,7 +196,7 @@ namespace Binance
                 // Update existing and add any new assets.
                 foreach (var asset in assets)
                 {
-                    Cache[asset] = asset;
+                    Cache[string.Intern(asset)] = asset;
                 }
             }
         }

@@ -75,12 +75,12 @@ namespace Binance
         {
             Throw.IfNullOrWhiteSpace(symbol);
 
-            return symbol.Trim()
+            return string.Intern(symbol.Trim()
                 .Replace(" ", string.Empty)
                 .Replace("-", string.Empty)
                 .Replace("_", string.Empty)
                 .Replace("/", string.Empty)
-                .ToUpperInvariant();
+                .ToUpperInvariant());
         }
 
         /// <summary>
