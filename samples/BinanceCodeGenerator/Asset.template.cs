@@ -84,7 +84,7 @@ namespace Binance
                     // <<insert asset definitions>>
             
                     // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                    { string.Intern("BCH"), BCC }
+                    { "BCH", BCC }
                 };
             }
             catch (Exception e)

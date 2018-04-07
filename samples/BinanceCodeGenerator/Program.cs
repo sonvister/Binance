@@ -70,7 +70,7 @@ namespace BinanceCodeGenerator
 
             foreach(var symbol in symbols)
             {
-                lines.Insert(index++, $"                    {{ string.Intern(\"{symbol}\"), {symbol.BaseAsset}_{symbol.QuoteAsset} }},");
+                lines.Insert(index++, $"                    {{ \"{symbol}\", {symbol.BaseAsset}_{symbol.QuoteAsset} }},");
             }
 
             // Save the generated source code (replacing original).
@@ -104,7 +104,7 @@ namespace BinanceCodeGenerator
 
             foreach (var asset in assets)
             {
-                lines.Insert(index++, $"                    {{ string.Intern(\"{asset}\"), {asset} }},");
+                lines.Insert(index++, $"                    {{ \"{asset}\", {asset} }},");
             }
 
             // Save the generated source code (replacing original).

@@ -124,10 +124,10 @@ namespace Binance
                     // <<insert symbol definitions>>
 
                     // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                    { string.Intern("BCHUSDT"), BCC_USDT },
-                    { string.Intern("BCHBNB"), BCC_BNB },
-                    { string.Intern("BCHBTC"), BCC_BTC },
-                    { string.Intern("BCHETH"), BCC_ETH }
+                    { "BCHUSDT", BCC_USDT },
+                    { "BCHBNB", BCC_BNB },
+                    { "BCHBTC", BCC_BTC },
+                    { "BCHETH", BCC_ETH }
                 };
             }
             catch (Exception e)
