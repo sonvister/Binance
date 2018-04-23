@@ -16,7 +16,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1523121513616;
+        public static readonly long LastUpdateAt = 1524451918573;
 
         public static readonly Asset ADA = new Asset("ADA", 8);
         public static readonly Asset ADX = new Asset("ADX", 8);
@@ -41,9 +41,9 @@ namespace Binance
         public static readonly Asset BTS = new Asset("BTS", 8);
         public static readonly Asset CDT = new Asset("CDT", 8);
         public static readonly Asset CHAT = new Asset("CHAT", 8);
+        public static readonly Asset CLOAK = new Asset("CLOAK", 8);
         public static readonly Asset CMT = new Asset("CMT", 8);
         public static readonly Asset CND = new Asset("CND", 8);
-        public static readonly Asset CTR = new Asset("CTR", 8);
         public static readonly Asset DASH = new Asset("DASH", 8);
         public static readonly Asset DGD = new Asset("DGD", 8);
         public static readonly Asset DLT = new Asset("DLT", 8);
@@ -226,9 +226,9 @@ namespace Binance
                     { "BTS", BTS },
                     { "CDT", CDT },
                     { "CHAT", CHAT },
+                    { "CLOAK", CLOAK },
                     { "CMT", CMT },
                     { "CND", CND },
-                    { "CTR", CTR },
                     { "DASH", DASH },
                     { "DGD", DGD },
                     { "DLT", DLT },
