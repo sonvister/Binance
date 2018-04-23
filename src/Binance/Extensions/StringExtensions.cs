@@ -38,7 +38,7 @@ namespace Binance
         {
             Throw.IfNullOrWhiteSpace(s, nameof(s));
 
-            switch (s.Trim().ToLower())
+            switch (s.Trim())
             {
                 case "1m": return CandlestickInterval.Minute;
                 case "3m": return CandlestickInterval.Minutes_3;
