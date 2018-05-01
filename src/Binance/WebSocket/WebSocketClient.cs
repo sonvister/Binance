@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Binance.Stream;
 using Microsoft.Extensions.Logging;
 
 namespace Binance.WebSocket

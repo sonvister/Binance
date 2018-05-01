@@ -16,7 +16,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1524451918573;
+        public static readonly long LastUpdateAt = 1525194835520;
 
         public static readonly Asset ADA = new Asset("ADA", 8);
         public static readonly Asset ADX = new Asset("ADX", 8);
@@ -59,6 +59,7 @@ namespace Binance
         public static readonly Asset FUEL = new Asset("FUEL", 8);
         public static readonly Asset FUN = new Asset("FUN", 8);
         public static readonly Asset GAS = new Asset("GAS", 8);
+        public static readonly Asset GNT = new Asset("GNT", 8);
         public static readonly Asset GRS = new Asset("GRS", 8);
         public static readonly Asset GTO = new Asset("GTO", 8);
         public static readonly Asset GVT = new Asset("GVT", 8);
@@ -244,6 +245,7 @@ namespace Binance
                     { "FUEL", FUEL },
                     { "FUN", FUN },
                     { "GAS", GAS },
+                    { "GNT", GNT },
                     { "GRS", GRS },
                     { "GTO", GTO },
                     { "GVT", GVT },

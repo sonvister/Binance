@@ -37,7 +37,20 @@ namespace Binance.Tests
             Assert.True(symbol1 != symbol3);
 
             Assert.True(symbol1 == symbol1.ToString());
+            Assert.True(symbol1 == symbol2.ToString());
             Assert.True(symbol1 != symbol3.ToString());
+
+            var baseAsset = new Asset("TEST", 8);
+            var quoteAsset = Asset.BTC;
+            var quantityRange = new InclusiveRange(0.01m, 10.0m, 0.01m);
+            var priceRange = new InclusiveRange(0.01m, 100.0m, 0.01m);
+            const decimal minNotionalValue = 0.001m;
+            const bool isIcebergAllowed = true;
+            var orderTypes = new[] { OrderType.Limit, OrderType.Market };
+
+            var newSymbol = new Symbol(SymbolStatus.Trading, baseAsset, quoteAsset, quantityRange, priceRange, minNotionalValue, isIcebergAllowed, orderTypes);
+
+            Assert.True(newSymbol == baseAsset.Symbol + quoteAsset.Symbol);
         }
 
         [Fact]
@@ -67,7 +80,6 @@ namespace Binance.Tests
         public void IsValid()
         {
             const SymbolStatus status = SymbolStatus.Trading;
-            //var baseAsset = Asset.BTC;
             var quoteAsset = Asset.USDT;
             var quantityRange = new InclusiveRange(0.01m, 10.0m, 0.01m);
             var priceRange = new InclusiveRange(0.01m, 100.0m, 0.01m);

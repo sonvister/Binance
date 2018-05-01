@@ -39,7 +39,7 @@ namespace BinanceConsoleApp
 
         public static async Task Main(string[] args)
         {
-            // Un-comment to run...
+            // Un-comment to run example applications...
             //await AccountBalancesExample.ExampleMain(args);
             //await AccountBalancesExample.AdvancedExampleMain(args);
             //await MinimalWithDependencyInjection.ExampleMain(args);
@@ -99,10 +99,13 @@ namespace BinanceConsoleApp
                         .CreateUser(apiKey, apiSecret);
                 }
 
+                // Instantiate the Binance API service (singleton).
                 Api = ServiceProvider.GetService<IBinanceApi>();
 
+                // Instantiate the web socket client manager service.
                 ClientManager = ServiceProvider.GetService<IBinanceWebSocketClientManager>();
 
+                // Add client manager error handler.
                 ClientManager.Error += (s, e) =>
                 {
                     lock (ConsoleSync)
@@ -113,9 +116,10 @@ namespace BinanceConsoleApp
                     }
                 };
 
+                // Instantiate the user data web socket manager.
                 UserDataManager = ServiceProvider.GetService<IUserDataWebSocketManager>();
 
-                // Instantiate all assembly command handlers.
+                // Instantiate all command handlers within this assembly.
                 foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
                 {
                     if (typeof(IHandleCommand).IsAssignableFrom(type) && !type.IsAbstract)

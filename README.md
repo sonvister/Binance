@@ -137,7 +137,8 @@ webSocketCache.Error += (s, e) => { Console.WriteLine(e.Exception.Message); };
 // Subscribe callback to BTC/USDT (automatically begin streaming).
 webSocketCache.Subscribe(Symbol.BTC_USDT, evt =>
 {
-    Symbol symbol = evt.OrderBook.Symbol; // use implicit conversion.
+    // Get symbol from cache (update cache if a symbol is missing).
+    var symbol = Symbol.Get(evt.OrderBook.Symbol);
 
     var minBidPrice = evt.OrderBook.Bids.Last().Price;
     var maxAskPrice = evt.OrderBook.Asks.Last().Price;

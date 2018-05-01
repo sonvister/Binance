@@ -18,6 +18,7 @@ namespace Binance.Stream
         /// </summary>
         /// <param name="subscriber"></param>
         /// <param name="streamNames"></param>
+        /// <returns>The <see cref="IJsonPublisher"/> for chaining method calls.</returns>
         IJsonPublisher Subscribe(IJsonSubscriber subscriber, params string[] streamNames);
 
         /// <summary>
@@ -25,6 +26,7 @@ namespace Binance.Stream
         /// </summary>
         /// <param name="subscriber"></param>
         /// <param name="streamNames"></param>
+        /// <returns>The <see cref="IJsonPublisher"/> for chaining method calls.</returns>
         IJsonPublisher Unsubscribe(IJsonSubscriber subscriber, params string[] streamNames);
     }
 }

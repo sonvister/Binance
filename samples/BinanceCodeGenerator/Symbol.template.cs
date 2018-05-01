@@ -38,16 +38,6 @@ namespace Binance
 
         public static implicit operator string(Symbol symbol) => symbol?.ToString();
 
-        public static implicit operator Symbol(string s)
-        {
-            if (s == null) return null;
-            var _s = s.FormatSymbol();
-            lock (_sync)
-            {
-                return Cache.ContainsKey(_s) ? Cache[_s] : null;
-            }
-        }
-
         #endregion Implicit Operators
 
         #region Public Properties
@@ -173,6 +163,22 @@ namespace Binance
         #endregion Constructors
 
         #region Public Methods
+
+        /// <summary>
+        /// Get a symbol from the cache using a string.
+        /// Update the cache with UpdateCacheAsync if new symbols are missing.
+        /// </summary>
+        /// <param name="s">The string to match.</param>
+        /// <returns>A <see cref="Symbol"/> or null.</returns>
+        public static Symbol Get(string s)
+        {
+            if (s == null) return null;
+            var _s = s.FormatSymbol();
+            lock (_sync)
+            {
+                return Cache.ContainsKey(_s) ? Cache[_s] : null;
+            }
+        }
 
         /// <summary>
         /// Verify that symbol is valid. If fails, but known to be valid,
