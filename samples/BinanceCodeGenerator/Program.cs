@@ -57,8 +57,7 @@ namespace BinanceCodeGenerator
 
                 foreach (var symbol in group)
                 {
-                    var orderTypes = string.Join(",", symbol.OrderTypes.Select(_ => "OrderType." + _));
-                    lines.Insert(index++, $"        public static readonly Symbol {symbol.BaseAsset}_{symbol.QuoteAsset} = new Symbol(SymbolStatus.{symbol.Status}, Asset.{symbol.BaseAsset}, Asset.{symbol.QuoteAsset}, ({symbol.Quantity.Minimum}m, {symbol.Quantity.Maximum}m, {symbol.Quantity.Increment}m), ({symbol.Price.Minimum}m, {symbol.Price.Maximum}m, {symbol.Price.Increment}m), {symbol.NotionalMinimumValue}m, {symbol.IsIcebergAllowed.ToString().ToLowerInvariant()}, new List<OrderType> {{{orderTypes}}});");
+                    lines.Insert(index++, $"        public static Symbol {symbol.BaseAsset}_{symbol.QuoteAsset} => Cache.Get(\"{symbol.BaseAsset}_{symbol.QuoteAsset}\");");
                 }
 
                 lines.Insert(index++, string.Empty);
@@ -70,7 +69,8 @@ namespace BinanceCodeGenerator
 
             foreach(var symbol in symbols)
             {
-                lines.Insert(index++, $"                    {{ \"{symbol}\", {symbol.BaseAsset}_{symbol.QuoteAsset} }},");
+                var orderTypes = string.Join(",", symbol.OrderTypes.Select(_ => "OrderType." + _));
+                lines.Insert(index++, $"                        new Symbol(SymbolStatus.{symbol.Status}, Asset.{symbol.BaseAsset}, Asset.{symbol.QuoteAsset}, ({symbol.Quantity.Minimum}m, {symbol.Quantity.Maximum}m, {symbol.Quantity.Increment}m), ({symbol.Price.Minimum}m, {symbol.Price.Maximum}m, {symbol.Price.Increment}m), {symbol.NotionalMinimumValue}m, {symbol.IsIcebergAllowed.ToString().ToLowerInvariant()}, new List<OrderType> {{{orderTypes}}}),");
             }
 
             // Save the generated source code (replacing original).
@@ -96,7 +96,7 @@ namespace BinanceCodeGenerator
             // Insert definition for each asset.
             foreach (var asset in assets)
             {
-                lines.Insert(index++, $"        public static readonly Asset {asset} = new Asset(\"{asset}\", {asset.Precision});");
+                lines.Insert(index++, $"        public static Asset {asset} => Cache.Get(\"{asset}\");");
             }
 
             index = lines.FindIndex(l => l.Contains("<<insert asset definitions>>"));
@@ -104,7 +104,7 @@ namespace BinanceCodeGenerator
 
             foreach (var asset in assets)
             {
-                lines.Insert(index++, $"                    {{ \"{asset}\", {asset} }},");
+                lines.Insert(index++, $"                        new Asset(\"{asset}\", {asset.Precision}),");
             }
 
             // Save the generated source code (replacing original).

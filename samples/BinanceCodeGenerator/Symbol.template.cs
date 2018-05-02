@@ -1,7 +1,6 @@
 ﻿// ReSharper disable InconsistentNaming
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,10 +22,10 @@ namespace Binance
         // <<insert symbols>>
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-        public static readonly Symbol BCH_USDT;
-        public static readonly Symbol BCH_BNB;
-        public static readonly Symbol BCH_BTC;
-        public static readonly Symbol BCH_ETH;
+        public static Symbol BCH_USDT => BCC_USDT;
+        public static Symbol BCH_BNB => BCC_BNB;
+        public static Symbol BCH_BTC => BCC_BTC;
+        public static Symbol BCH_ETH => BCC_ETH;
 
         #endregion Public Constants
 
@@ -45,7 +44,7 @@ namespace Binance
         /// <summary>
         /// Symbol cache.
         /// </summary>
-        public static IDictionary<string, Symbol> Cache { get; }
+        public static ISymbolCache Cache { get; set; }
 
         /// <summary>
         /// Get the symbol status.
@@ -103,22 +102,18 @@ namespace Binance
         {
             try
             {
+                Cache = new InMemorySymbolCache();
+
+                Cache.Load(
+                    new[] {
+                        // <<insert symbol definitions>>
+                    });
+
                 // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                BCH_USDT = BCC_USDT;
-                BCH_BNB = BCC_BNB;
-                BCH_BTC = BCC_BTC;
-                BCH_ETH = BCC_ETH;
-
-                Cache = new Dictionary<string, Symbol>
-                {
-                    // <<insert symbol definitions>>
-
-                    // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                    { "BCHUSDT", BCC_USDT },
-                    { "BCHBNB", BCC_BNB },
-                    { "BCHBTC", BCC_BTC },
-                    { "BCHETH", BCC_ETH }
-                };
+                Cache.Set("BCH_USDT", Cache.Get("BCC_USDT"));
+                Cache.Set("BCH_BNB", Cache.Get("BCC_BNB"));
+                Cache.Set("BCH_BTC", Cache.Get("BCC_BTC"));
+                Cache.Set("BCH_ETH", Cache.Get("BCC_ETH"));
             }
             catch (Exception e)
             {
@@ -165,22 +160,6 @@ namespace Binance
         #region Public Methods
 
         /// <summary>
-        /// Get a symbol from the cache using a string.
-        /// Update the cache with UpdateCacheAsync if new symbols are missing.
-        /// </summary>
-        /// <param name="s">The string to match.</param>
-        /// <returns>A <see cref="Symbol"/> or null.</returns>
-        public static Symbol Get(string s)
-        {
-            if (s == null) return null;
-            var _s = s.FormatSymbol();
-            lock (_sync)
-            {
-                return Cache.ContainsKey(_s) ? Cache[_s] : null;
-            }
-        }
-
-        /// <summary>
         /// Verify that symbol is valid. If fails, but known to be valid,
         /// call UpdateCacheAsync() to get the latest symbols.
         /// </summary>
@@ -193,11 +172,7 @@ namespace Binance
 
             symbol = symbol.FormatSymbol();
 
-            lock (_sync)
-            {
-                return Cache.ContainsKey(symbol)
-                    && Cache[symbol].ToString() == symbol;
-            }
+            return Cache.Get(symbol) == symbol;
         }
 
         /// <summary>
@@ -211,44 +186,20 @@ namespace Binance
             var symbols = await api.GetSymbolsAsync(token)
                 .ConfigureAwait(false);
 
-            UpdateCache(symbols);
-        }
+            Cache.Load(symbols);
 
-        /// <summary>
-        /// Update the symbol cache and asset cache.
-        /// </summary>
-        /// <param name="symbols">The symbols.</param>
-        /// <returns></returns>
-        public static void UpdateCache(IEnumerable<Symbol> symbols)
-        {
-            Throw.IfNull(symbols, nameof(symbols));
+            var assets = new List<Asset>();
 
-            // ReSharper disable once PossibleMultipleEnumeration
-            if (!symbols.Any())
-                throw new ArgumentException("Enumerable must not be empty.", nameof(symbols));
-
-            lock (_sync)
+            foreach (var symbol in symbols)
             {
-                // Remove any old symbols (preserves redirections).
-                // ReSharper disable once PossibleMultipleEnumeration
-                foreach (var symbol in Cache.Values.ToArray())
-                {
-                    if (!symbols.Contains(symbol))
-                    {
-                        Cache.Remove(symbol);
-                    }
-                }
+                if (!assets.Contains(symbol.BaseAsset))
+                    assets.Add(symbol.BaseAsset);
 
-                // Update existing and add any new symbols.
-                // ReSharper disable once PossibleMultipleEnumeration
-                foreach (var symbol in symbols)
-                {
-                    Cache[string.Intern(symbol)] = symbol;
-                }
+                if (!assets.Contains(symbol.QuoteAsset))
+                    assets.Add(symbol.QuoteAsset);
             }
 
-            // ReSharper disable once PossibleMultipleEnumeration
-            Asset.UpdateCache(symbols);
+            Asset.Cache.Load(assets);
         }
 
         public override string ToString()

@@ -14,7 +14,7 @@ namespace Binance
         {
             Throw.IfNull(clientOrder, nameof(clientOrder));
 
-            var symbol = Symbol.Get(clientOrder.Symbol);
+            var symbol = Symbol.Cache.Get(clientOrder.Symbol);
 
             return symbol != null && symbol.IsValid(clientOrder);
         }
@@ -28,7 +28,7 @@ namespace Binance
         {
             Throw.IfNull(clientOrder, nameof(clientOrder));
 
-            var symbol = Symbol.Get(clientOrder.Symbol);
+            var symbol = Symbol.Cache.Get(clientOrder.Symbol);
 
             if (symbol == null)
                 throw new ArgumentException($"The symbol ({clientOrder.Symbol}) is not recognized.", nameof(clientOrder.Symbol));

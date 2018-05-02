@@ -1,7 +1,5 @@
 ﻿// ReSharper disable InconsistentNaming
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Binance
 {
@@ -21,7 +19,7 @@ namespace Binance
         // <<insert assets>>
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-        public static readonly Asset BCH;
+        public static Asset BCH => BCC;
 
         #endregion Public Constants
 
@@ -33,16 +31,6 @@ namespace Binance
 
         public static implicit operator string(Asset asset) => asset?.ToString();
 
-        public static implicit operator Asset(string s)
-        {
-            if (s == null) return null;
-            var _s = s.FormatSymbol();
-            lock (_sync)
-            {
-                return Cache.ContainsKey(_s) ? Cache[_s] : null;
-            }
-        }
-
         #endregion Implicit Operators
 
         #region Public Properties
@@ -50,7 +38,7 @@ namespace Binance
         /// <summary>
         /// Asset cache.
         /// </summary>
-        public static IDictionary<string, Asset> Cache { get; }
+        public static IAssetCache Cache { get; set; }
 
         /// <summary>
         /// Get the asset symbol.
@@ -76,16 +64,15 @@ namespace Binance
         {
             try
             {
-                // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                BCH = BCC;
+                Cache = new InMemoryAssetCache();
 
-                Cache = new Dictionary<string, Asset>
-                {
-                    // <<insert asset definitions>>
-            
-                    // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                    { "BCH", BCC }
-                };
+                Cache.Load(
+                    new[] {
+                        // <<insert asset definitions>>
+                    });
+
+                // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
+                Cache.Set("BCH", Cache.Get("BCC"));
             }
             catch (Exception e)
             {
@@ -124,11 +111,7 @@ namespace Binance
 
             asset = asset.FormatSymbol();
 
-            lock (_sync)
-            {
-                return Cache.ContainsKey(asset)
-                    && Cache[asset].ToString() == asset;
-            }
+            return Cache.Get(asset) == asset;
         }
 
         public override bool Equals(object obj)
@@ -154,54 +137,6 @@ namespace Binance
         }
 
         #endregion Public Methods
-
-        #region Internal Methods
-
-        /// <summary>
-        /// Update the asset cache.
-        /// </summary>
-        /// <param name="symbols">The symbols.</param>
-        /// <returns></returns>
-        internal static void UpdateCache(IEnumerable<Symbol> symbols)
-        {
-            Throw.IfNull(symbols, nameof(symbols));
-
-            // ReSharper disable once PossibleMultipleEnumeration
-            if (!symbols.Any())
-                throw new ArgumentException("Enumerable must not be empty.", nameof(symbols));
-
-            var assets = new List<Asset>();
-
-            // ReSharper disable once PossibleMultipleEnumeration
-            foreach (var symbol in symbols)
-            {
-                if (!assets.Contains(symbol.BaseAsset))
-                    assets.Add(symbol.BaseAsset);
-
-                if (!assets.Contains(symbol.QuoteAsset))
-                    assets.Add(symbol.QuoteAsset);
-            }
-
-            lock (_sync)
-            {
-                // Remove any old assets (preserves redirections).
-                foreach (var asset in Cache.Values.ToArray())
-                {
-                    if (!assets.Contains(asset))
-                    {
-                        Cache.Remove(asset);
-                    }
-                }
-
-                // Update existing and add any new assets.
-                foreach (var asset in assets)
-                {
-                    Cache[string.Intern(asset)] = asset;
-                }
-            }
-        }
-
-        #endregion Internal Methods
 
         #region IComparable<Asset>
 

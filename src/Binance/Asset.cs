@@ -1,7 +1,5 @@
 // ReSharper disable InconsistentNaming
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Binance
 {
@@ -16,135 +14,136 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1525194835520;
+        public static readonly long LastUpdateAt = 1525297873590;
 
-        public static readonly Asset ADA = new Asset("ADA", 8);
-        public static readonly Asset ADX = new Asset("ADX", 8);
-        public static readonly Asset AE = new Asset("AE", 8);
-        public static readonly Asset AION = new Asset("AION", 8);
-        public static readonly Asset AMB = new Asset("AMB", 8);
-        public static readonly Asset APPC = new Asset("APPC", 8);
-        public static readonly Asset ARK = new Asset("ARK", 8);
-        public static readonly Asset ARN = new Asset("ARN", 8);
-        public static readonly Asset AST = new Asset("AST", 8);
-        public static readonly Asset BAT = new Asset("BAT", 8);
-        public static readonly Asset BCC = new Asset("BCC", 8);
-        public static readonly Asset BCD = new Asset("BCD", 8);
-        public static readonly Asset BCPT = new Asset("BCPT", 8);
-        public static readonly Asset BLZ = new Asset("BLZ", 8);
-        public static readonly Asset BNB = new Asset("BNB", 8);
-        public static readonly Asset BNT = new Asset("BNT", 8);
-        public static readonly Asset BQX = new Asset("BQX", 8);
-        public static readonly Asset BRD = new Asset("BRD", 8);
-        public static readonly Asset BTC = new Asset("BTC", 8);
-        public static readonly Asset BTG = new Asset("BTG", 8);
-        public static readonly Asset BTS = new Asset("BTS", 8);
-        public static readonly Asset CDT = new Asset("CDT", 8);
-        public static readonly Asset CHAT = new Asset("CHAT", 8);
-        public static readonly Asset CLOAK = new Asset("CLOAK", 8);
-        public static readonly Asset CMT = new Asset("CMT", 8);
-        public static readonly Asset CND = new Asset("CND", 8);
-        public static readonly Asset DASH = new Asset("DASH", 8);
-        public static readonly Asset DGD = new Asset("DGD", 8);
-        public static readonly Asset DLT = new Asset("DLT", 8);
-        public static readonly Asset DNT = new Asset("DNT", 8);
-        public static readonly Asset EDO = new Asset("EDO", 8);
-        public static readonly Asset ELF = new Asset("ELF", 8);
-        public static readonly Asset ENG = new Asset("ENG", 8);
-        public static readonly Asset ENJ = new Asset("ENJ", 8);
-        public static readonly Asset EOS = new Asset("EOS", 8);
-        public static readonly Asset ETC = new Asset("ETC", 8);
-        public static readonly Asset ETH = new Asset("ETH", 8);
-        public static readonly Asset EVX = new Asset("EVX", 8);
-        public static readonly Asset FUEL = new Asset("FUEL", 8);
-        public static readonly Asset FUN = new Asset("FUN", 8);
-        public static readonly Asset GAS = new Asset("GAS", 8);
-        public static readonly Asset GNT = new Asset("GNT", 8);
-        public static readonly Asset GRS = new Asset("GRS", 8);
-        public static readonly Asset GTO = new Asset("GTO", 8);
-        public static readonly Asset GVT = new Asset("GVT", 8);
-        public static readonly Asset GXS = new Asset("GXS", 8);
-        public static readonly Asset HSR = new Asset("HSR", 8);
-        public static readonly Asset ICN = new Asset("ICN", 8);
-        public static readonly Asset ICX = new Asset("ICX", 8);
-        public static readonly Asset INS = new Asset("INS", 8);
-        public static readonly Asset IOST = new Asset("IOST", 8);
-        public static readonly Asset IOTA = new Asset("IOTA", 8);
-        public static readonly Asset KMD = new Asset("KMD", 8);
-        public static readonly Asset KNC = new Asset("KNC", 8);
-        public static readonly Asset LEND = new Asset("LEND", 8);
-        public static readonly Asset LINK = new Asset("LINK", 8);
-        public static readonly Asset LRC = new Asset("LRC", 8);
-        public static readonly Asset LSK = new Asset("LSK", 8);
-        public static readonly Asset LTC = new Asset("LTC", 8);
-        public static readonly Asset LUN = new Asset("LUN", 8);
-        public static readonly Asset MANA = new Asset("MANA", 8);
-        public static readonly Asset MCO = new Asset("MCO", 8);
-        public static readonly Asset MDA = new Asset("MDA", 8);
-        public static readonly Asset MOD = new Asset("MOD", 8);
-        public static readonly Asset MTH = new Asset("MTH", 8);
-        public static readonly Asset MTL = new Asset("MTL", 8);
-        public static readonly Asset NANO = new Asset("NANO", 8);
-        public static readonly Asset NAV = new Asset("NAV", 8);
-        public static readonly Asset NCASH = new Asset("NCASH", 8);
-        public static readonly Asset NEBL = new Asset("NEBL", 8);
-        public static readonly Asset NEO = new Asset("NEO", 8);
-        public static readonly Asset NULS = new Asset("NULS", 8);
-        public static readonly Asset OAX = new Asset("OAX", 8);
-        public static readonly Asset OMG = new Asset("OMG", 8);
-        public static readonly Asset ONT = new Asset("ONT", 8);
-        public static readonly Asset OST = new Asset("OST", 8);
-        public static readonly Asset PIVX = new Asset("PIVX", 8);
-        public static readonly Asset POA = new Asset("POA", 8);
-        public static readonly Asset POE = new Asset("POE", 8);
-        public static readonly Asset POWR = new Asset("POWR", 8);
-        public static readonly Asset PPT = new Asset("PPT", 8);
-        public static readonly Asset QLC = new Asset("QLC", 8);
-        public static readonly Asset QSP = new Asset("QSP", 8);
-        public static readonly Asset QTUM = new Asset("QTUM", 8);
-        public static readonly Asset RCN = new Asset("RCN", 8);
-        public static readonly Asset RDN = new Asset("RDN", 8);
-        public static readonly Asset REQ = new Asset("REQ", 8);
-        public static readonly Asset RLC = new Asset("RLC", 8);
-        public static readonly Asset RPX = new Asset("RPX", 8);
-        public static readonly Asset SALT = new Asset("SALT", 8);
-        public static readonly Asset SNGLS = new Asset("SNGLS", 8);
-        public static readonly Asset SNM = new Asset("SNM", 8);
-        public static readonly Asset SNT = new Asset("SNT", 8);
-        public static readonly Asset STEEM = new Asset("STEEM", 8);
-        public static readonly Asset STORJ = new Asset("STORJ", 8);
-        public static readonly Asset STORM = new Asset("STORM", 8);
-        public static readonly Asset STRAT = new Asset("STRAT", 8);
-        public static readonly Asset SUB = new Asset("SUB", 8);
-        public static readonly Asset SYS = new Asset("SYS", 8);
-        public static readonly Asset TNB = new Asset("TNB", 8);
-        public static readonly Asset TNT = new Asset("TNT", 8);
-        public static readonly Asset TRIG = new Asset("TRIG", 8);
-        public static readonly Asset TRX = new Asset("TRX", 8);
-        public static readonly Asset USDT = new Asset("USDT", 8);
-        public static readonly Asset VEN = new Asset("VEN", 8);
-        public static readonly Asset VIA = new Asset("VIA", 8);
-        public static readonly Asset VIB = new Asset("VIB", 8);
-        public static readonly Asset VIBE = new Asset("VIBE", 8);
-        public static readonly Asset WABI = new Asset("WABI", 8);
-        public static readonly Asset WAN = new Asset("WAN", 8);
-        public static readonly Asset WAVES = new Asset("WAVES", 8);
-        public static readonly Asset WINGS = new Asset("WINGS", 8);
-        public static readonly Asset WPR = new Asset("WPR", 8);
-        public static readonly Asset WTC = new Asset("WTC", 8);
-        public static readonly Asset XEM = new Asset("XEM", 8);
-        public static readonly Asset XLM = new Asset("XLM", 8);
-        public static readonly Asset XMR = new Asset("XMR", 8);
-        public static readonly Asset XRP = new Asset("XRP", 8);
-        public static readonly Asset XVG = new Asset("XVG", 8);
-        public static readonly Asset XZC = new Asset("XZC", 8);
-        public static readonly Asset YOYO = new Asset("YOYO", 8);
-        public static readonly Asset ZEC = new Asset("ZEC", 8);
-        public static readonly Asset ZIL = new Asset("ZIL", 8);
-        public static readonly Asset ZRX = new Asset("ZRX", 8);
+        public static Asset ADA => Cache.Get("ADA");
+        public static Asset ADX => Cache.Get("ADX");
+        public static Asset AE => Cache.Get("AE");
+        public static Asset AION => Cache.Get("AION");
+        public static Asset AMB => Cache.Get("AMB");
+        public static Asset APPC => Cache.Get("APPC");
+        public static Asset ARK => Cache.Get("ARK");
+        public static Asset ARN => Cache.Get("ARN");
+        public static Asset AST => Cache.Get("AST");
+        public static Asset BAT => Cache.Get("BAT");
+        public static Asset BCC => Cache.Get("BCC");
+        public static Asset BCD => Cache.Get("BCD");
+        public static Asset BCPT => Cache.Get("BCPT");
+        public static Asset BLZ => Cache.Get("BLZ");
+        public static Asset BNB => Cache.Get("BNB");
+        public static Asset BNT => Cache.Get("BNT");
+        public static Asset BQX => Cache.Get("BQX");
+        public static Asset BRD => Cache.Get("BRD");
+        public static Asset BTC => Cache.Get("BTC");
+        public static Asset BTG => Cache.Get("BTG");
+        public static Asset BTS => Cache.Get("BTS");
+        public static Asset CDT => Cache.Get("CDT");
+        public static Asset CHAT => Cache.Get("CHAT");
+        public static Asset CLOAK => Cache.Get("CLOAK");
+        public static Asset CMT => Cache.Get("CMT");
+        public static Asset CND => Cache.Get("CND");
+        public static Asset DASH => Cache.Get("DASH");
+        public static Asset DGD => Cache.Get("DGD");
+        public static Asset DLT => Cache.Get("DLT");
+        public static Asset DNT => Cache.Get("DNT");
+        public static Asset EDO => Cache.Get("EDO");
+        public static Asset ELF => Cache.Get("ELF");
+        public static Asset ENG => Cache.Get("ENG");
+        public static Asset ENJ => Cache.Get("ENJ");
+        public static Asset EOS => Cache.Get("EOS");
+        public static Asset ETC => Cache.Get("ETC");
+        public static Asset ETH => Cache.Get("ETH");
+        public static Asset EVX => Cache.Get("EVX");
+        public static Asset FUEL => Cache.Get("FUEL");
+        public static Asset FUN => Cache.Get("FUN");
+        public static Asset GAS => Cache.Get("GAS");
+        public static Asset GNT => Cache.Get("GNT");
+        public static Asset GRS => Cache.Get("GRS");
+        public static Asset GTO => Cache.Get("GTO");
+        public static Asset GVT => Cache.Get("GVT");
+        public static Asset GXS => Cache.Get("GXS");
+        public static Asset HSR => Cache.Get("HSR");
+        public static Asset ICN => Cache.Get("ICN");
+        public static Asset ICX => Cache.Get("ICX");
+        public static Asset INS => Cache.Get("INS");
+        public static Asset IOST => Cache.Get("IOST");
+        public static Asset IOTA => Cache.Get("IOTA");
+        public static Asset KMD => Cache.Get("KMD");
+        public static Asset KNC => Cache.Get("KNC");
+        public static Asset LEND => Cache.Get("LEND");
+        public static Asset LINK => Cache.Get("LINK");
+        public static Asset LOOM => Cache.Get("LOOM");
+        public static Asset LRC => Cache.Get("LRC");
+        public static Asset LSK => Cache.Get("LSK");
+        public static Asset LTC => Cache.Get("LTC");
+        public static Asset LUN => Cache.Get("LUN");
+        public static Asset MANA => Cache.Get("MANA");
+        public static Asset MCO => Cache.Get("MCO");
+        public static Asset MDA => Cache.Get("MDA");
+        public static Asset MOD => Cache.Get("MOD");
+        public static Asset MTH => Cache.Get("MTH");
+        public static Asset MTL => Cache.Get("MTL");
+        public static Asset NANO => Cache.Get("NANO");
+        public static Asset NAV => Cache.Get("NAV");
+        public static Asset NCASH => Cache.Get("NCASH");
+        public static Asset NEBL => Cache.Get("NEBL");
+        public static Asset NEO => Cache.Get("NEO");
+        public static Asset NULS => Cache.Get("NULS");
+        public static Asset OAX => Cache.Get("OAX");
+        public static Asset OMG => Cache.Get("OMG");
+        public static Asset ONT => Cache.Get("ONT");
+        public static Asset OST => Cache.Get("OST");
+        public static Asset PIVX => Cache.Get("PIVX");
+        public static Asset POA => Cache.Get("POA");
+        public static Asset POE => Cache.Get("POE");
+        public static Asset POWR => Cache.Get("POWR");
+        public static Asset PPT => Cache.Get("PPT");
+        public static Asset QLC => Cache.Get("QLC");
+        public static Asset QSP => Cache.Get("QSP");
+        public static Asset QTUM => Cache.Get("QTUM");
+        public static Asset RCN => Cache.Get("RCN");
+        public static Asset RDN => Cache.Get("RDN");
+        public static Asset REQ => Cache.Get("REQ");
+        public static Asset RLC => Cache.Get("RLC");
+        public static Asset RPX => Cache.Get("RPX");
+        public static Asset SALT => Cache.Get("SALT");
+        public static Asset SNGLS => Cache.Get("SNGLS");
+        public static Asset SNM => Cache.Get("SNM");
+        public static Asset SNT => Cache.Get("SNT");
+        public static Asset STEEM => Cache.Get("STEEM");
+        public static Asset STORJ => Cache.Get("STORJ");
+        public static Asset STORM => Cache.Get("STORM");
+        public static Asset STRAT => Cache.Get("STRAT");
+        public static Asset SUB => Cache.Get("SUB");
+        public static Asset SYS => Cache.Get("SYS");
+        public static Asset TNB => Cache.Get("TNB");
+        public static Asset TNT => Cache.Get("TNT");
+        public static Asset TRIG => Cache.Get("TRIG");
+        public static Asset TRX => Cache.Get("TRX");
+        public static Asset USDT => Cache.Get("USDT");
+        public static Asset VEN => Cache.Get("VEN");
+        public static Asset VIA => Cache.Get("VIA");
+        public static Asset VIB => Cache.Get("VIB");
+        public static Asset VIBE => Cache.Get("VIBE");
+        public static Asset WABI => Cache.Get("WABI");
+        public static Asset WAN => Cache.Get("WAN");
+        public static Asset WAVES => Cache.Get("WAVES");
+        public static Asset WINGS => Cache.Get("WINGS");
+        public static Asset WPR => Cache.Get("WPR");
+        public static Asset WTC => Cache.Get("WTC");
+        public static Asset XEM => Cache.Get("XEM");
+        public static Asset XLM => Cache.Get("XLM");
+        public static Asset XMR => Cache.Get("XMR");
+        public static Asset XRP => Cache.Get("XRP");
+        public static Asset XVG => Cache.Get("XVG");
+        public static Asset XZC => Cache.Get("XZC");
+        public static Asset YOYO => Cache.Get("YOYO");
+        public static Asset ZEC => Cache.Get("ZEC");
+        public static Asset ZIL => Cache.Get("ZIL");
+        public static Asset ZRX => Cache.Get("ZRX");
 
         // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-        public static readonly Asset BCH;
+        public static Asset BCH => BCC;
 
         #endregion Public Constants
 
@@ -156,16 +155,6 @@ namespace Binance
 
         public static implicit operator string(Asset asset) => asset?.ToString();
 
-        public static implicit operator Asset(string s)
-        {
-            if (s == null) return null;
-            var _s = s.FormatSymbol();
-            lock (_sync)
-            {
-                return Cache.ContainsKey(_s) ? Cache[_s] : null;
-            }
-        }
-
         #endregion Implicit Operators
 
         #region Public Properties
@@ -173,7 +162,7 @@ namespace Binance
         /// <summary>
         /// Asset cache.
         /// </summary>
-        public static IDictionary<string, Asset> Cache { get; }
+        public static IAssetCache Cache { get; set; }
 
         /// <summary>
         /// Get the asset symbol.
@@ -199,139 +188,139 @@ namespace Binance
         {
             try
             {
-                // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                BCH = BCC;
+                Cache = new InMemoryAssetCache();
 
-                Cache = new Dictionary<string, Asset>
-                {
-                    { "ADA", ADA },
-                    { "ADX", ADX },
-                    { "AE", AE },
-                    { "AION", AION },
-                    { "AMB", AMB },
-                    { "APPC", APPC },
-                    { "ARK", ARK },
-                    { "ARN", ARN },
-                    { "AST", AST },
-                    { "BAT", BAT },
-                    { "BCC", BCC },
-                    { "BCD", BCD },
-                    { "BCPT", BCPT },
-                    { "BLZ", BLZ },
-                    { "BNB", BNB },
-                    { "BNT", BNT },
-                    { "BQX", BQX },
-                    { "BRD", BRD },
-                    { "BTC", BTC },
-                    { "BTG", BTG },
-                    { "BTS", BTS },
-                    { "CDT", CDT },
-                    { "CHAT", CHAT },
-                    { "CLOAK", CLOAK },
-                    { "CMT", CMT },
-                    { "CND", CND },
-                    { "DASH", DASH },
-                    { "DGD", DGD },
-                    { "DLT", DLT },
-                    { "DNT", DNT },
-                    { "EDO", EDO },
-                    { "ELF", ELF },
-                    { "ENG", ENG },
-                    { "ENJ", ENJ },
-                    { "EOS", EOS },
-                    { "ETC", ETC },
-                    { "ETH", ETH },
-                    { "EVX", EVX },
-                    { "FUEL", FUEL },
-                    { "FUN", FUN },
-                    { "GAS", GAS },
-                    { "GNT", GNT },
-                    { "GRS", GRS },
-                    { "GTO", GTO },
-                    { "GVT", GVT },
-                    { "GXS", GXS },
-                    { "HSR", HSR },
-                    { "ICN", ICN },
-                    { "ICX", ICX },
-                    { "INS", INS },
-                    { "IOST", IOST },
-                    { "IOTA", IOTA },
-                    { "KMD", KMD },
-                    { "KNC", KNC },
-                    { "LEND", LEND },
-                    { "LINK", LINK },
-                    { "LRC", LRC },
-                    { "LSK", LSK },
-                    { "LTC", LTC },
-                    { "LUN", LUN },
-                    { "MANA", MANA },
-                    { "MCO", MCO },
-                    { "MDA", MDA },
-                    { "MOD", MOD },
-                    { "MTH", MTH },
-                    { "MTL", MTL },
-                    { "NANO", NANO },
-                    { "NAV", NAV },
-                    { "NCASH", NCASH },
-                    { "NEBL", NEBL },
-                    { "NEO", NEO },
-                    { "NULS", NULS },
-                    { "OAX", OAX },
-                    { "OMG", OMG },
-                    { "ONT", ONT },
-                    { "OST", OST },
-                    { "PIVX", PIVX },
-                    { "POA", POA },
-                    { "POE", POE },
-                    { "POWR", POWR },
-                    { "PPT", PPT },
-                    { "QLC", QLC },
-                    { "QSP", QSP },
-                    { "QTUM", QTUM },
-                    { "RCN", RCN },
-                    { "RDN", RDN },
-                    { "REQ", REQ },
-                    { "RLC", RLC },
-                    { "RPX", RPX },
-                    { "SALT", SALT },
-                    { "SNGLS", SNGLS },
-                    { "SNM", SNM },
-                    { "SNT", SNT },
-                    { "STEEM", STEEM },
-                    { "STORJ", STORJ },
-                    { "STORM", STORM },
-                    { "STRAT", STRAT },
-                    { "SUB", SUB },
-                    { "SYS", SYS },
-                    { "TNB", TNB },
-                    { "TNT", TNT },
-                    { "TRIG", TRIG },
-                    { "TRX", TRX },
-                    { "USDT", USDT },
-                    { "VEN", VEN },
-                    { "VIA", VIA },
-                    { "VIB", VIB },
-                    { "VIBE", VIBE },
-                    { "WABI", WABI },
-                    { "WAN", WAN },
-                    { "WAVES", WAVES },
-                    { "WINGS", WINGS },
-                    { "WPR", WPR },
-                    { "WTC", WTC },
-                    { "XEM", XEM },
-                    { "XLM", XLM },
-                    { "XMR", XMR },
-                    { "XRP", XRP },
-                    { "XVG", XVG },
-                    { "XZC", XZC },
-                    { "YOYO", YOYO },
-                    { "ZEC", ZEC },
-                    { "ZIL", ZIL },
-                    { "ZRX", ZRX },
-            
-                    // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                    { "BCH", BCC }
-                };
+                Cache.Load(
+                    new[] {
+                        new Asset("ADA", 8),
+                        new Asset("ADX", 8),
+                        new Asset("AE", 8),
+                        new Asset("AION", 8),
+                        new Asset("AMB", 8),
+                        new Asset("APPC", 8),
+                        new Asset("ARK", 8),
+                        new Asset("ARN", 8),
+                        new Asset("AST", 8),
+                        new Asset("BAT", 8),
+                        new Asset("BCC", 8),
+                        new Asset("BCD", 8),
+                        new Asset("BCPT", 8),
+                        new Asset("BLZ", 8),
+                        new Asset("BNB", 8),
+                        new Asset("BNT", 8),
+                        new Asset("BQX", 8),
+                        new Asset("BRD", 8),
+                        new Asset("BTC", 8),
+                        new Asset("BTG", 8),
+                        new Asset("BTS", 8),
+                        new Asset("CDT", 8),
+                        new Asset("CHAT", 8),
+                        new Asset("CLOAK", 8),
+                        new Asset("CMT", 8),
+                        new Asset("CND", 8),
+                        new Asset("DASH", 8),
+                        new Asset("DGD", 8),
+                        new Asset("DLT", 8),
+                        new Asset("DNT", 8),
+                        new Asset("EDO", 8),
+                        new Asset("ELF", 8),
+                        new Asset("ENG", 8),
+                        new Asset("ENJ", 8),
+                        new Asset("EOS", 8),
+                        new Asset("ETC", 8),
+                        new Asset("ETH", 8),
+                        new Asset("EVX", 8),
+                        new Asset("FUEL", 8),
+                        new Asset("FUN", 8),
+                        new Asset("GAS", 8),
+                        new Asset("GNT", 8),
+                        new Asset("GRS", 8),
+                        new Asset("GTO", 8),
+                        new Asset("GVT", 8),
+                        new Asset("GXS", 8),
+                        new Asset("HSR", 8),
+                        new Asset("ICN", 8),
+                        new Asset("ICX", 8),
+                        new Asset("INS", 8),
+                        new Asset("IOST", 8),
+                        new Asset("IOTA", 8),
+                        new Asset("KMD", 8),
+                        new Asset("KNC", 8),
+                        new Asset("LEND", 8),
+                        new Asset("LINK", 8),
+                        new Asset("LOOM", 8),
+                        new Asset("LRC", 8),
+                        new Asset("LSK", 8),
+                        new Asset("LTC", 8),
+                        new Asset("LUN", 8),
+                        new Asset("MANA", 8),
+                        new Asset("MCO", 8),
+                        new Asset("MDA", 8),
+                        new Asset("MOD", 8),
+                        new Asset("MTH", 8),
+                        new Asset("MTL", 8),
+                        new Asset("NANO", 8),
+                        new Asset("NAV", 8),
+                        new Asset("NCASH", 8),
+                        new Asset("NEBL", 8),
+                        new Asset("NEO", 8),
+                        new Asset("NULS", 8),
+                        new Asset("OAX", 8),
+                        new Asset("OMG", 8),
+                        new Asset("ONT", 8),
+                        new Asset("OST", 8),
+                        new Asset("PIVX", 8),
+                        new Asset("POA", 8),
+                        new Asset("POE", 8),
+                        new Asset("POWR", 8),
+                        new Asset("PPT", 8),
+                        new Asset("QLC", 8),
+                        new Asset("QSP", 8),
+                        new Asset("QTUM", 8),
+                        new Asset("RCN", 8),
+                        new Asset("RDN", 8),
+                        new Asset("REQ", 8),
+                        new Asset("RLC", 8),
+                        new Asset("RPX", 8),
+                        new Asset("SALT", 8),
+                        new Asset("SNGLS", 8),
+                        new Asset("SNM", 8),
+                        new Asset("SNT", 8),
+                        new Asset("STEEM", 8),
+                        new Asset("STORJ", 8),
+                        new Asset("STORM", 8),
+                        new Asset("STRAT", 8),
+                        new Asset("SUB", 8),
+                        new Asset("SYS", 8),
+                        new Asset("TNB", 8),
+                        new Asset("TNT", 8),
+                        new Asset("TRIG", 8),
+                        new Asset("TRX", 8),
+                        new Asset("USDT", 8),
+                        new Asset("VEN", 8),
+                        new Asset("VIA", 8),
+                        new Asset("VIB", 8),
+                        new Asset("VIBE", 8),
+                        new Asset("WABI", 8),
+                        new Asset("WAN", 8),
+                        new Asset("WAVES", 8),
+                        new Asset("WINGS", 8),
+                        new Asset("WPR", 8),
+                        new Asset("WTC", 8),
+                        new Asset("XEM", 8),
+                        new Asset("XLM", 8),
+                        new Asset("XMR", 8),
+                        new Asset("XRP", 8),
+                        new Asset("XVG", 8),
+                        new Asset("XZC", 8),
+                        new Asset("YOYO", 8),
+                        new Asset("ZEC", 8),
+                        new Asset("ZIL", 8),
+                        new Asset("ZRX", 8),
+                    });
+
+                // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
+                Cache.Set("BCH", Cache.Get("BCC"));
             }
             catch (Exception e)
             {
@@ -370,11 +359,7 @@ namespace Binance
 
             asset = asset.FormatSymbol();
 
-            lock (_sync)
-            {
-                return Cache.ContainsKey(asset)
-                    && Cache[asset].ToString() == asset;
-            }
+            return Cache.Get(asset) == asset;
         }
 
         public override bool Equals(object obj)
@@ -400,54 +385,6 @@ namespace Binance
         }
 
         #endregion Public Methods
-
-        #region Internal Methods
-
-        /// <summary>
-        /// Update the asset cache.
-        /// </summary>
-        /// <param name="symbols">The symbols.</param>
-        /// <returns></returns>
-        internal static void UpdateCache(IEnumerable<Symbol> symbols)
-        {
-            Throw.IfNull(symbols, nameof(symbols));
-
-            // ReSharper disable once PossibleMultipleEnumeration
-            if (!symbols.Any())
-                throw new ArgumentException("Enumerable must not be empty.", nameof(symbols));
-
-            var assets = new List<Asset>();
-
-            // ReSharper disable once PossibleMultipleEnumeration
-            foreach (var symbol in symbols)
-            {
-                if (!assets.Contains(symbol.BaseAsset))
-                    assets.Add(symbol.BaseAsset);
-
-                if (!assets.Contains(symbol.QuoteAsset))
-                    assets.Add(symbol.QuoteAsset);
-            }
-
-            lock (_sync)
-            {
-                // Remove any old assets (preserves redirections).
-                foreach (var asset in Cache.Values.ToArray())
-                {
-                    if (!assets.Contains(asset))
-                    {
-                        Cache.Remove(asset);
-                    }
-                }
-
-                // Update existing and add any new assets.
-                foreach (var asset in assets)
-                {
-                    Cache[string.Intern(asset)] = asset;
-                }
-            }
-        }
-
-        #endregion Internal Methods
 
         #region IComparable<Asset>
 

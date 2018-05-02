@@ -23,7 +23,7 @@ namespace BinanceConsoleApp.Controllers
                 await Symbol.UpdateCacheAsync(Program.Api, token);
             }
 
-            var symbols = Symbol.Cache.Values.OrderBy(s => s.ToString());
+            var symbols = Symbol.Cache.GetAll().OrderBy(s => s.ToString());
             //var symbols = await Program.Api.SymbolsAsync(token); // as string.
 
             lock (Program.ConsoleSync)

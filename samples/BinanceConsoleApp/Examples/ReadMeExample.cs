@@ -81,7 +81,7 @@ namespace BinanceConsoleApp
             webSocketCache.Subscribe(Symbol.BTC_USDT, evt =>
             {
                 // Get symbol from cache (update cache if a symbol is missing).
-                var symbol = Symbol.Get(evt.OrderBook.Symbol);
+                var symbol = Symbol.Cache.Get(evt.OrderBook.Symbol);
 
                 var minBidPrice = evt.OrderBook.Bids.Last().Price;
                 var maxAskPrice = evt.OrderBook.Asks.Last().Price;
