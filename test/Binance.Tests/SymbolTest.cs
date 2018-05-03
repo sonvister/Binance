@@ -77,6 +77,15 @@ namespace Binance.Tests
         }
 
         [Fact]
+        public void Redirections()
+        {
+            Assert.Equal(Symbol.BCH_BNB, Symbol.BCC_BNB);
+            Assert.Equal(Symbol.BCH_BTC, Symbol.BCC_BTC);
+            Assert.Equal(Symbol.BCH_ETH, Symbol.BCC_ETH);
+            Assert.Equal(Symbol.BCH_USDT, Symbol.BCC_USDT);
+        }
+
+        [Fact]
         public void IsValid()
         {
             const SymbolStatus status = SymbolStatus.Trading;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Binance
+namespace Binance.Cache
 {
     public sealed class InMemorySymbolCache : ISymbolCache
     {

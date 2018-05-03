@@ -1,5 +1,6 @@
 // ReSharper disable InconsistentNaming
 using System;
+using Binance.Cache;
 
 namespace Binance
 {
@@ -14,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1525297873590;
+        public static readonly long LastUpdateAt = 1525308794413;
 
         public static Asset ADA => Cache.Get("ADA");
         public static Asset ADX => Cache.Get("ADX");

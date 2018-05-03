@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Binance.Cache;
 
 namespace Binance
 {
@@ -17,7 +18,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1525297873590;
+        public static readonly long LastUpdateAt = 1525308794413;
 
         // BNB
         public static Symbol ADA_BNB => Cache.Get("ADA_BNB");

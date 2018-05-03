@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Binance
+namespace Binance.Cache
 {
     /// <summary>
     /// A non-expiring object cache.
