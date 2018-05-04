@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1525308794413;
+        public static readonly long LastUpdateAt = 1525448255603;
 
         public static Asset ADA => Cache.Get("ADA");
         public static Asset ADX => Cache.Get("ADX");
@@ -163,7 +163,7 @@ namespace Binance
         /// <summary>
         /// Asset cache.
         /// </summary>
-        public static IAssetCache Cache { get; set; }
+        public static IObjectCache<Asset> Cache { get; set; }
 
         /// <summary>
         /// Get the asset symbol.
@@ -189,9 +189,9 @@ namespace Binance
         {
             try
             {
-                Cache = new InMemoryAssetCache();
+                Cache = new InMemoryCache<Asset>();
 
-                Cache.Load(
+                Cache.Set(
                     new[] {
                         new Asset("ADA", 8),
                         new Asset("ADX", 8),
@@ -320,8 +320,7 @@ namespace Binance
                         new Asset("ZRX", 8),
                     });
 
-                // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                Cache.Set("BCH", Cache.Get("BCC"));
+                AddCacheRedirections();
             }
             catch (Exception e)
             {
@@ -386,6 +385,16 @@ namespace Binance
         }
 
         #endregion Public Methods
+
+        #region Internal Methods
+
+        internal static void AddCacheRedirections()
+        {
+            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
+            Cache.Set("BCH", Cache.Get("BCC"));
+        }
+
+        #endregion Internal Methods
 
         #region IComparable<Asset>
 

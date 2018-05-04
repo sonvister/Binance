@@ -45,7 +45,7 @@ namespace Binance
         /// <summary>
         /// Symbol cache.
         /// </summary>
-        public static ISymbolCache Cache { get; set; }
+        public static IObjectCache<Symbol> Cache { get; set; }
 
         /// <summary>
         /// Get the symbol status.
@@ -103,9 +103,9 @@ namespace Binance
         {
             try
             {
-                Cache = new InMemorySymbolCache();
+                Cache = new InMemoryCache<Symbol>();
 
-                Cache.Load(
+                Cache.Set(
                     new[] {
                         // <<insert symbol definitions>>
                     });
@@ -187,7 +187,9 @@ namespace Binance
             var symbols = await api.GetSymbolsAsync(token)
                 .ConfigureAwait(false);
 
-            Cache.Load(symbols);
+            Cache.Clear();
+            Cache.Set(symbols);
+            AddCacheRedirections();
 
             var assets = new List<Asset>();
 
@@ -200,7 +202,9 @@ namespace Binance
                     assets.Add(symbol.QuoteAsset);
             }
 
-            Asset.Cache.Load(assets);
+            Asset.Cache.Clear();
+            Asset.Cache.Set(assets);
+            Asset.AddCacheRedirections();
         }
 
         public override string ToString()
@@ -226,6 +230,19 @@ namespace Binance
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        private static void AddCacheRedirections()
+        {
+            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
+            Cache.Set("BCH_USDT", Cache.Get("BCC_USDT"));
+            Cache.Set("BCH_BNB", Cache.Get("BCC_BNB"));
+            Cache.Set("BCH_BTC", Cache.Get("BCC_BTC"));
+            Cache.Set("BCH_ETH", Cache.Get("BCC_ETH"));
+        }
+
+        #endregion Private Methods
 
         #region IComparable<Symbol>
 

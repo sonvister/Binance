@@ -4,18 +4,26 @@ using System.Linq;
 
 namespace Binance.Cache
 {
-    public sealed class InMemorySymbolCache : ISymbolCache
+    public class InMemoryCache<T> : IObjectCache<T>
     {
-        private readonly IDictionary<string, Symbol> _cache;
-            
+        private readonly IDictionary<string, T> _cache;
+
         private readonly object _sync = new object();
 
-        public InMemorySymbolCache()
+        public InMemoryCache()
         {
-            _cache = new Dictionary<string, Symbol>();
+            _cache = new Dictionary<string, T>();
         }
 
-        public IEnumerable<Symbol> GetAll()
+        public void Clear()
+        {
+            lock (_sync)
+            {
+                _cache.Clear();
+            }
+        }
+
+        public IEnumerable<T> GetAll()
         {
             lock (_sync)
             {
@@ -23,20 +31,20 @@ namespace Binance.Cache
             }
         }
 
-        public Symbol Get(string key)
+        public T Get(string key)
         {
             if (key == null)
-                return null;
+                return default;
 
             var _key = key.FormatSymbol();
 
             lock (_sync)
             {
-                return _cache.ContainsKey(_key) ? _cache[_key] : null;
+                return _cache.ContainsKey(_key) ? _cache[_key] : default;
             }
         }
 
-        public void Set(string key, Symbol symbol)
+        public void Set(string key, T symbol)
         {
             lock (_sync)
             {
@@ -44,7 +52,7 @@ namespace Binance.Cache
             }
         }
 
-        public void Load(IEnumerable<Symbol> symbols)
+        public void Set(IEnumerable<T> symbols)
         {
             Throw.IfNull(symbols, nameof(symbols));
 
@@ -54,21 +62,11 @@ namespace Binance.Cache
 
             lock (_sync)
             {
-                // Remove any old symbols (preserves redirections).
-                // ReSharper disable once PossibleMultipleEnumeration
-                foreach (var symbol in _cache.Values.ToArray())
-                {
-                    if (!symbols.Contains(symbol))
-                    {
-                        _cache.Remove(symbol);
-                    }
-                }
-
                 // Update existing and add any new symbols.
                 // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var symbol in symbols)
                 {
-                    _cache[string.Intern(symbol)] = symbol;
+                    _cache[string.Intern(symbol.ToString())] = symbol;
                 }
             }
         }
