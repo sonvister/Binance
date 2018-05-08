@@ -30,7 +30,7 @@ namespace Binance
                 case CandlestickInterval.Week: return "1w";
                 case CandlestickInterval.Month: return "1M";
                 default:
-                    throw new ArgumentException($"{nameof(CandlestickIntervalExtensions)}.{nameof(ToString)}: {nameof(CandlestickInterval)} not supported: {interval}");
+                    throw new ArgumentException($"{nameof(CandlestickIntervalExtensions)}.{nameof(AsString)}: {nameof(CandlestickInterval)} not supported: {interval}");
             }
         }
     }
