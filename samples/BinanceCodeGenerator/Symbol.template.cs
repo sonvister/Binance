@@ -111,10 +111,10 @@ namespace Binance
                     });
 
                 // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                Cache.Set("BCH_USDT", Cache.Get("BCC_USDT"));
-                Cache.Set("BCH_BNB", Cache.Get("BCC_BNB"));
-                Cache.Set("BCH_BTC", Cache.Get("BCC_BTC"));
-                Cache.Set("BCH_ETH", Cache.Get("BCC_ETH"));
+                Cache.Set("BCHUSDT", Cache.Get("BCCUSDT"));
+                Cache.Set("BCHBNB", Cache.Get("BCCBNB"));
+                Cache.Set("BCHBTC", Cache.Get("BCCBTC"));
+                Cache.Set("BCHETH", Cache.Get("BCCETH"));
             }
             catch (Exception e)
             {

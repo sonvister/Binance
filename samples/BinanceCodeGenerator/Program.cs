@@ -57,7 +57,7 @@ namespace BinanceCodeGenerator
 
                 foreach (var symbol in group)
                 {
-                    lines.Insert(index++, $"        public static Symbol {symbol.BaseAsset}_{symbol.QuoteAsset} => Cache.Get(\"{symbol.BaseAsset}_{symbol.QuoteAsset}\");");
+                    lines.Insert(index++, $"        public static Symbol {symbol.BaseAsset}_{symbol.QuoteAsset} => Cache.Get(\"{symbol.BaseAsset}{symbol.QuoteAsset}\");");
                 }
 
                 lines.Insert(index++, string.Empty);

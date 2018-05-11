@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1525448255603;
+        public static readonly long LastUpdateAt = 1526068613045;
 
         public static Asset ADA => Cache.Get("ADA");
         public static Asset ADX => Cache.Get("ADX");
@@ -29,6 +29,7 @@ namespace Binance
         public static Asset BAT => Cache.Get("BAT");
         public static Asset BCC => Cache.Get("BCC");
         public static Asset BCD => Cache.Get("BCD");
+        public static Asset BCN => Cache.Get("BCN");
         public static Asset BCPT => Cache.Get("BCPT");
         public static Asset BLZ => Cache.Get("BLZ");
         public static Asset BNB => Cache.Get("BNB");
@@ -104,6 +105,7 @@ namespace Binance
         public static Asset QTUM => Cache.Get("QTUM");
         public static Asset RCN => Cache.Get("RCN");
         public static Asset RDN => Cache.Get("RDN");
+        public static Asset REP => Cache.Get("REP");
         public static Asset REQ => Cache.Get("REQ");
         public static Asset RLC => Cache.Get("RLC");
         public static Asset RPX => Cache.Get("RPX");
@@ -205,6 +207,7 @@ namespace Binance
                         new Asset("BAT", 8),
                         new Asset("BCC", 8),
                         new Asset("BCD", 8),
+                        new Asset("BCN", 8),
                         new Asset("BCPT", 8),
                         new Asset("BLZ", 8),
                         new Asset("BNB", 8),
@@ -280,6 +283,7 @@ namespace Binance
                         new Asset("QTUM", 8),
                         new Asset("RCN", 8),
                         new Asset("RDN", 8),
+                        new Asset("REP", 8),
                         new Asset("REQ", 8),
                         new Asset("RLC", 8),
                         new Asset("RPX", 8),
