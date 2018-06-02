@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -70,7 +71,7 @@ namespace BinanceCodeGenerator
             foreach(var symbol in symbols)
             {
                 var orderTypes = string.Join(",", symbol.OrderTypes.Select(_ => "OrderType." + _));
-                lines.Insert(index++, $"                        new Symbol(SymbolStatus.{symbol.Status}, Asset.{symbol.BaseAsset}, Asset.{symbol.QuoteAsset}, ({symbol.Quantity.Minimum}m, {symbol.Quantity.Maximum}m, {symbol.Quantity.Increment}m), ({symbol.Price.Minimum}m, {symbol.Price.Maximum}m, {symbol.Price.Increment}m), {symbol.NotionalMinimumValue}m, {symbol.IsIcebergAllowed.ToString().ToLowerInvariant()}, new List<OrderType> {{{orderTypes}}}),");
+                lines.Insert(index++, $"                        new Symbol(SymbolStatus.{symbol.Status}, Asset.{symbol.BaseAsset}, Asset.{symbol.QuoteAsset}, ({Convert.ToString(symbol.Quantity.Minimum, CultureInfo.InvariantCulture)}m, {Convert.ToString(symbol.Quantity.Maximum, CultureInfo.InvariantCulture)}m, {Convert.ToString(symbol.Quantity.Increment, CultureInfo.InvariantCulture)}m), ({Convert.ToString(symbol.Price.Minimum, CultureInfo.InvariantCulture)}m, {Convert.ToString(symbol.Price.Maximum, CultureInfo.InvariantCulture)}m, {Convert.ToString(symbol.Price.Increment, CultureInfo.InvariantCulture)}m), {Convert.ToString(symbol.NotionalMinimumValue, CultureInfo.InvariantCulture)}m, {symbol.IsIcebergAllowed.ToString().ToLowerInvariant()}, new List<OrderType> {{{orderTypes}}}),");
             }
 
             // Save the generated source code (replacing original).
@@ -104,7 +105,7 @@ namespace BinanceCodeGenerator
 
             foreach (var asset in assets)
             {
-                lines.Insert(index++, $"                        new Asset(\"{asset}\", {asset.Precision}),");
+                lines.Insert(index++, $"                        new Asset(\"{asset}\", {Convert.ToString(asset.Precision, CultureInfo.InvariantCulture)}),");
             }
 
             // Save the generated source code (replacing original).
