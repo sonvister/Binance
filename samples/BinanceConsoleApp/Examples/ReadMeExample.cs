@@ -35,9 +35,6 @@ namespace BinanceConsoleApp
 
                 try
                 {
-                    // Validate client order.
-                    order.Validate();
-
                     // Send the TEST order.
                     await api.TestPlaceAsync(order);
 
