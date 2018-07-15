@@ -78,9 +78,6 @@ using (var user = new BinanceApiUser("<API-Key>", "<API-Secret>"))
 
     try
     {
-        // Validate client order.
-        clientOrder.Validate();
-        
         // Send the TEST order.
         await api.TestPlaceAsync(clientOrder);
         
