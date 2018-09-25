@@ -151,6 +151,7 @@ namespace BinanceConsoleApp
                 User?.Dispose();
 
                 ClientManager?.Dispose();
+                UserDataManager?.Dispose();
 
                 lock (ConsoleSync)
                 {

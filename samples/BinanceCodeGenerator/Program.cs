@@ -111,6 +111,7 @@ namespace BinanceCodeGenerator
             // Save the generated source code (replacing original).
             await File.WriteAllLinesAsync("../../../../../src/Binance/Asset.cs", lines);
 
+            Console.WriteLine("Successfully generated new Symbol.cs and Asset.cs files.");
             Console.WriteLine();
             Console.WriteLine("  ...press any key to close window.");
             Console.ReadKey(true);
