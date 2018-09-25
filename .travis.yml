@@ -2,6 +2,6 @@ language: csharp
 mono: none
 dotnet: 2.0.0
 script:
- - dotnet build src/Binance --framework "netstandard2.0"
+ - dotnet build src/Binance --framework "netstandard2.1"
  - dotnet test test/Binance.Tests
  
