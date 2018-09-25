@@ -81,6 +81,9 @@ namespace Binance
 
         #region Public Methods
 
+        public void AddParameter(string field, decimal value)
+            => AddParameter<decimal>(field, value.Normalize());
+
         public void AddParameter<T>(string field, T value)
         {
             Throw.IfNull(value, nameof(value));
