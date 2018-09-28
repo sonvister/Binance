@@ -21,16 +21,16 @@ namespace Binance
             services.AddSingleton<ITimestampProvider, TimestampProvider>();
             services.AddSingleton<IBinanceHttpClient>(s =>
             {
-                if (!BinanceHttpClient.Initializer.IsValueCreated)
-                {
-                    // Replace initializer.
-                    BinanceHttpClient.Initializer = new Lazy<BinanceHttpClient>(() =>
-                        new BinanceHttpClient(
-                            s.GetService<ITimestampProvider>(),
-                            s.GetService<IApiRateLimiter>(),
-                            s.GetService<IOptions<BinanceApiOptions>>(),
-                            s.GetService<ILogger<BinanceHttpClient>>()), true);
-                }
+                if (BinanceHttpClient.Initializer.IsValueCreated)
+                    BinanceHttpClient.Initializer.Value.Dispose();
+
+                // Replace initializer.
+                BinanceHttpClient.Initializer = new Lazy<BinanceHttpClient>(() =>
+                    new BinanceHttpClient(
+                        s.GetService<ITimestampProvider>(),
+                        s.GetService<IApiRateLimiter>(),
+                        s.GetService<IOptions<BinanceApiOptions>>(),
+                        s.GetService<ILogger<BinanceHttpClient>>()), true);
 
                 return BinanceHttpClient.Instance;
             });

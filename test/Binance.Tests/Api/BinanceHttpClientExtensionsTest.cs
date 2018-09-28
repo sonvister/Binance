@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Binance.Tests.Api
 {
+    [Collection("Binance HTTP Client Tests")]
     public class BinanceHttpClientExtensionsTest
     {
         private readonly IBinanceHttpClient _client;
