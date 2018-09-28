@@ -150,6 +150,8 @@ namespace Binance
             Throw.IfNull(request, nameof(request));
             Throw.IfNull(user, nameof(user));
 
+            ThrowIfDisposed();
+
             var timestamp = TimestampProvider != null
                 ? await TimestampProvider.GetTimestampAsync(this, token).ConfigureAwait(false)
                 : DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -193,6 +195,8 @@ namespace Binance
             Throw.IfNull(request, nameof(request));
 
             token.ThrowIfCancellationRequested();
+
+            ThrowIfDisposed();
 
             var requestMessage = request.CreateMessage(method);
 
@@ -257,6 +261,12 @@ namespace Binance
         #region IDisposable
 
         private bool _disposed;
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(BinanceHttpClient));
+        }
 
         private void Dispose(bool disposing)
         {
