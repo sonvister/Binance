@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1537896077128;
+        public static readonly long LastUpdateAt = 1538198581399;
 
         public static Asset ADA => Cache.Get("ADA");
         public static Asset ADX => Cache.Get("ADX");
