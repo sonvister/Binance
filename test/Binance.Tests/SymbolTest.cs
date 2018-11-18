@@ -31,7 +31,7 @@ namespace Binance.Tests
         {
             var symbol1 = Symbol.BTC_USDT;
             var symbol2 = new Symbol(symbol1.Status, symbol1.BaseAsset, symbol1.QuoteAsset, symbol1.Quantity, symbol1.Price, symbol1.NotionalMinimumValue, symbol1.IsIcebergAllowed, symbol1.OrderTypes);
-            var symbol3 = Symbol.BCH_USDT;
+            var symbol3 = Symbol.XRP_USDT;
 
             Assert.True(symbol1 == symbol2);
             Assert.True(symbol1 != symbol3);
@@ -74,15 +74,6 @@ namespace Binance.Tests
             Assert.Equal(priceRange, symbol.Price);
             Assert.Equal(minNotionalValue, symbol.NotionalMinimumValue);
             Assert.Equal(orderTypes, symbol.OrderTypes);
-        }
-
-        [Fact]
-        public void Redirections()
-        {
-            Assert.Equal(Symbol.BCH_BNB, Symbol.BCC_BNB);
-            Assert.Equal(Symbol.BCH_BTC, Symbol.BCC_BTC);
-            Assert.Equal(Symbol.BCH_ETH, Symbol.BCC_ETH);
-            Assert.Equal(Symbol.BCH_USDT, Symbol.BCC_USDT);
         }
 
         [Fact]

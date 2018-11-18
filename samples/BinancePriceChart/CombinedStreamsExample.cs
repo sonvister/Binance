@@ -104,8 +104,8 @@ namespace BinancePriceChart
                     // Unsubscribe a symbol.
                     client.Unsubscribe(symbols[0], interval);
 
-                    // Subscribe to the real Bitcoin :D
-                    client.Subscribe(Symbol.BCH_USDT, interval); // a.k.a. BCC.
+                    // Subscribe to XRP.
+                    client.Subscribe(Symbol.XRP_USDT, interval); // drink the kool-aid.
 
                     // Set stream URI using client subscribed streams.
                     webSocket.Uri = BinanceWebSocketStream.CreateUri(client);
