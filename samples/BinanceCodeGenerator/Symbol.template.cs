@@ -22,12 +22,6 @@ namespace Binance
 
         // <<insert symbols>>
 
-        // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-        public static Symbol BCH_USDT => BCC_USDT;
-        public static Symbol BCH_BNB => BCC_BNB;
-        public static Symbol BCH_BTC => BCC_BTC;
-        public static Symbol BCH_ETH => BCC_ETH;
-
         #endregion Public Constants
 
         #region Implicit Operators
@@ -109,12 +103,6 @@ namespace Binance
                     new[] {
                         // <<insert symbol definitions>>
                     });
-
-                // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-                Cache.Set("BCHUSDT", Cache.Get("BCCUSDT"));
-                Cache.Set("BCHBNB", Cache.Get("BCCBNB"));
-                Cache.Set("BCHBTC", Cache.Get("BCCBTC"));
-                Cache.Set("BCHETH", Cache.Get("BCCETH"));
             }
             catch (Exception e)
             {
@@ -189,7 +177,6 @@ namespace Binance
 
             Cache.Clear();
             Cache.Set(symbols);
-            AddCacheRedirections();
 
             var assets = new List<Asset>();
 
@@ -204,7 +191,6 @@ namespace Binance
 
             Asset.Cache.Clear();
             Asset.Cache.Set(assets);
-            Asset.AddCacheRedirections();
         }
 
         public override string ToString()
@@ -230,19 +216,6 @@ namespace Binance
         }
 
         #endregion Public Methods
-
-        #region Private Methods
-
-        private static void AddCacheRedirections()
-        {
-            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-            Cache.Set("BCH_USDT", Cache.Get("BCC_USDT"));
-            Cache.Set("BCH_BNB", Cache.Get("BCC_BNB"));
-            Cache.Set("BCH_BTC", Cache.Get("BCC_BTC"));
-            Cache.Set("BCH_ETH", Cache.Get("BCC_ETH"));
-        }
-
-        #endregion Private Methods
 
         #region IComparable<Symbol>
 

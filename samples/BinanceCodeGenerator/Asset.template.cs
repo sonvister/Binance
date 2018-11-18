@@ -19,9 +19,6 @@ namespace Binance
 
         // <<insert assets>>
 
-        // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-        public static Asset BCH => BCC;
-
         #endregion Public Constants
 
         #region Implicit Operators
@@ -71,8 +68,6 @@ namespace Binance
                     new[] {
                         // <<insert asset definitions>>
                     });
-
-                AddCacheRedirections();
             }
             catch (Exception e)
             {
@@ -137,16 +132,6 @@ namespace Binance
         }
 
         #endregion Public Methods
-
-        #region Internal Methods
-
-        internal static void AddCacheRedirections()
-        {
-            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-            Cache.Set("BCH", Cache.Get("BCC"));
-        }
-
-        #endregion Internal Methods
 
         #region IComparable<Asset>
 

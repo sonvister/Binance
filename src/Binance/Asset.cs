@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1538198581399;
+        public static readonly long LastUpdateAt = 1542548896815;
 
         public static Asset ADA => Cache.Get("ADA");
         public static Asset ADX => Cache.Get("ADX");
@@ -29,8 +29,9 @@ namespace Binance
         public static Asset ARN => Cache.Get("ARN");
         public static Asset AST => Cache.Get("AST");
         public static Asset BAT => Cache.Get("BAT");
-        public static Asset BCC => Cache.Get("BCC");
         public static Asset BCD => Cache.Get("BCD");
+        public static Asset BCHABC => Cache.Get("BCHABC");
+        public static Asset BCHSV => Cache.Get("BCHSV");
         public static Asset BCN => Cache.Get("BCN");
         public static Asset BCPT => Cache.Get("BCPT");
         public static Asset BLZ => Cache.Get("BLZ");
@@ -49,6 +50,7 @@ namespace Binance
         public static Asset CVC => Cache.Get("CVC");
         public static Asset DASH => Cache.Get("DASH");
         public static Asset DATA => Cache.Get("DATA");
+        public static Asset DCR => Cache.Get("DCR");
         public static Asset DENT => Cache.Get("DENT");
         public static Asset DGD => Cache.Get("DGD");
         public static Asset DLT => Cache.Get("DLT");
@@ -94,6 +96,7 @@ namespace Binance
         public static Asset MCO => Cache.Get("MCO");
         public static Asset MDA => Cache.Get("MDA");
         public static Asset MFT => Cache.Get("MFT");
+        public static Asset MITH => Cache.Get("MITH");
         public static Asset MOD => Cache.Get("MOD");
         public static Asset MTH => Cache.Get("MTH");
         public static Asset MTL => Cache.Get("MTL");
@@ -110,6 +113,7 @@ namespace Binance
         public static Asset OMG => Cache.Get("OMG");
         public static Asset ONT => Cache.Get("ONT");
         public static Asset OST => Cache.Get("OST");
+        public static Asset PAX => Cache.Get("PAX");
         public static Asset PHX => Cache.Get("PHX");
         public static Asset PIVX => Cache.Get("PIVX");
         public static Asset POA => Cache.Get("POA");
@@ -127,6 +131,7 @@ namespace Binance
         public static Asset REQ => Cache.Get("REQ");
         public static Asset RLC => Cache.Get("RLC");
         public static Asset RPX => Cache.Get("RPX");
+        public static Asset RVN => Cache.Get("RVN");
         public static Asset SALT => Cache.Get("SALT");
         public static Asset SC => Cache.Get("SC");
         public static Asset SKY => Cache.Get("SKY");
@@ -145,6 +150,7 @@ namespace Binance
         public static Asset TRIG => Cache.Get("TRIG");
         public static Asset TRX => Cache.Get("TRX");
         public static Asset TUSD => Cache.Get("TUSD");
+        public static Asset USDC => Cache.Get("USDC");
         public static Asset USDT => Cache.Get("USDT");
         public static Asset VEN => Cache.Get("VEN");
         public static Asset VET => Cache.Get("VET");
@@ -168,9 +174,6 @@ namespace Binance
         public static Asset ZEN => Cache.Get("ZEN");
         public static Asset ZIL => Cache.Get("ZIL");
         public static Asset ZRX => Cache.Get("ZRX");
-
-        // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-        public static Asset BCH => BCC;
 
         #endregion Public Constants
 
@@ -231,8 +234,9 @@ namespace Binance
                         new Asset("ARN", 8),
                         new Asset("AST", 8),
                         new Asset("BAT", 8),
-                        new Asset("BCC", 8),
                         new Asset("BCD", 8),
+                        new Asset("BCHABC", 8),
+                        new Asset("BCHSV", 8),
                         new Asset("BCN", 8),
                         new Asset("BCPT", 8),
                         new Asset("BLZ", 8),
@@ -251,6 +255,7 @@ namespace Binance
                         new Asset("CVC", 8),
                         new Asset("DASH", 8),
                         new Asset("DATA", 8),
+                        new Asset("DCR", 8),
                         new Asset("DENT", 8),
                         new Asset("DGD", 8),
                         new Asset("DLT", 8),
@@ -296,6 +301,7 @@ namespace Binance
                         new Asset("MCO", 8),
                         new Asset("MDA", 8),
                         new Asset("MFT", 8),
+                        new Asset("MITH", 8),
                         new Asset("MOD", 8),
                         new Asset("MTH", 8),
                         new Asset("MTL", 8),
@@ -312,6 +318,7 @@ namespace Binance
                         new Asset("OMG", 8),
                         new Asset("ONT", 8),
                         new Asset("OST", 8),
+                        new Asset("PAX", 8),
                         new Asset("PHX", 8),
                         new Asset("PIVX", 8),
                         new Asset("POA", 8),
@@ -329,6 +336,7 @@ namespace Binance
                         new Asset("REQ", 8),
                         new Asset("RLC", 8),
                         new Asset("RPX", 8),
+                        new Asset("RVN", 8),
                         new Asset("SALT", 8),
                         new Asset("SC", 8),
                         new Asset("SKY", 8),
@@ -347,6 +355,7 @@ namespace Binance
                         new Asset("TRIG", 8),
                         new Asset("TRX", 8),
                         new Asset("TUSD", 8),
+                        new Asset("USDC", 8),
                         new Asset("USDT", 8),
                         new Asset("VEN", 8),
                         new Asset("VET", 8),
@@ -371,8 +380,6 @@ namespace Binance
                         new Asset("ZIL", 8),
                         new Asset("ZRX", 8),
                     });
-
-                AddCacheRedirections();
             }
             catch (Exception e)
             {
@@ -437,16 +444,6 @@ namespace Binance
         }
 
         #endregion Public Methods
-
-        #region Internal Methods
-
-        internal static void AddCacheRedirections()
-        {
-            // Redirect (BCH) Bitcoin Cash (BCC = BitConnect)
-            Cache.Set("BCH", Cache.Get("BCC"));
-        }
-
-        #endregion Internal Methods
 
         #region IComparable<Asset>
 

@@ -19,13 +19,13 @@ namespace Binance.Tests
         {
             var btc1 = Asset.BTC;
             var btc2 = new Asset(btc1.Symbol, btc1.Precision);
-            var btc3 = Asset.BCH;
+            var xrp = Asset.XRP;
 
             Assert.True(btc1 == btc2);
-            Assert.True(btc1 != btc3);
+            Assert.True(btc1 != xrp);
 
             Assert.True(btc1 == btc1.Symbol);
-            Assert.True(btc1 != btc3.Symbol);
+            Assert.True(btc1 != xrp.Symbol);
         }
 
         [Fact]

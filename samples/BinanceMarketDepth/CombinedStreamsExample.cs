@@ -107,8 +107,8 @@ namespace BinanceMarketDepth
                     // Unsubscribe a symbol.
                     client.Unsubscribe(symbols[0], limit);
 
-                    // Subscribe to the real Bitcoin :D
-                    client.Subscribe(Symbol.BCH_USDT, limit); // a.k.a. BCC.
+                    // Subscribe to XRP.
+                    client.Subscribe(Symbol.XRP_USDT, limit); // drink the kool-aid.
 
                     // Set stream URI using cache subscribed streams.
                     webSocket.Uri = BinanceWebSocketStream.CreateUri(client);
