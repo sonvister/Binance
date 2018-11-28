@@ -923,19 +923,26 @@ namespace Binance
 
             var error = jObject["msg"].Value<string>();
 
-            if (!string.IsNullOrWhiteSpace(error) && error.IsJsonObject())
+            if (!string.IsNullOrWhiteSpace(error))
             {
-                try // to parse server error response.
+                if (error.IsJsonObject())
                 {
-                    var jError = JObject.Parse(error);
+                    try // to parse server error response.
+                    {
+                        var jError = JObject.Parse(error);
 
-                    errorCode = jError["code"]?.Value<int>() ?? 0;
-                    errorMessage = jError["msg"]?.Value<string>();
+                        errorCode = jError["code"]?.Value<int>() ?? 0;
+                        errorMessage = jError["msg"]?.Value<string>();
+                    }
+                    catch (Exception e)
+                    {
+                        _logger?.LogError(e, $"{nameof(BinanceApi)}.{methodName} failed to parse server error response: \"{error}\"");
+                        throw;
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    _logger?.LogError(e, $"{nameof(BinanceApi)}.{methodName} failed to parse server error response: \"{error}\"");
-                    throw;
+                    errorMessage = error;
                 }
             }
 
