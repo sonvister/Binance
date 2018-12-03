@@ -16,6 +16,11 @@ namespace Binance
         public string Interval { get; }
 
         /// <summary>
+        /// Get the number of intervals.
+        /// </summary>
+        public int IntervalNum { get; }
+
+        /// <summary>
         /// Get the limit.
         /// </summary>
         public int Limit { get; }
@@ -29,14 +34,16 @@ namespace Binance
         /// </summary>
         /// <param name="type"></param>
         /// <param name="interval"></param>
+        /// <param name="intervalNum"></param>
         /// <param name="limit"></param>
-        public RateLimitInfo(string type, string interval, int limit)
+        public RateLimitInfo(string type, string interval, int intervalNum, int limit)
         {
             Throw.IfNullOrWhiteSpace(type, nameof(type));
             Throw.IfNullOrWhiteSpace(interval, nameof(interval));
 
             Type = type;
             Interval = interval;
+            IntervalNum = intervalNum;
             Limit = limit;
         }
 

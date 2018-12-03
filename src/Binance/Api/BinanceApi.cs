@@ -157,6 +157,7 @@ namespace Binance
                             new RateLimitInfo(
                                 jToken["rateLimitType"].Value<string>(),
                                 jToken["interval"].Value<string>(),
+                                jToken["intervalNum"].Value<int>(),
                                 jToken["limit"].Value<int>())));
                 }
             }
