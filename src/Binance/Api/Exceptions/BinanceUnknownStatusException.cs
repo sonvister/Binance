@@ -18,8 +18,8 @@ namespace Binance
         /// <summary>
         /// Constructor.
         /// </summary>
-        public BinanceUnknownStatusException()
-            : base(HttpStatusCode.GatewayTimeout, null, 0, "It is important to NOT treat this as a failure; the execution status is UNKNOWN and could have been a success.")
+        public BinanceUnknownStatusException(HttpStatusCode statusCode)
+            : base(statusCode, null, 0, "It is important to NOT treat this as a failure operation; the execution status is UNKNOWN and could have been a success.")
         { }
 
         #endregion Constructors

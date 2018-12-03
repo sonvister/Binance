@@ -214,9 +214,9 @@ namespace Binance
                     return json;
                 }
 
-                if (response.StatusCode == HttpStatusCode.GatewayTimeout)
+                if ((int)response.StatusCode >= 500 && (int)response.StatusCode <= 599)
                 {
-                    throw new BinanceUnknownStatusException();
+                    throw new BinanceUnknownStatusException(response.StatusCode);
                 }
 
                 var error = await response.Content.ReadAsStringAsync()
