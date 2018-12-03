@@ -308,6 +308,18 @@ namespace Binance
         Task<IEnumerable<AccountTrade>> GetAccountTradesAsync(IBinanceApiUser user, string symbol, long fromId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
+        /// Get trades for a specific account and symbol.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="symbol"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <param name="recvWindow"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IEnumerable<AccountTrade>> GetAccountTradesAsync(IBinanceApiUser user, string symbol, DateTime startTime, DateTime endTime, long recvWindow = default, CancellationToken token = default);
+
+        /// <summary>
         /// Submit a withdraw request.
         /// </summary>
         /// <param name="withdrawRequest"></param>

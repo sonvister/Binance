@@ -179,7 +179,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  stats <symbol>                                        display 24h stats for a symbol or all symbols.");
                 Console.WriteLine("  depth|book <symbol> [limit]                           display symbol order book, where limit: [1-100].");
                 Console.WriteLine("  aggTrades <symbol> [limit]                            display latest aggregate trades, where limit: [1-500].");
-                Console.WriteLine("  aggTradesIn <symbol> <start> <end>                    display aggregate trades within a time interval (inclusive).");
+                Console.WriteLine("  aggTradesIn <symbol> <start> <end>                    display aggregate trades within a time interval.");
                 Console.WriteLine("  aggTradesFrom <symbol> <tradeId> [limit]              display aggregate trades beginning with aggregate trade ID.");
                 Console.WriteLine("  trades <symbol> [limit]                               display latest trades, where limit: [1-500].");
                 Console.WriteLine("  tradesFrom <symbol> <tradeId> [limit]                 display trades beginning with trade ID.");
@@ -207,13 +207,14 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  takeProfitLimit <side> <symbol> <qty> <price> <stop>  create a take profit limit order.");
                 Console.WriteLine("  orders <symbol> [limit]                               display orders for a symbol, where limit: [1-500].");
                 Console.WriteLine("  orders [symbol] open                                  display all open orders for a symbol or all symbols.");
-                Console.WriteLine("  ordersIn <symbol> <start> <end>                       display orders for a symbol within a time interval (inclusive).");
+                Console.WriteLine("  ordersIn <symbol> <start> <end>                       display orders for a symbol within a time interval.");
                 Console.WriteLine("  cancel [symbol]                                       cancel all open orders for a symbol (or all symbols...).");
                 Console.WriteLine("  order <symbol> <ID>                                   display an order by symbol and ID.");
                 Console.WriteLine("  order <symbol> <ID> cancel                            cancel an order by symbol and ID.");
                 Console.WriteLine("  account|balances                                      display user account information (including balances).");
                 Console.WriteLine("  myTrades <symbol> [limit]                             display user trades of a symbol.");
                 Console.WriteLine("  myTradesFrom <symbol> <tradeId> [limit]               display user trades of a symbol beginning with trade ID.");
+                Console.WriteLine("  myTradesIn <symbol> <start> <end>                     display user trades of a symbol within a time interval.");
                 Console.WriteLine("  myTrades order <symbol> <orderId>                     display user trades of a symbol by order ID.");
                 Console.WriteLine("  address <asset>                                       display user deposit address for an asset.");
                 Console.WriteLine("  deposits [asset]                                      display user deposits of an asset or all deposits.");

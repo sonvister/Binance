@@ -641,7 +641,19 @@ namespace Binance
 
         public virtual async Task<IEnumerable<AccountTrade>> GetAccountTradesAsync(IBinanceApiUser user, string symbol, long fromId = NullId, int limit = default, long recvWindow = default, CancellationToken token = default)
         {
-            var json = await HttpClient.GetAccountTradesAsync(user, symbol, fromId, limit, recvWindow, token)
+            var json = await HttpClient.GetAccountTradesAsync(user, symbol, fromId, limit, recvWindow: recvWindow, token: token)
+                .ConfigureAwait(false);
+
+            try { return _accountTradeSerializer.DeserializeMany(json, symbol); }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetAccountTradesAsync), json, e);
+            }
+        }
+
+        public virtual async Task<IEnumerable<AccountTrade>> GetAccountTradesAsync(IBinanceApiUser user, string symbol, DateTime startTime, DateTime endTime, long recvWindow = default, CancellationToken token = default)
+        {
+            var json = await HttpClient.GetAccountTradesAsync(user, symbol, startTime: startTime, endTime: endTime, recvWindow: recvWindow, token: token)
                 .ConfigureAwait(false);
 
             try { return _accountTradeSerializer.DeserializeMany(json, symbol); }

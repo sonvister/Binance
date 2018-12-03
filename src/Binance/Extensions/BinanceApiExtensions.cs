@@ -298,6 +298,39 @@ namespace Binance
         }
 
         /// <summary>
+        /// Get account trades within a time interval (INCLUSIVE).
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="user"></param>
+        /// <param name="symbol"></param>
+        /// <param name="timeInterval"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<IEnumerable<AccountTrade>> GetAccountTradesAsync(this IBinanceApi api, IBinanceApiUser user, string symbol, (DateTime, DateTime) timeInterval, long recvWindow = default, CancellationToken token = default)
+        {
+            Throw.IfNull(api, nameof(api));
+
+            return api.GetAccountTradesAsync(user, symbol, timeInterval.Item1, timeInterval.Item2, recvWindow, token);
+        }
+
+        /// <summary>
+        /// Get account trades within a time interval (INCLUSIVE).
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="user"></param>
+        /// <param name="symbol"></param>
+        /// <param name="timeInterval"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Task<IEnumerable<AccountTrade>> GetAccountTradesAsync(this IBinanceApi api, IBinanceApiUser user, string symbol, (long, long) timeInterval, long recvWindow = default, CancellationToken token = default)
+        {
+            Throw.IfNull(api, nameof(api));
+
+            return api.GetAccountTradesAsync(user, symbol, timeInterval.Item1.ToDateTime(), timeInterval.Item2.ToDateTime(), recvWindow, token);
+        }
+
+
+        /// <summary>
         /// Get current price of a currency pair or determine the exchange rate
         /// (base price / quote price) of two assets using available markets.
         /// </summary>
