@@ -275,6 +275,18 @@ namespace Binance
         Task<IEnumerable<Order>> GetOrdersAsync(IBinanceApiUser user, string symbol, long orderId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default);
 
         /// <summary>
+        /// Get all account orders; active, canceled, or filled within a given time interval.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="symbol"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <param name="recvWindow"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IEnumerable<Order>> GetOrdersAsync(IBinanceApiUser user, string symbol, DateTime startTime, DateTime endTime, long recvWindow = default, CancellationToken token = default);
+
+        /// <summary>
         /// Get current account information.
         /// </summary>
         /// <param name="user"></param>

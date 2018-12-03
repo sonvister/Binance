@@ -4,17 +4,34 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 
+// ReSharper disable PossibleMultipleEnumeration
+
 namespace BinanceConsoleApp.Controllers
 {
-    internal class GetAggregateTradesIn : IHandleCommand
+    internal class GetOrdersIn : IHandleCommand
     {
         public async Task<bool> HandleAsync(string command, CancellationToken token = default)
         {
-            if (!command.StartsWith("aggTradesIn ", StringComparison.OrdinalIgnoreCase) &&
-                !command.Equals("aggTradesIn", StringComparison.OrdinalIgnoreCase))
+            if (!command.StartsWith("ordersIn ", StringComparison.OrdinalIgnoreCase) &&
+                !command.Equals("ordersIn", StringComparison.OrdinalIgnoreCase))
                 return false;
 
+            if (Program.User == null)
+            {
+                Program.PrintApiNotice();
+                return true;
+            }
+
             var args = command.Split(' ');
+
+            if (args.Length < 2)
+            {
+                lock (Program.ConsoleSync)
+                {
+                    Console.WriteLine("A symbol is required.");
+                    return true;
+                }
+            }
 
             if (args.Length < 4)
             {
@@ -31,21 +48,21 @@ namespace BinanceConsoleApp.Controllers
 
             long.TryParse(args[3], out var endTime);
 
-            var trades = (await Program.Api.GetAggregateTradesAsync(symbol, (startTime, endTime), token))
+            var orders = (await Program.Api.GetOrdersAsync(Program.User, symbol, (startTime, endTime), token: token))
                 .Reverse().ToArray();
 
             lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
-                if (!trades.Any())
+                if (!orders.Any())
                 {
-                    Console.WriteLine("  [None]");
+                    Console.WriteLine("[None]");
                 }
                 else
                 {
-                    foreach (var trade in trades)
+                    foreach (var order in orders)
                     {
-                        Program.Display(trade);
+                        Program.Display(order);
                     }
                 }
                 Console.WriteLine();

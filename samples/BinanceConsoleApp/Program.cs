@@ -207,6 +207,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  takeProfitLimit <side> <symbol> <qty> <price> <stop>  create a take profit limit order.");
                 Console.WriteLine("  orders <symbol> [limit]                               display orders for a symbol, where limit: [1-500].");
                 Console.WriteLine("  orders [symbol] open                                  display all open orders for a symbol or all symbols.");
+                Console.WriteLine("  ordersIn <symbol> <start> <end>                       display orders for a symbol within a time interval (inclusive).");
                 Console.WriteLine("  cancel [symbol]                                       cancel all open orders for a symbol (or all symbols...).");
                 Console.WriteLine("  order <symbol> <ID>                                   display an order by symbol and ID.");
                 Console.WriteLine("  order <symbol> <ID> cancel                            cancel an order by symbol and ID.");

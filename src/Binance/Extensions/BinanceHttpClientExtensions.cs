@@ -256,8 +256,8 @@ namespace Binance
                 if (endTime < startTime)
                     throw new ArgumentException($"Time ({nameof(endTime)}) must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
 
-                if ((endTime - startTime).Duration() >= TimeSpan.FromHours(24))
-                    throw new ArgumentException($"The interval between {nameof(startTime)} and {nameof(endTime)} must be less than 24 hours.", nameof(endTime));
+                if ((endTime - startTime).Duration() >= TimeSpan.FromHours(1))
+                    throw new ArgumentException($"The interval between {nameof(startTime)} and {nameof(endTime)} must be less than 1 hour.", nameof(endTime));
             }
 
             return await client.GetAsync(request, token)
@@ -690,11 +690,13 @@ namespace Binance
         /// <param name="user"></param>
         /// <param name="symbol"></param>
         /// <param name="orderId"></param>
-        /// <param name="limit">Default 500; max 500.</param>
+        /// <param name="limit">Default 500; max 1000.</param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
         /// <param name="recvWindow"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static async Task<string> GetOrdersAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol, long orderId = BinanceApi.NullId, int limit = default, long recvWindow = default, CancellationToken token = default)
+        public static async Task<string> GetOrdersAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol, long orderId = BinanceApi.NullId, int limit = default, DateTime startTime = default, DateTime endTime = default, long recvWindow = default, CancellationToken token = default)
         {
             Throw.IfNull(client, nameof(client));
             Throw.IfNull(user, nameof(user));
@@ -719,8 +721,34 @@ namespace Binance
             if (orderId >= 0)
                 request.AddParameter("orderId", orderId);
 
-            if (limit > 0)
-                request.AddParameter("limit", limit);
+            if (startTime != default)
+            {
+                if (startTime.Kind != DateTimeKind.Utc)
+                    throw new ArgumentException("Date/Time must be UTC.", nameof(startTime));
+
+                request.AddParameter("startTime", startTime.ToTimestamp());
+            }
+
+            if (endTime != default)
+            {
+                if (endTime.Kind != DateTimeKind.Utc)
+                    throw new ArgumentException("Date/Time must be UTC.", nameof(endTime));
+
+                request.AddParameter("endTime", endTime.ToTimestamp());
+            }
+
+            if (startTime == default || endTime == default)
+            {
+                if (limit > 0)
+                {
+                    request.AddParameter("limit", limit);
+                }
+            }
+            else
+            {
+                if (endTime < startTime)
+                    throw new ArgumentException($"Time ({nameof(endTime)}) must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
+            }
 
             if (recvWindow > 0)
                 request.AddParameter("recvWindow", recvWindow);

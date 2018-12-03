@@ -21,6 +21,7 @@ namespace BinanceConsoleApp.Controllers
                 lock (Program.ConsoleSync)
                 {
                     Console.WriteLine("An aggregate trade ID is required.");
+                    return true;
                 }
             }
 

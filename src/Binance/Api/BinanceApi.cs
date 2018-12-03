@@ -582,7 +582,19 @@ namespace Binance
 
         public virtual async Task<IEnumerable<Order>> GetOrdersAsync(IBinanceApiUser user, string symbol, long orderId = NullId, int limit = default, long recvWindow = default, CancellationToken token = default)
         {
-            var json = await HttpClient.GetOrdersAsync(user, symbol, orderId, limit, recvWindow, token)
+            var json = await HttpClient.GetOrdersAsync(user, symbol, orderId, limit, recvWindow: recvWindow, token: token)
+                .ConfigureAwait(false);
+
+            try { return _orderSerializer.DeserializeMany(json, user); }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetOrdersAsync), json, e);
+            }
+        }
+
+        public virtual async Task<IEnumerable<Order>> GetOrdersAsync(IBinanceApiUser user, string symbol, DateTime startTime, DateTime endTime, long recvWindow = default, CancellationToken token = default)
+        {
+            var json = await HttpClient.GetOrdersAsync(user, symbol, startTime: startTime, endTime: endTime, recvWindow: recvWindow, token: token)
                 .ConfigureAwait(false);
 
             try { return _orderSerializer.DeserializeMany(json, user); }
