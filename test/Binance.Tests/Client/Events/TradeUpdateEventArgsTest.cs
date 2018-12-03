@@ -53,7 +53,7 @@ namespace Binance.Tests.Client.Events
             const decimal icebergQuantity = 0.1m;
             const bool isWorking = true;
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, isWorking);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, time, isWorking);
 
             const string orderRejectedReason = OrderRejectedReason.None;
             const string newClientOrderId = "new-test-order";

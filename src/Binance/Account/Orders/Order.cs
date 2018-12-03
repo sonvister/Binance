@@ -77,9 +77,14 @@ namespace Binance
         public decimal IcebergQuantity { get; internal set; }
 
         /// <summary>
-        /// Get the time.
+        /// Get the creation time.
         /// </summary>
         public DateTime Time { get; internal set; }
+
+        /// <summary>
+        /// Get the update time.
+        /// </summary>
+        public DateTime UpdateTime { get; internal set; }
 
         /// <summary>
         /// Get the is working flag.
@@ -112,6 +117,7 @@ namespace Binance
         /// <param name="stopPrice"></param>
         /// <param name="icebergQuantity"></param>
         /// <param name="time"></param>
+        /// <param name="updateTime"></param>
         /// <param name="isWorking"></param>
         /// <param name="fills"></param>
         public Order(
@@ -129,6 +135,7 @@ namespace Binance
             decimal stopPrice,
             decimal icebergQuantity,
             DateTime time,
+            DateTime updateTime,
             bool isWorking,
             IEnumerable<Fill> fills = null)
             : this(user)
@@ -163,6 +170,7 @@ namespace Binance
             StopPrice = stopPrice;
             IcebergQuantity = icebergQuantity;
             Time = time;
+            UpdateTime = updateTime;
             IsWorking = isWorking;
 
             Fills = fills ?? new Fill[] { };

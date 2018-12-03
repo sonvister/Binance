@@ -410,7 +410,6 @@ namespace Binance.Client
         {
             order.Symbol = jToken["s"].Value<string>();
             order.Id = jToken["i"].Value<long>();
-            order.Time = jToken["T"].Value<long>().ToDateTime();
             order.Price = jToken["p"].Value<decimal>();
             order.OriginalQuantity = jToken["q"].Value<decimal>();
             order.ExecutedQuantity = jToken["z"].Value<decimal>();
@@ -421,6 +420,8 @@ namespace Binance.Client
             order.StopPrice = jToken["P"].Value<decimal>();
             order.IcebergQuantity = jToken["F"].Value<decimal>();
             order.ClientOrderId = jToken["C"].Value<string>();
+            order.Time = jToken["O"].Value<long>().ToDateTime();
+            order.UpdateTime = jToken["T"].Value<long>().ToDateTime();
         }
 
         /// <summary>

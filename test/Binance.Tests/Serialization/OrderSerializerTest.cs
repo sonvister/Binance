@@ -29,7 +29,7 @@ namespace Binance.Tests.Serialization
                 new Fill(price, originalQuantity, 0.001m, "BNB", 12345678990)
             };
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, isWorking, fills);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, time, isWorking, fills);
 
             var serializer = new OrderSerializer();
 

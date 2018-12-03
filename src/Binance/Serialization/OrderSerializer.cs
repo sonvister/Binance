@@ -12,6 +12,7 @@ namespace Binance.Serialization
         private const string KeyOrderId = "orderId";
         private const string KeyClientOrderId = "clientOrderId";
         private const string KeyTime = "time";
+        private const string KeyUpdateTime = "updateTime";
         private const string KeyPrice = "price";
         private const string KeyOriginalQuantity = "origQty";
         private const string KeyExecutedQuantity = "executedQty";
@@ -64,7 +65,6 @@ namespace Binance.Serialization
                 new JProperty(KeySymbol, order.Symbol),
                 new JProperty(KeyOrderId, order.Id),
                 new JProperty(KeyClientOrderId, order.ClientOrderId),
-                new JProperty(KeyTime, order.Time.ToTimestamp()),
                 new JProperty(KeyPrice, order.Price.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyOriginalQuantity, order.OriginalQuantity.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyExecutedQuantity, order.ExecutedQuantity.ToString(CultureInfo.InvariantCulture)),
@@ -74,6 +74,8 @@ namespace Binance.Serialization
                 new JProperty(KeySide, order.Side.ToString().ToUpperInvariant()),
                 new JProperty(KeyStopPrice, order.StopPrice.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyIcebergQuantity, order.IcebergQuantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyTime, order.Time.ToTimestamp()),
+                new JProperty(KeyUpdateTime, order.UpdateTime.ToTimestamp()),
                 new JProperty(KeyIsWorking, order.IsWorking)
             };
 
@@ -105,7 +107,6 @@ namespace Binance.Serialization
             order.Symbol = jToken[KeySymbol].Value<string>();
             order.Id = jToken[KeyOrderId].Value<long>();
             order.ClientOrderId = jToken[KeyClientOrderId].Value<string>();
-            order.Time = (jToken[KeyTime] ?? jToken["transactTime"]).Value<long>().ToDateTime();
             order.Price = jToken[KeyPrice].Value<decimal>();
             order.OriginalQuantity = jToken[KeyOriginalQuantity].Value<decimal>();
             order.ExecutedQuantity = jToken[KeyExecutedQuantity].Value<decimal>();
@@ -115,6 +116,8 @@ namespace Binance.Serialization
             order.Side = jToken[KeySide].Value<string>().ConvertOrderSide();
             order.StopPrice = jToken[KeyStopPrice]?.Value<decimal>() ?? order.StopPrice;
             order.IcebergQuantity = jToken[KeyIcebergQuantity]?.Value<decimal>() ?? order.IcebergQuantity;
+            order.Time = (jToken[KeyTime] ?? jToken["transactTime"]).Value<long>().ToDateTime();
+            order.UpdateTime = (jToken[KeyUpdateTime] ?? jToken[KeyTime] ?? jToken["transactTime"]).Value<long>().ToDateTime();
             order.IsWorking = jToken[KeyIsWorking]?.Value<bool>() ?? order.IsWorking;
 
             var fills = jToken[KeyFills]?

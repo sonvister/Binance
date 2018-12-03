@@ -167,7 +167,7 @@ namespace Binance
         /// <param name="apiKey"></param>
         /// <param name="symbol"></param>
         /// <param name="fromId">TradeId to fetch from. Default gets most recent trades.</param>
-        /// <param name="limit">Default 500; max 500.</param>
+        /// <param name="limit">Default 500; max 1000.</param>
         /// <param name="token"></param>
         /// <returns></returns>
         public static async Task<string> GetTradesAsync(this IBinanceHttpClient client, string apiKey, string symbol, long fromId = BinanceApi.NullId, int limit = default, CancellationToken token = default)
@@ -205,7 +205,7 @@ namespace Binance
         /// <param name="client"></param>
         /// <param name="symbol"></param>
         /// <param name="fromId">ID to get aggregate trades from INCLUSIVE.</param>
-        /// <param name="limit">Default 500; max 500.</param>
+        /// <param name="limit">Default 500; max 1000.</param>
         /// <param name="startTime">Timestamp in ms to get aggregate trades from INCLUSIVE.</param>
         /// <param name="endTime">Timestamp in ms to get aggregate trades until INCLUSIVE.</param>
         /// <param name="token"></param>
@@ -271,7 +271,7 @@ namespace Binance
         /// <param name="client"></param>
         /// <param name="symbol"></param>
         /// <param name="interval"></param>
-        /// <param name="limit">Default 500; max 500.</param>
+        /// <param name="limit">Default 500; max 1000.</param>
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
         /// <param name="token"></param>
