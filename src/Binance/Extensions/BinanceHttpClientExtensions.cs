@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -355,10 +354,8 @@ namespace Binance
 
             if (client.RateLimiter != null)
             {
-                var tradingSymbols = Symbol.Cache.GetAll().Count(s => s.Status == SymbolStatus.Trading);
-
                 await client.RateLimiter
-                    .DelayAsync(string.IsNullOrWhiteSpace(symbol) && tradingSymbols > 1 ? tradingSymbols / 2 : 1, token)
+                    .DelayAsync(string.IsNullOrWhiteSpace(symbol) ? 40 : 1, token)
                     .ConfigureAwait(false);
             }
 
@@ -387,7 +384,8 @@ namespace Binance
 
             if (client.RateLimiter != null)
             {
-                await client.RateLimiter.DelayAsync(token: token)
+                await client.RateLimiter
+                    .DelayAsync(string.IsNullOrWhiteSpace(symbol) ? 2 : 1, token)
                     .ConfigureAwait(false);
             }
 
@@ -440,7 +438,7 @@ namespace Binance
 
             if (client.RateLimiter != null)
             {
-                await client.RateLimiter.DelayAsync(token: token)
+                await client.RateLimiter.DelayAsync(2, token)
                    .ConfigureAwait(false);
             }
 
@@ -661,10 +659,8 @@ namespace Binance
 
             if (client.RateLimiter != null)
             {
-                var tradingSymbols = Symbol.Cache.GetAll().Count(s => s.Status == SymbolStatus.Trading);
-
                 await client.RateLimiter
-                    .DelayAsync(string.IsNullOrWhiteSpace(symbol) && tradingSymbols > 1 ? tradingSymbols / 2 : 1, token)
+                    .DelayAsync(string.IsNullOrWhiteSpace(symbol) ? 40 : 1, token)
                     .ConfigureAwait(false);
             }
 
