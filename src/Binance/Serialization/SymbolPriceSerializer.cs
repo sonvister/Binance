@@ -43,8 +43,8 @@ namespace Binance.Serialization
         private static SymbolPrice DeserializeSymbolPrice(JToken jToken)
         {
             return new SymbolPrice(
-                jToken["symbol"].Value<string>(),
-                jToken["price"].Value<decimal>());
+                jToken[KeySymbol].Value<string>(),
+                jToken[KeyPrice].Value<decimal>());
         }
     }
 }

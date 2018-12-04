@@ -5,7 +5,7 @@ namespace Binance.Serialization
     public interface ISymbolPriceSerializer
     {
         /// <summary>
-        /// Deserialize JSON to an <see cref="SymbolPrice"/>.
+        /// Deserialize JSON to a <see cref="SymbolPrice"/>.
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
@@ -19,7 +19,7 @@ namespace Binance.Serialization
         IEnumerable<SymbolPrice> DeserializeMany(string json);
 
         /// <summary>
-        /// Serialize an <see cref="SymbolPrice"/> to JSON.
+        /// Serialize a <see cref="SymbolPrice"/> to JSON.
         /// </summary>
         /// <param name="symbolPrice"></param>
         /// <returns></returns>

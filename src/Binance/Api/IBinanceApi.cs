@@ -152,6 +152,14 @@ namespace Binance
         Task<IEnumerable<SymbolPrice>> GetPricesAsync(CancellationToken token = default);
 
         /// <summary>
+        /// Get average price for a symbol.
+        /// </summary>
+        /// <param name="symbol"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<SymbolAveragePrice> GetAvgPriceAsync(string symbol, CancellationToken token = default);
+
+        /// <summary>
         /// Get best price/quantity on the order book for a symbol.
         /// </summary>
         /// <param name="symbol"></param>

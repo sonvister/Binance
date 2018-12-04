@@ -188,6 +188,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  symbols|pairs [refresh]                               display all symbols (currency pairs).");
                 Console.WriteLine("  assets [refresh]                                      display all assets (currencies).");
                 Console.WriteLine("  price <symbol>                                        display current market price for a symbol or all symbols.");
+                Console.WriteLine("  avgPrice <symbol>                                     display current average price for a symbol.");
                 Console.WriteLine("  rate <baseAsset> <quoteAsset>                         display exchange rate for any pair of assets.");
                 Console.WriteLine("  top <symbol>                                          display order book top price/qty for a symbol or all symbols.");
                 Console.WriteLine("  live depth|book <symbol> [off]                        enable/disable order book live feed for a symbol.");
@@ -361,6 +362,14 @@ namespace BinanceConsoleApp
             lock (ConsoleSync)
             {
                 Console.WriteLine($"  {price.Symbol.PadLeft(8)}: {price.Value}");
+            }
+        }
+
+        internal static void Display(SymbolAveragePrice price)
+        {
+            lock (ConsoleSync)
+            {
+                Console.WriteLine($"  {price.Symbol.PadLeft(8)}: {price.Value}  ({price.Minutes} minutes)");
             }
         }
 

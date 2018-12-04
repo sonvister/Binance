@@ -401,6 +401,32 @@ namespace Binance
         }
 
         /// <summary>
+        /// Get current average price for a symbol.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="symbol"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async Task<string> GetAvgPriceAsync(this IBinanceHttpClient client, string symbol, CancellationToken token = default)
+        {
+            Throw.IfNull(client, nameof(client));
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
+
+            var request = new BinanceHttpRequest("/api/v3/avgPrice");
+
+            request.AddParameter("symbol", symbol.FormatSymbol());
+
+            return await client.GetAsync(request, token)
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Get best price/quantity on the order book for a symbol.
         /// </summary>
         /// <param name="client"></param>

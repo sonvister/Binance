@@ -5,9 +5,10 @@ using System.Globalization;
 namespace Binance
 {
     /// <summary>
-    /// A symbol/price value object.
+    /// A symbol/average price value object.
+    /// See https://github.com/binance-exchange/binance-official-api-docs/blob/master/CHANGELOG.md for an explanation of the average price calculation.
     /// </summary>
-    public sealed class SymbolPrice : IEquatable<SymbolPrice>
+    public sealed class SymbolAveragePrice : IEquatable<SymbolAveragePrice>
     {
         #region Public Properties
 
@@ -17,7 +18,12 @@ namespace Binance
         public string Symbol { get; }
 
         /// <summary>
-        /// Get the price value.
+        /// Get the moving average time interval minutes.
+        /// </summary>
+        public int Minutes { get; }
+
+        /// <summary>
+        /// Get the average price value.
         /// </summary>
         public decimal Value { get; }
 
@@ -29,15 +35,20 @@ namespace Binance
         /// Constructor.
         /// </summary>
         /// <param name="symbol">The symbol.</param>
-        /// <param name="value">The price value.</param>
-        public SymbolPrice(string symbol, decimal value)
+        /// <param name="minutes">The moving average time interval minutes.</param>
+        /// <param name="value">The average price value.</param>
+        public SymbolAveragePrice(string symbol, int minutes, decimal value)
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
+            if (minutes <= 0)
+                throw new ArgumentException($"{nameof(SymbolAveragePrice)} value must be greater than 0.", nameof(minutes));
+
             if (value < 0)
-                throw new ArgumentException($"{nameof(SymbolPrice)} value must not be less than 0.", nameof(value));
+                throw new ArgumentException($"{nameof(SymbolAveragePrice)} value must not be less than 0.", nameof(value));
 
             Symbol = symbol.FormatSymbol();
+            Minutes = minutes;
             Value = value;
         }
 
@@ -46,7 +57,7 @@ namespace Binance
         #region Public Methods
 
         /// <summary>
-        /// Display price value as string.
+        /// Display average price value as string.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
@@ -58,13 +69,14 @@ namespace Binance
 
         #region IEquatable
 
-        public bool Equals(SymbolPrice other)
+        public bool Equals(SymbolAveragePrice other)
         {
             if (other == null)
                 return false;
 
             return other.Symbol == Symbol
-                && other.Value == Value;
+                   && other.Minutes == Minutes
+                   && other.Value == Value;
         }
 
         #endregion IEquatable

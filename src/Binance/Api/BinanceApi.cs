@@ -46,6 +46,8 @@ namespace Binance
 
         private readonly ISymbolPriceSerializer _symbolPriceSerializer;
 
+        private readonly ISymbolAveragePriceSerializer _symbolAveragePriceSerializer;
+
         private readonly ISymbolStatisticsSerializer _symbolStatisticsSerializer;
 
         private readonly IAccountTradeSerializer _accountTradeSerializer;
@@ -77,6 +79,7 @@ namespace Binance
         /// <param name="aggregateTradeSerializer"></param>
         /// <param name="candlestickSerializer"></param>
         /// <param name="symbolPriceSerializer"></param>
+        /// <param name="symbolAveragePriceSerializer"></param>
         /// <param name="symbolStatisticsSerializer"></param>
         /// <param name="accountTradeSerializer"></param>
         /// <param name="tradeSerializer"></param>
@@ -89,6 +92,7 @@ namespace Binance
             IAggregateTradeSerializer aggregateTradeSerializer = null,
             ICandlestickSerializer candlestickSerializer = null,
             ISymbolPriceSerializer symbolPriceSerializer = null,
+            ISymbolAveragePriceSerializer symbolAveragePriceSerializer = null,
             ISymbolStatisticsSerializer symbolStatisticsSerializer = null,
             IAccountTradeSerializer accountTradeSerializer = null,
             ITradeSerializer tradeSerializer = null,
@@ -104,6 +108,7 @@ namespace Binance
             _aggregateTradeSerializer = aggregateTradeSerializer ?? new AggregateTradeSerializer();
             _candlestickSerializer = candlestickSerializer ?? new CandlestickSerializer();
             _symbolPriceSerializer = symbolPriceSerializer ?? new SymbolPriceSerializer();
+            _symbolAveragePriceSerializer = symbolAveragePriceSerializer ?? new SymbolAveragePriceSerializer();
             _symbolStatisticsSerializer = symbolStatisticsSerializer ?? new SymbolStatisticsSerializer();
             _accountTradeSerializer = accountTradeSerializer ?? new AccountTradeSerializer();
             _tradeSerializer = tradeSerializer ?? new TradeSerializer();
@@ -326,7 +331,21 @@ namespace Binance
             try { return _symbolPriceSerializer.Deserialize(json); }
             catch (Exception e)
             {
-                throw NewFailedToParseJsonException(nameof(GetPricesAsync), json, e);
+                throw NewFailedToParseJsonException(nameof(GetPriceAsync), json, e);
+            }
+        }
+
+        public virtual async Task<SymbolAveragePrice> GetAvgPriceAsync(string symbol, CancellationToken token = default)
+        {
+            Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
+
+            var json = await HttpClient.GetAvgPriceAsync(symbol, token)
+                .ConfigureAwait(false);
+
+            try { return _symbolAveragePriceSerializer.Deserialize(symbol, json); }
+            catch (Exception e)
+            {
+                throw NewFailedToParseJsonException(nameof(GetAvgPriceAsync), json, e);
             }
         }
 

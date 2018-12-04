@@ -103,6 +103,7 @@ namespace Binance
             services.AddSingleton<IOrderBookSerializer, OrderBookSerializer>();
             services.AddSingleton<ICandlestickSerializer, CandlestickSerializer>();
             services.AddSingleton<ISymbolPriceSerializer, SymbolPriceSerializer>();
+            services.AddSingleton<ISymbolAveragePriceSerializer, SymbolAveragePriceSerializer>();
             services.AddSingleton<ISymbolStatisticsSerializer, SymbolStatisticsSerializer>();
             services.AddSingleton<IAggregateTradeSerializer, AggregateTradeSerializer>();
             services.AddSingleton<IAccountTradeSerializer, AccountTradeSerializer>();
