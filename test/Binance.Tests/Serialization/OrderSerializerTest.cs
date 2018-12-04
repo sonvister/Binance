@@ -16,6 +16,7 @@ namespace Binance.Tests.Serialization
             const decimal price = 4999;
             const decimal originalQuantity = 1;
             const decimal executedQuantity = 0.5m;
+            const decimal cummulativeQuoteAssetQuantity = executedQuantity * price;
             const OrderStatus status = OrderStatus.PartiallyFilled;
             const TimeInForce timeInForce = TimeInForce.IOC;
             const OrderType orderType = OrderType.Market;
@@ -29,7 +30,7 @@ namespace Binance.Tests.Serialization
                 new Fill(price, originalQuantity, 0.001m, "BNB", 12345678990)
             };
 
-            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, time, isWorking, fills);
+            var order = new Order(user, symbol, id, clientOrderId, price, originalQuantity, executedQuantity, cummulativeQuoteAssetQuantity, status, timeInForce, orderType, orderSide, stopPrice, icebergQuantity, time, time, isWorking, fills);
 
             var serializer = new OrderSerializer();
 

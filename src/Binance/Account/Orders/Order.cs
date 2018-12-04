@@ -47,6 +47,11 @@ namespace Binance
         public decimal ExecutedQuantity { get; internal set; }
 
         /// <summary>
+        /// Get the cummulative quote asset quantity.
+        /// </summary>
+        public decimal CummulativeQuoteAssetQuantity { get; internal set; }
+
+        /// <summary>
         /// Get the order status.
         /// </summary>
         public OrderStatus Status { get; internal set; }
@@ -110,6 +115,7 @@ namespace Binance
         /// <param name="price"></param>
         /// <param name="originalQuantity"></param>
         /// <param name="executedQuantity"></param>
+        /// <param name="cummulativeQuoteAssetQuantity"></param>
         /// <param name="status"></param>
         /// <param name="timeInForce"></param>
         /// <param name="orderType"></param>
@@ -128,6 +134,7 @@ namespace Binance
             decimal price,
             decimal originalQuantity,
             decimal executedQuantity,
+            decimal cummulativeQuoteAssetQuantity,
             OrderStatus status,
             TimeInForce timeInForce,
             OrderType orderType,
@@ -163,6 +170,7 @@ namespace Binance
             Price = price;
             OriginalQuantity = originalQuantity;
             ExecutedQuantity = executedQuantity;
+            CummulativeQuoteAssetQuantity = cummulativeQuoteAssetQuantity;
             Status = status;
             TimeInForce = timeInForce;
             Type = orderType;

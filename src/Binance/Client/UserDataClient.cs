@@ -413,6 +413,7 @@ namespace Binance.Client
             order.Price = jToken["p"].Value<decimal>();
             order.OriginalQuantity = jToken["q"].Value<decimal>();
             order.ExecutedQuantity = jToken["z"].Value<decimal>();
+            order.CummulativeQuoteAssetQuantity = jToken["Z"].Value<decimal>();
             order.Status = jToken["X"].Value<string>().ConvertOrderStatus();
             order.TimeInForce = jToken["f"].Value<string>().ConvertTimeInForce();
             order.Type = jToken["o"].Value<string>().ConvertOrderType();
@@ -422,6 +423,8 @@ namespace Binance.Client
             order.ClientOrderId = jToken["C"].Value<string>();
             order.Time = jToken["O"].Value<long>().ToDateTime();
             order.UpdateTime = jToken["T"].Value<long>().ToDateTime();
+
+            // TODO: Add "Y"... last quote asset transacted quantity (i.e. lastPrice * lastQty).
         }
 
         /// <summary>

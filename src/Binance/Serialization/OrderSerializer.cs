@@ -16,6 +16,7 @@ namespace Binance.Serialization
         private const string KeyPrice = "price";
         private const string KeyOriginalQuantity = "origQty";
         private const string KeyExecutedQuantity = "executedQty";
+        private const string KeyCummulativeQuoteAssetQuantity = "cummulativeQuoteQty";
         private const string KeyStatus = "status";
         private const string KeyTimeInForce = "timeInForce";
         private const string KeyType = "type";
@@ -68,6 +69,7 @@ namespace Binance.Serialization
                 new JProperty(KeyPrice, order.Price.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyOriginalQuantity, order.OriginalQuantity.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyExecutedQuantity, order.ExecutedQuantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyCummulativeQuoteAssetQuantity, order.CummulativeQuoteAssetQuantity.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyStatus, order.Status.AsString()),
                 new JProperty(KeyTimeInForce, order.TimeInForce.ToString().ToUpperInvariant()),
                 new JProperty(KeyType, order.Type.AsString()),
@@ -110,6 +112,7 @@ namespace Binance.Serialization
             order.Price = jToken[KeyPrice].Value<decimal>();
             order.OriginalQuantity = jToken[KeyOriginalQuantity].Value<decimal>();
             order.ExecutedQuantity = jToken[KeyExecutedQuantity].Value<decimal>();
+            order.CummulativeQuoteAssetQuantity = jToken[KeyCummulativeQuoteAssetQuantity].Value<decimal>();
             order.Status = jToken[KeyStatus].Value<string>().ConvertOrderStatus();
             order.TimeInForce = jToken[KeyTimeInForce].Value<string>().ConvertTimeInForce();
             order.Type = jToken[KeyType].Value<string>().ConvertOrderType();
