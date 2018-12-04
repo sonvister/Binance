@@ -4,8 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binance;
 
-// ReSharper disable PossibleMultipleEnumeration
-
 namespace BinanceConsoleApp.Controllers
 {
     internal class GetOrdersIn : IHandleCommand
@@ -54,12 +52,14 @@ namespace BinanceConsoleApp.Controllers
             lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
+                // ReSharper disable once PossibleMultipleEnumeration
                 if (!orders.Any())
                 {
-                    Console.WriteLine("[None]");
+                    Console.WriteLine("  [None]");
                 }
                 else
                 {
+                    // ReSharper disable once PossibleMultipleEnumeration
                     foreach (var order in orders)
                     {
                         Program.Display(order);

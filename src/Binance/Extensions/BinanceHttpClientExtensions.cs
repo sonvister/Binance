@@ -255,9 +255,6 @@ namespace Binance
             {
                 if (endTime < startTime)
                     throw new ArgumentException($"Time ({nameof(endTime)}) must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
-
-                if ((endTime - startTime).Duration() >= TimeSpan.FromHours(1))
-                    throw new ArgumentException($"The interval between {nameof(startTime)} and {nameof(endTime)} must be less than 1 hour.", nameof(endTime));
             }
 
             return await client.GetAsync(request, token)

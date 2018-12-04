@@ -37,12 +37,14 @@ namespace BinanceConsoleApp.Controllers
             lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
+                // ReSharper disable once PossibleMultipleEnumeration
                 if (!trades.Any())
                 {
                     Console.WriteLine("  [None]");
                 }
                 else
                 {
+                    // ReSharper disable once PossibleMultipleEnumeration
                     foreach (var trade in trades)
                     {
                         Program.Display(trade);

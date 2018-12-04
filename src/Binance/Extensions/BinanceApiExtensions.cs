@@ -201,6 +201,8 @@ namespace Binance
             Throw.IfNull(api, nameof(api));
             Throw.IfNull(order, nameof(order));
 
+            // TODO: Move to BinanceApi and update Order properties...
+
             // Cancel order using order ID.
             return api.CancelOrderAsync(order.User, order.Symbol, order.Id, newClientOrderId, recvWindow, token);
         }

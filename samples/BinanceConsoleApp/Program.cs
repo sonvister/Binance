@@ -434,7 +434,7 @@ namespace BinanceConsoleApp
         {
             lock (ConsoleSync)
             {
-                Console.WriteLine($"  {order.Symbol.PadLeft(8)} - {order.Type.ToString().PadLeft(6)} - {order.Side.ToString().PadLeft(4)} - {order.OriginalQuantity:0.00000000} @ {order.Price:0.00000000} - {order.Status.ToString()}  [ID: {order.Id}]");
+                Console.WriteLine($"  {order.Symbol.PadLeft(8)} - {order.Type.ToString().PadLeft(6)} - {order.Side.ToString().PadLeft(4)} - {order.OriginalQuantity:0.00000000} @ {order.Price:0.00000000} - {order.Status.ToString().PadRight(15)} [ID: {order.Id}]  {order.Time.ToShortDateString()}  {order.UpdateTime.ToShortDateString()}");
             }
         }
 
