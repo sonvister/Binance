@@ -1187,6 +1187,84 @@ namespace Binance
                 .ConfigureAwait(false);
         }
 
+        public static async Task<string> GetDustLogAsync(this IBinanceHttpClient client, IBinanceApiUser user, long recvWindow = default, CancellationToken token = default)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
+
+            var request = new BinanceHttpRequest("/wapi/v3/userAssetDribbletLog.html")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            if (recvWindow > 0)
+                request.AddParameter("recvWindow", recvWindow);
+
+            await client.SignAsync(request, user, token)
+                .ConfigureAwait(false);
+
+            return await client.GetAsync(request, token)
+                .ConfigureAwait(false);
+        }
+
+        public static async Task<string> GetTradeFeeAsync(this IBinanceHttpClient client, IBinanceApiUser user, string symbol, long recvWindow = default, CancellationToken token = default)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
+
+            var request = new BinanceHttpRequest("/wapi/v3/tradeFee.html")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            if (!string.IsNullOrWhiteSpace(symbol))
+                request.AddParameter("symbol", symbol.FormatSymbol());
+
+            if (recvWindow > 0)
+                request.AddParameter("recvWindow", recvWindow);
+
+            await client.SignAsync(request, user, token)
+                .ConfigureAwait(false);
+
+            return await client.GetAsync(request, token)
+                .ConfigureAwait(false);
+        }
+
+        public static async Task<string> GetAssetDetailAsync(this IBinanceHttpClient client, IBinanceApiUser user, long recvWindow = default, CancellationToken token = default)
+        {
+            Throw.IfNull(client, nameof(client));
+
+            if (client.RateLimiter != null)
+            {
+                await client.RateLimiter.DelayAsync(token: token)
+                    .ConfigureAwait(false);
+            }
+
+            var request = new BinanceHttpRequest("/wapi/v3/assetDetail.html")
+            {
+                ApiKey = user.ApiKey
+            };
+
+            if (recvWindow > 0)
+                request.AddParameter("recvWindow", recvWindow);
+
+            await client.SignAsync(request, user, token)
+                .ConfigureAwait(false);
+
+            return await client.GetAsync(request, token)
+                .ConfigureAwait(false);
+        }
+
         #endregion Account
 
         #region User Stream

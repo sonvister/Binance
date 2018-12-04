@@ -56,7 +56,7 @@ namespace BinanceConsoleApp.Controllers
 
 
             ///////////////////////////////////////////////////////////////////
-            var trades = (await Program.Api.GetAccountTradesAsync(Program.User, symbol, endTime.Subtract(TimeSpan.FromHours(24)), endTime, token:token))
+            var trades = (await Program.Api.GetAccountTradesAsync(Program.User, symbol, endTime.Subtract(TimeSpan.FromHours(24)), endTime, token: token))
                 .Reverse().ToArray();
 
             lock (Program.ConsoleSync)
@@ -83,7 +83,7 @@ namespace BinanceConsoleApp.Controllers
 
             ///////////////////////////////////////////////////////////////////
             var orders = await Program.Api
-                .GetOrdersAsync(Program.User, symbol, endTime.Subtract(TimeSpan.FromHours(24)), endTime, token:token);
+                .GetOrdersAsync(Program.User, symbol, endTime.Subtract(TimeSpan.FromHours(24)), endTime, token: token);
 
             lock (Program.ConsoleSync)
             {
