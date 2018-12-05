@@ -419,17 +419,38 @@ namespace Binance
 
                             var filters = jToken["filters"];
 
-                            var quoteMinPrice = filters[0]["minPrice"].Value<decimal>();
-                            var quoteMaxPrice = filters[0]["maxPrice"].Value<decimal>();
-                            var quoteIncrement = filters[0]["tickSize"].Value<decimal>();
+                            decimal quoteIncrement = 0;
+                            var priceFilter = filters.FirstOrDefault(f => f["filterType"].Value<string>() == "PRICE_FILTER");
+                            if (priceFilter != null)
+                            {
+                                quoteIncrement = priceFilter["tickSize"].Value<decimal>();
+                            }
+                            
+                            decimal multiplierUp = 0, multiplierDown = 0;
+                            var percentFilter = filters.FirstOrDefault(f => f["filterType"].Value<string>() == "PERCENT_PRICE");
+                            if (percentFilter != null)
+                            {
+                                multiplierUp = percentFilter["multiplierUp"].Value<decimal>();
+                                multiplierDown = percentFilter["multiplierDown"].Value<decimal>();
+                            }
 
-                            var baseMinQty = filters[1]["minQty"].Value<decimal>();
-                            var baseMaxQty = filters[1]["maxQty"].Value<decimal>();
-                            var baseIncrement = filters[1]["stepSize"].Value<decimal>();
+                            decimal baseMinQty = 0, baseMaxQty = 0, baseIncrement = 0;
+                            var quantityFilter = filters.FirstOrDefault(f => f["filterType"].Value<string>() == "LOT_SIZE");
+                            if (quantityFilter != null)
+                            {
+                                baseMinQty = quantityFilter["minQty"].Value<decimal>();
+                                baseMaxQty = quantityFilter["maxQty"].Value<decimal>();
+                                baseIncrement = quantityFilter["stepSize"].Value<decimal>();
+                            }
 
-                            var minNotional = filters[2]["minNotional"].Value<decimal>();
+                            decimal minNotional = 0;
+                            var minNotionalFilter = filters.FirstOrDefault(f => f["filterType"].Value<string>() == "MIN_NOTIONAL");
+                            if (minNotionalFilter != null)
+                            {
+                                minNotional = minNotionalFilter["minNotional"].Value<decimal>();
+                            }
 
-                            var symbol = new Symbol(status, baseAsset, quoteAsset, (baseMinQty, baseMaxQty, baseIncrement), (quoteMinPrice, quoteMaxPrice, quoteIncrement), minNotional, icebergAllowed, orderTypes);
+                            var symbol = new Symbol(status, baseAsset, quoteAsset, (baseMinQty, baseMaxQty, baseIncrement), new PriceRange(this, jToken["symbol"].Value<string>(), multiplierUp, multiplierDown, quoteIncrement), minNotional, icebergAllowed, orderTypes);
 
                             if (symbol.ToString() == jToken["symbol"].Value<string>())
                                 return symbol;

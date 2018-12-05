@@ -9,9 +9,7 @@ namespace Binance.Tests
         public void Throws()
         {
             Assert.Throws<ArgumentException>("minimum", () => new InclusiveRange(-1, 1, 1));
-            Assert.Throws<ArgumentException>("minimum", () => new InclusiveRange(0, 1, 1));
             Assert.Throws<ArgumentException>("maximum", () => new InclusiveRange(1, -1, 1));
-            Assert.Throws<ArgumentException>("maximum", () => new InclusiveRange(1, 0, 1));
             Assert.Throws<ArgumentException>("increment", () => new InclusiveRange(1, 1, -1));
             Assert.Throws<ArgumentException>("increment", () => new InclusiveRange(1, 1, 0));
         }

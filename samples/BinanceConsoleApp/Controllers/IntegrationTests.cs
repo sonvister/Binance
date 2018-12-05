@@ -19,6 +19,21 @@ namespace BinanceConsoleApp.Controllers
 
 
             ///////////////////////////////////////////////////////////////////
+            var valid = symbol.IsPriceQuantityValid(5000.01m, 0.1m);
+            var _valid = symbol.IsPriceQuantityValid(50000.01m, 0.1m);
+            var __valid = symbol.IsPriceQuantityValid(50.01m, 0.1m);
+
+            lock (Program.ConsoleSync)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Price/Quantity Valid: {valid}");
+                Console.WriteLine($"Price/Quantity Valid: {_valid}");
+                Console.WriteLine($"Price/Quantity Valid: {__valid}");
+            }
+            ///////////////////////////////////////////////////////////////////
+
+
+            /*/////////////////////////////////////////////////////////////////
             var price = await Program.Api.GetAvgPriceAsync(symbol, token);
 
             lock (Program.ConsoleSync)
@@ -26,10 +41,10 @@ namespace BinanceConsoleApp.Controllers
                 Console.WriteLine();
                 Program.Display(price);
             }
-            ///////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////*/
 
 
-            ///////////////////////////////////////////////////////////////////
+            /*/////////////////////////////////////////////////////////////////
             var aggTrades = (await Program.Api.GetAggregateTradesAsync(symbol, endTime.Subtract(TimeSpan.FromMinutes(1)), endTime, token))
                 .Reverse().ToArray();
 
@@ -52,10 +67,10 @@ namespace BinanceConsoleApp.Controllers
                     }
                 }
             }
-            ///////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////*/
 
 
-            ///////////////////////////////////////////////////////////////////
+            /*/////////////////////////////////////////////////////////////////
             var trades = (await Program.Api.GetAccountTradesAsync(Program.User, symbol, endTime.Subtract(TimeSpan.FromHours(24)), endTime, token: token))
                 .Reverse().ToArray();
 
@@ -78,10 +93,10 @@ namespace BinanceConsoleApp.Controllers
                     }
                 }
             }
-            ///////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////*/
 
 
-            ///////////////////////////////////////////////////////////////////
+            /*/////////////////////////////////////////////////////////////////
             var orders = await Program.Api
                 .GetOrdersAsync(Program.User, symbol, endTime.Subtract(TimeSpan.FromHours(24)), endTime, token: token);
 
@@ -104,7 +119,7 @@ namespace BinanceConsoleApp.Controllers
                     }
                 }
             }
-            ///////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////*/
 
 
             return true;
