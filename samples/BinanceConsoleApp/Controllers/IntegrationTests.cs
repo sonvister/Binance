@@ -20,15 +20,44 @@ namespace BinanceConsoleApp.Controllers
 
             ///////////////////////////////////////////////////////////////////
             var valid = symbol.IsPriceQuantityValid(5000.01m, 0.1m);
-            var _valid = symbol.IsPriceQuantityValid(50000.01m, 0.1m);
-            var __valid = symbol.IsPriceQuantityValid(50.01m, 0.1m);
+            var _valid = symbol.IsPriceQuantityValid(symbol.Price.Maximum + 1, 0.01m);
+            var __valid = symbol.IsPriceQuantityValid(symbol.Price.Minimum - 1, 1.0m);
 
             lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
                 Console.WriteLine($"Price/Quantity Valid: {valid}");
-                Console.WriteLine($"Price/Quantity Valid: {_valid}");
-                Console.WriteLine($"Price/Quantity Valid: {__valid}");
+                Console.WriteLine($"Price/Quantity Not Valid: {!_valid}");
+                Console.WriteLine($"Price/Quantity Not Valid: {!__valid}");
+
+                Console.WriteLine($"Maximum: {symbol.Price.Maximum}");
+                Console.WriteLine($"Minimum: {symbol.Price.Minimum}");
+            }
+
+            try
+            {
+                await Program.Api.TestPlaceAsync(new LimitOrder(Program.User)
+                {
+                    Symbol = symbol,
+                    Side = OrderSide.Sell,
+                    Quantity = 0.01m,
+                    Price = symbol.Price.Maximum,
+                });
+                Console.WriteLine("Maximum Test Order Placed.");
+
+                await Program.Api.TestPlaceAsync(new LimitOrder(Program.User)
+                {
+                    Symbol = symbol,
+                    Side = OrderSide.Buy,
+                    Quantity = 1.0m,
+                    Price = symbol.Price.Minimum
+                });
+                Console.WriteLine("Minimum Test Order Placed.");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
             ///////////////////////////////////////////////////////////////////
 
@@ -122,7 +151,7 @@ namespace BinanceConsoleApp.Controllers
             /////////////////////////////////////////////////////////////////*/
 
 
-            return true;
+            return await Task.FromResult(true);
         }
     }
 }

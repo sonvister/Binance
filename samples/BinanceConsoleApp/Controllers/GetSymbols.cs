@@ -18,9 +18,14 @@ namespace BinanceConsoleApp.Controllers
 
             var args = command.Split(' ');
 
-            if (args.Length > 1 && args[1].Equals("refresh", StringComparison.OrdinalIgnoreCase))
+            if (args.Length > 1 && (args[1].Equals("refresh", StringComparison.OrdinalIgnoreCase) || args[1].Equals("update", StringComparison.OrdinalIgnoreCase)))
             {
                 await Symbol.UpdateCacheAsync(Program.Api, token);
+            }
+            else
+            {
+                Console.WriteLine($"Invalid command: \"{args[1]}\"");
+                return true;
             }
 
             var symbols = Symbol.Cache.GetAll().OrderBy(s => s.ToString());
