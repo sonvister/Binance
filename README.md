@@ -1,5 +1,5 @@
 # Binance ![](https://github.com/sonvister/Binance/blob/master/images/logo.png?raw=true)
-A full-featured .NET **[Binance API](https://github.com/binance-exchange/binance-official-api-docs)** designed for ease of use.
+A full-featured .NET **[Binance API](https://github.com/binance-exchange/binance-official-api-docs)** library.
 
 Compatible with **.NET Standard 2.0** and **.NET Framework 4.7.1**
 
