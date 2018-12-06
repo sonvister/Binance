@@ -176,7 +176,7 @@ namespace Binance.Tests.WebSocket
 
             var isMessageEventReceived = false;
 
-            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2)))
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3)))
             {
                 stream.Message += (s, e) =>
                 {
