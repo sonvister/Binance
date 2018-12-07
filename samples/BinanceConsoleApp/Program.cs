@@ -74,6 +74,7 @@ namespace BinanceConsoleApp
                     .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
 
+                // TODO: Refactor to use ILoggingBuilder...
                 // Configure logging.
                 ServiceProvider
                     .GetService<ILoggerFactory>()
