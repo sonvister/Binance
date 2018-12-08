@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="bin\Debug\netcoreapp2.0\BinancePriceChart.log.txt" />
+    <Content Include="bin\Debug\netcoreapp2.1\BinancePriceChart.log.txt" />
   </ItemGroup>
 
   <ItemGroup>

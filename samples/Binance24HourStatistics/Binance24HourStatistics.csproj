@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="bin\Debug\netcoreapp2.0\Binance24HourStatistics.log.txt" />
+    <Content Include="bin\Debug\netcoreapp2.1\Binance24HourStatistics.log.txt" />
   </ItemGroup>
 
   <ItemGroup>

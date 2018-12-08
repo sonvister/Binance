@@ -49,13 +49,12 @@ namespace BinancePriceChart
                     //.AddTransient<IWebSocketClient, WebSocket4NetClient>()
                     //.AddTransient<IWebSocketClient, WebSocketSharpClient>()
 
-                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
-                    .BuildServiceProvider();
+                    // Configure logging.
+                    .AddLogging(builder => builder
+                        .SetMinimumLevel(LogLevel.Trace)
+                        .AddFile(configuration.GetSection("Logging:File")))
 
-                // Configure logging.
-                services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging:File"));
-                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
+                    .BuildServiceProvider();
 
                 // Get configuration settings.
                 var symbol = configuration.GetSection("PriceChart")?["Symbol"] ?? Symbol.BTC_USDT;
@@ -106,13 +105,10 @@ namespace BinancePriceChart
                 // Configure services.
                 var services = new ServiceCollection()
                     .AddBinance() // add default Binance services.
-                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+                    .AddLogging(builder => builder // configure logging.
+                        .SetMinimumLevel(LogLevel.Trace)
+                        .AddFile(configuration.GetSection("Logging:File")))
                     .BuildServiceProvider();
-
-                // Configure logging.
-                services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging:File"));
-                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var symbol = configuration.GetSection("PriceChart")?["Symbol"] ?? Symbol.BTC_USDT;

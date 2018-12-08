@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="bin\Debug\netcoreapp2.0\BinanceConsoleApp.log.txt" />
+    <Content Include="bin\Debug\netcoreapp2.1\BinanceConsoleApp.log.txt" />
   </ItemGroup>
 
   <ItemGroup>

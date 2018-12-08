@@ -50,13 +50,12 @@ namespace BinanceTradeHistory
                     //.AddTransient<IWebSocketClient, WebSocket4NetClient>()
                     //.AddTransient<IWebSocketClient, WebSocketSharpClient>()
 
-                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
-                    .BuildServiceProvider();
+                    // Configure logging.
+                    .AddLogging(builder => builder
+                        .SetMinimumLevel(LogLevel.Trace)
+                        .AddFile(configuration.GetSection("Logging:File")))
 
-                // Configure logging.
-                services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging:File"));
-                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
+                    .BuildServiceProvider();
 
                 // Get configuration settings.
                 var symbols = configuration.GetSection("TradeHistory:Symbols").Get<string[]>()
@@ -71,71 +70,6 @@ namespace BinanceTradeHistory
 
                 // Add error event handler.
                 cache.Error += (s, e) => Console.WriteLine(e.Exception.Message);
-
-                foreach (var symbol in symbols)
-                {
-                    // Subscribe to symbol with callback.
-                    cache.Subscribe(symbol, limit, Display);
-
-                    lock (_sync)
-                    {
-                        _message = symbol == symbols.Last()
-                            ? $"Symbol: \"{symbol}\" ...press any key to exit."
-                            : $"Symbol: \"{symbol}\" ...press any key to continue.";
-                    }
-                    Console.ReadKey(true);
-
-                    // Unsubscribe from symbol.
-                    cache.Unsubscribe();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Console.WriteLine();
-                Console.WriteLine("  ...press any key to close window.");
-                Console.ReadKey(true);
-            }
-        }
-
-        /// <summary>
-        /// Example using manager without DI framework (not recommended).
-        /// </summary>
-        // ReSharper disable once InconsistentNaming
-        // ReSharper disable once UnusedMember.Local
-        private static void ExampleMainWithoutDI()
-        {
-            try
-            {
-                // Load configuration.
-                var configuration = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", true, false)
-                    .Build();
-
-                // Get configuration settings.
-                var symbols = configuration.GetSection("TradeHistory:Symbols").Get<string[]>()
-                    ?? new string[] { Symbol.BTC_USDT };
-
-                var limit = 25;
-                try { limit = Convert.ToInt32(configuration.GetSection("TradeHistory")?["Limit"]); }
-                catch { /* ignore */ }
-
-                var loggerFactory = new LoggerFactory();
-                loggerFactory.AddFile(configuration.GetSection("Logging:File"));
-
-                // Initialize all the things... a DI framework could instantiate for you...
-                var api = new BinanceApi(BinanceHttpClient.Instance, logger: loggerFactory.CreateLogger<BinanceApi>());
-                var tradeClient = new AggregateTradeClient(loggerFactory.CreateLogger<AggregateTradeClient>());
-                var webSocket = new DefaultWebSocketClient(logger: loggerFactory.CreateLogger<DefaultWebSocketClient>());
-                var stream = new BinanceWebSocketStream(webSocket, loggerFactory.CreateLogger<BinanceWebSocketStream>());
-                var controller = new BinanceWebSocketStreamController(api, stream, loggerFactory.CreateLogger<BinanceWebSocketStreamController>());
-                var publisher = new BinanceWebSocketStreamPublisher(controller, loggerFactory.CreateLogger<BinanceWebSocketStreamPublisher>());
-                var client = new AggregateTradeWebSocketClient(tradeClient, publisher, loggerFactory.CreateLogger<AggregateTradeWebSocketClient>());
-                var cache = new AggregateTradeWebSocketCache(api, client, loggerFactory.CreateLogger<AggregateTradeWebSocketCache>());
-
-                // Add error event handler.
-                controller.Error += (s, e) => HandleError(e.Exception);
 
                 foreach (var symbol in symbols)
                 {
@@ -180,13 +114,10 @@ namespace BinanceTradeHistory
                 // Configure services.
                 var services = new ServiceCollection()
                     .AddBinance() // add default Binance services.
-                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+                    .AddLogging(builder => builder // configure logging.
+                        .SetMinimumLevel(LogLevel.Trace)
+                        .AddFile(configuration.GetSection("Logging:File")))
                     .BuildServiceProvider();
-
-                // Configure logging.
-                services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging:File"));
-                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var limit = 25;

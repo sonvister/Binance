@@ -49,18 +49,15 @@ namespace Binance24HourStatistics
                 // Configure services.
                 var services = new ServiceCollection()
                     .AddBinance() // add default Binance services.
+                    .AddLogging(builder => builder // configure logging.
+                        .SetMinimumLevel(LogLevel.Trace)
+                        .AddFile(configuration.GetSection("Logging:File")))
 
                     // Use alternative, low-level, web socket client implementation.
                     //.AddTransient<IWebSocketClient, WebSocket4NetClient>()
                     //.AddTransient<IWebSocketClient, WebSocketSharpClient>()
 
-                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                     .BuildServiceProvider();
-
-                // Configure logging.
-                services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging:File"));
-                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var symbols = configuration.GetSection("Statistics:Symbols").Get<string[]>()
@@ -112,13 +109,10 @@ namespace Binance24HourStatistics
                 // Configure services.
                 var services = new ServiceCollection()
                     .AddBinance() // add default Binance services.
-                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+                    .AddLogging(builder => builder // configure logging.
+                        .SetMinimumLevel(LogLevel.Trace)
+                        .AddFile(configuration.GetSection("Logging:File")))
                     .BuildServiceProvider();
-
-                // Configure logging.
-                services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging:File"));
-                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 // Get configuration settings.
                 var symbols = configuration.GetSection("Statistics:Symbols").Get<string[]>()

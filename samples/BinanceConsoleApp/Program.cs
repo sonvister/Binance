@@ -12,6 +12,7 @@ using BinanceConsoleApp.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 
 namespace BinanceConsoleApp
 {
@@ -71,16 +72,14 @@ namespace BinanceConsoleApp
                     .AddOptions()
                     .Configure<BinanceApiOptions>(Configuration.GetSection("ApiOptions"))
 
-                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
-                    .BuildServiceProvider();
+                    // Configure logging.
+                    .AddLogging(builder => builder
+                        .SetMinimumLevel(LogLevel.Trace)
+                        .AddFile(Configuration.GetSection("Logging:File"))
+                        .AddConfiguration(Configuration.GetSection("Logging:Console"))
+                        .AddConsole())
 
-                // TODO: Refactor to use ILoggingBuilder...
-                // Configure logging.
-                ServiceProvider
-                    .GetService<ILoggerFactory>()
-                        .AddConsole(Configuration.GetSection("Logging:Console"))
-                        .AddFile(Configuration.GetSection("Logging:File"));
-                        // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
+                    .BuildServiceProvider();
 
                 var apiKey = Configuration["BinanceApiKey"] // user secrets configuration.
                     ?? Configuration.GetSection("User")["ApiKey"]; // appsettings.json configuration.

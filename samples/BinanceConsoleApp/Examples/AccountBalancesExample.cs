@@ -45,13 +45,10 @@ namespace BinanceConsoleApp
                 // Configure services.
                 var services = new ServiceCollection()
                     .AddBinance() // add default Binance services.
-                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+                    .AddLogging(builder => builder // configure logging.
+                        .SetMinimumLevel(LogLevel.Trace)
+                        .AddFile(configuration.GetSection("Logging:File")))
                     .BuildServiceProvider();
-
-                // Configure logging.
-                services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging:File"));
-                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 var api = services.GetService<IBinanceApi>();
                 var userProvider = services.GetService<IBinanceApiUserProvider>();
@@ -98,13 +95,10 @@ namespace BinanceConsoleApp
                 // Configure services.
                 var services = new ServiceCollection()
                     .AddBinance() // add default Binance services.
-                    .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+                    .AddLogging(builder => builder // configure logging.
+                        .SetMinimumLevel(LogLevel.Trace)
+                        .AddFile(configuration.GetSection("Logging:File")))
                     .BuildServiceProvider();
-
-                // Configure logging.
-                services.GetService<ILoggerFactory>()
-                    .AddFile(configuration.GetSection("Logging:File"));
-                    // NOTE: Using ":" requires Microsoft.Extensions.Configuration.Binder.
 
                 var api = services.GetService<IBinanceApi>();
                 var client = services.GetService<IUserDataWebSocketClient>();

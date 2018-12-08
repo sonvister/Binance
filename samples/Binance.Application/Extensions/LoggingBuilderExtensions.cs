@@ -6,9 +6,9 @@ using Microsoft.Extensions.Logging;
 // ReSharper disable once CheckNamespace
 namespace Binance.Application
 {
-    public static class LoggerFactoryExtensions
+    public static class LoggingBuilderExtensions
     {
-        public static ILoggerFactory AddFile(this ILoggerFactory factory, IConfiguration configuration)
+        public static ILoggingBuilder AddFile(this ILoggingBuilder builder, IConfiguration configuration)
         {
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
@@ -37,20 +37,20 @@ namespace Binance.Application
                 }
             }
 
-            return AddFile(factory, filePath, level);
+            return AddFile(builder, filePath, level);
         }
 
-        public static ILoggerFactory AddFile(this ILoggerFactory factory, string filePath, LogLevel level = LogLevel.Information)
+        public static ILoggingBuilder AddFile(this ILoggingBuilder builder, string filePath, LogLevel level = LogLevel.Information)
         {
-            if (factory == null)
-                throw new ArgumentNullException(nameof(factory), $"{nameof(ILoggerFactory)} is null (add Microsoft.Extensions.Logging NuGet package).");
+            if (builder == null)
+                throw new ArgumentNullException(nameof(builder), $"{nameof(ILoggerFactory)} is null (add Microsoft.Extensions.Logging NuGet package).");
 
             if (filePath == null)
                 throw new ArgumentNullException(nameof(filePath));
 
-            factory.AddProvider(new FileLoggerProvider(filePath, level));
+            builder.AddProvider(new FileLoggerProvider(filePath, level));
 
-            return factory;
+            return builder;
         }
     }
 }
