@@ -3,8 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-// ReSharper disable once CheckNamespace
-namespace Binance
+namespace Binance.Api
 {
     internal sealed class TimestampProvider : ITimestampProvider
     {

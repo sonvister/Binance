@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace
-namespace Binance
+namespace Binance.Api
 {
     public sealed class RateLimiterProvider : IRateLimiterProvider
     {

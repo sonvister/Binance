@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Binance.Serialization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using Binance.Api;
 
 // ReSharper disable once CheckNamespace
 namespace Binance

@@ -1,4 +1,5 @@
 ﻿using System;
+using Binance.Api;
 
 // ReSharper disable once CheckNamespace
 namespace Binance
