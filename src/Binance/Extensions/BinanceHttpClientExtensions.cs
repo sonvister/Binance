@@ -309,6 +309,12 @@ namespace Binance
                 request.AddParameter("endTime", endTime.ToTimestamp());
             }
 
+            if (startTime != default && endTime != default)
+            {
+                if (endTime < startTime)
+                    throw new ArgumentException($"Time ({nameof(endTime)}) must not be less than {nameof(startTime)} ({startTime}).", nameof(endTime));
+            }
+
             return await client.GetAsync(request, token)
                 .ConfigureAwait(false);
         }
