@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using Binance.Api;
 
 namespace Binance.Tests
 {

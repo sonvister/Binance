@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace
-namespace Binance
+namespace Binance.Api
 {
     public class RateLimiter : IRateLimiter
     {

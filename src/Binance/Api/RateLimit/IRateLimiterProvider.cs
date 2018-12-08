@@ -1,5 +1,5 @@
 ﻿// ReSharper disable once CheckNamespace
-namespace Binance
+namespace Binance.Api
 {
     public interface IRateLimiterProvider
     {

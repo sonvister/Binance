@@ -7,8 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
-// ReSharper disable once CheckNamespace
-namespace Binance
+namespace Binance.Api
 {
     public sealed class BinanceHttpClient : JsonProducer, IBinanceHttpClient
     {
