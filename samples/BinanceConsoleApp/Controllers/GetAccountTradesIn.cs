@@ -37,8 +37,7 @@ namespace BinanceConsoleApp.Controllers
 
             long.TryParse(args[3], out var endTime);
 
-            var trades = (await Program.Api.GetAccountTradesAsync(Program.User, symbol, (startTime, endTime), token: token))
-                .Reverse().ToArray();
+            var trades = await Program.Api.GetAccountTradesAsync(Program.User, symbol, (startTime, endTime), token: token);
 
             lock (Program.ConsoleSync)
             {
@@ -51,7 +50,7 @@ namespace BinanceConsoleApp.Controllers
                 else
                 {
                     // ReSharper disable once PossibleMultipleEnumeration
-                    foreach (var trade in trades)
+                    foreach (var trade in trades.Reverse())
                     {
                         Program.Display(trade);
                     }

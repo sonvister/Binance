@@ -184,7 +184,7 @@ namespace BinanceConsoleApp
                 Console.WriteLine("  aggTradesFrom <symbol> <tradeId> [limit]              display aggregate trades beginning with aggregate trade ID.");
                 Console.WriteLine("  trades <symbol> [limit]                               display latest trades, where limit: [1-500].");
                 Console.WriteLine("  tradesFrom <symbol> <tradeId> [limit]                 display trades beginning with trade ID.");
-                Console.WriteLine("  candles|kLines <symbol> <interval> [limit]            display candlesticks for a symbol.");
+                Console.WriteLine("  candles|kLines <symbol> <interval> [limit]            display candlesticks for a symbol (default: 1h).");
                 Console.WriteLine("  candlesIn|kLinesIn <symbol> <interval> <start> <end>  display candlesticks for a symbol in time interval.");
                 Console.WriteLine("  symbols|pairs [refresh]                               display all symbols (currency pairs).");
                 Console.WriteLine("  assets [refresh]                                      display all assets (currencies).");
@@ -411,7 +411,7 @@ namespace BinanceConsoleApp
         {
             lock (ConsoleSync)
             {
-                Console.WriteLine($"  {trade.Time.ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time.ToTimestamp()}");
+                Console.WriteLine($"  {trade.Time.ToLocalTime().ToString().PadLeft(22)} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time.ToTimestamp()}");
             }
         }
 
@@ -419,7 +419,7 @@ namespace BinanceConsoleApp
         {
             lock (ConsoleSync)
             {
-                Console.WriteLine($"  {trade.Time.ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time.ToTimestamp()}");
+                Console.WriteLine($"  {trade.Time.ToLocalTime().ToString().PadLeft(22)} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyerMaker ? "Sell" : "Buy").PadLeft(4)} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - [ID: {trade.Id}] - {trade.Time.ToTimestamp()}");
             }
         }
 
@@ -443,7 +443,7 @@ namespace BinanceConsoleApp
         {
             lock (ConsoleSync)
             {
-                Console.WriteLine($"  {trade.Time.ToLocalTime()} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyer ? "Buy" : "Sell").PadLeft(4)} - {(trade.IsMaker ? "Maker" : "Taker")} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - Fee: {trade.Commission:0.00000000} {trade.CommissionAsset.PadRight(5)} ID: {trade.Id}");
+                Console.WriteLine($"  {trade.Time.ToLocalTime().ToString().PadLeft(22)} - {trade.Symbol.PadLeft(8)} - {(trade.IsBuyer ? "Buy" : "Sell").PadLeft(4)} - {(trade.IsMaker ? "Maker" : "Taker")} - {trade.Quantity:0.00000000} @ {trade.Price:0.00000000}{(trade.IsBestPriceMatch ? "*" : " ")} - Fee: {trade.Commission:0.00000000} {trade.CommissionAsset.PadRight(5)} ID: {trade.Id}");
             }
         }
 

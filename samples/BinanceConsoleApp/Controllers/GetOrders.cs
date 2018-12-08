@@ -64,13 +64,15 @@ namespace BinanceConsoleApp.Controllers
             lock (Program.ConsoleSync)
             {
                 Console.WriteLine();
+                // ReSharper disable once PossibleMultipleEnumeration
                 if (!orders.Any())
                 {
                     Console.WriteLine("[None]");
                 }
                 else
                 {
-                    foreach (var order in orders)
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    foreach (var order in orders.Reverse())
                     {
                         Program.Display(order);
                     }
