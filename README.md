@@ -170,7 +170,7 @@ To get the source code for a particular release, first select the corresponding 
 ![Build status](https://travis-ci.org/sonvister/Binance.svg?branch=master)
 
 ## Donate
-**DCR**: Dsd7amDBfC7n6G93NJzbaJjUdiSeN5D3tmR
+**Decred (DCR)**: Dsd7amDBfC7n6G93NJzbaJjUdiSeN5D3tmR
 
 Thank you.
 
