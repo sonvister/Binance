@@ -1,5 +1,5 @@
 # Binance ![](https://github.com/sonvister/Binance/blob/master/images/logo.png?raw=true)
-A full-featured .NET **[Binance API](https://github.com/binance-exchange/binance-official-api-docs)** library.
+A full-featured .NET API library (a.k.a. wrapper) for the **[official Binance web API](https://github.com/binance-exchange/binance-official-api-docs)**.
 
 Compatible with **.NET Standard 2.0** and **.NET Framework 4.7.1**
 
@@ -29,7 +29,7 @@ Built using [TAP (Task-based Asynchronous Pattern)](https://docs.microsoft.com/e
 
 ## Getting Started
 ### Binance Sign-up
-To use the private (*authenticated*) API methods you must have an account with Binance and create an API-Key. Please use my Referral ID: **10899093** when you [**Register**](https://www.binance.com/register.html?ref=10899093) (*it's an easy way to give back at no cost to you*).
+To use the private (*authenticated*) API methods you must have an account with Binance and create an API-Key. Please use my Referral ID: **10899093** when you [**Register**](https://www.binance.com/register.html?ref=10899093) (*it's an easy way to give back at no cost to you*). If you already have an account, please consider the option of closing and creating a new account or contacting Binance to associate your existing account with my Referral ID (**10899093**). Thanks :) #BUIDL.
 
 *NOTE*: An account is *not* required to access the public market data.
 
