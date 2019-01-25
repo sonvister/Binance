@@ -24,7 +24,7 @@ namespace Binance
         #region Public Properties
 
         /// <summary>
-        /// Get or set the service point manager connection least timeout.
+        /// Get or set the service point manager connection lease timeout.
         /// Workaround for: "Singleton HttpClient doesn't respect DNS changes."
         /// https://github.com/dotnet/corefx/issues/11224
         /// </summary>
