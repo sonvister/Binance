@@ -29,7 +29,7 @@ Built using [TAP (Task-based Asynchronous Pattern)](https://docs.microsoft.com/e
 
 ## Getting Started
 ### Binance Sign-up
-To use the private (*authenticated*) API methods you must have an account with Binance and create an API-Key. Please use my Referral ID: **10899093** when you [**Register**](https://www.binance.com/register.html?ref=10899093) (*it's an easy way to give back at no cost to you*). If you already have an account, please consider the option of closing and creating a new account or contacting Binance to associate your existing account with my Referral ID (**10899093**). Thanks :) #BUIDL.
+To use the private (*authenticated*) API methods you must have an account with Binance and create an API-Key. Please use my Referral ID: **10899093** when you [**Register**](https://www.binance.com/register.html?ref=10899093) (*it's an easy way to give back at no cost to you*).
 
 *NOTE*: An account is *not* required to access the public market data.
 
