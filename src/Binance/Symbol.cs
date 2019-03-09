@@ -18,7 +18,7 @@ namespace Binance
         /// <summary>
         /// When the symbols (currency pairs) were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1544198726245;
+        public static readonly long LastUpdateAt = 1552142082458;
 
         // BNB
         public static Symbol ADA_BNB => Cache.Get("ADABNB");
@@ -36,6 +36,7 @@ namespace Binance
         public static Symbol BLZ_BNB => Cache.Get("BLZBNB");
         public static Symbol BRD_BNB => Cache.Get("BRDBNB");
         public static Symbol BTS_BNB => Cache.Get("BTSBNB");
+        public static Symbol BTT_BNB => Cache.Get("BTTBNB");
         public static Symbol CMT_BNB => Cache.Get("CMTBNB");
         public static Symbol CND_BNB => Cache.Get("CNDBNB");
         public static Symbol CVC_BNB => Cache.Get("CVCBNB");
@@ -44,9 +45,11 @@ namespace Binance
         public static Symbol ENJ_BNB => Cache.Get("ENJBNB");
         public static Symbol EOS_BNB => Cache.Get("EOSBNB");
         public static Symbol ETC_BNB => Cache.Get("ETCBNB");
+        public static Symbol FET_BNB => Cache.Get("FETBNB");
         public static Symbol GNT_BNB => Cache.Get("GNTBNB");
         public static Symbol GO_BNB => Cache.Get("GOBNB");
         public static Symbol GTO_BNB => Cache.Get("GTOBNB");
+        public static Symbol HOT_BNB => Cache.Get("HOTBNB");
         public static Symbol ICX_BNB => Cache.Get("ICXBNB");
         public static Symbol IOTA_BNB => Cache.Get("IOTABNB");
         public static Symbol LOOM_BNB => Cache.Get("LOOMBNB");
@@ -63,6 +66,7 @@ namespace Binance
         public static Symbol NEO_BNB => Cache.Get("NEOBNB");
         public static Symbol NULS_BNB => Cache.Get("NULSBNB");
         public static Symbol NXS_BNB => Cache.Get("NXSBNB");
+        public static Symbol ONG_BNB => Cache.Get("ONGBNB");
         public static Symbol ONT_BNB => Cache.Get("ONTBNB");
         public static Symbol OST_BNB => Cache.Get("OSTBNB");
         public static Symbol PAX_BNB => Cache.Get("PAXBNB");
@@ -105,6 +109,7 @@ namespace Binance
         public static Symbol YOYO_BNB => Cache.Get("YOYOBNB");
         public static Symbol ZEN_BNB => Cache.Get("ZENBNB");
         public static Symbol ZIL_BNB => Cache.Get("ZILBNB");
+        public static Symbol ZRX_BNB => Cache.Get("ZRXBNB");
 
         // BTC
         public static Symbol ADA_BTC => Cache.Get("ADABTC");
@@ -132,6 +137,7 @@ namespace Binance
         public static Symbol BRD_BTC => Cache.Get("BRDBTC");
         public static Symbol BTG_BTC => Cache.Get("BTGBTC");
         public static Symbol BTS_BTC => Cache.Get("BTSBTC");
+        public static Symbol BTT_BTC => Cache.Get("BTTBTC");
         public static Symbol CDT_BTC => Cache.Get("CDTBTC");
         public static Symbol CHAT_BTC => Cache.Get("CHATBTC");
         public static Symbol CLOAK_BTC => Cache.Get("CLOAKBTC");
@@ -154,6 +160,7 @@ namespace Binance
         public static Symbol ETC_BTC => Cache.Get("ETCBTC");
         public static Symbol ETH_BTC => Cache.Get("ETHBTC");
         public static Symbol EVX_BTC => Cache.Get("EVXBTC");
+        public static Symbol FET_BTC => Cache.Get("FETBTC");
         public static Symbol FUEL_BTC => Cache.Get("FUELBTC");
         public static Symbol FUN_BTC => Cache.Get("FUNBTC");
         public static Symbol GAS_BTC => Cache.Get("GASBTC");
@@ -201,6 +208,7 @@ namespace Binance
         public static Symbol NXS_BTC => Cache.Get("NXSBTC");
         public static Symbol OAX_BTC => Cache.Get("OAXBTC");
         public static Symbol OMG_BTC => Cache.Get("OMGBTC");
+        public static Symbol ONG_BTC => Cache.Get("ONGBTC");
         public static Symbol ONT_BTC => Cache.Get("ONTBTC");
         public static Symbol OST_BTC => Cache.Get("OSTBTC");
         public static Symbol PAX_BTC => Cache.Get("PAXBTC");
@@ -413,43 +421,99 @@ namespace Binance
         public static Symbol ZIL_ETH => Cache.Get("ZILETH");
         public static Symbol ZRX_ETH => Cache.Get("ZRXETH");
 
+        // TUSD
+        public static Symbol ADA_TUSD => Cache.Get("ADATUSD");
+        public static Symbol BCHABC_TUSD => Cache.Get("BCHABCTUSD");
+        public static Symbol BCHSV_TUSD => Cache.Get("BCHSVTUSD");
+        public static Symbol BTT_TUSD => Cache.Get("BTTTUSD");
+        public static Symbol EOS_TUSD => Cache.Get("EOSTUSD");
+        public static Symbol LINK_TUSD => Cache.Get("LINKTUSD");
+        public static Symbol LTC_TUSD => Cache.Get("LTCTUSD");
+        public static Symbol NEO_TUSD => Cache.Get("NEOTUSD");
+        public static Symbol PAX_TUSD => Cache.Get("PAXTUSD");
+        public static Symbol TRX_TUSD => Cache.Get("TRXTUSD");
+        public static Symbol USDC_TUSD => Cache.Get("USDCTUSD");
+        public static Symbol USDS_TUSD => Cache.Get("USDSTUSD");
+        public static Symbol WAVES_TUSD => Cache.Get("WAVESTUSD");
+        public static Symbol XLM_TUSD => Cache.Get("XLMTUSD");
+        public static Symbol XRP_TUSD => Cache.Get("XRPTUSD");
+
         // USDT
         public static Symbol ADA_USDT => Cache.Get("ADAUSDT");
+        public static Symbol BAT_USDT => Cache.Get("BATUSDT");
         public static Symbol BCC_USDT => Cache.Get("BCCUSDT");
         public static Symbol BCHABC_USDT => Cache.Get("BCHABCUSDT");
         public static Symbol BCHSV_USDT => Cache.Get("BCHSVUSDT");
         public static Symbol BNB_USDT => Cache.Get("BNBUSDT");
         public static Symbol BTC_USDT => Cache.Get("BTCUSDT");
+        public static Symbol BTT_USDT => Cache.Get("BTTUSDT");
         public static Symbol EOS_USDT => Cache.Get("EOSUSDT");
         public static Symbol ETC_USDT => Cache.Get("ETCUSDT");
         public static Symbol ETH_USDT => Cache.Get("ETHUSDT");
+        public static Symbol FET_USDT => Cache.Get("FETUSDT");
+        public static Symbol HOT_USDT => Cache.Get("HOTUSDT");
         public static Symbol ICX_USDT => Cache.Get("ICXUSDT");
         public static Symbol IOTA_USDT => Cache.Get("IOTAUSDT");
+        public static Symbol LINK_USDT => Cache.Get("LINKUSDT");
         public static Symbol LTC_USDT => Cache.Get("LTCUSDT");
         public static Symbol NEO_USDT => Cache.Get("NEOUSDT");
         public static Symbol NULS_USDT => Cache.Get("NULSUSDT");
+        public static Symbol ONG_USDT => Cache.Get("ONGUSDT");
         public static Symbol ONT_USDT => Cache.Get("ONTUSDT");
         public static Symbol PAX_USDT => Cache.Get("PAXUSDT");
         public static Symbol QTUM_USDT => Cache.Get("QTUMUSDT");
         public static Symbol TRX_USDT => Cache.Get("TRXUSDT");
         public static Symbol TUSD_USDT => Cache.Get("TUSDUSDT");
+        public static Symbol USDC_USDT => Cache.Get("USDCUSDT");
+        public static Symbol USDS_USDT => Cache.Get("USDSUSDT");
         public static Symbol VEN_USDT => Cache.Get("VENUSDT");
         public static Symbol VET_USDT => Cache.Get("VETUSDT");
+        public static Symbol WAVES_USDT => Cache.Get("WAVESUSDT");
         public static Symbol XLM_USDT => Cache.Get("XLMUSDT");
         public static Symbol XRP_USDT => Cache.Get("XRPUSDT");
+        public static Symbol ZIL_USDT => Cache.Get("ZILUSDT");
+        public static Symbol ZRX_USDT => Cache.Get("ZRXUSDT");
 
         // PAX
+        public static Symbol BCHABC_PAX => Cache.Get("BCHABCPAX");
+        public static Symbol BCHSV_PAX => Cache.Get("BCHSVPAX");
         public static Symbol BNB_PAX => Cache.Get("BNBPAX");
         public static Symbol BTC_PAX => Cache.Get("BTCPAX");
+        public static Symbol BTT_PAX => Cache.Get("BTTPAX");
         public static Symbol EOS_PAX => Cache.Get("EOSPAX");
         public static Symbol ETH_PAX => Cache.Get("ETHPAX");
+        public static Symbol LINK_PAX => Cache.Get("LINKPAX");
+        public static Symbol LTC_PAX => Cache.Get("LTCPAX");
+        public static Symbol TRX_PAX => Cache.Get("TRXPAX");
+        public static Symbol USDC_PAX => Cache.Get("USDCPAX");
+        public static Symbol USDS_PAX => Cache.Get("USDSPAX");
+        public static Symbol WAVES_PAX => Cache.Get("WAVESPAX");
         public static Symbol XLM_PAX => Cache.Get("XLMPAX");
         public static Symbol XRP_PAX => Cache.Get("XRPPAX");
 
-        // TUSD
-        public static Symbol EOS_TUSD => Cache.Get("EOSTUSD");
-        public static Symbol XLM_TUSD => Cache.Get("XLMTUSD");
-        public static Symbol XRP_TUSD => Cache.Get("XRPTUSD");
+        // USDC
+        public static Symbol BCHABC_USDC => Cache.Get("BCHABCUSDC");
+        public static Symbol BCHSV_USDC => Cache.Get("BCHSVUSDC");
+        public static Symbol BNB_USDC => Cache.Get("BNBUSDC");
+        public static Symbol BTC_USDC => Cache.Get("BTCUSDC");
+        public static Symbol BTT_USDC => Cache.Get("BTTUSDC");
+        public static Symbol EOS_USDC => Cache.Get("EOSUSDC");
+        public static Symbol ETH_USDC => Cache.Get("ETHUSDC");
+        public static Symbol LINK_USDC => Cache.Get("LINKUSDC");
+        public static Symbol LTC_USDC => Cache.Get("LTCUSDC");
+        public static Symbol TRX_USDC => Cache.Get("TRXUSDC");
+        public static Symbol USDS_USDC => Cache.Get("USDSUSDC");
+        public static Symbol WAVES_USDC => Cache.Get("WAVESUSDC");
+        public static Symbol XLM_USDC => Cache.Get("XLMUSDC");
+        public static Symbol XRP_USDC => Cache.Get("XRPUSDC");
+
+        // USDS
+        public static Symbol BNB_USDS => Cache.Get("BNBUSDS");
+        public static Symbol BTC_USDS => Cache.Get("BTCUSDS");
+
+        // XRP
+        public static Symbol TRX_XRP => Cache.Get("TRXXRP");
+        public static Symbol XZC_XRP => Cache.Get("XZCXRP");
 
         #endregion Public Constants
 
@@ -533,6 +597,7 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.ADA, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ADA, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ADA, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.ADA, Asset.TUSD, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ADA, Asset.USDT, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ADX, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ADX, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -564,6 +629,7 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.BAT, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BAT, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BAT, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BAT, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.BCC, Asset.BNB, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.BCC, Asset.BTC, (0.00100000m, 100000.00000000m, 0.00100000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.BCC, Asset.ETH, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00001000m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -571,8 +637,14 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.BCD, Asset.BTC, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BCD, Asset.ETH, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00001000m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BCHABC, Asset.BTC, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BCHABC, Asset.PAX, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BCHABC, Asset.TUSD, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BCHABC, Asset.USDC, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BCHABC, Asset.USDT, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BCHSV, Asset.BTC, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BCHSV, Asset.PAX, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BCHSV, Asset.TUSD, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BCHSV, Asset.USDC, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BCHSV, Asset.USDT, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.BCN, Asset.BNB, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000100m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.BCN, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -586,6 +658,8 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.BNB, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BNB, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BNB, Asset.PAX, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BNB, Asset.USDC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BNB, Asset.USDS, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BNB, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BNT, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BNT, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -595,18 +669,26 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.BRD, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BRD, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000010m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BTC, Asset.PAX, (0.00000100m, 10000000.00000000m, 0.00000100m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BTC, Asset.USDC, (0.00000100m, 10000000.00000000m, 0.00000100m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BTC, Asset.USDS, (0.00000100m, 10000000.00000000m, 0.00000100m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BTC, Asset.USDT, (0.00000100m, 10000000.00000000m, 0.00000100m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BTG, Asset.BTC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BTG, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BTS, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BTS, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.BTS, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BTT, Asset.BNB, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BTT, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BTT, Asset.PAX, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000010m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BTT, Asset.TUSD, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000010m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BTT, Asset.USDC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000010m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.BTT, Asset.USDT, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000010m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.CDT, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.CDT, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.CHAT, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.CHAT, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.CLOAK, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.CLOAK, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.CLOAK, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.CLOAK, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.CMT, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.CMT, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.CMT, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -647,6 +729,7 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.EOS, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.EOS, Asset.PAX, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.EOS, Asset.TUSD, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.EOS, Asset.USDC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.EOS, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ETC, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ETC, Asset.BTC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -654,9 +737,13 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.ETC, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ETH, Asset.BTC, (0.00100000m, 100000.00000000m, 0.00100000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ETH, Asset.PAX, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.ETH, Asset.USDC, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ETH, Asset.USDT, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.EVX, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.EVX, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000010m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.FET, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.FET, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.FET, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.FUEL, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.FUEL, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.FUN, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -678,8 +765,10 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.GXS, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.HC, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.HC, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.HOT, Asset.BNB, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.HOT, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.HOT, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.HOT, Asset.USDT, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000010m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.HSR, Asset.BTC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.HSR, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.ICN, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -708,6 +797,10 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.LEND, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.LINK, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.LINK, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.LINK, Asset.PAX, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.LINK, Asset.TUSD, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.LINK, Asset.USDC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.LINK, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.LOOM, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.LOOM, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.LOOM, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -719,6 +812,9 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.LTC, Asset.BNB, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.LTC, Asset.BTC, (0.01000000m, 100000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.LTC, Asset.ETH, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00001000m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.LTC, Asset.PAX, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.LTC, Asset.TUSD, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.LTC, Asset.USDC, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.LTC, Asset.USDT, (0.00001000m, 10000000.00000000m, 0.00001000m), (0m, 0m, 0.01000000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.LUN, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.LUN, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -734,8 +830,8 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.MFT, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.MITH, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.MITH, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.MOD, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.MOD, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.MOD, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.MOD, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.MTH, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.MTH, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.MTL, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -758,6 +854,7 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.NEO, Asset.BNB, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00100000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.NEO, Asset.BTC, (0.01000000m, 100000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.NEO, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.NEO, Asset.TUSD, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00100000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.NEO, Asset.USDT, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00100000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.NPXS, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.NPXS, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -772,16 +869,20 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.OAX, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000010m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.OMG, Asset.BTC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.OMG, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.ONG, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.ONG, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.ONG, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ONT, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ONT, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ONT, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.ONT, Asset.USDT, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00100000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.ONT, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.OST, Asset.BNB, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000100m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.OST, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.OST, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.PAX, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.PAX, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.PAX, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.PAX, Asset.TUSD, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.PAX, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.PHX, Asset.BNB, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000100m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.PHX, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -834,8 +935,8 @@ namespace Binance
                         new Symbol(SymbolStatus.Break, Asset.RPX, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.RVN, Asset.BNB, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000100m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.RVN, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.SALT, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.SALT, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.SALT, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.SALT, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.SC, Asset.BNB, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000100m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.SC, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.SC, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -858,8 +959,8 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.STORM, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.STRAT, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.STRAT, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.SUB, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.SUB, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.SUB, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.SUB, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.SYS, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.SYS, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.SYS, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -876,13 +977,24 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.TRX, Asset.BNB, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000100m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.TRX, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.TRX, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.TRX, Asset.PAX, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.TRX, Asset.TUSD, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.TRX, Asset.USDC, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.TRX, Asset.USDT, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.TRX, Asset.XRP, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.TUSD, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.TUSD, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.TUSD, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.TUSD, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.USDC, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.USDC, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.USDC, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.USDC, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.USDC, Asset.PAX, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.USDC, Asset.TUSD, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.USDC, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.USDS, Asset.PAX, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.USDS, Asset.TUSD, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.USDS, Asset.USDC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.USDS, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.VEN, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.VEN, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Break, Asset.VEN, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -890,7 +1002,7 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.VET, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.VET, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.VET, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.VET, Asset.USDT, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.VET, Asset.USDT, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000100m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.VIA, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.VIA, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.VIA, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -907,8 +1019,12 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.WAVES, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.WAVES, Asset.BTC, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000010m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.WAVES, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.WINGS, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
-                        new Symbol(SymbolStatus.Trading, Asset.WINGS, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000010m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.WAVES, Asset.PAX, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.WAVES, Asset.TUSD, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.WAVES, Asset.USDC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.WAVES, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.WINGS, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Break, Asset.WINGS, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000010m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.WPR, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.WPR, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.WTC, Asset.BNB, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -922,6 +1038,7 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.XLM, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XLM, Asset.PAX, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XLM, Asset.TUSD, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.XLM, Asset.USDC, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XLM, Asset.USDT, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XMR, Asset.BTC, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XMR, Asset.ETH, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00001000m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -930,12 +1047,14 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.XRP, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XRP, Asset.PAX, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XRP, Asset.TUSD, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.XRP, Asset.USDC, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XRP, Asset.USDT, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XVG, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XVG, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XZC, Asset.BNB, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00100000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XZC, Asset.BTC, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.XZC, Asset.ETH, (0.01000000m, 90000000.00000000m, 0.01000000m), (0m, 0m, 0.00000100m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.XZC, Asset.XRP, (0.00100000m, 10000000.00000000m, 0.00100000m), (0m, 0m, 0.00100000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.YOYO, Asset.BNB, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000100m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.YOYO, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.YOYO, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
@@ -947,8 +1066,11 @@ namespace Binance
                         new Symbol(SymbolStatus.Trading, Asset.ZIL, Asset.BNB, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000100m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ZIL, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ZIL, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.ZIL, Asset.USDT, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.ZRX, Asset.BNB, (0.10000000m, 90000000.00000000m, 0.10000000m), (0m, 0m, 0.00001000m), 1.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ZRX, Asset.BTC, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.00100000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                         new Symbol(SymbolStatus.Trading, Asset.ZRX, Asset.ETH, (1.00000000m, 90000000.00000000m, 1.00000000m), (0m, 0m, 0.00000001m), 0.01000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
+                        new Symbol(SymbolStatus.Trading, Asset.ZRX, Asset.USDT, (0.01000000m, 10000000.00000000m, 0.01000000m), (0m, 0m, 0.00010000m), 10.00000000m, true, new List<OrderType> {OrderType.Limit,OrderType.LimitMaker,OrderType.Market,OrderType.StopLossLimit,OrderType.TakeProfitLimit}),
                     });
             }
             catch (Exception e)

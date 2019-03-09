@@ -15,7 +15,7 @@ namespace Binance
         /// <summary>
         /// When the assets were last updated.
         /// </summary>
-        public static readonly long LastUpdateAt = 1544198726245;
+        public static readonly long LastUpdateAt = 1552142082458;
 
         public static Asset ADA => Cache.Get("ADA");
         public static Asset ADX => Cache.Get("ADX");
@@ -43,6 +43,7 @@ namespace Binance
         public static Asset BTC => Cache.Get("BTC");
         public static Asset BTG => Cache.Get("BTG");
         public static Asset BTS => Cache.Get("BTS");
+        public static Asset BTT => Cache.Get("BTT");
         public static Asset CDT => Cache.Get("CDT");
         public static Asset CHAT => Cache.Get("CHAT");
         public static Asset CLOAK => Cache.Get("CLOAK");
@@ -65,6 +66,7 @@ namespace Binance
         public static Asset ETC => Cache.Get("ETC");
         public static Asset ETH => Cache.Get("ETH");
         public static Asset EVX => Cache.Get("EVX");
+        public static Asset FET => Cache.Get("FET");
         public static Asset FUEL => Cache.Get("FUEL");
         public static Asset FUN => Cache.Get("FUN");
         public static Asset GAS => Cache.Get("GAS");
@@ -112,6 +114,7 @@ namespace Binance
         public static Asset NXS => Cache.Get("NXS");
         public static Asset OAX => Cache.Get("OAX");
         public static Asset OMG => Cache.Get("OMG");
+        public static Asset ONG => Cache.Get("ONG");
         public static Asset ONT => Cache.Get("ONT");
         public static Asset OST => Cache.Get("OST");
         public static Asset PAX => Cache.Get("PAX");
@@ -153,6 +156,7 @@ namespace Binance
         public static Asset TRX => Cache.Get("TRX");
         public static Asset TUSD => Cache.Get("TUSD");
         public static Asset USDC => Cache.Get("USDC");
+        public static Asset USDS => Cache.Get("USDS");
         public static Asset USDT => Cache.Get("USDT");
         public static Asset VEN => Cache.Get("VEN");
         public static Asset VET => Cache.Get("VET");
@@ -250,6 +254,7 @@ namespace Binance
                         new Asset("BTC", 8),
                         new Asset("BTG", 8),
                         new Asset("BTS", 8),
+                        new Asset("BTT", 8),
                         new Asset("CDT", 8),
                         new Asset("CHAT", 8),
                         new Asset("CLOAK", 8),
@@ -272,6 +277,7 @@ namespace Binance
                         new Asset("ETC", 8),
                         new Asset("ETH", 8),
                         new Asset("EVX", 8),
+                        new Asset("FET", 8),
                         new Asset("FUEL", 8),
                         new Asset("FUN", 8),
                         new Asset("GAS", 8),
@@ -319,6 +325,7 @@ namespace Binance
                         new Asset("NXS", 8),
                         new Asset("OAX", 8),
                         new Asset("OMG", 8),
+                        new Asset("ONG", 8),
                         new Asset("ONT", 8),
                         new Asset("OST", 8),
                         new Asset("PAX", 8),
@@ -360,6 +367,7 @@ namespace Binance
                         new Asset("TRX", 8),
                         new Asset("TUSD", 8),
                         new Asset("USDC", 8),
+                        new Asset("USDS", 8),
                         new Asset("USDT", 8),
                         new Asset("VEN", 8),
                         new Asset("VET", 8),
