@@ -175,8 +175,9 @@ namespace Binance
         {
             Throw.IfNullOrWhiteSpace(symbol, nameof(symbol));
 
-            if (weightedAveragePrice < 0)
-                throw new ArgumentException($"{nameof(SymbolStatistics)}: price must not be less than 0.", nameof(weightedAveragePrice));
+            // HACK
+            //if (weightedAveragePrice < 0)
+            //    throw new ArgumentException($"{nameof(SymbolStatistics)}: price must not be less than 0.", nameof(weightedAveragePrice));
             if (previousClosePrice < 0)
                 throw new ArgumentException($"{nameof(SymbolStatistics)}: price must not be less than 0.", nameof(previousClosePrice));
             if (lastPrice < 0)
@@ -200,8 +201,9 @@ namespace Binance
             if (lowPrice > highPrice)
                 throw new ArgumentException($"{nameof(SymbolStatistics)}: low price must be less than or equal to high price.", nameof(lowPrice));
 
-            if (volume < 0)
-                throw new ArgumentException($"{nameof(SymbolStatistics)}: volume must be greater than or equal to 0.", nameof(volume));
+            // HACK
+            //if (volume < 0)
+            //    throw new ArgumentException($"{nameof(SymbolStatistics)}: volume must be greater than or equal to 0.", nameof(volume));
             if (quoteVolume < 0)
                 throw new ArgumentException($"{nameof(SymbolStatistics)}: volume must be greater than or equal to 0.", nameof(quoteVolume));
 
