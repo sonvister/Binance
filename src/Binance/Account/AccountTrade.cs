@@ -16,6 +16,11 @@ namespace Binance
         public long OrderId { get; }
 
         /// <summary>
+        /// Get the quote quantity.
+        /// </summary>
+        public decimal QuoteQuantity { get; }
+
+        /// <summary>
         /// Get the commission (commission asset quantity).
         /// </summary>
         public decimal Commission { get; }
@@ -47,6 +52,7 @@ namespace Binance
         /// <param name="orderId"></param>
         /// <param name="price"></param>
         /// <param name="quantity"></param>
+        /// <param name="quoteQuantity"></param>
         /// <param name="commission"></param>
         /// <param name="commissionAsset"></param>
         /// <param name="time"></param>
@@ -59,6 +65,7 @@ namespace Binance
             long orderId,
             decimal price,
             decimal quantity,
+            decimal quoteQuantity,
             decimal commission,
             string commissionAsset,
             DateTime time,
@@ -71,6 +78,7 @@ namespace Binance
                 throw new ArgumentException($"{nameof(Trade)}: ID must not be less than 0.", nameof(orderId));
 
             OrderId = orderId;
+            QuoteQuantity = quoteQuantity;
             Commission = commission;
             CommissionAsset = commissionAsset;
             IsBuyer = isBuyer;
@@ -88,6 +96,7 @@ namespace Binance
 
             return base.Equals(other)
                 && other.OrderId == OrderId
+                && other.QuoteQuantity == QuoteQuantity
                 && other.Commission == Commission
                 && other.CommissionAsset == CommissionAsset
                 && other.IsBuyer == IsBuyer

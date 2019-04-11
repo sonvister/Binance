@@ -265,6 +265,7 @@ namespace Binance.Client
                             jObject["i"].Value<long>(),    // order ID
                             jObject["L"].Value<decimal>(), // price (price of last filled trade)
                             jObject["z"].Value<decimal>(), // quantity (accumulated quantity of filled trades)
+                            0, // TODO: quoteQuantity
                             jObject["n"].Value<decimal>(), // commission
                             jObject["N"].Value<string>(),  // commission asset
                             jObject["T"].Value<long>()

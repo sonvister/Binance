@@ -14,6 +14,7 @@ namespace Binance.Tests.Serialization
             const long orderId = 54321;
             const decimal price = 5000;
             const decimal quantity = 1;
+            const decimal quoteQuantity = price * quantity;
             const decimal commission = 10;
             var commissionAsset = Asset.BNB;
             var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
@@ -21,7 +22,7 @@ namespace Binance.Tests.Serialization
             const bool isMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AccountTrade(symbol, id, orderId, price, quantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch);
+            var trade = new AccountTrade(symbol, id, orderId, price, quantity, quoteQuantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch);
 
             var serializer = new AccountTradeSerializer();
 

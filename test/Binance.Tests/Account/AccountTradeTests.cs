@@ -14,6 +14,7 @@ namespace Binance.Tests.Account
             const long orderId = 54321;
             const decimal price = 5000;
             const decimal quantity = 1;
+            const decimal quoteQuantity = price * quantity;
             const decimal commission = 10;
             var commissionAsset = Asset.BNB;
             var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
@@ -21,15 +22,15 @@ namespace Binance.Tests.Account
             const bool isMaker = true;
             const bool isBestPriceMatch = true;
 
-            Assert.Throws<ArgumentNullException>("symbol", () => new AccountTrade(null, id, orderId, price, quantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentNullException>("symbol", () => new AccountTrade(null, id, orderId, price, quantity, quoteQuantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
 
-            Assert.Throws<ArgumentException>("id", () => new AccountTrade(symbol, -1, orderId, price, quantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
-            Assert.Throws<ArgumentException>("orderId", () => new AccountTrade(symbol, id, -1, price, quantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("id", () => new AccountTrade(symbol, -1, orderId, price, quantity, quoteQuantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("orderId", () => new AccountTrade(symbol, id, -1, price, quantity, quoteQuantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
 
-            Assert.Throws<ArgumentException>("price", () => new AccountTrade(symbol, id, orderId, -1, quantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("price", () => new AccountTrade(symbol, id, orderId, -1, quantity, quoteQuantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
 
-            Assert.Throws<ArgumentException>("quantity", () => new AccountTrade(symbol, id, orderId, price, -1, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
-            Assert.Throws<ArgumentException>("quantity", () => new AccountTrade(symbol, id, orderId, price, 0, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("quantity", () => new AccountTrade(symbol, id, orderId, price, -1, quoteQuantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
+            Assert.Throws<ArgumentException>("quantity", () => new AccountTrade(symbol, id, orderId, price, 0, quoteQuantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch));
         }
 
         [Fact]
@@ -40,6 +41,7 @@ namespace Binance.Tests.Account
             const long orderId = 54321;
             const decimal price = 5000;
             const decimal quantity = 1;
+            const decimal quoteQuantity = price * quantity;
             const decimal commission = 10;
             var commissionAsset = Asset.BNB;
             var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
@@ -47,13 +49,14 @@ namespace Binance.Tests.Account
             const bool isMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AccountTrade(symbol, id, orderId, price, quantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch);
+            var trade = new AccountTrade(symbol, id, orderId, price, quantity, quoteQuantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch);
 
             Assert.Equal(symbol, trade.Symbol);
             Assert.Equal(id, trade.Id);
             Assert.Equal(orderId, trade.OrderId);
             Assert.Equal(price, trade.Price);
             Assert.Equal(quantity, trade.Quantity);
+            Assert.Equal(quoteQuantity, trade.QuoteQuantity);
             Assert.Equal(commission, trade.Commission);
             Assert.Equal(commissionAsset, trade.CommissionAsset);
             Assert.Equal(time, trade.Time);
@@ -70,6 +73,7 @@ namespace Binance.Tests.Account
             const long orderId = 54321;
             const decimal price = 5000;
             const decimal quantity = 1;
+            const decimal quoteQuantity = price * quantity;
             const decimal commission = 10;
             var commissionAsset = Asset.BNB;
             var time = DateTimeOffset.FromUnixTimeMilliseconds(DateTime.UtcNow.ToTimestamp()).UtcDateTime;
@@ -77,7 +81,7 @@ namespace Binance.Tests.Account
             const bool isMaker = true;
             const bool isBestPriceMatch = true;
 
-            var trade = new AccountTrade(symbol, id, orderId, price, quantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch);
+            var trade = new AccountTrade(symbol, id, orderId, price, quantity, quoteQuantity, commission, commissionAsset, time, isBuyer, isMaker, isBestPriceMatch);
 
             var json = JsonConvert.SerializeObject(trade);
 
@@ -88,6 +92,7 @@ namespace Binance.Tests.Account
             Assert.Equal(orderId, trade.OrderId);
             Assert.Equal(price, trade.Price);
             Assert.Equal(quantity, trade.Quantity);
+            Assert.Equal(quoteQuantity, trade.QuoteQuantity);
             Assert.Equal(commission, trade.Commission);
             Assert.Equal(commissionAsset, trade.CommissionAsset);
             Assert.Equal(time, trade.Time);

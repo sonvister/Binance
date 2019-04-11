@@ -13,6 +13,7 @@ namespace Binance.Serialization
         private const string KeyOrderId = "orderId";
         private const string KeyPrice = "price";
         private const string KeyQuantity = "qty";
+        private const string KeyQuoteQuantity = "quoteQty";
         private const string KeyCommission = "commission";
         private const string KeyCommissionAsset = "commissionAsset";
         private const string KeyTime = "time";
@@ -50,6 +51,7 @@ namespace Binance.Serialization
                 new JProperty(KeyOrderId, trade.OrderId),
                 new JProperty(KeyPrice, trade.Price.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyQuantity, trade.Quantity.ToString(CultureInfo.InvariantCulture)),
+                new JProperty(KeyQuoteQuantity, trade.QuoteQuantity.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyCommission, trade.Commission.ToString(CultureInfo.InvariantCulture)),
                 new JProperty(KeyCommissionAsset, trade.CommissionAsset),
                 new JProperty(KeyTime, trade.Time.ToTimestamp()),
@@ -71,6 +73,7 @@ namespace Binance.Serialization
                     jToken[KeyOrderId].Value<long>(),
                     jToken[KeyPrice].Value<decimal>(),
                     jToken[KeyQuantity].Value<decimal>(),
+                    jToken[KeyQuoteQuantity].Value<decimal>(),
                     jToken[KeyCommission].Value<decimal>(),
                     jToken[KeyCommissionAsset].Value<string>(),
                     jToken[KeyTime].Value<long>().ToDateTime(),
@@ -81,16 +84,17 @@ namespace Binance.Serialization
 
             return new AccountTrade(
                 symbol,
-                jToken["id"].Value<long>(),
-                jToken["orderId"].Value<long>(),
-                jToken["price"].Value<decimal>(),
-                jToken["qty"].Value<decimal>(),
-                jToken["commission"].Value<decimal>(),
-                jToken["commissionAsset"].Value<string>(),
-                jToken["time"].Value<long>().ToDateTime(),
-                jToken["isBuyer"].Value<bool>(),
-                jToken["isMaker"].Value<bool>(),
-                jToken["isBestMatch"].Value<bool>());
+                jToken[KeyId].Value<long>(),
+                jToken[KeyOrderId].Value<long>(),
+                jToken[KeyPrice].Value<decimal>(),
+                jToken[KeyQuantity].Value<decimal>(),
+                jToken[KeyQuoteQuantity].Value<decimal>(),
+                jToken[KeyCommission].Value<decimal>(),
+                jToken[KeyCommissionAsset].Value<string>(),
+                jToken[KeyTime].Value<long>().ToDateTime(),
+                jToken[KeyIsBuyer].Value<bool>(),
+                jToken[KeyIsMaker].Value<bool>(),
+                jToken[KeyIsBestPriceMatch].Value<bool>());
         }
     }
 }
