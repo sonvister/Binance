@@ -11,7 +11,7 @@ namespace Binance
         public static readonly int RequestRateLimitBurstCountDefault = 100;
         public static readonly int RequestRateLimitBurstDurationSecondsDefault = 1;
 
-        public static readonly int OrderRateLimitCountDefault = 100000;
+        public static readonly int OrderRateLimitCountDefault = 200000;
         public static readonly int OrderRateLimitDurationDaysDefault = 1;
 
         public static readonly int OrderRateLimitBurstCountDefault = 10;
