@@ -16,7 +16,7 @@ namespace Binance.Api
         /// <summary>
         /// Get the base endpoint URL.
         /// </summary>
-        public static readonly string EndpointUrl = "https://api.binance.com";
+        public static readonly string EndpointUrl = BinanceApiOptions.EndpointUrl_binance_com;
 
         /// <summary>
         /// Get the successful test response string.
@@ -90,7 +90,7 @@ namespace Binance.Api
                 throw new BinanceApiException(message, e);
             }
 
-            var uri = new Uri(EndpointUrl);
+            var uri = new Uri(apiOptions.EndpointUrl);
 
             try
             {

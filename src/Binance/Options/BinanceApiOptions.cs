@@ -19,9 +19,17 @@ namespace Binance
 
         public const int TimestampOffsetRefreshPeriodMinutesDefault = 30;
 
+        public static readonly string EndpointUrl_binance_com = "https://api.binance.com";
+        public static readonly string EndpointUrl_binance_us = "https://api.binance.us";
+
         #endregion Public Constants
 
         #region Public Properties
+
+        /// <summary>
+        /// Get or set the HTTP client endpoint URL.
+        /// </summary>
+        public string EndpointUrl { get; set; } = EndpointUrl_binance_com;
 
         /// <summary>
         /// Get or set the service point manager connection lease timeout.
