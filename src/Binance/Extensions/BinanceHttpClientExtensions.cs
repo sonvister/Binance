@@ -103,7 +103,7 @@ namespace Binance
         /// </summary>
         /// <param name="client"></param>
         /// <param name="symbol"></param>
-        /// <param name="limit">Valid values: [5, 10, 20, 50, 100, 500, 1000] (default: 100).</param>
+        /// <param name="limit">Valid values: [5, 10, 20, 50, 100, 500, 1000, 5000] (default: 100).</param>
         /// <param name="token"></param>
         /// <returns></returns>
         public static async Task<string> GetOrderBookAsync(this IBinanceHttpClient client, string symbol, int limit = default, CancellationToken token = default)
@@ -114,7 +114,11 @@ namespace Binance
             if (client.RateLimiter != null)
             {
                 await client.RateLimiter
-                    .DelayAsync(limit >= 1000 ? 10 : limit >= 500 ? 5 : 1, token)
+                    .DelayAsync(limit >= 10000 ? 100
+                                       : limit >= 5000 ? 50
+                                                : limit >= 1000 ? 10
+                                                         : limit >= 500 ? 5
+                                                                  : 1, token)
                     .ConfigureAwait(false);
             }
 
