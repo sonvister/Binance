@@ -175,3 +175,5 @@ To get the source code for a particular release, first select the corresponding 
 Thank you.
 
 Follow [@sonvister](https://twitter.com/sonvister)
+
+[![Donate NIM](https://www.nimiq.com/accept-donations/img/donationBtnImg/orange-small.svg)](https://safe.nimiq.com/#_request/NQ13481VT3VVKRENJJL39B5J7DJMHF4CRCVL_)
