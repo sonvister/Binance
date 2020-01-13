@@ -1,5 +1,5 @@
 # Binance ![](https://github.com/sonvister/Binance/blob/master/images/logo.png?raw=true)
-A full-featured .NET API library (a.k.a. wrapper) for the **[official Binance web API](https://github.com/binance-exchange/binance-official-api-docs)**.
+A .NET API library (a.k.a. wrapper) for the **[official Binance web API](https://github.com/binance-exchange/binance-official-api-docs)**.
 
 Compatible with **.NET Standard 2.0** and **.NET Framework 4.7.1**
 
@@ -8,7 +8,8 @@ Built using [TAP (Task-based Asynchronous Pattern)](https://docs.microsoft.com/e
 [![](https://img.shields.io/github/last-commit/sonvister/Binance.svg)](https://github.com/sonvister/Binance)
 
 ## Features
-* **Complete** coverage of the official [Binance API](https://github.com/binance-exchange/binance-official-api-docs) including the latest REST API and Web Socket combined streams.
+* **Beta** release with majority coverage of the official [Binance API](https://github.com/binance-exchange/binance-official-api-docs) including REST API and Web Sockets.
+  * *NOTE: Not actively adding new features or providing support...*
   * Binance account API-Key is *not required* to access the *public* REST and Web Socket endpoints (*most market data*).
 * Easy-to-use **Web Socket managers** (*with combined streams*) and **in-memory cache** implementations (*with events*).
 * **Convenient** assets and symbols (e.g. `Symbol.BTC_USDT`) with exchange info (*price/quantity: min, max, etc.*).
